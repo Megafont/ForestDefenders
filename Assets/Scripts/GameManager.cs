@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
     private float _BuildTime = 10f;
     private float _GameStateStartTime;
 
+    private int _Score;
 
 
 
@@ -53,6 +54,8 @@ public class GameManager : MonoBehaviour
         UI_MonstersLeftText.enabled = false;
         UI_TimeToNextWaveText.enabled = false;
         UI_WaveNumberText.enabled = false;
+        UI_ScoreText.text = UI_ScoreText.text = "Score: 0000000000";
+
 
         GameObject playerPrefab = Resources.Load<GameObject>("Player/MaleCharacter");
 
@@ -90,8 +93,19 @@ public class GameManager : MonoBehaviour
         } // end switch GameState
     }
 
+    public void AddToScore(int amount)
+    {
+        if (amount <= 0)
+            Debug.LogError("The amount to add to the score must be positive!");
+
+        _Score += amount;
+        UI_ScoreText.text = $"Score: {_Score:0000000000}";
+    }
+
     private void ChangeGameState(GameStates newState)
     {
+        _MonsterManager.ResetComboStreak();
+
         GameState = newState;
         _GameStateStartTime = Time.time;
 
@@ -137,13 +151,16 @@ public class GameManager : MonoBehaviour
     {
         int monstersLeft = _MonsterManager.MonstersLeft;
 
-        UI_MonstersLeftText.text = $"Monsters Left: {monstersLeft}";
+        UI_MonstersLeftText.text = $"Monsters Left: {monstersLeft} of {_MonsterManager.WaveSize}";
         UI_WaveNumberText.text = $"Wave #{_MonsterManager.WaveNumber} Incoming!";
 
-        if (monstersLeft == 0)
+        if (_MonsterManager.WaveComplete)
         {
             UI_MonstersLeftText.enabled = false;
             UI_WaveNumberText.enabled = false;
+
+            // Give player a scoring bonus for clearing the wave.
+            AddToScore(_MonsterManager.WaveNumber * 100);
 
             ChangeGameState(GameStates.PlayerBuildPhase);
         }
@@ -176,5 +193,6 @@ public class GameManager : MonoBehaviour
         UI_TimeToNextWaveText.enabled = false;
         UI_WaveNumberText.enabled = false;
     }
+
 }
 

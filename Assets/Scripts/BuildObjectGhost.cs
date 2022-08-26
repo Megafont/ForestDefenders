@@ -27,7 +27,12 @@ public class BuildObjectGhost : MonoBehaviour
         //Debug.Log($"Build ghost object collided with GameObject {other.name}!");
 
         if (other.tag != "Ground" && other.tag != "Player" && other.tag != "EnemyTargetDetector")
-            _OverlappingObjects.Add(other);
+        {
+            // Make sure we don't end up with duplicate entries in the list, as this can cause the player to be unable to build things
+            // since only one entry gets cleared in OnTriggerExit().
+            if (!_OverlappingObjects.Contains(other))
+                _OverlappingObjects.Add(other);
+        }
     }
 
     private void OnTriggerExit(Collider other)

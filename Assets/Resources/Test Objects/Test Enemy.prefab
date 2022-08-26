@@ -200,6 +200,7 @@ MonoBehaviour:
   AI_MaxPlayerChaseDistance: 10
   AI_TargetCheckFrequency: 5
   AI_TargetCheckRadius: 5
+  ScoreValue: 10
 --- !u!114 &92072812458034442
 MonoBehaviour:
   m_ObjectHideFlags: 0

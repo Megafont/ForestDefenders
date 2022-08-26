@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 
-public class TestEnemy : MonoBehaviour
+public class TestEnemy : MonoBehaviour, IEnemy
 {
     public float AttackPower = 3;
     public float AttackCooldownTime = 2.0f;
@@ -14,6 +14,8 @@ public class TestEnemy : MonoBehaviour
     public float AI_MaxPlayerChaseDistance = 10.0f;
     public float AI_TargetCheckFrequency = 5.0f;
     public float AI_TargetCheckRadius = 5.0f;
+
+    public int ScoreValue = 10;
 
     private NavMeshAgent _NavMeshAgent;
     private GameObject _Target;
@@ -137,4 +139,12 @@ public class TestEnemy : MonoBehaviour
     {
         Destroy(gameObject);
     }
+
+
+
+    public int GetScoreValue()
+    {
+        return ScoreValue;
+    }
+
 }

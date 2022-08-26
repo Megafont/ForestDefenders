@@ -9,14 +9,23 @@ public class MonsterManager : MonoBehaviour
 {
     public GameObject MonsterPrefab;
 
-    public int MonstersLeft { get { return _Monsters.Count; } }
+    public int CurrentComboStreak { get; private set; }
+    public float ComboStreakResetTime = 5.0f;
+
+    public int MonstersKilled { get; private set; }
+    public int MonstersLeft { get { return WaveSize - MonstersKilled; } }
+    public bool WaveComplete { get { return _WaveIsDoneSpawning && _Monsters.Count == 0; } }
     public int WaveNumber { get; private set; }
+    public int WaveSize { get; private set; }
+
+    public int BaseWaveSize = 5;
 
 
+    private bool _WaveIsDoneSpawning;
     private GameObject _MonstersParent;
     private float _LastWaveTime;
-
     private List<GameObject> _Monsters;
+    private float _LastMonsterDeathTime;
 
 
     // Start is called before the first frame update
@@ -37,14 +46,24 @@ public class MonsterManager : MonoBehaviour
     public void BeginNextWave()
     {
         WaveNumber++;
+        
         StartCoroutine(SpawnWave());
+    }
+
+    public void ResetComboStreak()
+    {
+        CurrentComboStreak = 0;
     }
 
     private IEnumerator SpawnWave()
     {
+        MonstersKilled = 0;
+        _WaveIsDoneSpawning = false;
+
         GameObject playerBase = GameObject.Find("Player Base");
 
-        for (int i = 0; i < 5; i++)
+        WaveSize = GetWaveSize();
+        for (int i = 0; i < WaveSize; i++)
         {
             GameObject monster = Instantiate(MonsterPrefab, transform.position, Quaternion.identity, _MonstersParent.transform);
             monster.GetComponent<TestEnemy>().SetTarget(playerBase);
@@ -54,10 +73,36 @@ public class MonsterManager : MonoBehaviour
             yield return new WaitForSeconds(2.0f);
         }
 
+        _WaveIsDoneSpawning = true;
+    }
+
+    private int GetWaveSize()
+    {
+        int waveSize = BaseWaveSize + (WaveNumber * WaveSize / 2);
+
+        return waveSize;
     }
 
     private void OnDeath(GameObject sender)
     {
+        if (Time.time - _LastMonsterDeathTime >= ComboStreakResetTime)
+            ResetComboStreak();
+
+
+        _LastMonsterDeathTime = Time.time;        
+        CurrentComboStreak++;
+
+
+        MonstersKilled++;
+
+
+        int enemyScoreValue = sender.GetComponent<IEnemy>().GetScoreValue();
+        GameManager.Instance.AddToScore(enemyScoreValue * CurrentComboStreak);
+
+
+        //Debug.Log($"Kill Streak: {CurrentComboStreak}  Enemy Base Score: {enemyScoreValue}");
+
+
         _Monsters.Remove(sender);        
     }
 }
