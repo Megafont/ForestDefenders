@@ -9,6 +9,7 @@ TagManager:
   - Ground
   - Enemy
   - EnemyTargetDetector
+  - CinemachineTarget
   layers:
   - Default
   - TransparentFX
@@ -18,8 +19,8 @@ TagManager:
   - UI
   - Buildable
   - Enemies
-  - 
-  - 
+  - Player
+  - Camera
   - 
   - 
   - 

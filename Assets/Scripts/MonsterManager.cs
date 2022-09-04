@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -19,6 +20,8 @@ public class MonsterManager : MonoBehaviour
     public int WaveSize { get; private set; }
 
     public int BaseWaveSize = 5;
+
+    public GameObject[] SpawnPoints = new GameObject[0];
 
 
     private bool _WaveIsDoneSpawning;
@@ -60,12 +63,21 @@ public class MonsterManager : MonoBehaviour
         MonstersKilled = 0;
         _WaveIsDoneSpawning = false;
 
+
+        if (SpawnPoints.Length < 1)
+            throw new Exception("Cannot spawn monsters because no spawn points have been specified in the inspector!");
+
+
         GameObject playerBase = GameObject.Find("Player Base");
 
         WaveSize = GetWaveSize();
         for (int i = 0; i < WaveSize; i++)
         {
-            GameObject monster = Instantiate(MonsterPrefab, transform.position, Quaternion.identity, _MonstersParent.transform);
+            // Randomly select a spawn point from the list.
+            int index = UnityEngine.Random.Range(0, SpawnPoints.Length - 1);
+
+            // Spawn a monster.
+            GameObject monster = Instantiate(MonsterPrefab, SpawnPoints[index].transform.position, Quaternion.identity, _MonstersParent.transform);
             monster.GetComponent<TestEnemy>().SetTarget(playerBase);
             monster.GetComponent<Health>().OnDeath += OnDeath;
             _Monsters.Add(monster);

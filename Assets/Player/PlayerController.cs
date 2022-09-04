@@ -24,8 +24,6 @@ public class PlayerController : MonoBehaviour
     private float _TurnRate;
     private float _AttackCooldownRemainingTime;
 
-    private LayerMask _ResourcesLayerMask;
-
     private bool _IsBuildModeActive;
     private GameObject _BuildObjectGhostPrefab;
     private GameObject _BuildObjectGhost;
@@ -37,6 +35,8 @@ public class PlayerController : MonoBehaviour
     private int _WoodCount;
     private const int _AverageWoodPerHit = 5;
 
+    private RadialMenu _RadialMenu;
+
 
     // Start is called before the first frame update
     void Start()
@@ -45,8 +45,6 @@ public class PlayerController : MonoBehaviour
 
         _Animator = GetComponent<Animator>();    
         _Rigidbody = GetComponent<Rigidbody>();
-
-        _ResourcesLayerMask = LayerMask.NameToLayer("Resources");
 
 
         _BarricadePrefab = Resources.Load<GameObject>("Test Objects/Barricade");        
@@ -57,6 +55,18 @@ public class PlayerController : MonoBehaviour
                                         transform);
         _BuildObjectGhost.SetActive(false);
         _BarricadesParent = GameObject.Find("Barricades");
+
+
+        GameObject obj = GameObject.Find("Radial Menu");
+        if (!obj)
+            throw new System.Exception("The radial menu GameObject was not found!");
+        else
+        {
+            _RadialMenu = obj.GetComponent<RadialMenu>();
+            if (_RadialMenu == null)
+                throw new System.Exception("The radial menu GameObject does not have a RadialMenu component!");
+        }
+
     }
 
     // Update is called once per frame
@@ -91,7 +101,7 @@ public class PlayerController : MonoBehaviour
             _TurnRate = 0;
         }
     }
-
+    /*
     public void OnMove(InputAction.CallbackContext value)
     {
         Vector2 moveValue = value.ReadValue<Vector2>();
@@ -140,12 +150,16 @@ public class PlayerController : MonoBehaviour
         if (value.canceled)
             _IsBuildModeActive = false;
 
+        if (_IsBuildModeActive)
+        {
+            _RadialMenu.ShowRadialMenu();
+        }
 
         _BuildObjectGhost.SetActive(_IsBuildModeActive);
 
         //Debug.Log($"Build: " + _IsBuildModeActive);
     }
-
+    */
     private void DoAttack()
     {
         if (_AttackCooldownRemainingTime > 0)

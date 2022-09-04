@@ -10,10 +10,12 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("UI")]
     public TMP_Text UI_TimeToNextWaveText;
     public TMP_Text UI_WaveNumberText;
     public TMP_Text UI_MonstersLeftText;
     public TMP_Text UI_ScoreText;
+
 
     public GameObject Player { get; private set; }
 
@@ -43,7 +45,7 @@ public class GameManager : MonoBehaviour
 
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         if (Instance == null)
             Instance = this;
@@ -51,24 +53,22 @@ public class GameManager : MonoBehaviour
             throw new Exception("There is already a GameManager present in the scene!");
 
 
+        
+        GameObject playerPrefab = Resources.Load<GameObject>("Player/Player (Male)");
+        GameObject playerObj = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
+
+        Player = playerObj.transform.Find("Player Armature").gameObject;
+        Player.GetComponent<Health>().OnDeath += OnPlayerDeath;
+
+
+        _MonsterManager = GameObject.Find("Monster Manager").GetComponent<MonsterManager>();
+
+
         UI_MonstersLeftText.enabled = false;
         UI_TimeToNextWaveText.enabled = false;
         UI_WaveNumberText.enabled = false;
         UI_ScoreText.text = UI_ScoreText.text = "Score: 0000000000";
 
-
-        GameObject playerPrefab = Resources.Load<GameObject>("Player/MaleCharacter");
-
-        Player = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
-        Player.name = "Player";
-        Player.GetComponent<Health>().OnDeath += OnPlayerDeath;
-
-        _MainCamera = GameObject.Find("CM Main Camera");
-        CinemachineVirtualCamera cmCam = _MainCamera.GetComponent<CinemachineVirtualCamera>();
-        cmCam.Follow = Player.transform;
-        cmCam.LookAt = Player.transform;
-
-        _MonsterManager = GameObject.Find("Monster Manager").GetComponent<MonsterManager>();
 
         ChangeGameState(GameStates.PlayerBuildPhase);
     }
