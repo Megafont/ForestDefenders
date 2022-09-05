@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     private Animator _Animator;
     private Rigidbody _Rigidbody;
 
-        private Vector3 _Velocity;
+    private Vector3 _Velocity;
     private float _TurnRate;
     private float _AttackCooldownRemainingTime;
 

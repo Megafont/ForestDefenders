@@ -10,9 +10,11 @@ namespace StarterAssets
 		[Header("Character Input Values")]
 		public Vector2 move;
 		public Vector2 look;
-        public bool attack;
         public bool jump;
 		public bool sprint;
+
+        public bool _Attack;
+        public bool _BuildMode;
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -36,11 +38,6 @@ namespace StarterAssets
 			}
 		}
 
-        public void OnAttack(InputAction.CallbackContext context)
-        {
-			AttackInput(context.control.IsPressed());
-        }
-
         public void OnJump(InputAction.CallbackContext context)
 		{
 			JumpInput(context.control.IsPressed());
@@ -51,7 +48,18 @@ namespace StarterAssets
 			SprintInput(context.control.IsPressed());
 		}
 
+
+        public void OnAttack(InputAction.CallbackContext context)
+        {
+            AttackInput(context.control.IsPressed());
+        }
+
+        public void OnBuildMode(InputAction.CallbackContext context)
+		{
+			BuildModeInput(context.control.IsPressed());
+		}
 #endif
+
 
 
 		public void MoveInput(Vector2 newMoveDirection)
@@ -64,11 +72,6 @@ namespace StarterAssets
 			look = newLookDirection;
 		}
 
-		public void AttackInput(bool newAttackState)
-		{
-			attack = newAttackState;
-		}
-
 		public void JumpInput(bool newJumpState)
 		{
 			jump = newJumpState;
@@ -79,7 +82,20 @@ namespace StarterAssets
 			sprint = newSprintState;
 		}
 
-		private void OnApplicationFocus(bool hasFocus)
+
+        public void AttackInput(bool newAttackState)
+        {
+            _Attack = newAttackState;
+        }
+
+        private void BuildModeInput(bool newBuildModeState)
+        {
+            _BuildMode = newBuildModeState;
+        }
+
+
+
+        private void OnApplicationFocus(bool hasFocus)
 		{
 			SetCursorState(cursorLocked);
 		}
@@ -88,6 +104,7 @@ namespace StarterAssets
 		{
 			Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
 		}
+
 	}
 	
 }

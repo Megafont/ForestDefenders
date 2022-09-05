@@ -17,10 +17,10 @@ TagManager:
   - Ground
   - Water
   - UI
-  - Buildable
+  - Buildings
   - Enemies
   - Player
-  - Camera
+  - Resources
   - 
   - 
   - 

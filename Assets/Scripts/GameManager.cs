@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
     private GameObject _MainCamera;
     private MonsterManager _MonsterManager;
 
-    private float _BuildTime = 10f;
+    private float _BuildTime = 30f;
     private float _GameStateStartTime;
 
     private int _Score;

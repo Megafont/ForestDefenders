@@ -50,7 +50,7 @@ namespace StarterAssets
         [Header("Player Stats")]
         public float AttackPower = 10f;
         public float AttackCooldownTime = 0.5f;
-
+       
 
         [Header("Player Grounded")]
         [Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")]
@@ -129,7 +129,7 @@ namespace StarterAssets
         private float _AttackCooldownRemainingTime;
 
         private bool _IsBuildModeActive;
-        private GameObject _BuildObjectGhostPrefab;
+        private GameObject _BuildObjectGhostsParent;
         private GameObject _BuildObjectGhost;
         private GameObject _BarricadePrefab;
         private GameObject _BarricadesParent;
@@ -183,6 +183,36 @@ namespace StarterAssets
             // reset our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
+
+
+            Init();
+        }
+
+        private void Init()
+        {
+            GetComponent<Health>().OnDeath += OnDeath;
+
+            _BuildObjectGhostsParent = GameObject.Find("Build Mode Ghost Models");
+            _BarricadePrefab = Resources.Load<GameObject>("Test Objects/Barricade");
+            GameObject buildObjectGhostPrefab = Resources.Load<GameObject>("Test Objects/Barricade Ghost");
+            _BuildObjectGhost = Instantiate(buildObjectGhostPrefab,
+                                            transform.position + transform.forward,
+                                            Quaternion.identity,
+                                            _BuildObjectGhostsParent.transform);
+            _BuildObjectGhost.SetActive(false);
+            _BarricadesParent = GameObject.Find("Barricades");
+
+
+            GameObject obj = GameObject.Find("Radial Menu");
+            if (!obj)
+                throw new System.Exception("The radial menu GameObject was not found!");
+            else
+            {
+                _RadialMenu = obj.GetComponent<RadialMenu>();
+                if (_RadialMenu == null)
+                    throw new System.Exception("The radial menu GameObject does not have a RadialMenu component!");
+            }
+
         }
 
         private void Update()
@@ -194,10 +224,34 @@ namespace StarterAssets
             Move();
 
             //Debug.Log(_input.attack);
-            if (_input.attack && _AttackCooldownRemainingTime <= 0)
-                Attack();
+            if (_input._Attack && _AttackCooldownRemainingTime <= 0)
+            {
+                if (!_input._BuildMode)
+                    DoAttack();
+                else
+                    DoBuildAction();
+            }
             else if (_AttackCooldownRemainingTime > 0)
+            {
                 _AttackCooldownRemainingTime -= Time.deltaTime;
+            }
+
+
+            // If the player is in build mode, show the building ghost so he can see where his structure will be built.
+            if (_input._BuildMode)
+            {
+                _BuildGhostOffset = transform.position + transform.forward * 2f;
+                _BuildGhostOffset = new Vector3(_BuildGhostOffset.x, 0.5f + 0.01f, _BuildGhostOffset.z); // We add a little to y to prevent the ghost from colliding with the ground.
+                _BuildObjectGhost.transform.position = _BuildGhostOffset;
+                _BuildObjectGhost.transform.rotation = transform.rotation;
+            }
+
+            // Check if we entered or exited buildmode.
+            if (_BuildObjectGhost.activeSelf != _input._BuildMode)
+            {
+                _BuildObjectGhost.SetActive(_input._BuildMode);
+            }
+
         }
 
         private void LateUpdate()
@@ -391,7 +445,7 @@ namespace StarterAssets
             }
         }
 
-        private void Attack()
+        private void DoAttack()
         {
             _AttackCooldownRemainingTime = AttackCooldownTime;
 

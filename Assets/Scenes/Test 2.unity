@@ -2005,7 +2005,7 @@ GameObject:
   - component: {fileID: 556158736}
   - component: {fileID: 556158735}
   - component: {fileID: 556158739}
-  m_Layer: 3
+  m_Layer: 10
   m_Name: Tree
   m_TagString: Tree
   m_Icon: {fileID: 0}
@@ -2339,6 +2339,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 779627600}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &813121272
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 813121273}
+  m_Layer: 0
+  m_Name: Build Mode Ghost Models
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &813121273
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 813121272}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -3314,7 +3345,7 @@ GameObject:
   - component: {fileID: 2133676427}
   - component: {fileID: 2133676426}
   - component: {fileID: 2133676429}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Radial Menu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3513,7 +3544,7 @@ PrefabInstance:
     - target: {fileID: 4302555989410089668, guid: ea8df4e4c6fc3fb47b8df27bc4cb216e,
         type: 3}
       propertyPath: m_Layer
-      value: 3
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4302555989410089672, guid: ea8df4e4c6fc3fb47b8df27bc4cb216e,
         type: 3}
