@@ -51,9 +51,54 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Build",
+                    "type": "Button",
+                    "id": "dbcf6b16-4d1b-4b4e-b017-c834d752a531",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "BuildMode",
                     "type": "Button",
                     "id": "a4b4a149-d985-47a6-873e-1b52d4ac5127",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SelectBuilding",
+                    "type": "Button",
+                    "id": "3679946f-efa7-4606-a469-a69b727150f8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "UI Navigate",
+                    "type": "Value",
+                    "id": "3ad58cc7-a737-4880-8fa4-36bc69969aa9",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "UI Confirm",
+                    "type": "Button",
+                    "id": "0e10493a-56bc-4ea7-9970-4ac9d08c77c2",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "UI Cancel",
+                    "type": "Button",
+                    "id": "bc7250fc-69b9-4f20-8a0e-09e3bc96d1d9",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -108,7 +153,7 @@
                 {
                     "name": "",
                     "id": "9f973413-5e27-4239-acee-38c4a63feeba",
-                    "path": "<Gamepad>/buttonSouth",
+                    "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -240,7 +285,7 @@
                 {
                     "name": "",
                     "id": "a76c975e-2690-43f2-be53-ebab13dc2e6f",
-                    "path": "<Gamepad>/buttonEast",
+                    "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -278,6 +323,105 @@
                     "processors": "",
                     "groups": "KeyboardMouse",
                     "action": "BuildMode",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ef37bb22-e7e6-4501-bdf8-054ac10d5278",
+                    "path": "<Gamepad>/rightStickPress",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "SelectBuilding",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f8a9d931-ce43-4430-8fca-582badf75387",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "SelectBuilding",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f2c601a4-1c2c-46c5-a9f9-1eb627ea8162",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Build",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "45e3fd8b-2403-4b5d-84ee-d72158242db3",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Build",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "20f0627e-6448-459f-bde0-929ac823b363",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "InvertVector2(invertX=false),ScaleVector2(x=0.05,y=0.05)",
+                    "groups": "KeyboardMouse",
+                    "action": "UI Navigate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b5de81a1-d027-4425-aa64-fa010c4f74f4",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "InvertVector2(invertX=false),StickDeadzone,ScaleVector2(x=300,y=300)",
+                    "groups": "Gamepad",
+                    "action": "UI Navigate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a0f72661-6bb1-4f11-b906-6beee5e374b8",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "UI Confirm",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c3767682-875f-40c0-9386-becbd3a08e87",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UI Confirm",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2aedd9ee-4752-48c8-b85a-f500b720daa7",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "UI Cancel",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

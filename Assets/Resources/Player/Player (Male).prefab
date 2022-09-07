@@ -2463,7 +2463,12 @@ MonoBehaviour:
   jump: 0
   sprint: 0
   _Attack: 0
+  _Build: 0
   _BuildMode: 0
+  _SelectBuilding: 0
+  _UI_Navigate: {x: 0, y: 0}
+  _UI_Confirm: 0
+  _UI_Cancel: 0
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
@@ -2485,7 +2490,31 @@ MonoBehaviour:
   m_UIInputModule: {fileID: 0}
   m_DeviceLostEvent:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_DeviceRegainedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -2589,6 +2618,86 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: a4b4a149-d985-47a6-873e-1b52d4ac5127
     m_ActionName: Player/BuildMode[/XInputControllerWindows/rightTrigger,/Mouse/rightButton]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8018682782157017428}
+        m_TargetAssemblyTypeName: StarterAssets.StarterAssetsInputs, Assembly-CSharp
+        m_MethodName: OnBuild
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: dbcf6b16-4d1b-4b4e-b017-c834d752a531
+    m_ActionName: Player/Build[/XInputControllerWindows/buttonSouth,/Keyboard/z]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8018682782157017428}
+        m_TargetAssemblyTypeName: StarterAssets.StarterAssetsInputs, Assembly-CSharp
+        m_MethodName: OnSelectBuilding
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 3679946f-efa7-4606-a469-a69b727150f8
+    m_ActionName: Player/SelectBuilding
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8018682782157017428}
+        m_TargetAssemblyTypeName: StarterAssets.StarterAssetsInputs, Assembly-CSharp
+        m_MethodName: OnUINavigate
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 3ad58cc7-a737-4880-8fa4-36bc69969aa9
+    m_ActionName: Player/UI Navigate[/Mouse/delta,/XInputControllerWindows/rightStick]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8018682782157017428}
+        m_TargetAssemblyTypeName: StarterAssets.StarterAssetsInputs, Assembly-CSharp
+        m_MethodName: OnUIConfirm
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 0e10493a-56bc-4ea7-9970-4ac9d08c77c2
+    m_ActionName: Player/UI Confirm[/XInputControllerWindows/buttonSouth,/Mouse/leftButton]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8018682782157017428}
+        m_TargetAssemblyTypeName: StarterAssets.StarterAssetsInputs, Assembly-CSharp
+        m_MethodName: OnUICancel
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: bc7250fc-69b9-4f20-8a0e-09e3bc96d1d9
+    m_ActionName: Player/UI Cancel[/XInputControllerWindows/buttonEast]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player

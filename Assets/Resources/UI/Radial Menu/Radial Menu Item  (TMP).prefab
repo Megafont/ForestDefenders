@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7021009415078907667}
   - component: {fileID: 2226827589451132407}
   - component: {fileID: 7575899858293359080}
+  - component: {fileID: 4157190338349815892}
   m_Layer: 0
   m_Name: Radial Menu Item  (TMP)
   m_TagString: Untagged
@@ -135,3 +136,15 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4157190338349815892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6480163416539743212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d16ddc74e465c20408f193573bd43aa0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -13,8 +13,15 @@ namespace StarterAssets
         public bool jump;
 		public bool sprint;
 
-        public bool _Attack;
-        public bool _BuildMode;
+        public bool Attack;
+		public bool Build;
+        public bool BuildMode;
+		public bool SelectBuilding;
+
+		public Vector2 UI_Navigate;
+		public bool UI_Confirm;
+		public bool UI_Cancel;
+
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -24,13 +31,14 @@ namespace StarterAssets
 		public bool cursorInputForLook = true;
 
 
+
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
-		public void OnMove(InputAction.CallbackContext context)
+		private void OnMove(InputAction.CallbackContext context)
 		{
 			MoveInput(context.ReadValue<Vector2>());
 		}
 
-		public void OnLook(InputAction.CallbackContext context)
+		private void OnLook(InputAction.CallbackContext context)
 		{
 			if(cursorInputForLook)
 			{
@@ -38,31 +46,61 @@ namespace StarterAssets
 			}
 		}
 
-        public void OnJump(InputAction.CallbackContext context)
+        private void OnJump(InputAction.CallbackContext context)
 		{
 			JumpInput(context.control.IsPressed());
 		}
 
-		public void OnSprint(InputAction.CallbackContext context)
+		private void OnSprint(InputAction.CallbackContext context)
 		{
 			SprintInput(context.control.IsPressed());
 		}
 
 
-        public void OnAttack(InputAction.CallbackContext context)
+
+        private void OnAttack(InputAction.CallbackContext context)
         {
             AttackInput(context.control.IsPressed());
         }
 
-        public void OnBuildMode(InputAction.CallbackContext context)
+
+		private void OnBuild(InputAction.CallbackContext context)
+		{
+			BuildInput(context.control.IsPressed());
+		}
+
+        private void OnBuildMode(InputAction.CallbackContext context)
 		{
 			BuildModeInput(context.control.IsPressed());
 		}
+
+		private void OnSelectBuilding(InputAction.CallbackContext context)
+		{
+			SelectBuildingInput(context.control.IsPressed());
+		}
+
+
+        private void OnUINavigate(InputAction.CallbackContext context)
+        {
+            UI_NavigateInput(context.ReadValue<Vector2>());
+        }
+
+        private void OnUIConfirm(InputAction.CallbackContext context)
+        {
+			UI_ConfirmInput(context.control.IsPressed());
+        }
+
+        private void OnUICancel(InputAction.CallbackContext context)
+        {
+            UI_CancelInput(context.control.IsPressed());
+        }
 #endif
 
 
 
-		public void MoveInput(Vector2 newMoveDirection)
+        // NOTE: The following four methods are intentionally public, because they are accessed by UICanvasControllerInput.cs. I believe this is for touch screen input.
+
+        public void MoveInput(Vector2 newMoveDirection)
 		{
 			move = newMoveDirection;
 		} 
@@ -83,14 +121,42 @@ namespace StarterAssets
 		}
 
 
-        public void AttackInput(bool newAttackState)
+
+        private void AttackInput(bool newAttackState)
         {
-            _Attack = newAttackState;
+            Attack = newAttackState;
         }
+
+		private void BuildInput(bool newBuildState)
+		{
+			Build = newBuildState;
+		}
 
         private void BuildModeInput(bool newBuildModeState)
         {
-            _BuildMode = newBuildModeState;
+            BuildMode = newBuildModeState;
+        }
+
+		private void SelectBuildingInput(bool newSelectBuildingState)
+		{
+			SelectBuilding = newSelectBuildingState;
+		}
+
+
+
+		private void UI_NavigateInput(Vector2 newUINavigateDirection)
+		{
+			UI_Navigate = newUINavigateDirection;
+		}
+
+        private void UI_ConfirmInput(bool newUIConfirmState)
+        {
+            UI_Confirm = newUIConfirmState;
+        }
+
+        private void UI_CancelInput(bool newUICancelState)
+        {
+            UI_Cancel = newUICancelState;
         }
 
 

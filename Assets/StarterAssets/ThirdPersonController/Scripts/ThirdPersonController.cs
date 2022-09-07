@@ -1,7 +1,14 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections;
+
+using UnityEngine;
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 using UnityEngine.InputSystem;
 #endif
+
+
+using Random = UnityEngine.Random;
+
 
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
  */
@@ -104,6 +111,7 @@ namespace StarterAssets
         private int _animIDJump;
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
+
         // My Animation IDs
         private int _AnimAttack1;
         private int _AnimAttack2;
@@ -123,6 +131,7 @@ namespace StarterAssets
         private bool _hasAnimator;
 
         private bool _IsAttacking;
+        private bool _IsSelectingBuilding;
 
 
 
@@ -205,12 +214,12 @@ namespace StarterAssets
 
             GameObject obj = GameObject.Find("Radial Menu");
             if (!obj)
-                throw new System.Exception("The radial menu GameObject was not found!");
+                throw new Exception("The radial menu GameObject was not found!");
             else
             {
                 _RadialMenu = obj.GetComponent<RadialMenu>();
                 if (_RadialMenu == null)
-                    throw new System.Exception("The radial menu GameObject does not have a RadialMenu component!");
+                    throw new Exception("The radial menu GameObject does not have a RadialMenu component!");
             }
 
         }
@@ -219,44 +228,24 @@ namespace StarterAssets
         {
             _hasAnimator = TryGetComponent(out _animator);
 
-            JumpAndGravity();
-            GroundedCheck();
-            Move();
+            if (!_IsSelectingBuilding)
+            {
+                JumpAndGravity();
+                GroundedCheck();
+                Move();
 
-            //Debug.Log(_input.attack);
-            if (_input._Attack && _AttackCooldownRemainingTime <= 0)
-            {
-                if (!_input._BuildMode)
-                    DoAttack();
-                else
-                    DoBuildAction();
-            }
-            else if (_AttackCooldownRemainingTime > 0)
-            {
-                _AttackCooldownRemainingTime -= Time.deltaTime;
+                DoAttackChecks();
             }
 
 
-            // If the player is in build mode, show the building ghost so he can see where his structure will be built.
-            if (_input._BuildMode)
-            {
-                _BuildGhostOffset = transform.position + transform.forward * 2f;
-                _BuildGhostOffset = new Vector3(_BuildGhostOffset.x, 0.5f + 0.01f, _BuildGhostOffset.z); // We add a little to y to prevent the ghost from colliding with the ground.
-                _BuildObjectGhost.transform.position = _BuildGhostOffset;
-                _BuildObjectGhost.transform.rotation = transform.rotation;
-            }
-
-            // Check if we entered or exited buildmode.
-            if (_BuildObjectGhost.activeSelf != _input._BuildMode)
-            {
-                _BuildObjectGhost.SetActive(_input._BuildMode);
-            }
+            DoBuildModeChecks();
 
         }
 
         private void LateUpdate()
         {
-            CameraRotation();
+            if (!_IsSelectingBuilding)
+                CameraRotation();
         }
 
         private void AssignAnimationIDs()
@@ -445,11 +434,29 @@ namespace StarterAssets
             }
         }
 
-        private void DoAttack()
+        private void DoAttackChecks()
         {
-            _AttackCooldownRemainingTime = AttackCooldownTime;
+            // Make the cooldown timer elapse if an attack is still in progress.
+            if (_AttackCooldownRemainingTime > 0)
+            {
+                _AttackCooldownRemainingTime -= Time.deltaTime;
 
 
+                // An attack is already in progress, so return to prevent another one from being started if the user presses the attack button again.
+                return;
+            }
+
+
+            if (_input.Attack)
+            {
+                _AttackCooldownRemainingTime = AttackCooldownTime;
+                DoAttackAction();
+            }
+
+        }
+
+        private void DoAttackAction()
+        {
             int n = Random.Range(1, 4);
 
             string trigger = $"Attack {n}";
@@ -457,33 +464,83 @@ namespace StarterAssets
             _animator.SetTrigger(trigger);
 
             RaycastHit[] raycastHits = Physics.SphereCastAll(transform.position + transform.forward * 0.75f, 1.0f, transform.forward, 0.1f);
+            foreach (RaycastHit hit in raycastHits)
             {
-                foreach (RaycastHit hit in raycastHits)
+                Health health = hit.collider.GetComponent<Health>();
+                if (health)
                 {
-                    Health health = hit.collider.GetComponent<Health>();
-                    if (health)
+                    if (hit.collider.tag == "Tree")
                     {
-                        if (hit.collider.tag == "Tree")
-                        {
-                            _WoodCount += _AverageWoodPerHit + Random.Range(-2, 2);
-                            Debug.Log("Hit tree!");
-                        }
-                        else if (hit.collider.tag == "Enemy")
-                        {
-                            health.TakeDamage(AttackPower);
-                        }
+                        _WoodCount += _AverageWoodPerHit + Random.Range(-2, 2);
+                        Debug.Log("Hit tree!");
                     }
-                    else
+                    else if (hit.collider.tag == "Enemy")
                     {
-                        if (hit.collider.tag == "Building")
-                        {
-                            DoDestroyAction(hit.collider.gameObject);
-                        }
-
+                        health.TakeDamage(AttackPower);
                     }
-                } // end foreach hit
+                }
+                else
+                {
+                    if (hit.collider.tag == "Building")
+                    {
+                        DoDestroyAction(hit.collider.gameObject);
+                    }
 
+                }
+            } // end foreach hit
+
+        }
+
+        private void DoBuildModeChecks()
+        {
+            if (_input.BuildMode && _input.SelectBuilding && !_IsSelectingBuilding)
+            {                
+                StartCoroutine(SelectBuilding());
+                return;
             }
+
+
+            // Check if we entered or exited buildmode.
+            if (_BuildObjectGhost.activeSelf != _input.BuildMode)
+            {
+                _BuildObjectGhost.SetActive(_input.BuildMode);
+            }
+
+            // Are we in build mode?
+            if (_input.BuildMode)
+            {
+                if (_input.Build)
+                    DoBuildAction();
+
+                // Show the building ghost so the player can see where his structure will be built.
+                _BuildGhostOffset = transform.position + transform.forward * 2f;
+                _BuildGhostOffset = new Vector3(_BuildGhostOffset.x, 0.5f + 0.01f, _BuildGhostOffset.z); // We add a little to y to prevent the ghost from colliding with the ground. 
+                _BuildObjectGhost.transform.position = _BuildGhostOffset;
+                _BuildObjectGhost.transform.rotation = transform.rotation;
+            }
+
+        }
+
+        private IEnumerator SelectBuilding()
+        {
+            _IsSelectingBuilding = true;
+
+            // Show building category menu.
+            _RadialMenu.ShowRadialMenu("Select Building Type", RadialMenuDefinitions.BuildCategoriesMenu);
+
+            while (!_RadialMenu.MenuConfirmed && !_RadialMenu.MenuCancelled)
+                yield return new WaitForSeconds(0.1f);
+
+            if (_RadialMenu.MenuConfirmed)
+                Debug.Log($"Radial menu confirmed. Selected \"{_RadialMenu.SelectedItemName}\"");
+            else if (_RadialMenu.MenuCancelled)
+                Debug.Log("Radial menu cancelled.");
+
+
+            // This prevents the player character from attacking as soon as you close the menu, because the input hasn't had time to change yet.
+            // So we give a slight delay so the button will be released by the time that check happens again.
+            yield return new WaitForSeconds(0.2f); 
+            _IsSelectingBuilding = false;
 
         }
 
