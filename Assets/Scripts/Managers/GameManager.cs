@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using Cinemachine;
+using StarterAssets;
 using TMPro;
 
 
@@ -17,13 +18,17 @@ public class GameManager : MonoBehaviour
     public TMP_Text UI_ScoreText;
 
 
-    public GameObject Player { get; private set; }
-
     public static GameManager Instance;
 
+    public GameObject Player { get; private set; }
 
-    private GameObject _MainCamera;
-    private MonsterManager _MonsterManager;
+    public BuildModeManager BuildModeManager { get; private set; }
+    public StarterAssetsInputs PlayerInput { get; private set; }
+    public MonsterManager MonsterManager { get; private set; }
+
+
+    public RadialMenu UI_RadialMenu { get; private set; }
+
 
     private float _BuildTime = 30f;
     private float _GameStateStartTime;
@@ -61,8 +66,12 @@ public class GameManager : MonoBehaviour
         Player.GetComponent<Health>().OnDeath += OnPlayerDeath;
 
 
-        _MonsterManager = GameObject.Find("Monster Manager").GetComponent<MonsterManager>();
+        BuildModeManager = GameObject.Find("Build Mode Manager").GetComponent<BuildModeManager>();
+        MonsterManager = GameObject.Find("Monster Manager").GetComponent<MonsterManager>();
+        PlayerInput = Player.gameObject.GetComponent<StarterAssetsInputs>();
 
+
+        InitRadialMenu();
 
         UI_MonstersLeftText.enabled = false;
         UI_TimeToNextWaveText.enabled = false;
@@ -93,6 +102,19 @@ public class GameManager : MonoBehaviour
         } // end switch GameState
     }
 
+    private void InitRadialMenu()
+    {
+        GameObject obj = GameObject.Find("Radial Menu");
+        if (!obj)
+            throw new Exception("The radial menu GameObject was not found!");
+        else
+        {
+            UI_RadialMenu = obj.GetComponent<RadialMenu>();
+            if (UI_RadialMenu == null)
+                throw new Exception("The radial menu GameObject does not have a RadialMenu component!");
+        }
+    }
+
     public void AddToScore(int amount)
     {
         if (amount <= 0)
@@ -104,7 +126,7 @@ public class GameManager : MonoBehaviour
 
     private void ChangeGameState(GameStates newState)
     {
-        _MonsterManager.ResetComboStreak();
+        MonsterManager.ResetComboStreak();
 
         GameState = newState;
         _GameStateStartTime = Time.time;
@@ -121,7 +143,7 @@ public class GameManager : MonoBehaviour
                 UI_MonstersLeftText.enabled = true;
                 UI_WaveNumberText.enabled = true;
 
-                _MonsterManager.BeginNextWave();
+                MonsterManager.BeginNextWave();
                 break;
 
             case GameStates.GameOver:
@@ -149,18 +171,18 @@ public class GameManager : MonoBehaviour
 
     private void GameState_MonsterAttackPhase()
     {
-        int monstersLeft = _MonsterManager.MonstersLeft;
+        int monstersLeft = MonsterManager.MonstersLeft;
 
-        UI_MonstersLeftText.text = $"Monsters Left: {monstersLeft} of {_MonsterManager.WaveSize}";
-        UI_WaveNumberText.text = $"Wave #{_MonsterManager.WaveNumber} Incoming!";
+        UI_MonstersLeftText.text = $"Monsters Left: {monstersLeft} of {MonsterManager.WaveSize}";
+        UI_WaveNumberText.text = $"Wave #{MonsterManager.WaveNumber} Incoming!";
 
-        if (_MonsterManager.WaveComplete)
+        if (MonsterManager.WaveComplete)
         {
             UI_MonstersLeftText.enabled = false;
             UI_WaveNumberText.enabled = false;
 
             // Give player a scoring bonus for clearing the wave.
-            AddToScore(_MonsterManager.WaveNumber * 100);
+            AddToScore(MonsterManager.WaveNumber * 100);
 
             ChangeGameState(GameStates.PlayerBuildPhase);
         }

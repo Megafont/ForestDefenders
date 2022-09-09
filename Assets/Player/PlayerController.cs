@@ -207,7 +207,7 @@ public class PlayerController : MonoBehaviour
 
     private void DoBuildAction()
     {
-        if (_BuildObjectGhost.GetComponent<BuildObjectGhost>().CanBuild &&
+        if (_BuildObjectGhost.GetComponent<BuildingConstructionGhost>().CanBuild &&
             Time.time - _LastBuildTime >= 0.1f)
         {
             Instantiate(_BarricadePrefab, _BuildGhostOffset, _Rigidbody.rotation, _BarricadesParent.transform);

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using StarterAssets;
 using TMPro;
-//using UnityEngine.Windows;
 
 
 public class RadialMenu : MonoBehaviour
@@ -22,8 +21,46 @@ public class RadialMenu : MonoBehaviour
     public bool MenuConfirmed { get; private set; }
     public bool MenuCancelled { get; private set; }
 
+    public Color32 MenuItemColor 
+    { 
+        get { return RadialMenuItem.TextColor; }
+        set 
+        { 
+            RadialMenuItem.TextColor = value;
+
+            foreach (RadialMenuItem item in _MenuItems)
+                item.SetColor(value);
+        } 
+    }
+
+    public Color32 MenuItemHighlightColor
+    {
+        get { return RadialMenuItem.TextHighlightColor; }
+        set
+        { 
+            RadialMenuItem.TextHighlightColor = value; 
+            _MenuItems[SelectedItemIndex].SetHighlightColor(value);
+        }
+    }
+
     public int SelectedItemIndex { get; private set; }
     public string SelectedItemName { get { return _MenuItems[SelectedItemIndex].Name; } }
+
+    public Color TitleColor 
+    { 
+        get 
+        { 
+            return _MenuTitleColor; 
+        } 
+        set 
+        {  
+            if (_MenuTitleUI)
+            {
+                _MenuTitleColor = value;
+                _MenuTitleUI.color = _MenuTitleColor;
+            }
+        } 
+    }
 
 
     public delegate void ItemSelectedCallback(int selectedMenuItemIndex);
@@ -38,14 +75,16 @@ public class RadialMenu : MonoBehaviour
     private int _PrevSelectedItemIndex;
 
     private GameObject _RadialMenuPanel;
-    private GameObject _RadialMenuItemsParent;
     private TMP_Text _MenuTitleUI;
-
+    private Color32 _MenuTitleColor = Color.yellow;
+    private GameObject _RadialMenuItemsParent;
+    
+    
 
     // Start is called before the first frame update
     void Start()
     {
-        _Input = GameManager.Instance.Player.GetComponent<StarterAssetsInputs>();
+        _Input = GameManager.Instance.PlayerInput;
         _MenuTitleUI = GameObject.Find("Radial Menu/Panel/Image/Title (TMP)").GetComponent<TMP_Text>();
         _RadialMenuPanel = GameObject.Find("Radial Menu/Panel");
         _RadialMenuItemsParent = GameObject.Find("Radial Menu/Panel/Menu Items Parent");
@@ -116,7 +155,7 @@ public class RadialMenu : MonoBehaviour
 
 
         _IsOpen = true;
-
+        Time.timeScale = 0; // Pause the game.
 
         while (true)
         {
@@ -131,6 +170,7 @@ public class RadialMenu : MonoBehaviour
 
         _RadialMenuPanel.SetActive(false);
         _IsOpen = false;
+        Time.timeScale = 1; // Unpause the game.
     }
 
     private void DoUIChecks()
@@ -229,23 +269,24 @@ public class RadialMenu : MonoBehaviour
         // Iterate through the list of menu items.
         for (int i = 0; i < length; i++)
         {
-            angle = _MenuItemSizeInDegrees * i;
-            q.eulerAngles = new Vector3(0, 0, -angle); // We negate the angle so the menu items are placed around the center going clockwise rather than the inverse.
-            Vector3 offset = q * (Vector3.up * Radius);
-
             // If there isn't a next menu item, create it.
             if (i >= _MenuItems.Count)
                 CreateMenuItem();
 
             // If the menu item is within the length of the passed in list of items, then set it up.
             // This is >= instead of > to take into account the "Cancel" menu item that is added automatically.
-            if (i <= menuItemCount)
+            if (i < menuItemCount)
             {
+                angle = _MenuItemSizeInDegrees * i;
+                q.eulerAngles = new Vector3(0, 0, -angle); // We negate the angle so the menu items are placed around the center going clockwise rather than the inverse.
+                Vector3 offset = q * (Vector3.up * Radius);
+
                 // Position the menu item.
                 // The last part of this line in ()s shifts the menu items down by half the height of the title bar so they appear centered in the area beneath it.
                 _MenuItems[i].transform.position = _RadialMenuPanel.transform.position + offset + (Vector3.down * titlebarOffset);
 
                 // Debug.Log($"Menu Pos: {RadialMenuPanel.transform.position}    Offset: {offset}    Menu Item Pos: {_MenuItems[i].UI.transform.position}");
+
 
                 // Remove highlighting if this menu item is highlighted.
                 _MenuItems[i].Unhighlight();
@@ -255,6 +296,7 @@ public class RadialMenu : MonoBehaviour
                     _MenuItems[i].Name = names[i];
                 else if (i == names.Length)
                     _MenuItems[i].Name = "Cancel";
+
 
                 // If this is the first menu item, set it as the default.
                 if (i == defaultItemIndex)
@@ -267,13 +309,16 @@ public class RadialMenu : MonoBehaviour
                     _MenuItems[i].IsDefaultMenuItem = false;
                 }
 
+
                 // Make sure this menu item's UI is enabled.
-                _MenuItems[i].enabled = true;
+                _MenuItems[i].Show(true);
             }
             else
             {
+                _MenuItems[i].Name = "Unused";
+
                 // This is an extra menu item that won't be used this time around, so disable it.
-                _MenuItems[i].enabled = false;
+                _MenuItems[i].Show(false);
             }
 
         } // end for i

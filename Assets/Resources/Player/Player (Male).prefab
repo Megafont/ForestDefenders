@@ -173,7 +173,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 276626934889169432}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.20000005, y: 1.375, z: -4}
+  m_LocalPosition: {x: 0.20000005, y: 1.375, z: -6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -298,7 +298,7 @@ MonoBehaviour:
   ShoulderOffset: {x: 1, y: 0, z: 0}
   VerticalArmLength: 0
   CameraSide: 0.6
-  CameraDistance: 4
+  CameraDistance: 6
   CameraCollisionFilter:
     serializedVersion: 2
     m_Bits: 1
@@ -2462,13 +2462,13 @@ MonoBehaviour:
   look: {x: 0, y: 0}
   jump: 0
   sprint: 0
-  _Attack: 0
-  _Build: 0
-  _BuildMode: 0
-  _SelectBuilding: 0
-  _UI_Navigate: {x: 0, y: 0}
-  _UI_Confirm: 0
-  _UI_Cancel: 0
+  Attack: 0
+  Build: 0
+  BuildMode: 0
+  SelectBuilding: 0
+  UI_Navigate: {x: 0, y: 0}
+  UI_Confirm: 0
+  UI_Cancel: 0
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
@@ -3140,7 +3140,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7921086107250432216}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.20000005, y: 1.375, z: -4}
+  m_LocalPosition: {x: 0.20000005, y: 1.375, z: -6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

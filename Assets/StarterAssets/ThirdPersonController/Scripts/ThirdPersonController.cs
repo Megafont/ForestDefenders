@@ -4,6 +4,7 @@ using System.Collections;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.iOS;
 #endif
 
 
@@ -89,6 +90,12 @@ namespace StarterAssets
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
 
+
+
+        public PlayerGameData PlayerGameData { get; private set; }
+
+
+
         // cinemachine
         private float _cinemachineTargetYaw;
         private float _cinemachineTargetPitch;
@@ -126,30 +133,16 @@ namespace StarterAssets
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
 
+        private BuildModeManager _BuildModeManager;
+
         private const float _threshold = 0.01f;
 
         private bool _hasAnimator;
 
         private bool _IsAttacking;
-        private bool _IsSelectingBuilding;
-
-
 
         private float _AttackCooldownRemainingTime;
-
-        private bool _IsBuildModeActive;
-        private GameObject _BuildObjectGhostsParent;
-        private GameObject _BuildObjectGhost;
-        private GameObject _BarricadePrefab;
-        private GameObject _BarricadesParent;
-        private Vector3 _BuildGhostOffset = Vector3.forward * 2f + Vector3.up * 0.5f;
-        private float _LastBuildTime;
-
-        private int _WoodCount;
-        private const int _AverageWoodPerHit = 5;
-
-        private RadialMenu _RadialMenu;
-
+       
 
 
         private bool IsCurrentDeviceMouse
@@ -180,7 +173,9 @@ namespace StarterAssets
             
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
-            _input = GetComponent<StarterAssetsInputs>();
+            _input = GameManager.Instance.PlayerInput;
+            _BuildModeManager = GameManager.Instance.BuildModeManager;
+
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
             _playerInput = GetComponent<PlayerInput>();
 #else
@@ -194,41 +189,16 @@ namespace StarterAssets
             _fallTimeoutDelta = FallTimeout;
 
 
-            Init();
-        }
-
-        private void Init()
-        {
             GetComponent<Health>().OnDeath += OnDeath;
-
-            _BuildObjectGhostsParent = GameObject.Find("Build Mode Ghost Models");
-            _BarricadePrefab = Resources.Load<GameObject>("Test Objects/Barricade");
-            GameObject buildObjectGhostPrefab = Resources.Load<GameObject>("Test Objects/Barricade Ghost");
-            _BuildObjectGhost = Instantiate(buildObjectGhostPrefab,
-                                            transform.position + transform.forward,
-                                            Quaternion.identity,
-                                            _BuildObjectGhostsParent.transform);
-            _BuildObjectGhost.SetActive(false);
-            _BarricadesParent = GameObject.Find("Barricades");
-
-
-            GameObject obj = GameObject.Find("Radial Menu");
-            if (!obj)
-                throw new Exception("The radial menu GameObject was not found!");
-            else
-            {
-                _RadialMenu = obj.GetComponent<RadialMenu>();
-                if (_RadialMenu == null)
-                    throw new Exception("The radial menu GameObject does not have a RadialMenu component!");
-            }
-
         }
+
+
 
         private void Update()
         {
             _hasAnimator = TryGetComponent(out _animator);
 
-            if (!_IsSelectingBuilding)
+            if (!_BuildModeManager.IsSelectingBuilding)
             {
                 JumpAndGravity();
                 GroundedCheck();
@@ -237,14 +207,11 @@ namespace StarterAssets
                 DoAttackChecks();
             }
 
-
-            DoBuildModeChecks();
-
         }
 
         private void LateUpdate()
         {
-            if (!_IsSelectingBuilding)
+            if (!_BuildModeManager.IsSelectingBuilding)
                 CameraRotation();
         }
 
@@ -266,8 +233,7 @@ namespace StarterAssets
             // set sphere position, with offset
             Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset,
                 transform.position.z);
-            Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
-                QueryTriggerInteraction.Ignore);
+            Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore);
 
             // update animator if using character
             if (_hasAnimator)
@@ -471,7 +437,7 @@ namespace StarterAssets
                 {
                     if (hit.collider.tag == "Tree")
                     {
-                        _WoodCount += _AverageWoodPerHit + Random.Range(-2, 2);
+                        PlayerGameData.ResourceCount_Wood += PlayerGameData.AverageWoodPerHit + Random.Range(-2, 2);
                         Debug.Log("Hit tree!");
                     }
                     else if (hit.collider.tag == "Enemy")
@@ -489,73 +455,6 @@ namespace StarterAssets
                 }
             } // end foreach hit
 
-        }
-
-        private void DoBuildModeChecks()
-        {
-            if (_input.BuildMode && _input.SelectBuilding && !_IsSelectingBuilding)
-            {                
-                StartCoroutine(SelectBuilding());
-                return;
-            }
-
-
-            // Check if we entered or exited buildmode.
-            if (_BuildObjectGhost.activeSelf != _input.BuildMode)
-            {
-                _BuildObjectGhost.SetActive(_input.BuildMode);
-            }
-
-            // Are we in build mode?
-            if (_input.BuildMode)
-            {
-                if (_input.Build)
-                    DoBuildAction();
-
-                // Show the building ghost so the player can see where his structure will be built.
-                _BuildGhostOffset = transform.position + transform.forward * 2f;
-                _BuildGhostOffset = new Vector3(_BuildGhostOffset.x, 0.5f + 0.01f, _BuildGhostOffset.z); // We add a little to y to prevent the ghost from colliding with the ground. 
-                _BuildObjectGhost.transform.position = _BuildGhostOffset;
-                _BuildObjectGhost.transform.rotation = transform.rotation;
-            }
-
-        }
-
-        private IEnumerator SelectBuilding()
-        {
-            _IsSelectingBuilding = true;
-
-            // Show building category menu.
-            _RadialMenu.ShowRadialMenu("Select Building Type", RadialMenuDefinitions.BuildCategoriesMenu);
-
-            while (!_RadialMenu.MenuConfirmed && !_RadialMenu.MenuCancelled)
-                yield return new WaitForSeconds(0.1f);
-
-            if (_RadialMenu.MenuConfirmed)
-                Debug.Log($"Radial menu confirmed. Selected \"{_RadialMenu.SelectedItemName}\"");
-            else if (_RadialMenu.MenuCancelled)
-                Debug.Log("Radial menu cancelled.");
-
-
-            // This prevents the player character from attacking as soon as you close the menu, because the input hasn't had time to change yet.
-            // So we give a slight delay so the button will be released by the time that check happens again.
-            yield return new WaitForSeconds(0.2f); 
-            _IsSelectingBuilding = false;
-
-        }
-
-        private void DoBuildAction()
-        {
-            if (_BuildObjectGhost.GetComponent<BuildObjectGhost>().CanBuild &&
-                Time.time - _LastBuildTime >= 0.1f)
-            {
-                Instantiate(_BarricadePrefab, _BuildGhostOffset, transform.rotation, _BarricadesParent.transform);
-                _LastBuildTime = Time.time;
-            }
-            else
-            {
-                //Debug.LogError("Can't build. Something's in the way!");
-            }
         }
 
         private void DoDestroyAction(GameObject objToDestroy)

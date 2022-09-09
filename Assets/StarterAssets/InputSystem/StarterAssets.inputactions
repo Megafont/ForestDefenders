@@ -416,11 +416,33 @@
                 },
                 {
                     "name": "",
+                    "id": "94f86bfd-2020-404f-a6e7-4d4324ee797a",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "UI Confirm",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "2aedd9ee-4752-48c8-b85a-f500b720daa7",
                     "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
+                    "action": "UI Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f32b12f8-8f76-448e-95d1-d0d9f7812ea5",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
                     "action": "UI Cancel",
                     "isComposite": false,
                     "isPartOfComposite": false

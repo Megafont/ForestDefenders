@@ -9,13 +9,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3016518859856247243}
-  - component: {fileID: 3016518859856247242}
+  - component: {fileID: 4295615707632919596}
   - component: {fileID: 3016518859856247241}
   - component: {fileID: 5835401697559683354}
-  - component: {fileID: 3016518859856247240}
   - component: {fileID: -4847106322255392004}
+  - component: {fileID: 4341365631053159840}
+  - component: {fileID: 8275343356523308250}
   m_Layer: 0
-  m_Name: Barricade Ghost
+  m_Name: Build Mode Ghost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30,13 +31,13 @@ Transform:
   m_GameObject: {fileID: 3016518859856247255}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.5, z: 0}
-  m_LocalScale: {x: 4, y: 1, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &3016518859856247242
+--- !u!33 &4295615707632919596
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -102,19 +103,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &3016518859856247240
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3016518859856247255}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &-4847106322255392004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,3 +115,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efecd496e51398646a1de518e7d40e3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CanBuildColor: {r: 0, g: 1, b: 0, a: 0.5019608}
+  BuildingBlockedColor: {r: 1, g: 0, b: 0, a: 0.5019608}
+  DefaultBuilding: Defense/Barricade
+--- !u!65 &4341365631053159840
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3016518859856247255}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!136 &8275343356523308250
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3016518859856247255}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 0
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
