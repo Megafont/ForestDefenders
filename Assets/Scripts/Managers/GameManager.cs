@@ -30,7 +30,8 @@ public class GameManager : MonoBehaviour
     public RadialMenu UI_RadialMenu { get; private set; }
 
 
-    private float _BuildTime = 30f;
+    private float _BuildPhaseLength = 10f; // BuildModeDefinitions.BuildPhaseBaseLength;
+
     private float _GameStateStartTime;
 
     private int _Score;
@@ -155,7 +156,7 @@ public class GameManager : MonoBehaviour
 
     private void GameState_PlayerBuildPhase()
     {
-        float timeToNextWave = _BuildTime - (Time.time - _GameStateStartTime);
+        float timeToNextWave = _BuildPhaseLength - (Time.time - _GameStateStartTime);
 
         if (timeToNextWave <= 0)
         {

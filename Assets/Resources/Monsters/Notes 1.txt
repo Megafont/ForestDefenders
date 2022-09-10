@@ -1,0 +1,4 @@
+
+NOTE:
+The monster prefabs in this folder are MODIFIED versions of the prefabs in the
+RPG Monster Duo PBR Polyart asset pack. I may get the full pack later.

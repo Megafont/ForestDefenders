@@ -31,6 +31,12 @@ public class Health : MonoBehaviour
         if (amount <= 0)
             throw new Exception("The damage amount must be positive!");
 
+
+        // If this entity is already dead, then do nothing. This way the code below won't spam the OnDeath event when an entity is dead.
+        if (CurrentHealth <= 0)
+            return;
+
+
         CurrentHealth -= amount;
 
         if (CurrentHealth <= 0)

@@ -17,6 +17,9 @@ public struct BuildingDefinition
 public static class BuildModeDefinitions
 {
 
+    public const float BuildPhaseBaseLength = 300f;
+
+
     public static string[] BuildCategoriesMenu = new string[]
     {
         "Defense",

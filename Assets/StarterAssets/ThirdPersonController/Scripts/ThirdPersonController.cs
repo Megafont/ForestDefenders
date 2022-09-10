@@ -402,6 +402,11 @@ namespace StarterAssets
 
         private void DoAttackChecks()
         {
+            // Return since the player cannot attack while in midair. This could possibly be changed later, but the attack animations are ground animations. There appears to be an arial version of the spin animation, though.
+            if (!Grounded)
+                return;
+
+
             // Make the cooldown timer elapse if an attack is still in progress.
             if (_AttackCooldownRemainingTime > 0)
             {
@@ -464,6 +469,14 @@ namespace StarterAssets
 
         private void OnDeath(GameObject sender)
         {
+            Debug.Log("Player died!");
+
+
+            _animator.ResetTrigger("Die");
+
+            // Play death animation.
+            _animator.SetTrigger("Die");
+
             //Destroy(gameObject);
         }
 

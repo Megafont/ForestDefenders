@@ -8,7 +8,7 @@ using UnityEngine.AI;
 
 public class MonsterManager : MonoBehaviour
 {
-    public GameObject MonsterPrefab;
+    public Monster_Base MonsterPrefab;
 
     public int CurrentComboStreak { get; private set; }
     public float ComboStreakResetTime = 5.0f;
@@ -68,7 +68,7 @@ public class MonsterManager : MonoBehaviour
             throw new Exception("Cannot spawn monsters because no spawn points have been specified in the inspector!");
 
 
-        GameObject playerBase = GameObject.Find("Player Base");
+        GameObject playerBase = GameObject.Find("Test Destructable Player Building");
 
         WaveSize = GetWaveSize();
         for (int i = 0; i < WaveSize; i++)
@@ -77,8 +77,11 @@ public class MonsterManager : MonoBehaviour
             int index = UnityEngine.Random.Range(0, SpawnPoints.Length - 1);
 
             // Spawn a monster.
-            GameObject monster = Instantiate(MonsterPrefab, SpawnPoints[index].transform.position, Quaternion.identity, _MonstersParent.transform);
-            monster.GetComponent<TestEnemy>().SetTarget(playerBase);
+            GameObject monster = Instantiate(MonsterPrefab.gameObject, 
+                                             SpawnPoints[index].transform.position,
+                                             Quaternion.identity,
+                                             _MonstersParent.transform);
+            monster.GetComponent<Monster_Base>().SetTarget(playerBase);
             monster.GetComponent<Health>().OnDeath += OnDeath;
             _Monsters.Add(monster);
 
@@ -108,7 +111,7 @@ public class MonsterManager : MonoBehaviour
         MonstersKilled++;
 
 
-        int enemyScoreValue = sender.GetComponent<IEnemy>().GetScoreValue();
+        int enemyScoreValue = sender.GetComponent<IMonster>().GetScoreValue();
         GameManager.Instance.AddToScore(enemyScoreValue * CurrentComboStreak);
 
 

@@ -315,9 +315,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3444782286187615475}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Player (Male)
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2355,7 +2355,7 @@ Animator:
   m_GameObject: {fileID: 6045601659488587048}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 0308cf4e83cf517488b60af58b290fe0, type: 3}
-  m_Controller: {fileID: 9100000, guid: 40db3173a05ae3242b1c182a09b0a183, type: 2}
+  m_Controller: {fileID: 9100000, guid: c2cc0cc8c529a4147b92a076384a59d8, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -2423,7 +2423,7 @@ MonoBehaviour:
   GroundedRadius: 0.28
   GroundLayers:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 200
   CinemachineCameraTarget: {fileID: 4085733029319744982}
   TopClamp: 70
   BottomClamp: -15

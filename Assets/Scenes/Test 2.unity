@@ -2420,7 +2420,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh28496
+  m_Name: pb_Mesh28500
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -3193,10 +3193,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8b0906a92b1e1441b007dde6730b83b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MonsterPrefab: {fileID: 6538376665992543674, guid: 6660108259e6a4b4c884063106971c53,
+  MonsterPrefab: {fileID: 2745817624516006512, guid: 5003cf80a7fda6d46ae321ce3e77a715,
     type: 3}
   ComboStreakResetTime: 5
-  BaseWaveSize: 5
+  BaseWaveSize: 3
   SpawnPoints:
   - {fileID: 224973805}
 --- !u!4 &1480730956
@@ -3412,7 +3412,7 @@ PrefabInstance:
     - target: {fileID: 3322792006412762081, guid: 1bd448e7b0538824fbd388717c383736,
         type: 3}
       propertyPath: m_Name
-      value: Player Base
+      value: Test Destructable Player Building
       objectReference: {fileID: 0}
     - target: {fileID: 3322792006412762087, guid: 1bd448e7b0538824fbd388717c383736,
         type: 3}
