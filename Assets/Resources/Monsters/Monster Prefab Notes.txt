@@ -1,0 +1,9 @@
+
+NOTE:
+The monster prefabs in this folder are MODIFIED versions of the prefabs in the
+RPG Monster Wave asset packs. I may get the full pack later.
+
+Also, each character has a collider component even though the NavMeshAgent
+has one of its own. This is because that one doesn't show up as a component
+in the Unity Editor. We have to add one so the player will collide properly
+with monsters.

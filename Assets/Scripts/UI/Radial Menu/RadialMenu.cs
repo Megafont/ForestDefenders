@@ -168,6 +168,17 @@ public class RadialMenu : MonoBehaviour
         }
 
 
+        /*
+        if (MenuConfirmed)
+            Debug.Log($"Radial Menu \"{_MenuTitleUI.text}\": Selected Item = \"{SelectedItemName}\"");
+        else if (MenuCancelled)
+            Debug.Log($"Radial Menu  \"{_MenuTitleUI.text}\": Selection cancelled.");
+        */
+
+
+        // Wait slightly to stop the player character from receiving the same button press that closed the menu, which will make him jump or attack upon closing the menu.
+        yield return new WaitForSecondsRealtime(0.1f);
+
         _RadialMenuPanel.SetActive(false);
         _IsOpen = false;
         Time.timeScale = 1; // Unpause the game.

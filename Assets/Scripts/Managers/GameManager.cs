@@ -7,7 +7,7 @@ using UnityEngine;
 using Cinemachine;
 using StarterAssets;
 using TMPro;
-
+using JetBrains.Annotations;
 
 public class GameManager : MonoBehaviour
 {
@@ -15,6 +15,10 @@ public class GameManager : MonoBehaviour
     public TMP_Text UI_TimeToNextWaveText;
     public TMP_Text UI_WaveNumberText;
     public TMP_Text UI_MonstersLeftText;
+
+    public TMP_Text UI_WoodCountText;
+    public TMP_Text UI_StoneCountText;
+
     public TMP_Text UI_ScoreText;
 
 
@@ -25,12 +29,14 @@ public class GameManager : MonoBehaviour
     public BuildModeManager BuildModeManager { get; private set; }
     public StarterAssetsInputs PlayerInput { get; private set; }
     public MonsterManager MonsterManager { get; private set; }
+    public ResourceManager ResourceManager { get; private set; }
+    public VillageManager VillageManager { get; private set; }
 
 
     public RadialMenu UI_RadialMenu { get; private set; }
 
 
-    private float _BuildPhaseLength = 10f; // BuildModeDefinitions.BuildPhaseBaseLength;
+    private float _BuildPhaseLength;
 
     private float _GameStateStartTime;
 
@@ -50,7 +56,6 @@ public class GameManager : MonoBehaviour
     }
 
 
-    // Start is called before the first frame update
     void Awake()
     {
         if (Instance == null)
@@ -60,7 +65,7 @@ public class GameManager : MonoBehaviour
 
 
         
-        GameObject playerPrefab = Resources.Load<GameObject>("Player/Player (Male)");
+        GameObject playerPrefab = Resources.Load<GameObject>("Player/Player_Male");
         GameObject playerObj = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
 
         Player = playerObj.transform.Find("Player Armature").gameObject;
@@ -70,6 +75,8 @@ public class GameManager : MonoBehaviour
         BuildModeManager = GameObject.Find("Build Mode Manager").GetComponent<BuildModeManager>();
         MonsterManager = GameObject.Find("Monster Manager").GetComponent<MonsterManager>();
         PlayerInput = Player.gameObject.GetComponent<StarterAssetsInputs>();
+        ResourceManager = GameObject.Find("Resource Manager").GetComponent<ResourceManager>();
+        VillageManager = GameObject.Find("Village Manager").GetComponent<VillageManager>();
 
 
         InitRadialMenu();
@@ -77,15 +84,28 @@ public class GameManager : MonoBehaviour
         UI_MonstersLeftText.enabled = false;
         UI_TimeToNextWaveText.enabled = false;
         UI_WaveNumberText.enabled = false;
+
         UI_ScoreText.text = UI_ScoreText.text = "Score: 0000000000";
 
 
         ChangeGameState(GameStates.PlayerBuildPhase);
     }
 
+    private void Start()
+    {
+        _BuildPhaseLength = BuildModeManager.BuildPhaseBaseLength;
+    }
+
     // Update is called once per frame
     void Update()
     {
+        //if (ResourceManager.Stockpiles != null)
+        //{
+            UI_WoodCountText.text = $"Wood: {ResourceManager.Stockpiles[ResourceTypes.Wood]}";
+            UI_StoneCountText.text = $"Stone: {ResourceManager.Stockpiles[ResourceTypes.Stone]}";
+        //}
+
+
         switch (GameState)
         {
             case GameStates.PlayerBuildPhase:
@@ -103,6 +123,31 @@ public class GameManager : MonoBehaviour
         } // end switch GameState
     }
 
+
+
+    public void AddToScore(int amount)
+    {
+        if (amount <= 0)
+            Debug.LogError("The amount to add to the score must be positive!");
+
+        _Score += amount;
+        UI_ScoreText.text = $"Score: {_Score:0000000000}";
+    }
+
+    public bool CheckIfGameIsOver()
+    {
+        // NOTE: We don't check if the player is dead here, as we receive an event when that happens via the OnPlayerDeath() method below, which instantly switches us to the GameOver game state;
+        if (VillageManager.GetTotalBuildingCount() == 0)
+        {
+            ChangeGameState(GameStates.GameOver);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     private void InitRadialMenu()
     {
         GameObject obj = GameObject.Find("Radial Menu");
@@ -114,15 +159,6 @@ public class GameManager : MonoBehaviour
             if (UI_RadialMenu == null)
                 throw new Exception("The radial menu GameObject does not have a RadialMenu component!");
         }
-    }
-
-    public void AddToScore(int amount)
-    {
-        if (amount <= 0)
-            Debug.LogError("The amount to add to the score must be positive!");
-
-        _Score += amount;
-        UI_ScoreText.text = $"Score: {_Score:0000000000}";
     }
 
     private void ChangeGameState(GameStates newState)
@@ -137,7 +173,6 @@ public class GameManager : MonoBehaviour
         {
             case GameStates.PlayerBuildPhase:
                 UI_TimeToNextWaveText.enabled = true;
-
                 break;
 
             case GameStates.MonsterAttackPhase:
@@ -172,6 +207,9 @@ public class GameManager : MonoBehaviour
 
     private void GameState_MonsterAttackPhase()
     {
+        CheckIfGameIsOver();
+
+
         int monstersLeft = MonsterManager.MonstersLeft;
 
         UI_MonstersLeftText.text = $"Monsters Left: {monstersLeft} of {MonsterManager.WaveSize}";
@@ -215,6 +253,9 @@ public class GameManager : MonoBehaviour
         UI_ScoreText.enabled = false;
         UI_TimeToNextWaveText.enabled = false;
         UI_WaveNumberText.enabled = false;
+
+        UI_WoodCountText.enabled = false;
+        UI_StoneCountText.enabled = false;
     }
 
 }

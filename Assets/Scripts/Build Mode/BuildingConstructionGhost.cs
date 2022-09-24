@@ -1,10 +1,18 @@
 using System.Collections.Generic;
+
 using UnityEngine;
+using UnityEngine.UIElements;
+
 
 public class BuildingConstructionGhost : MonoBehaviour
 {
+    [Tooltip("How far in front of the player the building ghost should appear.")]
+    public float DistanceInFrontOfPlayer = 2.0f;
+
+    [Tooltip("The color the building ghost will appear when it is in an unobstructed area.")]
     public Color CanBuildColor = new Color32(0, 255, 0, 128);
-    public Color BuildingBlockedColor = new Color32(255, 0, 0, 128);
+    [Tooltip("The color the building ghost will appear when it is in an obstructed area.")]
+    public Color ObstructedColor = new Color32(255, 0, 0, 128);
 
 
     public bool CanBuild { get { return _OverlappingObjects.Count == 0; } }
@@ -38,7 +46,7 @@ public class BuildingConstructionGhost : MonoBehaviour
 
     public void ChangeMesh(Mesh newMesh, BuildingDefinition buildingDef)
     {
-        _MeshFilter.sharedMesh = newMesh; // We have to use .sharedMesh here to avoid a Unity error saying you can't access .mesh on a prefab.
+        _MeshFilter.mesh = newMesh; // We have to use .sharedMesh here to avoid a Unity error saying you can't access .mesh on a prefab.
 
 
         // These two lines are here intentionally rather than in the if statement below, since the BoxCollider is used in both cases.        
@@ -99,7 +107,7 @@ public class BuildingConstructionGhost : MonoBehaviour
 
     private void UpdateGhostColor()
     {
-        _Renderer.material.color = CanBuild ? CanBuildColor : BuildingBlockedColor;
+        _Renderer.material.color = CanBuild ? CanBuildColor : ObstructedColor;
     }
 
 }

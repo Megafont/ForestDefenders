@@ -4,12 +4,17 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Tree
   - Building
   - Ground
-  - Enemy
-  - EnemyTargetDetector
   - CinemachineTarget
+  - Villager
+  - Building Ghost
+  - Town Center
+  - Stone
+  - Wood
+  - VillagerTargetDetector
+  - Monster
+  - MonsterTargetDetector
   layers:
   - Default
   - TransparentFX
@@ -18,12 +23,12 @@ TagManager:
   - Water
   - UI
   - Buildings
-  - Enemies
+  - Monsters
   - Player
   - Resources
-  - 
-  - 
-  - 
+  - Villagers
+  - MonsterTargetDetectors
+  - VillagerTargetDetectors
   - 
   - 
   - 

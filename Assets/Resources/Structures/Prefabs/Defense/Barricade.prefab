@@ -13,9 +13,11 @@ GameObject:
   - component: {fileID: 6911667001663908520}
   - component: {fileID: 7480035786945511460}
   - component: {fileID: 2016346915796769330}
-  m_Layer: 0
+  - component: {fileID: 1985892419035854274}
+  - component: {fileID: -141230236827549289}
+  m_Layer: 6
   m_Name: Barricade
-  m_TagString: Untagged
+  m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -42,7 +44,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4966292762666781565}
-  m_Mesh: {fileID: -2170176288904971387, guid: e8313067a38b4dc44958ea9d7fc21453, type: 3}
+  m_Mesh: {fileID: -2170176288904971387, guid: 023da40fba65a17459fd194f5cc15891, type: 3}
 --- !u!23 &6911667001663908520
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -98,7 +100,7 @@ MeshCollider:
   serializedVersion: 4
   m_Convex: 1
   m_CookingOptions: 30
-  m_Mesh: {fileID: -2170176288904971387, guid: e8313067a38b4dc44958ea9d7fc21453, type: 3}
+  m_Mesh: {fileID: -2170176288904971387, guid: 023da40fba65a17459fd194f5cc15891, type: 3}
 --- !u!208 &2016346915796769330
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -115,3 +117,31 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0.5, z: 0}
   m_TimeToStationary: 0.5
+--- !u!114 &1985892419035854274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4966292762666781565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6df9a2ac328829469f5fe85294fb2ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-141230236827549289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4966292762666781565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3950e6e9fcef36478009ff55fcb081e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxHealth: 100
+  EnableDamageFlash: 1
+  DamageFlashColor: {r: 1, g: 0, b: 0, a: 1}
+  DamageFlashTime: 0.1

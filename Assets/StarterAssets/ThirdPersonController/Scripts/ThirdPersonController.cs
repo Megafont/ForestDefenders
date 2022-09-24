@@ -56,7 +56,7 @@ namespace StarterAssets
 
         
         [Header("Player Stats")]
-        public float AttackPower = 10f;
+        public int AttackPower = 10;
         public float AttackCooldownTime = 0.5f;
        
 
@@ -89,10 +89,6 @@ namespace StarterAssets
 
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
-
-
-
-        public PlayerGameData PlayerGameData { get; private set; }
 
 
 
@@ -134,6 +130,7 @@ namespace StarterAssets
         private GameObject _mainCamera;
 
         private BuildModeManager _BuildModeManager;
+        private ResourceManager _ResourceManager;
 
         private const float _threshold = 0.01f;
 
@@ -174,7 +171,9 @@ namespace StarterAssets
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             _input = GameManager.Instance.PlayerInput;
+
             _BuildModeManager = GameManager.Instance.BuildModeManager;
+            _ResourceManager = GameManager.Instance.ResourceManager;
 
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
             _playerInput = GetComponent<PlayerInput>();
@@ -440,24 +439,24 @@ namespace StarterAssets
                 Health health = hit.collider.GetComponent<Health>();
                 if (health)
                 {
-                    if (hit.collider.tag == "Tree")
-                    {
-                        PlayerGameData.ResourceCount_Wood += PlayerGameData.AverageWoodPerHit + Random.Range(-2, 2);
-                        Debug.Log("Hit tree!");
-                    }
-                    else if (hit.collider.tag == "Enemy")
-                    {
-                        health.TakeDamage(AttackPower);
-                    }
-                }
-                else
-                {
-                    if (hit.collider.tag == "Building")
+                    if (hit.collider.tag == "Building" && GameManager.Instance.BuildModeManager.IsBuildModeActive)
                     {
                         DoDestroyAction(hit.collider.gameObject);
                     }
-
+                    else if (hit.collider.tag == "Monster")
+                    {
+                        health.TakeDamage(AttackPower);
+                    }
+}
+                else
+                {
+                    ResourceNode node = hit.collider.GetComponent<ResourceNode>();
+                    if (node)
+                    {
+                        node.Gather();
+                    }
                 }
+
             } // end foreach hit
 
         }

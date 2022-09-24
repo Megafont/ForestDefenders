@@ -1,0 +1,4 @@
+
+NOTE:
+The player prefabs in this folder are MODIFIED versions of the prefabs in the
+RPG Tiny Hero Wave asset pack.

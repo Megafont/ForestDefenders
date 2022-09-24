@@ -8,7 +8,7 @@ using UnityEngine.AI;
 
 public class MonsterManager : MonoBehaviour
 {
-    public Monster_Base MonsterPrefab;
+    public GameObject[] MonsterPrefabs;
 
     public int CurrentComboStreak { get; private set; }
     public float ComboStreakResetTime = 5.0f;
@@ -68,20 +68,21 @@ public class MonsterManager : MonoBehaviour
             throw new Exception("Cannot spawn monsters because no spawn points have been specified in the inspector!");
 
 
-        GameObject playerBase = GameObject.Find("Test Destructable Player Building");
+        //GameObject playerBase = GameObject.Find("Test Destructable Player Building");
 
         WaveSize = GetWaveSize();
         for (int i = 0; i < WaveSize; i++)
         {
             // Randomly select a spawn point from the list.
-            int index = UnityEngine.Random.Range(0, SpawnPoints.Length - 1);
+            int spawnPointIndex = UnityEngine.Random.Range(0, SpawnPoints.Length - 1);
 
             // Spawn a monster.
-            GameObject monster = Instantiate(MonsterPrefab.gameObject, 
-                                             SpawnPoints[index].transform.position,
+            int monsterIndex = UnityEngine.Random.Range(0, MonsterPrefabs.Length);
+            GameObject monster = Instantiate(MonsterPrefabs[monsterIndex], 
+                                             SpawnPoints[spawnPointIndex].transform.position,
                                              Quaternion.identity,
                                              _MonstersParent.transform);
-            monster.GetComponent<Monster_Base>().SetTarget(playerBase);
+            //monster.GetComponent<Monster_Base>().SetTarget(playerBase);
             monster.GetComponent<Health>().OnDeath += OnDeath;
             _Monsters.Add(monster);
 
@@ -115,7 +116,7 @@ public class MonsterManager : MonoBehaviour
         GameManager.Instance.AddToScore(enemyScoreValue * CurrentComboStreak);
 
 
-        //Debug.Log($"Kill Streak: {CurrentComboStreak}  Enemy Base Score: {enemyScoreValue}");
+        //Debug.Log($"Kill Streak: {CurrentComboStreak}  Monster Base Score: {enemyScoreValue}");
 
 
         _Monsters.Remove(sender);        
