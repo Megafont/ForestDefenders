@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Bson;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,12 +12,15 @@ public class ResourceManager : MonoBehaviour
 
 
     private Dictionary<string, GameObject> _ResourceTypeParents;
-    private Dictionary<ResourceTypes, int> _ResourceStockpiles;
+    private Dictionary<ResourceTypes, int> _ResourceStockpilesByType;
+    private Dictionary<ResourceTypes, List<ResourceNode>> _ResourceNodesByType;
+    private List<ResourceNode> _AllResourceNodes;
+
 
 
     public Dictionary<ResourceTypes, int> Stockpiles
     {
-        get { return _ResourceStockpiles; }
+        get { return _ResourceStockpilesByType; }
     }
 
 
@@ -27,6 +31,7 @@ public class ResourceManager : MonoBehaviour
 
         InitResourceTypeParentObjects();
         InitResourceStockpiles();
+        InitResourceNodeLists();
     }
 
     // Update is called once per frame
@@ -89,12 +94,97 @@ public class ResourceManager : MonoBehaviour
 
     private void InitResourceStockpiles()
     {
-        _ResourceStockpiles = new Dictionary<ResourceTypes, int>();
+        _ResourceStockpilesByType = new Dictionary<ResourceTypes, int>();
 
 
         foreach (int i in Enum.GetValues(typeof(ResourceTypes)))
-            _ResourceStockpiles.Add((ResourceTypes) i, 0);
+            _ResourceStockpilesByType.Add((ResourceTypes) i, 0);
 
+    }
+
+    private void InitResourceNodeLists()
+    {
+        _ResourceNodesByType = new Dictionary<ResourceTypes, List<ResourceNode>>();
+        _AllResourceNodes = new List<ResourceNode>();
+
+        _ResourceNodesByType.Add(ResourceTypes.Wood, new List<ResourceNode>());
+        _ResourceNodesByType.Add(ResourceTypes.Stone, new List<ResourceNode>());
+
+        DetectResourceNodes();
+    }
+
+    private void DetectResourceNodes()
+    {
+        ResourceNode[] resourceNodes = FindObjectsOfType<ResourceNode>();
+
+
+        foreach (ResourceNode node in resourceNodes)
+        {
+            _ResourceNodesByType[node.ResourceType].Add(node);
+            _AllResourceNodes.Add(node);
+        }
+    }
+
+    public ResourceTypes GetLowestResourceStockpileType()
+    {
+        ResourceTypes lowestResourceType = ResourceTypes.Wood;
+        int minAmount = int.MaxValue;
+
+
+        foreach (KeyValuePair<ResourceTypes, int> pair in _ResourceStockpilesByType)
+        {
+            if (pair.Value < minAmount)
+            {
+                lowestResourceType = pair.Key;
+                minAmount = pair.Value;
+            }
+
+        } // end foreach pair
+
+
+        return lowestResourceType;
+    }
+
+    public ResourceNode FindNearestResourceNodeOfType(Vector3 callerPosition, ResourceTypes type)
+    {
+        ResourceNode closestNode = null;
+        float minDistance = float.MaxValue;
+
+
+        foreach (ResourceNode node in _ResourceNodesByType[type])
+        {
+            float distance = Vector3.Distance(callerPosition, node.transform.position);
+            if (node.AmountAvailable > 0 && distance < minDistance)
+            {
+                closestNode = node;
+                minDistance = distance;
+            }
+
+        } // end foreach node
+
+
+        return closestNode;
+    }
+
+    public ResourceNode FindNearestResourceNode(Vector3 callerPosition)
+    {
+        ResourceNode closestNode = null;
+        float minDistance = float.MaxValue;
+
+
+        foreach (ResourceNode node in _AllResourceNodes)
+        {
+            float distance = Vector3.Distance(callerPosition, node.transform.position);
+            if (node.AmountAvailable > 0 && distance < minDistance)
+            {
+                closestNode = node;
+                minDistance = distance;
+            }
+
+        } // end foreach node
+
+
+        return closestNode;
     }
 
 

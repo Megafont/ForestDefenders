@@ -6,13 +6,6 @@ using UnityEngine;
 
 
 
-public enum ResourceTypes
-{
-    Wood    = 0,
-    Stone,
-}
-
-
 public class ResourceNode : MonoBehaviour
 {
     protected ResourceManager _ResourceManager;

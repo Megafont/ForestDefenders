@@ -46,9 +46,8 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
             // If the AI is attacking, has the attack cooldown period fully elapsed yet?
             if (_IsAttacking && Time.time - _LastAttackTime >= AttackCooldownTime)
-            {
                 DoAttack();
-            }
+
         }
         else // _Target is null.
         {
@@ -67,7 +66,9 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
             _PrevTarget = _Target;
             _Target = target;
-            _NavMeshAgent.destination = _Target.transform.position;
+
+            if (_Target)
+                _NavMeshAgent.destination = _Target.transform.position;
         }
         else                
         {
@@ -96,6 +97,8 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
     protected virtual void CheckIfInAttackRange()
     {
+        //Debug.Log($"Distance: {GetDistanceToTarget()}    Attack Range: {AttackRange}");
+
         if (GetDistanceToTarget() <= AttackRange)
         {
             _IsAttacking = true;
@@ -120,9 +123,17 @@ public abstract class AI_WithAttackBehavior : AI_Base
     {
         // Debug.Log($"Attacking \"{_Target.name}\"");
 
-        _Target.GetComponent<Health>().TakeDamage(AttackPower);
-        _LastAttackTime = Time.time;        
+        _LastAttackTime = Time.time;
+
+        if (_Target.GetComponent<Health>().CurrentHealth > 0)
+        {
+            _Target.GetComponent<Health>().TakeDamage(AttackPower);
+            AnimateAttack();
+        }
     }
+
+    protected abstract void AnimateAttack();
+
 
     protected abstract void UpdateNearbyTargetDetectorState();
 

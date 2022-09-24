@@ -23,7 +23,8 @@ public class MonsterTargetDetector : MonoBehaviour
 
     public void Enable(bool enabledState)
     {
-        _Collider.enabled = enabledState;
+        if (_Collider)
+            _Collider.enabled = enabledState;
     }
 
     private void OnTriggerEnter(Collider other)

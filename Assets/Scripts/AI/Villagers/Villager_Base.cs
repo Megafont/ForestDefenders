@@ -1,8 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEditor.EditorTools;
 using UnityEngine;
 using UnityEngine.AI;
+
+using Random = UnityEngine.Random;
 
 
 
@@ -23,30 +27,33 @@ public delegate void VillagerTaskEventHandler(object sender, VillagerTaskEventAr
 /// </summary>
 public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 {
+    /*
     [Tooltip("How often (in seconds) that the villager will check for an available task if not already doing one.")]
     public float TaskCheckFrequency = 5.0f;
     [Tooltip("How often (in seconds) the villager will work on the current task.")]
     public float TaskWorkFrequency = 2.0f;
 
-
+    
     public VillagerTasks CurrentTask { get; private set; }
     public object TaskTarget { get; private set; }
 
 
     public event VillagerTaskEventHandler OnTaskFinished;
     public event VillagerTaskEventHandler OnTaskStarted;
+    */
 
-
-    private float _LastTaskCheckTime;
-    private float _LastTaskWorkTime;
 
     private VillagerTargetDetector _NearbyTargetDetector;
+
+    private ResourceManager _ResourceManager;
 
 
 
     protected override void InitAI()
     {
         _NearbyTargetDetector = transform.GetComponentInChildren<VillagerTargetDetector>();
+
+        _ResourceManager = GameManager.Instance.ResourceManager;
 
         base.InitAI();
 
@@ -59,45 +66,31 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
     {
         base.UpdateAI();
 
-
-        if (CurrentTask == VillagerTasks.None && 
-            Time.time - _LastTaskCheckTime >= TaskCheckFrequency)
-        {
-            DoTaskCheck();
-        }
-        else if (CurrentTask == VillagerTasks.GoToTask)
-        {
-            DoGoToTask();
-        }
-        else if (CurrentTask != VillagerTasks.None &&
-                 Time.time - _LastTaskWorkTime >= TaskWorkFrequency)
-        {
-            DoTaskWork();
-        }
-
     }
 
-
-    protected virtual void DoTaskCheck()
-    {
-
-    }
-
-    protected virtual void DoGoToTask()
-    {
-        if (TaskTarget == null)
-            return;
-
-    }
 
     protected virtual void DoTaskWork()
     {
-        if (CurrentTask == VillagerTasks.GatherResource)
-            DoGathering();
-    }
+        ResourceNode node = _Target.GetComponent<ResourceNode>();
+        if (node)
+        {
+            node.Gather();
 
-    protected virtual void DoGathering()
-    {
+            if (node.AmountAvailable == 0)
+            {
+                SetTarget(null);
+                DoTargetCheck();
+            }
+
+            return;
+        }
+
+
+        IBuilding building = _Target.GetComponent<IBuilding>();
+        if (building != null)
+        {
+            throw new NotImplementedException();
+        }
 
     }
 
@@ -109,16 +102,19 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
         if (_Target == null)
         {
-            // This villager is not chasing a target. So if the target check time has elapsed, then do a new target check.            
-            /*
-            GameObject possibleNewTarget = Utils_AI.FindNearestObjectOfType(gameObject, typeof(Building_Base));
-            if (possibleNewTarget)
-            {
-                SetTarget(possibleNewTarget);
-            }
-            */
-            if (_Target == null)
-                _NearbyTargetDetector.Enable(true);
+            // This villager is not chasing a target. So if the target check time has elapsed, then do a new target check.                        
+
+            // Find a non-empty resource node of the same type as the lowest resource stockpile.
+            ResourceTypes lowest = _ResourceManager.GetLowestResourceStockpileType();
+            ResourceNode possibleTargetResourceNode = _ResourceManager.FindNearestResourceNodeOfType(transform.position, lowest);
+            
+            // If we didn't find a resource node of the same type as the lowest resource stockpile, then find a non-empty one of any type.
+            if (possibleTargetResourceNode == null)
+                possibleTargetResourceNode = _ResourceManager.FindNearestResourceNode(transform.position);
+            
+            // Did we find a non-empty resource node?
+            if (possibleTargetResourceNode)
+                SetTarget(possibleTargetResourceNode.gameObject);
 
         }
         // If this villager is chasing a target and the target gets far enough away, revert to the previous target.
@@ -127,10 +123,11 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
             if (Vector3.Distance(transform.position, _Target.transform.position) >= MaxChaseDistance)
             {
                 SetTarget(_PrevTarget);
-
-                UpdateNearbyTargetDetectorState();
             }
         }
+
+
+        UpdateNearbyTargetDetectorState();
     }
 
 
@@ -153,14 +150,33 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
     protected override void DoAttack()
     {
-        base.DoAttack();
+        // NOTE: We don't need to call the base class method in here.
 
+
+        // Check if the villager is doing a work task.
+        if (_Target.tag != "Monster")
+        {
+            _LastAttackTime = Time.time;
+
+            AnimateAttack();
+            DoTaskWork();
+
+            return;
+        }
+        else // The villager is not doing a work task, so apply damage to the target.
+        {
+            base.DoAttack();
+        }
+
+    }
+
+    protected override void AnimateAttack()
+    {
         int n = Random.Range(1, 4);
 
         string trigger = $"Attack {n}";
         _Animator.ResetTrigger(trigger);
         _Animator.SetTrigger(trigger);
-        
     }
 
     protected override void UpdateNearbyTargetDetectorState()

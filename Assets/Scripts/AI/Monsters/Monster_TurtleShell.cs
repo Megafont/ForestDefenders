@@ -18,17 +18,13 @@ public class Monster_TurtleShell : Monster_Base
     }
 
 
-    protected override void DoAttack()
+    protected override void AnimateAttack()
     {
-        base.DoAttack();
-
         int n = Random.Range(1, 3);
 
         string trigger = $"Attack {n}";
         _Animator.ResetTrigger(trigger);
         _Animator.SetTrigger(trigger);
-
     }
-
 
 }

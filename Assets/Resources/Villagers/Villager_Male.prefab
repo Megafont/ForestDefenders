@@ -1255,8 +1255,6 @@ MonoBehaviour:
   MaxChaseDistance: 10
   TargetCheckFrequency: 10
   TargetCheckRadius: 5
-  TaskCheckFrequency: 5
-  TaskWorkFrequency: 2
 --- !u!114 &3011654070411364966
 MonoBehaviour:
   m_ObjectHideFlags: 0

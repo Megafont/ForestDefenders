@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -134,10 +134,24 @@ public abstract class AI_Base : MonoBehaviour
         float distance = float.MaxValue;
 
 
-        Vector3 rayHeightAboveGround = Vector3.up * 0.4f;
-        Vector3 rayStartPos = new Vector3(transform.position.x, rayHeightAboveGround.y, transform.position.z);
-        Vector3 rayDirection = Vector3.Normalize(_Target.transform.position - transform.position);
+        //float rayHeightAboveGround = 0.4f;
+        //Vector3 rayStartPos = new Vector3(transform.position.x, rayHeightAboveGround, transform.position.z);
+        
+        // The part in parantheses shifts the start position of the ray upward so it is in the center of the AI
+        // character's body rather than on the ground.
+        Vector3 rayStartPos = transform.position + (Vector3.up * _NavMeshAgent.height / 2);
+        Vector3 rayDirection = Vector3.Normalize(_Target.transform.position - rayStartPos);
+        
 
+        // NOTE: This commented code doesn't work right if the origin point of the target object is too hight
+        //       above ground. The test tree object has this problem, because the origin is half way up the trunk.
+        //       This causes the raycast to point up at a steep angle so the distance ends up longer than it
+        //       should be. A villager couldn't gather from the tree as a result. I fixed this by making the
+        //       test tree shorter. All my objects imported from Blender have the origin set at the base of
+        //       the object, so they don't have this problem.
+        //       This line is still here for testing purposes.
+        //rayDirection = new Vector3(rayDirection.x, rayHeightAboveGround, rayDirection.z);
+        
 
         if (Physics.Raycast(rayStartPos, rayDirection, out RaycastHit hitInfo, 5f))
         {
@@ -150,8 +164,8 @@ public abstract class AI_Base : MonoBehaviour
         }
 
 
-        //Debug.DrawLine(rayStartPos, rayStartPos + rayDirection * 5.0f);
-        //Debug.Log($"Distance from target: {distance}");
+        Debug.DrawLine(rayStartPos, rayStartPos + rayDirection * 5.0f);
+        // Debug.Log($"Distance from target: {distance}");
 
 
         return distance;

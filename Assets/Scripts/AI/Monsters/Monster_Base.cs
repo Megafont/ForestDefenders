@@ -42,10 +42,7 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
             // This monster is not chasing a target. So if the target check time has elapsed, then do a new target check.
             GameObject possibleNewTarget = Utils_AI.FindNearestObjectOfType(gameObject, typeof(Building_Base));
             if (possibleNewTarget)
-            {
-                if (!SetTarget(possibleNewTarget))
-                    _NearbyTargetDetector.Enable(true);
-            }
+                SetTarget(possibleNewTarget);
         }
         // If this monster is chasing a target and the target gets far enough away, revert to the previous target.
         else if (_Target == player || _Target.CompareTag("Villager")) // Is the target the player or a villager?
@@ -55,6 +52,9 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
                 SetTarget(_PrevTarget);
             }
         }
+
+
+        UpdateNearbyTargetDetectorState();
     }
 
     public override bool ValidateTarget(GameObject target)
@@ -84,7 +84,7 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         bool state = true;
         if (_Target == null)
             state = true;
-        else if (_Target && _PrevTarget.tag == "Villager")
+        else if (_Target && _Target.tag == "Villager")
             state = false;
         else
             state = true;
