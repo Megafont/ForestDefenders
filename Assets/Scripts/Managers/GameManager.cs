@@ -99,11 +99,8 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if (ResourceManager.Stockpiles != null)
-        //{
-            UI_WoodCountText.text = $"Wood: {ResourceManager.Stockpiles[ResourceTypes.Wood]}";
-            UI_StoneCountText.text = $"Stone: {ResourceManager.Stockpiles[ResourceTypes.Stone]}";
-        //}
+        UI_WoodCountText.text = $"Wood: {ResourceManager.Stockpiles[ResourceTypes.Wood]}";
+        UI_StoneCountText.text = $"Stone: {ResourceManager.Stockpiles[ResourceTypes.Stone]}";
 
 
         switch (GameState)
@@ -193,8 +190,9 @@ public class GameManager : MonoBehaviour
     {
         float timeToNextWave = _BuildPhaseLength - (Time.time - _GameStateStartTime);
 
-        if (timeToNextWave <= 0)
+        if (timeToNextWave <= 0 || PlayerInput.EndBuildMode)
         {
+            timeToNextWave = 0;
             UI_TimeToNextWaveText.enabled = false;
 
             ChangeGameState(GameStates.MonsterAttackPhase);

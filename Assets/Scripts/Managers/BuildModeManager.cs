@@ -6,13 +6,17 @@ using UnityEngine;
 using UnityEngine.Windows;
 
 using StarterAssets;
-
-
+using Unity.VisualScripting;
+using System.Text;
 
 public class BuildModeManager : MonoBehaviour
 {
     [Tooltip("The base length of player build phases in the game (in seconds).")]
     public float BuildPhaseBaseLength = 60.0f;
+
+    [Range(0, 1)]
+    [Tooltip("The percentage of construction materials the player gets back when they destroy a building.")]
+    public float PercentageOfMaterialsRecoveredOnBuildingDestruction = 1.0f;
 
 
     public bool IsBuildModeActive { get; private set; }
@@ -21,6 +25,8 @@ public class BuildModeManager : MonoBehaviour
 
 
     private ThirdPersonController _Player;
+
+    private ResourceManager _ResourceManager;
     private StarterAssetsInputs _PlayerInput;
 
     private BuildingConstructionGhost _BuildingConstructionGhost;
@@ -34,12 +40,19 @@ public class BuildModeManager : MonoBehaviour
     private float _ConstructionOffsetFromPlayer; // Holds a float value that is how far ahead of the player the building will be built. This is recalculated each time a new building is selected since they are all different sizes.
 
     private RadialMenu _RadialMenu;
+    private string _TempCategory; // Tracks the selected category while the second building selection menu is open.
 
 
+    private void Awake()
+    {
+        BuildModeDefinitions.InitBuildingDefinitionLookupTables();
+    }
 
     // Start is called before the first frame update
     void Start()
     {
+        _ResourceManager = GameManager.Instance.ResourceManager;
+
         _Player = GameManager.Instance.Player.GetComponentInChildren<ThirdPersonController>();
         _PlayerInput = GameManager.Instance.PlayerInput;
 
@@ -118,12 +131,13 @@ public class BuildModeManager : MonoBehaviour
         // BUILDING CATEGORIES MENU
         // ----------------------------------------------------------------------------------------------------
 
+        _RadialMenu.BottomBarText = "";
         _RadialMenu.ShowRadialMenu("Select Building Type", BuildModeDefinitions.GetBuildingCategoriesList());
 
         while (!_RadialMenu.MenuConfirmed && !_RadialMenu.MenuCancelled)
             yield return new WaitForSecondsRealtime(0.1f);
 
-        string category = _RadialMenu.SelectedItemName;
+        _TempCategory = _RadialMenu.SelectedItemName;
 
 
         if (_RadialMenu.MenuCancelled)
@@ -143,17 +157,21 @@ public class BuildModeManager : MonoBehaviour
         // BUILDINGS IN CHOSEN CATEGORY MENU
         // ----------------------------------------------------------------------------------------------------
 
-        _RadialMenu.ShowRadialMenu($"Select {category} Building", BuildModeDefinitions.GetBuildingNamesListForCategory(category));
+        _RadialMenu.OnSelectionChanged += OnRadialMenuSelectionChangedHandler;
+        _RadialMenu.ShowRadialMenu($"Select {_TempCategory} Building", BuildModeDefinitions.GetBuildingNamesListForCategory(_TempCategory));
+        OnRadialMenuSelectionChangedHandler(null);
 
         while (!_RadialMenu.MenuConfirmed && !_RadialMenu.MenuCancelled)
             yield return new WaitForSecondsRealtime(0.1f);
 
         string building = _RadialMenu.SelectedItemName;
 
+        _RadialMenu.OnSelectionChanged -= OnRadialMenuSelectionChangedHandler;
 
         if (_RadialMenu.MenuCancelled)
         {
             IsSelectingBuilding = false;
+
             yield break; // The player cancelled out of the menu, so break out of this coroutine.
         }
 
@@ -162,13 +180,39 @@ public class BuildModeManager : MonoBehaviour
         // CLEANUP
         // ----------------------------------------------------------------------------------------------------
 
-        SelectBuilding(category, building);
+        SelectBuilding(_TempCategory, building);
 
         // This prevents the player character from attacking as soon as you close the menu, because the input hasn't had time to change yet.
         // So we give this slight delay so the button will be released by the time that check happens again.
         yield return new WaitForSecondsRealtime(0.1f);
         IsSelectingBuilding = false;
 
+    }
+
+    private void OnRadialMenuSelectionChangedHandler(GameObject sender)
+    {
+        // The user selected "Cancel" rather than a building, so return (otherwise we'd try to find a building called "Cancel").
+        if (_RadialMenu.SelectedItemName == "Cancel" || _RadialMenu.SelectedItemName == "Unused")
+        {
+            _RadialMenu.BottomBarText = "";
+            return;
+        }
+
+
+        StringBuilder b = new StringBuilder("Construction Cost:  ");
+
+        List<MaterialCost> constructionCosts = BuildModeDefinitions.GetBuildingConstructionCosts(_TempCategory, _RadialMenu.SelectedItemName);
+
+        for (int i = 0; i < constructionCosts.Count; i++)
+        {
+            b.Append(" ");
+            b.Append($"{constructionCosts[i].Amount} {constructionCosts[i].Resource}");
+
+            if (i < constructionCosts.Count - 1)
+                b.Append(",  ");
+        }
+
+        _RadialMenu.BottomBarText = b.ToString();
     }
 
     public void SelectBuilding(string category, string buildingName)
@@ -196,7 +240,7 @@ public class BuildModeManager : MonoBehaviour
             
             if (buildingDef == null)
             {
-                Debug.LogError($"Build definition not found for \"{buildingKey}\"!");
+                Debug.LogError($"Building definition not found for \"{buildingKey}\"!");
             }
             else
             {
@@ -221,11 +265,14 @@ public class BuildModeManager : MonoBehaviour
         if (_BuildingConstructionGhost.CanBuild &&
             Time.time - _LastBuildTime >= 0.1f)
         {
+            ApplyBuildCosts();
+
             GameManager.Instance.VillageManager.SpawnBuilding(_SelectedBuildingPrefab,
                                                               _SelectedBuildingCategory,
                                                               _SelectedBuildingName,
                                                               _BuildingConstructionGhost.transform.position,
                                                               _BuildingConstructionGhost.transform.rotation);
+
             _LastBuildTime = Time.time;
         }
         else
@@ -234,7 +281,50 @@ public class BuildModeManager : MonoBehaviour
         }
     }
 
+    public bool CanAffordBuilding(List<MaterialCost> constructionCosts)
+    {
+        bool result = true;
 
 
+        foreach (MaterialCost cost in constructionCosts)
+        {
+            if (_ResourceManager.Stockpiles[cost.Resource] < cost.Amount)
+            {
+                result = false;
+                break;
+            }
+        } // end foreach cost
+
+
+        return result;
+
+    }
+
+    /// <summary>
+    /// Called to deduct the construction costs of a building from the player's resource stockpiles.
+    /// </summary>
+    private void ApplyBuildCosts()
+    {
+        BuildingDefinition def = BuildModeDefinitions.GetBuildingDefinition(_SelectedBuildingCategory, _SelectedBuildingName);
+
+        foreach (MaterialCost cost in def.ConstructionCosts)
+        {
+            _ResourceManager.Stockpiles[cost.Resource] -= cost.Amount;
+        }
+    }
+
+    /// <summary>
+    /// Called to give back materials to the player when he destroys a building.
+    /// </summary>
+    public void RestoreBuildingMaterials(string buildingCategory, string buildingName)
+    {
+        BuildingDefinition def = BuildModeDefinitions.GetBuildingDefinition(buildingCategory, buildingName);
+
+        foreach (MaterialCost cost in def.ConstructionCosts)
+        {
+            _ResourceManager.Stockpiles[cost.Resource] += (int) (cost.Amount * def.PercentageOfResourcesRecoveredOnDestruction);
+        }
+
+    }
 
 }

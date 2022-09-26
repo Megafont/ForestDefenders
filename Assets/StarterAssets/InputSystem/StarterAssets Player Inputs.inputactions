@@ -1,5 +1,5 @@
 {
-    "name": "StarterAssets",
+    "name": "StarterAssets Player Inputs",
     "maps": [
         {
             "name": "Player",
@@ -72,6 +72,15 @@
                     "name": "SelectBuilding",
                     "type": "Button",
                     "id": "3679946f-efa7-4606-a469-a69b727150f8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "EndBuildMode",
+                    "type": "Button",
+                    "id": "c4def3ed-c564-44d1-8bf4-c8aa2f10e50c",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -444,6 +453,17 @@
                     "processors": "",
                     "groups": "KeyboardMouse",
                     "action": "UI Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7cefe24f-677a-4515-833a-03a1234ee750",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "EndBuildMode",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

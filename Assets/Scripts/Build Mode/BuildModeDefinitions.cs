@@ -5,28 +5,41 @@ using System.Linq;
 using UnityEngine;
 
 
+
 public class BuildingDefinition
 {
     public string BuildingName;
     public string Category;
     public int MaxHealth;
+
+    public List<MaterialCost> ConstructionCosts = new List<MaterialCost>();
+    public float PercentageOfResourcesRecoveredOnDestruction;
+
+    // Collider data (used ESPECIALLY for the build mode construction ghost)
     public bool IsRound;
-    public float Radius;
+    public float Radius; // This value controls the size of the construction ghost's collider. It can't use a MeshCollider like the building prefabs
+                         // do (see the comments for the _BoxCollider and _CapsuleCollider member variables in the BuildingConstructionGhost.cs file).
 
     public GameObject Prefab;
+}
+
+public struct MaterialCost
+{
+    public ResourceTypes Resource;
+    public int Amount;
 }
 
 
 public static class BuildModeDefinitions
 {
+    private static BuildModeManager _BuildModeManager;
     private static Dictionary<string, BuildingDefinition> _BuildingDefinitions;
     private static List<BuildingDefinition> _Buildings_Defense;
     private static List<BuildingDefinition> _Buildings_Farming;
     private static List<BuildingDefinition> _Buildings_Housing;
     private static Dictionary<string, List<BuildingDefinition>> _BuildingCategories;
 
-    public const float BuildPhaseBaseLength = 300f;
-
+    private static float _MaterialRecoveryRate;
 
 
     static BuildModeDefinitions()
@@ -38,7 +51,13 @@ public static class BuildModeDefinitions
         _Buildings_Housing = new List<BuildingDefinition>();
 
         _BuildingCategories = new Dictionary<string, List<BuildingDefinition>>();
+    }
 
+
+    public static void InitBuildingDefinitionLookupTables()
+    {
+        _BuildModeManager = GameManager.Instance.BuildModeManager;
+        _MaterialRecoveryRate = _BuildModeManager.PercentageOfMaterialsRecoveredOnBuildingDestruction;
 
         InitBuildingCategories();
         InitBuildingDefinitions();
@@ -58,38 +77,56 @@ public static class BuildModeDefinitions
         InitHousingBuildings();
     }
 
+
     private static void InitDefenseBuildings()
     {
         string category = "Defense";
 
-        CreateBuildingDefinition(category, "Barricade", 20, false);
+        CreateBuildingDefinition(category, "Barricade", 20, _MaterialRecoveryRate, false, 0.0f, new MaterialCost[] 
+            { CreateMaterialCost(ResourceTypes.Wood, 10) });
     }
 
     private static void InitFarmingBuildings()
     {
         string category = "Farming";
 
-        CreateBuildingDefinition(category, "Small Garden", 50, false);
+        CreateBuildingDefinition(category, "Small Garden", 50, _MaterialRecoveryRate, false, 0.0f, new MaterialCost[]
+            { CreateMaterialCost(ResourceTypes.Wood, 20) });
     }
 
     private static void InitHousingBuildings()
     {
         string category = "Housing";
 
-        CreateBuildingDefinition(category, "Small House", 100, false);
+        CreateBuildingDefinition(category, "Small House", 100, _MaterialRecoveryRate, false, 0.0f, new MaterialCost[]
+            { CreateMaterialCost(ResourceTypes.Wood, 40),
+              CreateMaterialCost(ResourceTypes.Stone, 20), });
     }
 
-    private static BuildingDefinition CreateBuildingDefinition(string category, string buildingName, int maxHealth, bool isRound = false, float radius = 0.0f)
+
+    private static BuildingDefinition CreateBuildingDefinition(string category, string buildingName, int maxHealth, float percentageOfMaterialsRecoveredOnDestroy, bool isRound, float radius, MaterialCost[] constructionCosts)
     {
+        if (constructionCosts == null)
+            throw new ArgumentNullException("The passed in construction costs list is null!");
+        if (constructionCosts.Length == 0)
+            throw new ArgumentException("The passed in construction costs list is empty!");
+
+
         BuildingDefinition def = new BuildingDefinition()
         {
             BuildingName = buildingName,
             Category = category,
             MaxHealth = maxHealth,
+
+            PercentageOfResourcesRecoveredOnDestruction = percentageOfMaterialsRecoveredOnDestroy,
+            ConstructionCosts = new List<MaterialCost>(constructionCosts),
+
             IsRound = isRound,
-            Prefab = LoadBuildingPrefab(category, buildingName),
             Radius = radius,
+
+            Prefab = LoadBuildingPrefab(category, buildingName),
         };
+
 
         _BuildingDefinitions.Add($"{category}/{buildingName}", def);
 
@@ -103,6 +140,10 @@ public static class BuildModeDefinitions
         return def;
     }
 
+    private static MaterialCost CreateMaterialCost(ResourceTypes resource, int amount)
+    {
+        return new MaterialCost { Resource = resource, Amount = amount };
+    }
 
     public static BuildingDefinition GetBuildingDefinition(string category, string buildingName)
     {
@@ -117,6 +158,13 @@ public static class BuildModeDefinitions
         BuildingDefinition def = GetBuildingDefinition(category, buildingName);
 
         return def.Prefab.gameObject;
+    }
+
+    public static List<MaterialCost> GetBuildingConstructionCosts(string category, string buildingName)
+    {
+        BuildingDefinition def = GetBuildingDefinition(category, buildingName);
+
+        return def.ConstructionCosts;
     }
 
     public static string[] GetBuildingCategoriesList()

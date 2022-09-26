@@ -463,6 +463,10 @@ namespace StarterAssets
 
         private void DoDestroyAction(GameObject objToDestroy)
         {
+            IBuilding building = objToDestroy.GetComponent<IBuilding>();
+
+            _BuildModeManager.RestoreBuildingMaterials(building.BuildingCategory, building.BuildingName);
+
             Destroy(objToDestroy);
         }
 

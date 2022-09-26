@@ -441,6 +441,7 @@ MonoBehaviour:
   Build: 0
   BuildMode: 0
   SelectBuilding: 0
+  EndBuildMode: 0
   UI_Navigate: {x: 0, y: 0}
   UI_Confirm: 0
   UI_Cancel: 0
@@ -673,6 +674,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: bc7250fc-69b9-4f20-8a0e-09e3bc96d1d9
     m_ActionName: Player/UI Cancel[/XInputControllerWindows/buttonEast]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4483431140330120880}
+        m_TargetAssemblyTypeName: StarterAssets.StarterAssetsInputs, Assembly-CSharp
+        m_MethodName: OnEndBuildMode
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: c4def3ed-c564-44d1-8bf4-c8aa2f10e50c
+    m_ActionName: Player/EndBuildMode[/XInputControllerWindows/buttonNorth]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -691,6 +708,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxHealth: 100
+  EnableDamageFlash: 1
+  DamageFlashColor: {r: 1, g: 0, b: 0, a: 1}
+  DamageFlashTime: 0.1
 --- !u!1 &303646539035693345
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.UIElements;
+
 using StarterAssets;
 using TMPro;
 
@@ -18,56 +20,16 @@ public class RadialMenu : MonoBehaviour
     public float Radius = 150;
 
 
-    public bool MenuConfirmed { get; private set; }
-    public bool MenuCancelled { get; private set; }
-
-    public Color32 MenuItemColor 
-    { 
-        get { return RadialMenuItem.TextColor; }
-        set 
-        { 
-            RadialMenuItem.TextColor = value;
-
-            foreach (RadialMenuItem item in _MenuItems)
-                item.SetColor(value);
-        } 
-    }
-
-    public Color32 MenuItemHighlightColor
-    {
-        get { return RadialMenuItem.TextHighlightColor; }
-        set
-        { 
-            RadialMenuItem.TextHighlightColor = value; 
-            _MenuItems[SelectedItemIndex].SetHighlightColor(value);
-        }
-    }
-
-    public int SelectedItemIndex { get; private set; }
-    public string SelectedItemName { get { return _MenuItems[SelectedItemIndex].Name; } }
-
-    public Color TitleColor 
-    { 
-        get 
-        { 
-            return _MenuTitleColor; 
-        } 
-        set 
-        {  
-            if (_MenuTitleUI)
-            {
-                _MenuTitleColor = value;
-                _MenuTitleUI.color = _MenuTitleColor;
-            }
-        } 
-    }
 
 
-    public delegate void ItemSelectedCallback(int selectedMenuItemIndex);
 
+    public delegate void RadialMenuEventHandler(GameObject sender);
+    public event RadialMenuEventHandler OnSelectionChanged;
+    
+
+    private BuildModeManager _BuildModeManager;
 
     private StarterAssetsInputs _Input;
-
 
     private bool _IsInitializing;
     private bool _IsOpen;
@@ -75,8 +37,12 @@ public class RadialMenu : MonoBehaviour
     private int _PrevSelectedItemIndex;
 
     private GameObject _RadialMenuPanel;
+
     private TMP_Text _MenuTitleUI;
-    private Color32 _MenuTitleColor = Color.yellow;
+    private TMP_Text _MenuBottomBarUI;
+    private Color32 _MenuBottomBarTextColor = new Color32(255, 160, 0, 0);
+    private Color32 _MenuTitleTextColor = new Color32(255, 160, 0, 0);
+
     private GameObject _RadialMenuItemsParent;
     
     
@@ -84,13 +50,19 @@ public class RadialMenu : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _BuildModeManager = GameManager.Instance.BuildModeManager;
         _Input = GameManager.Instance.PlayerInput;
-        _MenuTitleUI = GameObject.Find("Radial Menu/Panel/Image/Title (TMP)").GetComponent<TMP_Text>();
+
+        _MenuTitleUI = GameObject.Find("Radial Menu/Panel/Title Bar/Title Text (TMP)").GetComponent<TMP_Text>();
+        _MenuBottomBarUI = GameObject.Find("Radial Menu/Panel/Bottom Text Bar/Bottom Text Bar (TMP)").GetComponent<TMP_Text>();
         _RadialMenuPanel = GameObject.Find("Radial Menu/Panel");
         _RadialMenuItemsParent = GameObject.Find("Radial Menu/Panel/Menu Items Parent");
 
 
         _MenuItems = new List<RadialMenuItem>();
+        // Create one menu item so the list isn't empty (to prevent errors).
+        GameObject newItem = Instantiate(RadialMenuItemPrefab, Vector3.zero, Quaternion.identity, _RadialMenuItemsParent.transform);
+        _MenuItems.Add(newItem.GetComponent<RadialMenuItem>());
 
         _RadialMenuPanel.SetActive(false);
 
@@ -115,7 +87,6 @@ public class RadialMenu : MonoBehaviour
 
         if (_RadialMenuPanel == null)
             throw new Exception("The radial menu panel is null!");
-
 
 
         if (_IsInitializing || _IsOpen)
@@ -243,19 +214,23 @@ public class RadialMenu : MonoBehaviour
             _PrevSelectedItemIndex = SelectedItemIndex;
             SelectedItemIndex = index;
 
-            UpdateSelectionInUI();
+            UpdateSelection();
         }
 
     }
 
-    private void UpdateSelectionInUI()
+    private void UpdateSelection()
     {
         if (SelectedItemIndex >= 0)
             _MenuItems[SelectedItemIndex].Highlight();
 
         if (_PrevSelectedItemIndex >= 0)
             _MenuItems[_PrevSelectedItemIndex].Unhighlight();
+
+
+        OnSelectionChanged?.Invoke(gameObject);
     }
+
 
     private void InitMenuItemsVisualElements(string[] names, int defaultItemIndex)
     {
@@ -269,8 +244,7 @@ public class RadialMenu : MonoBehaviour
         Quaternion q = Quaternion.identity;
         float angle = 0;
 
-        // We need to offset all the menu items down by half the title bar height so they are properly centered in the body of the panel.
-        float titlebarOffset = _MenuTitleUI.rectTransform.rect.size.y / 2;
+        float menuItemVerticalOffset = CalculateMenuItemsVerticalOffset();
 
         // Get the number of items we need to iterate through (whichever one is higher is what we need).
         // The plus one takes into account the Cancel item that is added to the end of the menu automatically below.
@@ -294,7 +268,7 @@ public class RadialMenu : MonoBehaviour
 
                 // Position the menu item.
                 // The last part of this line in ()s shifts the menu items down by half the height of the title bar so they appear centered in the area beneath it.
-                _MenuItems[i].transform.position = _RadialMenuPanel.transform.position + offset + (Vector3.down * titlebarOffset);
+                _MenuItems[i].transform.position = _RadialMenuPanel.transform.position + offset + new Vector3(0, menuItemVerticalOffset, 0);
 
                 // Debug.Log($"Menu Pos: {RadialMenuPanel.transform.position}    Offset: {offset}    Menu Item Pos: {_MenuItems[i].UI.transform.position}");
 
@@ -336,13 +310,93 @@ public class RadialMenu : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Offsets the menu items vertically so they are centered between the title bar and the bottom bar.
+    /// </summary>
+    /// <returns></returns>
+    private float CalculateMenuItemsVerticalOffset()
+    {
+        float titleBarHeight = _MenuTitleUI.rectTransform.rect.height;
+        float bottomBarHeight = _MenuBottomBarUI.rectTransform.rect.height;
+
+        return ((-titleBarHeight) + (bottomBarHeight)) / 2;
+    }
+
     private void CreateMenuItem()
     {
         GameObject newMenuItem = Instantiate(RadialMenuItemPrefab,
-                                 Vector3.zero,
-                                 Quaternion.identity,
-                                 _RadialMenuItemsParent.transform);
+                                             Vector3.zero,
+                                             Quaternion.identity,
+                                             _RadialMenuItemsParent.transform);
 
         _MenuItems.Add(newMenuItem.GetComponent<RadialMenuItem>());
+    }
+
+
+
+    public bool MenuConfirmed { get; private set; }
+    public bool MenuCancelled { get; private set; }
+
+    public Color32 MenuItemTextColor
+    {
+        get { return RadialMenuItem.TextColor; }
+        set
+        {
+            RadialMenuItem.TextColor = value;
+
+            foreach (RadialMenuItem item in _MenuItems)
+                item.SetColor(value);
+        }
+    }
+
+    public Color32 MenuItemHighlightTextColor
+    {
+        get { return RadialMenuItem.TextHighlightColor; }
+        set
+        {
+            RadialMenuItem.TextHighlightColor = value;
+            _MenuItems[SelectedItemIndex].SetHighlightColor(value);
+        }
+    }
+    
+    public int SelectedItemIndex { get; private set; }
+    public string SelectedItemName { get { return _MenuItems[SelectedItemIndex].Name; } }
+
+    public string BottomBarText
+    {
+        get { return _MenuBottomBarUI.text; }
+        set { _MenuBottomBarUI.text = value; }        
+    }
+
+    public Color BottomBarTextColor
+    {
+        get
+        {
+            return _MenuBottomBarTextColor;
+        }
+        set
+        {
+            if (_MenuBottomBarUI)
+            {
+                _MenuBottomBarTextColor = value;
+                _MenuBottomBarUI.color = _MenuBottomBarTextColor;
+            }
+        }
+    }
+
+    public Color TitleTextColor
+    {
+        get
+        {
+            return _MenuTitleTextColor;
+        }
+        set
+        {
+            if (_MenuTitleUI)
+            {
+                _MenuTitleTextColor = value;
+                _MenuTitleUI.color = _MenuTitleTextColor;
+            }
+        }
     }
 }
