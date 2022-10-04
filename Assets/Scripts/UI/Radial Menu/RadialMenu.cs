@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-using StarterAssets;
 using TMPro;
 
 
@@ -29,7 +28,7 @@ public class RadialMenu : MonoBehaviour
 
     private BuildModeManager _BuildModeManager;
 
-    private StarterAssetsInputs _Input;
+    private InputManager _InputManager;
 
     private bool _IsInitializing;
     private bool _IsOpen;
@@ -51,7 +50,7 @@ public class RadialMenu : MonoBehaviour
     void Start()
     {
         _BuildModeManager = GameManager.Instance.BuildModeManager;
-        _Input = GameManager.Instance.PlayerInput;
+        _InputManager = GameManager.Instance.InputManager;
 
         _MenuTitleUI = GameObject.Find("Radial Menu/Panel/Title Bar/Title Text (TMP)").GetComponent<TMP_Text>();
         _MenuBottomBarUI = GameObject.Find("Radial Menu/Panel/Bottom Text Bar/Bottom Text Bar (TMP)").GetComponent<TMP_Text>();
@@ -124,6 +123,10 @@ public class RadialMenu : MonoBehaviour
             throw new Exception("The menu items list is null!");
 
 
+        // Enable the UI controls InputActionMap.
+        _InputManager.GetPlayerInputComponent().actions.FindActionMap(InputManager.ACTION_MAP_UI).Enable();
+
+
 
         _IsOpen = true;
         Time.timeScale = 0; // Pause the game.
@@ -150,6 +153,9 @@ public class RadialMenu : MonoBehaviour
         // Wait slightly to stop the player character from receiving the same button press that closed the menu, which will make him jump or attack upon closing the menu.
         yield return new WaitForSecondsRealtime(0.1f);
 
+        // Disable the UI controls InputActionMap.
+        _InputManager.GetPlayerInputComponent().actions.FindActionMap(InputManager.ACTION_MAP_UI).Disable();
+
         _RadialMenuPanel.SetActive(false);
         _IsOpen = false;
         Time.timeScale = 1; // Unpause the game.
@@ -163,14 +169,14 @@ public class RadialMenu : MonoBehaviour
 
         GetSelectedItemIndex();
 
-        if (_Input.UI_Confirm && !MenuCancelled)
+        if (_InputManager.UI.Confirm && !MenuCancelled)
         {
             if (SelectedItemName != "Cancel")
                 MenuConfirmed = true;
             else
                 MenuCancelled = true;
         }
-        else if (_Input.UI_Cancel && !MenuConfirmed)
+        else if (_InputManager.UI.Cancel && !MenuConfirmed)
         {
             MenuCancelled = true;
         }
@@ -179,7 +185,7 @@ public class RadialMenu : MonoBehaviour
 
     private void GetSelectedItemIndex()
     {
-        Vector2 dir = _Input.UI_Navigate;
+        Vector2 dir = _InputManager.UI.Navigate;
 
 
         // Filter out inputs that are zero. Otherwise it will reselect the top item

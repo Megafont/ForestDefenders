@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using Cinemachine;
-using StarterAssets;
+
 using TMPro;
-using JetBrains.Annotations;
+
 
 public class GameManager : MonoBehaviour
 {
@@ -27,7 +27,8 @@ public class GameManager : MonoBehaviour
     public GameObject Player { get; private set; }
 
     public BuildModeManager BuildModeManager { get; private set; }
-    public StarterAssetsInputs PlayerInput { get; private set; }
+    public CameraManager CameraManager { get; private set; }
+    public InputManager InputManager { get; private set; }
     public MonsterManager MonsterManager { get; private set; }
     public ResourceManager ResourceManager { get; private set; }
     public VillageManager VillageManager { get; private set; }
@@ -71,29 +72,27 @@ public class GameManager : MonoBehaviour
         Player = playerObj.transform.Find("Player Armature").gameObject;
         Player.GetComponent<Health>().OnDeath += OnPlayerDeath;
 
+        GetManagerReferences();
 
-        BuildModeManager = GameObject.Find("Build Mode Manager").GetComponent<BuildModeManager>();
-        MonsterManager = GameObject.Find("Monster Manager").GetComponent<MonsterManager>();
-        PlayerInput = Player.gameObject.GetComponent<StarterAssetsInputs>();
-        ResourceManager = GameObject.Find("Resource Manager").GetComponent<ResourceManager>();
-        VillageManager = GameObject.Find("Village Manager").GetComponent<VillageManager>();
-
-
-        InitRadialMenu();
-
-        UI_MonstersLeftText.enabled = false;
-        UI_TimeToNextWaveText.enabled = false;
-        UI_WaveNumberText.enabled = false;
-
-        UI_ScoreText.text = UI_ScoreText.text = "Score: 0000000000";
-
+        InitUI();
 
         ChangeGameState(GameStates.PlayerBuildPhase);
     }
 
     private void Start()
     {
+        InitInput();
+
+
         _BuildPhaseLength = BuildModeManager.BuildPhaseBaseLength;
+
+
+        // Register main camera.
+        ICinemachineCamera mainCam = GameObject.Find("PlayerFollowCamera").GetComponent<ICinemachineCamera>();
+        CameraManager.RegisterCamera((int)CameraIDs.PlayerFollow, mainCam);
+
+        // Make sure the main camera is active.
+        CameraManager.SwitchToCamera((int) CameraIDs.PlayerFollow);
     }
 
     // Update is called once per frame
@@ -121,6 +120,34 @@ public class GameManager : MonoBehaviour
     }
 
 
+    private void GetManagerReferences()
+    {
+        BuildModeManager = GameObject.Find("Build Mode Manager").GetComponent<BuildModeManager>();
+        CameraManager = GameObject.Find("Camera Manager").GetComponent<CameraManager>();
+        InputManager = GameObject.Find("Input Manager").GetComponent<InputManager>();
+        MonsterManager = GameObject.Find("Monster Manager").GetComponent<MonsterManager>();
+        ResourceManager = GameObject.Find("Resource Manager").GetComponent<ResourceManager>();
+        VillageManager = GameObject.Find("Village Manager").GetComponent<VillageManager>();
+    }
+
+    private void InitInput()
+    {
+        InputManager.RegisterInputActionMap((int) InputActionMapIDs.Player, "Player", true);
+        InputManager.RegisterInputActionMap((int) InputActionMapIDs.BuildMode, "Build Mode", true);
+        InputManager.RegisterInputActionMap((int) InputActionMapIDs.UI, "UI", true);
+    }
+
+    private void InitUI()
+    {
+        UI_MonstersLeftText.enabled = false;
+        UI_TimeToNextWaveText.enabled = false;
+        UI_WaveNumberText.enabled = false;
+
+        UI_ScoreText.text = UI_ScoreText.text = "Score: 0000000000";
+
+
+        InitRadialMenu();
+    }
 
     public void AddToScore(int amount)
     {
@@ -190,7 +217,8 @@ public class GameManager : MonoBehaviour
     {
         float timeToNextWave = _BuildPhaseLength - (Time.time - _GameStateStartTime);
 
-        if (timeToNextWave <= 0 || PlayerInput.EndBuildMode)
+        if (timeToNextWave <= 0 || 
+            (InputManager.Player.EnterBuildMode == false && InputManager.Player.EndBuildPhase)) // Is the player pressing the end build phase button while NOT in build mode?
         {
             timeToNextWave = 0;
             UI_TimeToNextWaveText.enabled = false;

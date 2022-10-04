@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections;
-
-using UnityEngine;
+﻿using UnityEngine;
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.iOS;
 #endif
-
-
-using Random = UnityEngine.Random;
-
 
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
  */
@@ -54,12 +46,6 @@ namespace StarterAssets
         [Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
         public float FallTimeout = 0.15f;
 
-        
-        [Header("Player Stats")]
-        public int AttackPower = 10;
-        public float AttackCooldownTime = 0.5f;
-       
-
         [Header("Player Grounded")]
         [Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")]
         public bool Grounded = true;
@@ -72,7 +58,6 @@ namespace StarterAssets
 
         [Tooltip("What layers the character uses as ground")]
         public LayerMask GroundLayers;
-
 
         [Header("Cinemachine")]
         [Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
@@ -89,8 +74,6 @@ namespace StarterAssets
 
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
-
-
 
         // cinemachine
         private float _cinemachineTargetYaw;
@@ -115,12 +98,6 @@ namespace StarterAssets
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
 
-        // My Animation IDs
-        private int _AnimAttack1;
-        private int _AnimAttack2;
-        private int _AnimAttack3;
-
-
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
         private PlayerInput _playerInput;
 #endif
@@ -129,18 +106,9 @@ namespace StarterAssets
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
 
-        private BuildModeManager _BuildModeManager;
-        private ResourceManager _ResourceManager;
-
         private const float _threshold = 0.01f;
 
         private bool _hasAnimator;
-
-        private bool _IsAttacking;
-
-        private float _AttackCooldownRemainingTime;
-       
-
 
         private bool IsCurrentDeviceMouse
         {
@@ -170,11 +138,7 @@ namespace StarterAssets
             
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
-            _input = GameManager.Instance.PlayerInput;
-
-            _BuildModeManager = GameManager.Instance.BuildModeManager;
-            _ResourceManager = GameManager.Instance.ResourceManager;
-
+            _input = GetComponent<StarterAssetsInputs>();
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
             _playerInput = GetComponent<PlayerInput>();
 #else
@@ -186,32 +150,20 @@ namespace StarterAssets
             // reset our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
-
-
-            GetComponent<Health>().OnDeath += OnDeath;
         }
-
-
 
         private void Update()
         {
             _hasAnimator = TryGetComponent(out _animator);
 
-            if (!_BuildModeManager.IsSelectingBuilding)
-            {
-                JumpAndGravity();
-                GroundedCheck();
-                Move();
-
-                DoAttackChecks();
-            }
-
+            JumpAndGravity();
+            GroundedCheck();
+            Move();
         }
 
         private void LateUpdate()
         {
-            if (!_BuildModeManager.IsSelectingBuilding)
-                CameraRotation();
+            CameraRotation();
         }
 
         private void AssignAnimationIDs()
@@ -221,10 +173,6 @@ namespace StarterAssets
             _animIDJump = Animator.StringToHash("Jump");
             _animIDFreeFall = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
-
-            _AnimAttack1 = Animator.StringToHash("Attack 1");
-            _AnimAttack2 = Animator.StringToHash("Attack 2");
-            _AnimAttack3 = Animator.StringToHash("Attack 3");
         }
 
         private void GroundedCheck()
@@ -232,7 +180,8 @@ namespace StarterAssets
             // set sphere position, with offset
             Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset,
                 transform.position.z);
-            Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers, QueryTriggerInteraction.Ignore);
+            Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
+                QueryTriggerInteraction.Ignore);
 
             // update animator if using character
             if (_hasAnimator)
@@ -397,90 +346,6 @@ namespace StarterAssets
             {
                 _verticalVelocity += Gravity * Time.deltaTime;
             }
-        }
-
-        private void DoAttackChecks()
-        {
-            // Return since the player cannot attack while in midair. This could possibly be changed later, but the attack animations are ground animations. There appears to be an arial version of the spin animation, though.
-            if (!Grounded)
-                return;
-
-
-            // Make the cooldown timer elapse if an attack is still in progress.
-            if (_AttackCooldownRemainingTime > 0)
-            {
-                _AttackCooldownRemainingTime -= Time.deltaTime;
-
-
-                // An attack is already in progress, so return to prevent another one from being started if the user presses the attack button again.
-                return;
-            }
-
-
-            if (_input.Attack)
-            {
-                _AttackCooldownRemainingTime = AttackCooldownTime;
-                DoAttackAction();
-            }
-
-        }
-
-        private void DoAttackAction()
-        {
-            int n = Random.Range(1, 4);
-
-            string trigger = $"Attack {n}";
-            _animator.ResetTrigger(trigger);
-            _animator.SetTrigger(trigger);
-
-            RaycastHit[] raycastHits = Physics.SphereCastAll(transform.position + transform.forward * 0.75f, 1.0f, transform.forward, 0.1f);
-            foreach (RaycastHit hit in raycastHits)
-            {
-                Health health = hit.collider.GetComponent<Health>();
-                if (health)
-                {
-                    if (hit.collider.tag == "Building" && GameManager.Instance.BuildModeManager.IsBuildModeActive)
-                    {
-                        DoDestroyAction(hit.collider.gameObject);
-                    }
-                    else if (hit.collider.tag == "Monster")
-                    {
-                        health.TakeDamage(AttackPower);
-                    }
-}
-                else
-                {
-                    ResourceNode node = hit.collider.GetComponent<ResourceNode>();
-                    if (node)
-                    {
-                        node.Gather();
-                    }
-                }
-
-            } // end foreach hit
-
-        }
-
-        private void DoDestroyAction(GameObject objToDestroy)
-        {
-            IBuilding building = objToDestroy.GetComponent<IBuilding>();
-
-            _BuildModeManager.RestoreBuildingMaterials(building.BuildingCategory, building.BuildingName);
-
-            Destroy(objToDestroy);
-        }
-
-        private void OnDeath(GameObject sender)
-        {
-            Debug.Log("Player died!");
-
-
-            _animator.ResetTrigger("Die");
-
-            // Play death animation.
-            _animator.SetTrigger("Die");
-
-            //Destroy(gameObject);
         }
 
         private static float ClampAngle(float lfAngle, float lfMin, float lfMax)

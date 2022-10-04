@@ -1,13 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 
 using UnityEngine;
-using UnityEngine.Windows;
 
-using StarterAssets;
-using Unity.VisualScripting;
-using System.Text;
+using Cinemachine;
+
 
 public class BuildModeManager : MonoBehaviour
 {
@@ -24,10 +23,11 @@ public class BuildModeManager : MonoBehaviour
 
 
 
-    private ThirdPersonController _Player;
+    private PlayerController _Player;
 
+    private CameraManager _CameraManager;
+    private InputManager _InputManager;
     private ResourceManager _ResourceManager;
-    private StarterAssetsInputs _PlayerInput;
 
     private BuildingConstructionGhost _BuildingConstructionGhost;
 
@@ -37,10 +37,9 @@ public class BuildModeManager : MonoBehaviour
     private string _SelectedBuildingCategory;
     private GameObject _SelectedBuildingPrefab;
 
-    private float _ConstructionOffsetFromPlayer; // Holds a float value that is how far ahead of the player the building will be built. This is recalculated each time a new building is selected since they are all different sizes.
-
     private RadialMenu _RadialMenu;
     private string _TempCategory; // Tracks the selected category while the second building selection menu is open.
+
 
 
     private void Awake()
@@ -51,22 +50,36 @@ public class BuildModeManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _ResourceManager = GameManager.Instance.ResourceManager;
+        _Player = GameManager.Instance.Player.GetComponentInChildren<PlayerController>();
 
-        _Player = GameManager.Instance.Player.GetComponentInChildren<ThirdPersonController>();
-        _PlayerInput = GameManager.Instance.PlayerInput;
+        _CameraManager = GameManager.Instance.CameraManager;
+        _InputManager = GameManager.Instance.InputManager;
+        _ResourceManager = GameManager.Instance.ResourceManager;
 
         _RadialMenu = GameManager.Instance.UI_RadialMenu;
 
         InitBuildingGhost();
+
+
+        ICinemachineCamera buildCam = GameObject.Find("CM Build Mode Camera").GetComponent<ICinemachineCamera>();
+        buildCam.Follow = _BuildingConstructionGhost.transform;
+        buildCam.LookAt = _BuildingConstructionGhost.transform;
+        _CameraManager.RegisterCamera((int) CameraIDs.BuildMode,
+                                      buildCam);       
     }
 
     // Update is called once per frame
     void Update()
     {
-        IsBuildModeActive = _PlayerInput.BuildMode;
+        // Check if player is entering build mode.
+        bool input = _InputManager.Player.EnterBuildMode;
+        if (input && !IsBuildModeActive)
+            StartCoroutine(EnableBuildMode(input));
+            
         
-        DoBuildModeChecks();
+        // Do build mode checks only when build mode is on. We wait until input is false, because otherwise
+        if (IsBuildModeActive && !input)
+            DoBuildModeChecks();
     }
 
     private void InitBuildingGhost()
@@ -79,6 +92,8 @@ public class BuildModeManager : MonoBehaviour
                                        parent.transform);
         _BuildingConstructionGhost = ghost.GetComponent<BuildingConstructionGhost>();
 
+        _BuildingConstructionGhost.Init();
+
         _BuildingConstructionGhost.gameObject.SetActive(false);
     }
 
@@ -86,40 +101,60 @@ public class BuildModeManager : MonoBehaviour
 
     private void DoBuildModeChecks()
     {
-        // Do not allow build mode if the player is in midair.
-        if (!_Player.Grounded || _PlayerInput.jump)
+
+        // Check if the player is exiting buildmode.
+        bool input = _InputManager.BuildMode.ExitBuildMode;
+        if (input)
         {
-            _BuildingConstructionGhost.gameObject.SetActive(false);
+            StartCoroutine(EnableBuildMode(false));
             return;
         }
 
 
-        // If we are in build mode, the player pressed the select building button, and we are not already in the process of selecting a building, then open the buildings menu.
-        if (IsBuildModeActive && _PlayerInput.SelectBuilding && !IsSelectingBuilding)
+        // If the player pressed the select building button, and we are not already in the process of selecting a building, then open the buildings menu.
+        if (_InputManager.BuildMode.SelectBuilding && !IsSelectingBuilding)
         {
             StartCoroutine(DisplaySelectBuildingMenu());
             return;
         }
 
 
-        // Check if we entered or exited buildmode.
-        if (!IsSelectingBuilding &&
-            _BuildingConstructionGhost.gameObject.activeSelf != IsBuildModeActive)
+        // Did the player press the build button?
+        if (_InputManager.BuildMode.Build && !IsSelectingBuilding)
+            DoBuildAction();
+
+    }
+
+    private IEnumerator EnableBuildMode(bool state)
+    {
+        // Wait until the button press that entered/exited build mode has ended.
+        // Otherwise, we'll have problems since the two inputs use the same button where
+        // as soon as we exit build mode, the Update() method will think we should enter
+        // build mode again, because it sees that the button is pressed.
+        while (_InputManager.Player.EnterBuildMode || _InputManager.BuildMode.ExitBuildMode)
         {
-            _BuildingConstructionGhost.gameObject.SetActive(IsBuildModeActive);
+            yield return null;
         }
 
-        // Are we in build mode?
-        if (IsBuildModeActive || IsSelectingBuilding)
-        {
-            if (_PlayerInput.Build && !IsSelectingBuilding)
-                DoBuildAction();
 
-            // Show the building ghost so the player can see where his structure will be built.
-            _BuildingConstructionGhost.gameObject.transform.position = _Player.transform.position + (_Player.transform.forward * _ConstructionOffsetFromPlayer) + (Vector3.up * 0.02f); // Position the building ghost in front of the player and add a little
-                                                                                                                                                                                        // to y to prevent the ghost from colliding with the ground.
-            _BuildingConstructionGhost.gameObject.transform.rotation = _Player.transform.rotation;
+        _BuildingConstructionGhost.gameObject.SetActive(state);
+
+
+        if (state)
+        {
+            _CameraManager.SwitchToCamera((int) CameraIDs.BuildMode);
+            _InputManager.SwitchToActionMap((int) InputActionMapIDs.BuildMode);
+
+            _BuildingConstructionGhost.ResetTransform();
         }
+        else
+        { 
+            _CameraManager.SwitchToCamera((int) CameraIDs.PlayerFollow);
+            _InputManager.SwitchToActionMap((int) InputActionMapIDs.Player);
+        }
+
+
+        IsBuildModeActive = state;
     }
 
     private IEnumerator DisplaySelectBuildingMenu()
@@ -246,18 +281,9 @@ public class BuildModeManager : MonoBehaviour
             {
                 Mesh mesh = buildingDef.Prefab.GetComponent<MeshFilter>().sharedMesh;
                 _BuildingConstructionGhost.ChangeMesh(mesh, buildingDef);
-                CalculateConstructionOffsetFromPlayer(mesh);
             }
-        }
-    }
+        } // end if
 
-    private void CalculateConstructionOffsetFromPlayer(Mesh mesh)
-    {
-        // Calculate the construction offset distance. This is how far to offset the ghost from the player so that all buildings always
-        // appear the same distance ahead of the player in build mode.
-        // We want to construct each building ahead of the player by half it's own size on the Z-axis (since that one is aligned to the player),
-        // and add 1 so all buildings will appear the same distance ahead of the player in build mode.
-        _ConstructionOffsetFromPlayer = (mesh.bounds.size.z / 2) + _BuildingConstructionGhost.DistanceInFrontOfPlayer;
     }
 
     private void DoBuildAction()
