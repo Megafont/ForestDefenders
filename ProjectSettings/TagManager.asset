@@ -10,8 +10,6 @@ TagManager:
   - Villager
   - Building Ghost
   - Town Center
-  - Stone
-  - Wood
   - VillagerTargetDetector
   - Monster
   - MonsterTargetDetector

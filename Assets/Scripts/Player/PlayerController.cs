@@ -444,15 +444,12 @@ public class PlayerController : MonoBehaviour
                 {
                     health.TakeDamage(AttackPower);
                 }
-}
-            else
-            {
-                ResourceNode node = hit.collider.GetComponent<ResourceNode>();
-                if (node)
-                {
-                    node.Gather();
-                }
             }
+            
+
+            ResourceNode node = hit.collider.GetComponent<ResourceNode>();
+            if (node != null)
+                node.Gather();
 
         } // end foreach hit
 

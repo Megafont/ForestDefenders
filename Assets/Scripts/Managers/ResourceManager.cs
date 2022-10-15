@@ -1,4 +1,3 @@
-using Newtonsoft.Json.Bson;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,7 +10,7 @@ public class ResourceManager : MonoBehaviour
     public GameObject ResourcesParent;
 
 
-    private Dictionary<string, GameObject> _ResourceTypeParents;
+    private Dictionary<ResourceTypes, GameObject> _ResourceTypeParents;
     private Dictionary<ResourceTypes, int> _ResourceStockpilesByType;
     private Dictionary<ResourceTypes, List<ResourceNode>> _ResourceNodesByType;
     private List<ResourceNode> _AllResourceNodes;
@@ -27,7 +26,7 @@ public class ResourceManager : MonoBehaviour
 
     void Awake()
     {
-        _ResourceTypeParents = new Dictionary<string, GameObject>();
+        _ResourceTypeParents = new Dictionary<ResourceTypes, GameObject>();
 
         InitResourceTypeParentObjects();
         InitResourceStockpiles();
@@ -59,37 +58,15 @@ public class ResourceManager : MonoBehaviour
         resourceTypes = new List<string>();
 
 
-        object[] objects = GameObject.FindObjectsOfType(typeof(GameObject));
-        foreach (object obj in objects)
-        {
-            GameObject gObj = (GameObject)obj;
-
-            if (gObj.layer == LayerMask.NameToLayer("Resources"))
-            {
-                resourceNodes.Add(gObj);
-                if (!resourceTypes.Contains(gObj.tag))
-                    resourceTypes.Add(gObj.tag);
-            }
-
-        } // end foreach obj
-
-
         // Create the parent object for each type of resource node.
-        resourceTypes.Sort();
-        foreach (string category in resourceTypes)
+        foreach (int i in Enum.GetValues(typeof(ResourceTypes)))
         {
-            GameObject categoryParent = new GameObject(category);
+            GameObject categoryParent = new GameObject(Enum.GetName(typeof(ResourceTypes), i));
             categoryParent.transform.parent = ResourcesParent.transform;
 
-            _ResourceTypeParents.Add(category, categoryParent);
+            _ResourceTypeParents.Add((ResourceTypes) i, categoryParent);
         }
 
-
-        // Parent each resource node to the proper parent.
-        foreach (GameObject resourceNode in resourceNodes)
-        {
-            resourceNode.transform.parent = _ResourceTypeParents[resourceNode.tag].transform;
-        }
     }
 
     private void InitResourceStockpiles()
@@ -107,8 +84,10 @@ public class ResourceManager : MonoBehaviour
         _ResourceNodesByType = new Dictionary<ResourceTypes, List<ResourceNode>>();
         _AllResourceNodes = new List<ResourceNode>();
 
-        _ResourceNodesByType.Add(ResourceTypes.Wood, new List<ResourceNode>());
-        _ResourceNodesByType.Add(ResourceTypes.Stone, new List<ResourceNode>());
+
+        foreach (int i in Enum.GetValues(typeof(ResourceTypes)))
+            _ResourceNodesByType.Add((ResourceTypes) i, new List<ResourceNode>());
+
 
         DetectResourceNodes();
     }
@@ -122,6 +101,8 @@ public class ResourceManager : MonoBehaviour
         {
             _ResourceNodesByType[node.ResourceType].Add(node);
             _AllResourceNodes.Add(node);
+
+            node.transform.parent = _ResourceTypeParents[node.ResourceType].transform;
         }
     }
 

@@ -9,17 +9,19 @@ using Cinemachine;
 using TMPro;
 
 
-public class GameManager : MonoBehaviour
+public partial class GameManager : MonoBehaviour
 {
     [Header("UI")]
     public TMP_Text UI_TimeToNextWaveText;
     public TMP_Text UI_WaveNumberText;
     public TMP_Text UI_MonstersLeftText;
 
+    public TMP_Text UI_ScoreText;
+
+    public TMP_Text UI_FoodCountText;
     public TMP_Text UI_WoodCountText;
     public TMP_Text UI_StoneCountText;
 
-    public TMP_Text UI_ScoreText;
 
 
     public static GameManager Instance;
@@ -46,15 +48,6 @@ public class GameManager : MonoBehaviour
 
 
     public GameStates GameState { get; private set; } = GameStates.Startup;
-
-
-    public enum GameStates
-    {
-        Startup,
-        PlayerBuildPhase,
-        MonsterAttackPhase,
-        GameOver,
-    }
 
 
     void Awake()
@@ -98,6 +91,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        UI_FoodCountText.text = $"Food: {ResourceManager.Stockpiles[ResourceTypes.Food]}";
         UI_WoodCountText.text = $"Wood: {ResourceManager.Stockpiles[ResourceTypes.Wood]}";
         UI_StoneCountText.text = $"Stone: {ResourceManager.Stockpiles[ResourceTypes.Stone]}";
 

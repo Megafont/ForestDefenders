@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 7208474159602796042}
   - component: {fileID: 9060502859515688690}
   - component: {fileID: 751484918996844353}
+  - component: {fileID: 3017308577823786629}
   m_Layer: 6
   m_Name: Small Garden
   m_TagString: Building
@@ -145,3 +146,19 @@ MonoBehaviour:
   EnableDamageFlash: 1
   DamageFlashColor: {r: 1, g: 0, b: 0, a: 1}
   DamageFlashTime: 0.1
+--- !u!114 &3017308577823786629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3498206886117766571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcb0f1deca6e004478948d91df6721ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ResourceType: 0
+  TotalAmountInNode: 100
+  AmountGainedPerGather: 4
+  GatherAmountVariance: 2

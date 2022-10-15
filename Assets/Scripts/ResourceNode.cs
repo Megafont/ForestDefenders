@@ -17,13 +17,13 @@ public class ResourceNode : MonoBehaviour
     public ResourceTypes ResourceType;
 
     [Tooltip("The maximum amount of resources that can be gathered from this node.")]
-    public int TotalAmountInNode = 50;
+    public int TotalAmountInNode = 100;
 
 
     [Header("Gathering Settings")]
 
     [Tooltip("The base amount of this resource obtained per gather.")]
-    public int AmountGainedPerGather = 3;
+    public int AmountGainedPerGather = 4;
 
     [Tooltip("The amount of random variance that the amount obtained per gather can vary by (the amount received per gather is AmountPerGather + or - GatherVariance).")]
     public int GatherAmountVariance = 2;
