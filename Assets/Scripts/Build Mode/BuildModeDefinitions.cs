@@ -15,6 +15,8 @@ public class BuildingDefinition
     public List<MaterialCost> ConstructionCosts = new List<MaterialCost>();
     public float PercentageOfResourcesRecoveredOnDestruction;
 
+    public uint PopulationBoost; // The number of villagers that will spawn after the building is constructed.
+
     // Collider data (used ESPECIALLY for the build mode construction ghost)
     public bool IsRound;
     public float Radius; // This value controls the size of the construction ghost's collider. It can't use a MeshCollider like the building prefabs
@@ -82,7 +84,7 @@ public static class BuildModeDefinitions
     {
         string category = "Defense";
 
-        CreateBuildingDefinition(category, "Barricade", 20, _MaterialRecoveryRate, false, 0.0f, new MaterialCost[] 
+        CreateBuildingDefinition(category, "Barricade", 20, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[] 
             { CreateMaterialCost(ResourceTypes.Wood, 10) });
     }
 
@@ -90,7 +92,7 @@ public static class BuildModeDefinitions
     {
         string category = "Farming";
 
-        CreateBuildingDefinition(category, "Small Garden", 50, _MaterialRecoveryRate, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Small Garden", 50, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 20) });
     }
 
@@ -98,13 +100,13 @@ public static class BuildModeDefinitions
     {
         string category = "Housing";
 
-        CreateBuildingDefinition(category, "Small House", 100, _MaterialRecoveryRate, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Small House", 100, _MaterialRecoveryRate, 1, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 40),
               CreateMaterialCost(ResourceTypes.Stone, 20), });
     }
 
 
-    private static BuildingDefinition CreateBuildingDefinition(string category, string buildingName, int maxHealth, float percentageOfMaterialsRecoveredOnDestroy, bool isRound, float radius, MaterialCost[] constructionCosts)
+    private static BuildingDefinition CreateBuildingDefinition(string category, string buildingName, int maxHealth, float percentageOfMaterialsRecoveredOnDestroy, uint populationBoost, bool isRound, float radius, MaterialCost[] constructionCosts)
     {
         if (constructionCosts == null)
             throw new ArgumentNullException("The passed in construction costs list is null!");
@@ -120,6 +122,8 @@ public static class BuildModeDefinitions
 
             PercentageOfResourcesRecoveredOnDestruction = percentageOfMaterialsRecoveredOnDestroy,
             ConstructionCosts = new List<MaterialCost>(constructionCosts),
+
+            PopulationBoost = populationBoost,
 
             IsRound = isRound,
             Radius = radius,
@@ -150,7 +154,7 @@ public static class BuildModeDefinitions
         if (_BuildingDefinitions.TryGetValue($"{category}/{buildingName}", out BuildingDefinition def))
             return def;
         else
-            throw new Exception($"Cannot retrieve the building definition for unknown building type {category}/{buildingName}!");
+            throw new Exception($"Cannot retrieve the building definition for unknown building type \"{category}/{buildingName}\"!");
     }
 
     public static GameObject GetBuildingPrefab(string category, string buildingName)

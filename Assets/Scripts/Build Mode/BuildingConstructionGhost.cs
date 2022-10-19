@@ -93,8 +93,12 @@ public class BuildingConstructionGhost : MonoBehaviour
 
     private void Update()
     {
-        CheckGhostMovementInputs();
-        UpdateGhostPositionAndRotation();
+        if (!_BuildModeManager.IsSelectingBuilding)
+        {
+            CheckGhostMovementInputs();
+            UpdateGhostPositionAndRotation();
+        }
+
         UpdateGhostColor();
     }
 
@@ -343,6 +347,15 @@ public class BuildingConstructionGhost : MonoBehaviour
     }
 
 
+
+    public Vector3 BuildPosition
+    {
+        get
+        {
+            // Cancel out the vertical offset of the construction ghost so the building position is flush with the ground.
+            return transform.position - new Vector3(0, _VerticalOffsetFromGround, 0);
+        }
+    }
 
     public bool CanBuild
     {

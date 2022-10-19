@@ -556,7 +556,7 @@
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "KeyboardMouse",
                     "action": "Confirm",
                     "isComposite": false,
                     "isPartOfComposite": false

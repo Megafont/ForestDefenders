@@ -127,6 +127,10 @@ public class BuildModeManager : MonoBehaviour
 
     private IEnumerator EnableBuildMode(bool state)
     {
+        if (IsSelectingBuilding)
+            yield break;
+
+
         // Wait until the button press that entered/exited build mode has ended.
         // Otherwise, we'll have problems since the two inputs use the same button where
         // as soon as we exit build mode, the Update() method will think we should enter
@@ -172,6 +176,7 @@ public class BuildModeManager : MonoBehaviour
         while (!_RadialMenu.MenuConfirmed && !_RadialMenu.MenuCancelled)
             yield return new WaitForSecondsRealtime(0.1f);
 
+
         _TempCategory = _RadialMenu.SelectedItemName;
 
 
@@ -199,9 +204,11 @@ public class BuildModeManager : MonoBehaviour
         while (!_RadialMenu.MenuConfirmed && !_RadialMenu.MenuCancelled)
             yield return new WaitForSecondsRealtime(0.1f);
 
+
         string building = _RadialMenu.SelectedItemName;
 
         _RadialMenu.OnSelectionChanged -= OnRadialMenuSelectionChangedHandler;
+
 
         if (_RadialMenu.MenuCancelled)
         {
@@ -296,7 +303,7 @@ public class BuildModeManager : MonoBehaviour
             GameManager.Instance.VillageManager.SpawnBuilding(_SelectedBuildingPrefab,
                                                               _SelectedBuildingCategory,
                                                               _SelectedBuildingName,
-                                                              _BuildingConstructionGhost.transform.position,
+                                                              _BuildingConstructionGhost.BuildPosition,
                                                               _BuildingConstructionGhost.transform.rotation);
 
             _LastBuildTime = Time.time;

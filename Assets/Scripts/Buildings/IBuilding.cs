@@ -6,10 +6,12 @@ using UnityEngine;
 
 public interface IBuilding
 {
-    public string BuildingCategory { get; }
-    public string BuildingName { get; }
+    BuildingDefinition GetBuildingDefinition();
 
-    public GameObject gameObject { get; }
-    public Health HealthComponent { get; }
+    string BuildingCategory { get; }
+    string BuildingName { get; }
+
+    GameObject gameObject { get; }
+    Health HealthComponent { get; }
 
 }

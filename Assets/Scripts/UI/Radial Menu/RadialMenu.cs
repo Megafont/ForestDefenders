@@ -10,21 +10,20 @@ using TMPro;
 
 public class RadialMenu : MonoBehaviour
 {
-    private List<RadialMenuItem> _MenuItems;
-
     public GameObject RadialMenuItemPrefab;
-
 
     [Min(1)]
     public float Radius = 150;
 
 
 
-
-
     public delegate void RadialMenuEventHandler(GameObject sender);
     public event RadialMenuEventHandler OnSelectionChanged;
-    
+
+
+
+    private List<RadialMenuItem> _MenuItems;
+    private int _ActiveMenuItemsCount;
 
     private BuildModeManager _BuildModeManager;
 
@@ -34,6 +33,8 @@ public class RadialMenu : MonoBehaviour
     private bool _IsOpen;
     private float _MenuItemSizeInDegrees;
     private int _PrevSelectedItemIndex;
+
+    WaitForSecondsRealtime _MenuCloseDelay = new WaitForSecondsRealtime(0.1f);
 
     private GameObject _RadialMenuPanel;
 
@@ -114,13 +115,14 @@ public class RadialMenu : MonoBehaviour
 
     private IEnumerator DoRadialMenu()
     {
-        if (_IsOpen)
-            throw new Exception("Cannot display the radial menu, because one is already displayed!");
-
         if (_MenuItems == null)
             throw new Exception("The menu items list is null!");
         else if (_MenuItems.Count == 0)
             throw new Exception("The menu items list is null!");
+
+
+        if (_IsOpen)
+            throw new Exception("Cannot display the radial menu, because one is already displayed!");
 
 
         // Enable the UI controls InputActionMap.
@@ -135,6 +137,7 @@ public class RadialMenu : MonoBehaviour
         {
             DoUIChecks();
 
+            //Debug.Log($"Confirm: {MenuConfirmed}    Cancel: {MenuCancelled}");
             if (MenuConfirmed || MenuCancelled)
                 break;
 
@@ -151,11 +154,10 @@ public class RadialMenu : MonoBehaviour
 
 
         // Wait slightly to stop the player character from receiving the same button press that closed the menu, which will make him jump or attack upon closing the menu.
-        yield return new WaitForSecondsRealtime(0.1f);
+        yield return _MenuCloseDelay;
 
         // Disable the UI controls InputActionMap.
         _InputManager.GetPlayerInputComponent().actions.FindActionMap(InputManager.ACTION_MAP_UI).Disable();
-
         _RadialMenuPanel.SetActive(false);
         _IsOpen = false;
         Time.timeScale = 1; // Unpause the game.
@@ -203,7 +205,7 @@ public class RadialMenu : MonoBehaviour
         int index = (int)Mathf.Round((float)(angle / _MenuItemSizeInDegrees));
 
         // If the index is equal to the number of items, it means angle was 360, which is the same as 0. So reset index to 0 so it points to the first item as it should.
-        if (index >= _MenuItems.Count)
+        if (index >= _ActiveMenuItemsCount)
             index = 0;
 
 
@@ -240,12 +242,12 @@ public class RadialMenu : MonoBehaviour
 
     private void InitMenuItemsVisualElements(string[] names, int defaultItemIndex)
     {
-        int menuItemCount = names.Length + 1;
+        _ActiveMenuItemsCount = names.Length + 1;
 
 
         // Calculate the size of the pie slice each menu item occupies in the radial menu.
         // The plus one takes into account the Cancel item that is added to the end of the menu automatically below.
-        _MenuItemSizeInDegrees = 360 / menuItemCount;
+        _MenuItemSizeInDegrees = 360 / _ActiveMenuItemsCount;
 
         Quaternion q = Quaternion.identity;
         float angle = 0;
@@ -254,7 +256,7 @@ public class RadialMenu : MonoBehaviour
 
         // Get the number of items we need to iterate through (whichever one is higher is what we need).
         // The plus one takes into account the Cancel item that is added to the end of the menu automatically below.
-        int length = Mathf.Max(_MenuItems.Count, menuItemCount);
+        int length = Mathf.Max(_MenuItems.Count, _ActiveMenuItemsCount);
 
 
         // Iterate through the list of menu items.
@@ -266,7 +268,7 @@ public class RadialMenu : MonoBehaviour
 
             // If the menu item is within the length of the passed in list of items, then set it up.
             // This is >= instead of > to take into account the "Cancel" menu item that is added automatically.
-            if (i < menuItemCount)
+            if (i < _ActiveMenuItemsCount)
             {
                 angle = _MenuItemSizeInDegrees * i;
                 q.eulerAngles = new Vector3(0, 0, -angle); // We negate the angle so the menu items are placed around the center going clockwise rather than the inverse.

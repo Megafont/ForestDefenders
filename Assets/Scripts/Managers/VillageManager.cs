@@ -13,6 +13,9 @@ public class VillageManager : MonoBehaviour
     public GameObject BuildingsParent;
     public GameObject VillagersParent;
 
+    [Tooltip("The delay between spawning queued up villagers (assuming the spawn location is not blocked).")]
+    public float VillagerSpawnDelay = 2.0f;
+
 
     private Dictionary<string, GameObject> _BuildingCategoryParents;
     
@@ -21,6 +24,9 @@ public class VillageManager : MonoBehaviour
     private List<IVillager> _AllVillagers;
 
     private GameObject _TownCenter;
+
+    private Queue<GameObject> _VillagerSpawningQueue;
+    private WaitForSeconds _VillagerSpawnWaitTime;
 
 
 
@@ -33,9 +39,8 @@ public class VillageManager : MonoBehaviour
         _VillagerPrefabs = new Dictionary<string, GameObject>();
         _AllVillagers = new List<IVillager>();
 
-        InitBuildingCategoryParentObjects();
-        FindPreExistingBuildings();
-
+        _VillagerSpawningQueue = new Queue<GameObject>();
+        _VillagerSpawnWaitTime = new WaitForSeconds(VillagerSpawnDelay);
 
         
         GameObject[] objs = GameObject.FindGameObjectsWithTag("Town Center");
@@ -48,6 +53,12 @@ public class VillageManager : MonoBehaviour
         
 
         InitVillagerTypes();
+
+        InitBuildingCategoryParentObjects();
+        FindPreExistingBuildings();
+
+        StartCoroutine(SpawnVillagers());
+
 
         //Debug.Log("C1: " + GetBuildingCount("Defense", "Barricade"));
         //Debug.Log("C2: " + GetBuildingCountForCategory("Defense"));
@@ -62,6 +73,8 @@ public class VillageManager : MonoBehaviour
 
     void OnDestroy()
     {
+        StopAllCoroutines();
+
         Utils.DestroyAllChildGameObjects(BuildingsParent);
         Utils.DestroyAllChildGameObjects(VillagersParent);
     }
@@ -115,9 +128,10 @@ public class VillageManager : MonoBehaviour
         newBuilding.transform.parent = parent;
 
 
-        if (buildingCategory == "Housing")
-            StartCoroutine(SpawnVillagers(newBuilding));
-        
+        IBuilding building = newBuilding.GetComponent<IBuilding>();           
+        for (int i = 0; i < building.GetBuildingDefinition().PopulationBoost; i++)
+            _VillagerSpawningQueue.Enqueue(SelectVillagerPrefab());
+
 
         return newBuilding;
     }
@@ -170,6 +184,11 @@ public class VillageManager : MonoBehaviour
                     obj.transform.parent = parent.transform;
                 else
                     obj.transform.parent = _BuildingCategoryParents["None/None"].transform;
+
+
+                for (int i = 0; i < building.GetBuildingDefinition().PopulationBoost; i++)
+                    _VillagerSpawningQueue.Enqueue(SelectVillagerPrefab());
+
 
                 //Debug.Log($"Found pre-existing building: {building.BuildingCategory}/{building.BuildingName}");
             }
@@ -253,46 +272,40 @@ public class VillageManager : MonoBehaviour
             throw new Exception("The loaded villager prefab does not have a villager component!");
     }
 
-    private IEnumerator SpawnVillagers(GameObject parentHouse)
+    private IEnumerator SpawnVillagers()
     {
         if (_TownCenter == null)
             throw new Exception("Cannot spawn a villager. The town center is null!");
 
 
-        int numVillagers = 1;
-        IBuilding house = parentHouse.GetComponent<IBuilding>();
-        if (house is Building_SmallHouse)
-            numVillagers = 1;
-
-
         WaitForSeconds delay = new WaitForSeconds(2.0f);
         yield return delay;
 
-        for (int i = 0; i < numVillagers; i++)
+        while (true)
         {
-            GameObject prefab = SelectVillagerPrefab();
-            
-            GameObject newVillager = Instantiate(prefab, 
-                                                 _TownCenter.transform.position,
-                                                 _TownCenter.transform.rotation,
-                                                 _VillagerTypeParents[prefab.name].transform);
+            if (_VillagerSpawningQueue.Count > 0)
+            {
+                GameObject prefab = _VillagerSpawningQueue.Dequeue();
 
-            IVillager villagerComponent = newVillager.GetComponent<IVillager>();
-            _AllVillagers.Add(villagerComponent);
-            villagerComponent.HealthComponent.OnDeath += OnVillagerDeath;
+                GameObject newVillager = Instantiate(prefab,
+                                                     _TownCenter.transform.position,
+                                                     _TownCenter.transform.rotation,
+                                                     _VillagerTypeParents[prefab.name].transform);
 
-            yield return delay;
+                IVillager villagerComponent = newVillager.GetComponent<IVillager>();
+                _AllVillagers.Add(villagerComponent);
+                villagerComponent.HealthComponent.OnDeath += OnVillagerDeath;
+            }
 
-        } // end for i
+            yield return _VillagerSpawnWaitTime;
 
+        } // end while
 
-
-        yield break;
     }
 
     private GameObject SelectVillagerPrefab()
     {
-        int index = Random.Range(0, _VillagerPrefabs.Values.Count - 1);
+        int index = Random.Range(0, _VillagerPrefabs.Values.Count);
 
         return _VillagerPrefabs.Values.ToArray()[index];
     }
@@ -300,9 +313,7 @@ public class VillageManager : MonoBehaviour
     private void OnVillagerDeath(GameObject sender)
     {
         sender.GetComponent<Health>().OnDeath -= OnVillagerDeath;
-
-        // TODO: Also remove this villager from any active job list it is in. Just use a dictionary of lists, containing one list for each job type.
-
+       
         _AllVillagers.Remove(sender.GetComponent<IVillager>());
     }
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+
 /// <summary>
 /// This is the base class for all buildings.
 /// </summary>
@@ -29,16 +30,25 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
         _NavMeshObstacle = GetComponent<NavMeshObstacle>();
 
         GetComponent<Health>().OnDeath += OnDeath;
+
+        InitBuilding();
     }
 
     void Start()
     {
-        InitBuilding();
+
     }
 
     void Update()
     {
         UpdateBuilding();
+    }
+
+
+
+    public BuildingDefinition GetBuildingDefinition()
+    {
+        return BuildModeDefinitions.GetBuildingDefinition(BuildingCategory, BuildingName);
     }
 
 
