@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 
 using UnityEditor.EditorTools;
 using UnityEngine;
@@ -27,22 +28,6 @@ public delegate void VillagerTaskEventHandler(object sender, VillagerTaskEventAr
 /// </summary>
 public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 {
-    /*
-    [Tooltip("How often (in seconds) that the villager will check for an available task if not already doing one.")]
-    public float TaskCheckFrequency = 5.0f;
-    [Tooltip("How often (in seconds) the villager will work on the current task.")]
-    public float TaskWorkFrequency = 2.0f;
-
-    
-    public VillagerTasks CurrentTask { get; private set; }
-    public object TaskTarget { get; private set; }
-
-
-    public event VillagerTaskEventHandler OnTaskFinished;
-    public event VillagerTaskEventHandler OnTaskStarted;
-    */
-
-
     private VillagerTargetDetector _NearbyTargetDetector;
 
     private ResourceManager _ResourceManager;
@@ -201,4 +186,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
         Destroy(gameObject);
     }
 
+
+
+    public string VillagerType { get { return this.GetType().Name; /* return MethodBase.GetCurrentMethod().DeclaringType.Name; */ } }
 }

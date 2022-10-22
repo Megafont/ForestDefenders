@@ -18,6 +18,7 @@ public partial class GameManager : MonoBehaviour
 
     public TMP_Text UI_ScoreText;
 
+    public TMP_Text UI_PopulationCountText;
     public TMP_Text UI_FoodCountText;
     public TMP_Text UI_WoodCountText;
     public TMP_Text UI_StoneCountText;
@@ -91,6 +92,7 @@ public partial class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        UI_PopulationCountText.text = $"Population: {VillageManager.Population} / {VillageManager.PopulationCap}";
         UI_FoodCountText.text = $"Food: {ResourceManager.Stockpiles[ResourceTypes.Food]}";
         UI_WoodCountText.text = $"Wood: {ResourceManager.Stockpiles[ResourceTypes.Wood]}";
         UI_StoneCountText.text = $"Stone: {ResourceManager.Stockpiles[ResourceTypes.Stone]}";

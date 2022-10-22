@@ -436,7 +436,7 @@ public class PlayerController : MonoBehaviour
             Health health = hit.collider.GetComponent<Health>();
             if (health)
             {
-                if (hit.collider.tag == "Building" && GameManager.Instance.BuildModeManager.IsBuildModeActive)
+                if (hit.collider.tag == "Building")
                 {
                     DoDestroyAction(hit.collider.gameObject);
                 }

@@ -9,4 +9,5 @@ public interface IVillager
     public GameObject gameObject { get; }
     public Health HealthComponent { get; }
 
+    public string VillagerType { get; }
 }

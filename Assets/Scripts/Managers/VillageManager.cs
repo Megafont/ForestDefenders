@@ -10,36 +10,55 @@ using Random = UnityEngine.Random;
 
 public class VillageManager : MonoBehaviour
 {
+    [Header("Parent Objects")]
     public GameObject BuildingsParent;
     public GameObject VillagersParent;
 
+
+    [Header("Buildings Settings")]
+
+
+    [Header("Villager Settings")]
+
+    [Tooltip("The initial population cap of the village.")]
+    public int StartingPopulationCap = 3;
+
+    [Tooltip("The amount of food required for a villager to spawn.")]
+    public int VillagerFoodCost = 50;
+    
     [Tooltip("The delay between spawning queued up villagers (assuming the spawn location is not blocked).")]
     public float VillagerSpawnDelay = 2.0f;
 
 
+
+    private ResourceManager _ResourceManager;
+
     private Dictionary<string, GameObject> _BuildingCategoryParents;
-    
+    private GameObject _TownCenter;
+
+
     private Dictionary<string, GameObject> _VillagerTypeParents;
     private Dictionary<string, GameObject> _VillagerPrefabs;
     private List<IVillager> _AllVillagers;
-
-    private GameObject _TownCenter;
-
-    private Queue<GameObject> _VillagerSpawningQueue;
+    
     private WaitForSeconds _VillagerSpawnWaitTime;
+
+    private int _PopulationCap;
 
 
 
     // Start is called before the first frame update
     void Start()
     {
+        _ResourceManager = GameManager.Instance.ResourceManager;
+
         _BuildingCategoryParents = new Dictionary<string, GameObject>();
 
         _VillagerTypeParents = new Dictionary<string, GameObject>();
         _VillagerPrefabs = new Dictionary<string, GameObject>();
         _AllVillagers = new List<IVillager>();
 
-        _VillagerSpawningQueue = new Queue<GameObject>();
+        _PopulationCap = StartingPopulationCap;
         _VillagerSpawnWaitTime = new WaitForSeconds(VillagerSpawnDelay);
 
         
@@ -55,7 +74,7 @@ public class VillageManager : MonoBehaviour
         InitVillagerTypes();
 
         InitBuildingCategoryParentObjects();
-        FindPreExistingBuildings();
+        FindPreExistingVillageObjects();
 
         StartCoroutine(SpawnVillagers());
 
@@ -77,6 +96,31 @@ public class VillageManager : MonoBehaviour
 
         Utils.DestroyAllChildGameObjects(BuildingsParent);
         Utils.DestroyAllChildGameObjects(VillagersParent);
+    }
+
+
+
+    private void FindPreExistingVillageObjects()
+    {
+        GameObject[] objects = FindObjectsOfType<GameObject>();
+        foreach (GameObject obj in objects)
+        {
+            IBuilding building = obj.GetComponent<IBuilding>();
+            if (building != null)
+            {
+                AddBuilding(building);
+                //Debug.Log($"Found pre-existing building: {building.BuildingCategory}/{building.BuildingName}");
+            }
+
+            IVillager villager = obj.GetComponent<IVillager>();
+            if (villager != null)
+            {
+                AddVillager(villager);
+                //Debug.Log($"Found pre-existing villager: {villager.VillagerType}");
+            }
+
+        } // end foreach obj
+
     }
 
 
@@ -126,13 +170,12 @@ public class VillageManager : MonoBehaviour
         
         Transform parent = _BuildingCategoryParents[$"{buildingCategory}/{buildingName}"].transform;
         newBuilding.transform.parent = parent;
+        newBuilding.GetComponent<Health>().OnDeath += OnBuildingDestroyed;
 
+        IBuilding building = newBuilding.GetComponent<IBuilding>();
+        _PopulationCap += (int) building.GetBuildingDefinition().PopulationCapBoost;
 
-        IBuilding building = newBuilding.GetComponent<IBuilding>();           
-        for (int i = 0; i < building.GetBuildingDefinition().PopulationBoost; i++)
-            _VillagerSpawningQueue.Enqueue(SelectVillagerPrefab());
-
-
+        
         return newBuilding;
     }
 
@@ -167,33 +210,20 @@ public class VillageManager : MonoBehaviour
         _BuildingCategoryParents.Add("None/None", unknown);
     }
 
-    private void FindPreExistingBuildings()
+    private void AddBuilding(IBuilding building)
     {
-        GameObject[] objects = FindObjectsOfType<GameObject>();
-        foreach (GameObject obj in objects)
-        {
-            IBuilding building = obj.GetComponent<IBuilding>();
-            if (building != null)
-            {
-                _BuildingCategoryParents.TryGetValue($"{building.BuildingCategory}/{building.BuildingName}", out GameObject parent);
+        _BuildingCategoryParents.TryGetValue($"{building.BuildingCategory}/{building.BuildingName}", out GameObject parent);
 
-                // Set the parent of the building.
-                // If the building returns "None" for both category and building name, then it will be added to the "Unknown" parent object.
-                // If the building's category and name are not found in the dictionary, then it will be added to the "Unknown" parent object.
-                if (parent)
-                    obj.transform.parent = parent.transform;
-                else
-                    obj.transform.parent = _BuildingCategoryParents["None/None"].transform;
+        // Set the parent of the building.
+        // If the building returns "None" for both category and building name, then it will be added to the "Unknown" parent object.
+        // If the building's category and name are not found in the dictionary, then it will be added to the "Unknown" parent object.
+        if (parent)
+            building.gameObject.transform.parent = parent.transform;
+        else
+            building.gameObject.transform.parent = _BuildingCategoryParents["None/None"].transform;
 
 
-                for (int i = 0; i < building.GetBuildingDefinition().PopulationBoost; i++)
-                    _VillagerSpawningQueue.Enqueue(SelectVillagerPrefab());
-
-
-                //Debug.Log($"Found pre-existing building: {building.BuildingCategory}/{building.BuildingName}");
-            }
-
-        } // end foreach obj
+        _PopulationCap += (int) building.GetBuildingDefinition().PopulationCapBoost;
 
     }
 
@@ -283,24 +313,37 @@ public class VillageManager : MonoBehaviour
 
         while (true)
         {
-            if (_VillagerSpawningQueue.Count > 0)
+            if (_AllVillagers.Count < _PopulationCap &&
+                _ResourceManager.Stockpiles[ResourceTypes.Food] >= VillagerFoodCost)
             {
-                GameObject prefab = _VillagerSpawningQueue.Dequeue();
+                GameObject prefab = SelectVillagerPrefab();
+                _ResourceManager.Stockpiles[ResourceTypes.Food] -= VillagerFoodCost;
 
+                
                 GameObject newVillager = Instantiate(prefab,
                                                      _TownCenter.transform.position,
                                                      _TownCenter.transform.rotation,
                                                      _VillagerTypeParents[prefab.name].transform);
 
-                IVillager villagerComponent = newVillager.GetComponent<IVillager>();
-                _AllVillagers.Add(villagerComponent);
-                villagerComponent.HealthComponent.OnDeath += OnVillagerDeath;
+                AddVillager(newVillager.GetComponent<IVillager>());
+                //IVillager villagerComponent = newVillager.GetComponent<IVillager>();
+                //_AllVillagers.Add(villagerComponent);
+                //villagerComponent.HealthComponent.OnDeath += OnVillagerDeath;
+                
             }
 
             yield return _VillagerSpawnWaitTime;
 
         } // end while
 
+    }
+
+    private void AddVillager(IVillager villager)
+    {
+        villager.gameObject.transform.parent = _VillagerTypeParents[villager.VillagerType].transform;
+
+        _AllVillagers.Add(villager);
+        villager.HealthComponent.OnDeath += OnVillagerDeath;
     }
 
     private GameObject SelectVillagerPrefab()
@@ -316,5 +359,19 @@ public class VillageManager : MonoBehaviour
        
         _AllVillagers.Remove(sender.GetComponent<IVillager>());
     }
+
+    private void OnBuildingDestroyed(GameObject sender)
+    {
+        sender.GetComponent<Health>().OnDeath -= OnBuildingDestroyed;
+
+        IBuilding building = sender.GetComponent<IBuilding>();
+        _PopulationCap -= (int) building.GetBuildingDefinition().PopulationCapBoost;
+
+    }
+
+
+
+    public int Population { get { return _AllVillagers.Count; } }
+    public int PopulationCap {  get { return _PopulationCap; } }
 
 }

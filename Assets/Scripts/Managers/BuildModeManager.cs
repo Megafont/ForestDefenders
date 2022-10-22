@@ -38,6 +38,7 @@ public class BuildModeManager : MonoBehaviour
     private GameObject _SelectedBuildingPrefab;
 
     private RadialMenu _RadialMenu;
+    private WaitForSecondsRealtime _RadialMenuCloseDelay = new WaitForSecondsRealtime(0.1f);
     private string _TempCategory; // Tracks the selected category while the second building selection menu is open.
 
 
@@ -174,7 +175,7 @@ public class BuildModeManager : MonoBehaviour
         _RadialMenu.ShowRadialMenu("Select Building Type", BuildModeDefinitions.GetBuildingCategoriesList());
 
         while (!_RadialMenu.MenuConfirmed && !_RadialMenu.MenuCancelled)
-            yield return new WaitForSecondsRealtime(0.1f);
+            yield return _RadialMenuCloseDelay;
 
 
         _TempCategory = _RadialMenu.SelectedItemName;
@@ -190,7 +191,7 @@ public class BuildModeManager : MonoBehaviour
 
         // This prevents the building menu we display in the line after this one from instantly closing, because the input hasn't had time to change yet.
         // So we give this slight delay so the button will be released by the time that menu is displayed.
-        yield return new WaitForSeconds(0.1f);
+        yield return _RadialMenuCloseDelay;
 
 
 
@@ -202,7 +203,7 @@ public class BuildModeManager : MonoBehaviour
         OnRadialMenuSelectionChangedHandler(null);
 
         while (!_RadialMenu.MenuConfirmed && !_RadialMenu.MenuCancelled)
-            yield return new WaitForSecondsRealtime(0.1f);
+            yield return _RadialMenuCloseDelay;
 
 
         string building = _RadialMenu.SelectedItemName;
@@ -226,7 +227,7 @@ public class BuildModeManager : MonoBehaviour
 
         // This prevents the player character from attacking as soon as you close the menu, because the input hasn't had time to change yet.
         // So we give this slight delay so the button will be released by the time that check happens again.
-        yield return new WaitForSecondsRealtime(0.1f);
+        yield return _RadialMenuCloseDelay;
         IsSelectingBuilding = false;
 
     }

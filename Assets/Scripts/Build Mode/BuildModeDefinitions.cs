@@ -15,7 +15,7 @@ public class BuildingDefinition
     public List<MaterialCost> ConstructionCosts = new List<MaterialCost>();
     public float PercentageOfResourcesRecoveredOnDestruction;
 
-    public uint PopulationBoost; // The number of villagers that will spawn after the building is constructed.
+    public uint PopulationCapBoost; // The number of villagers that will spawn after the building is constructed.
 
     // Collider data (used ESPECIALLY for the build mode construction ghost)
     public bool IsRound;
@@ -85,7 +85,10 @@ public static class BuildModeDefinitions
         string category = "Defense";
 
         CreateBuildingDefinition(category, "Barricade", 20, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[] 
-            { CreateMaterialCost(ResourceTypes.Wood, 10) });
+            { CreateMaterialCost(ResourceTypes.Wood, 20) });
+        CreateBuildingDefinition(category, "Wood Wall", 50, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[]
+            { CreateMaterialCost(ResourceTypes.Wood, 50) });
+
     }
 
     private static void InitFarmingBuildings()
@@ -123,7 +126,7 @@ public static class BuildModeDefinitions
             PercentageOfResourcesRecoveredOnDestruction = percentageOfMaterialsRecoveredOnDestroy,
             ConstructionCosts = new List<MaterialCost>(constructionCosts),
 
-            PopulationBoost = populationBoost,
+            PopulationCapBoost = populationBoost,
 
             IsRound = isRound,
             Radius = radius,
