@@ -39,12 +39,76 @@ public class ResourceManager : MonoBehaviour
         
     }
 
-    private void OnDestroy()
+    void OnDestroy()
     {
         Utils.DestroyAllChildGameObjects(ResourcesParent);
     }
 
 
+
+    public ResourceTypes GetLowestResourceStockpileType()
+    {
+        ResourceTypes lowestResourceType = ResourceTypes.Wood;
+        int minAmount = int.MaxValue;
+
+
+        foreach (KeyValuePair<ResourceTypes, int> pair in _ResourceStockpilesByType)
+        {
+            if (pair.Value < minAmount)
+            {
+                lowestResourceType = pair.Key;
+                minAmount = pair.Value;
+            }
+
+        } // end foreach pair
+
+
+        return lowestResourceType;
+    }
+
+    public ResourceNode FindNearestResourceNode(Vector3 callerPosition, ResourceTypes? type = null)
+    {
+        ResourceNode closestNode = null;
+        float minDistance = float.MaxValue;
+
+
+        foreach (ResourceNode node in _AllResourceNodes)
+        {
+            // A node can be null if it was destroyed and removed from the resource manager.
+            if (node == null)
+                continue;
+
+            float distance = Vector3.Distance(callerPosition, node.transform.position);
+            if (node.AmountAvailable > 0 && distance < minDistance)
+            {
+                // If no resource type was specified, or if the resource node has the same type as that specified,
+                // then set it as the new closest node.
+                if (type == null || type == node.ResourceType)
+                {
+                    closestNode = node;
+                    minDistance = distance;
+                }
+            }
+
+        } // end foreach node
+
+
+        return closestNode;
+    }
+
+    public void AddResourceNode(ResourceNode newNode)
+    {
+        _AllResourceNodes.Add(newNode);
+        _ResourceNodesByType[newNode.ResourceType].Add(newNode);
+    }
+
+    public void RemoveResourceNode(ResourceNode node)
+    {
+        Debug.Log($"R Remove Before: {_AllResourceNodes.Count} | {_ResourceNodesByType[node.ResourceType].Count}");
+        _AllResourceNodes.Remove(node);
+        _ResourceNodesByType[node.ResourceType].Remove(node);
+        Debug.Log($"R Remove After: {_AllResourceNodes.Count} | {_ResourceNodesByType[node.ResourceType].Count}");
+    }
 
     private void InitResourceTypeParentObjects()
     {
@@ -104,68 +168,6 @@ public class ResourceManager : MonoBehaviour
 
             node.transform.parent = _ResourceTypeParents[node.ResourceType].transform;
         }
-    }
-
-    public ResourceTypes GetLowestResourceStockpileType()
-    {
-        ResourceTypes lowestResourceType = ResourceTypes.Wood;
-        int minAmount = int.MaxValue;
-
-
-        foreach (KeyValuePair<ResourceTypes, int> pair in _ResourceStockpilesByType)
-        {
-            if (pair.Value < minAmount)
-            {
-                lowestResourceType = pair.Key;
-                minAmount = pair.Value;
-            }
-
-        } // end foreach pair
-
-
-        return lowestResourceType;
-    }
-
-    public ResourceNode FindNearestResourceNodeOfType(Vector3 callerPosition, ResourceTypes type)
-    {
-        ResourceNode closestNode = null;
-        float minDistance = float.MaxValue;
-
-
-        foreach (ResourceNode node in _ResourceNodesByType[type])
-        {
-            float distance = Vector3.Distance(callerPosition, node.transform.position);
-            if (node.AmountAvailable > 0 && distance < minDistance)
-            {
-                closestNode = node;
-                minDistance = distance;
-            }
-
-        } // end foreach node
-
-
-        return closestNode;
-    }
-
-    public ResourceNode FindNearestResourceNode(Vector3 callerPosition)
-    {
-        ResourceNode closestNode = null;
-        float minDistance = float.MaxValue;
-
-
-        foreach (ResourceNode node in _AllResourceNodes)
-        {
-            float distance = Vector3.Distance(callerPosition, node.transform.position);
-            if (node.AmountAvailable > 0 && distance < minDistance)
-            {
-                closestNode = node;
-                minDistance = distance;
-            }
-
-        } // end foreach node
-
-
-        return closestNode;
     }
 
 

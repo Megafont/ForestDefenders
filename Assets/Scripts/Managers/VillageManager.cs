@@ -168,13 +168,8 @@ public class VillageManager : MonoBehaviour
     {
         GameObject newBuilding = Instantiate(buildingPrefab, position, rotation);
         
-        Transform parent = _BuildingCategoryParents[$"{buildingCategory}/{buildingName}"].transform;
-        newBuilding.transform.parent = parent;
-        newBuilding.GetComponent<Health>().OnDeath += OnBuildingDestroyed;
-
         IBuilding building = newBuilding.GetComponent<IBuilding>();
-        _PopulationCap += (int) building.GetBuildingDefinition().PopulationCapBoost;
-
+        AddBuilding(building);
         
         return newBuilding;
     }
@@ -223,8 +218,15 @@ public class VillageManager : MonoBehaviour
             building.gameObject.transform.parent = _BuildingCategoryParents["None/None"].transform;
 
 
+        building.gameObject.GetComponent<Health>().OnDeath += OnBuildingDestroyed;
+
         _PopulationCap += (int) building.GetBuildingDefinition().PopulationCapBoost;
 
+
+        // If the building has a resource node (like farms do), then add it to the resource manager.
+        ResourceNode node = building.gameObject.GetComponent<ResourceNode>();
+        if (node)
+            _ResourceManager.AddResourceNode(node);
     }
 
 
@@ -326,10 +328,6 @@ public class VillageManager : MonoBehaviour
                                                      _VillagerTypeParents[prefab.name].transform);
 
                 AddVillager(newVillager.GetComponent<IVillager>());
-                //IVillager villagerComponent = newVillager.GetComponent<IVillager>();
-                //_AllVillagers.Add(villagerComponent);
-                //villagerComponent.HealthComponent.OnDeath += OnVillagerDeath;
-                
             }
 
             yield return _VillagerSpawnWaitTime;
@@ -367,6 +365,12 @@ public class VillageManager : MonoBehaviour
         IBuilding building = sender.GetComponent<IBuilding>();
         _PopulationCap -= (int) building.GetBuildingDefinition().PopulationCapBoost;
 
+        Debug.Log("Building destroyed: " + building.BuildingName);
+
+        // If the building has a resource node (like farms do), then remove it from the resource manager.
+        ResourceNode node = sender.GetComponent<ResourceNode>();
+        if (node)
+            _ResourceManager.RemoveResourceNode(node);
     }
 
 

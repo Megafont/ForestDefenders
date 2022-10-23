@@ -88,6 +88,9 @@ public static class BuildModeDefinitions
             { CreateMaterialCost(ResourceTypes.Wood, 20) });
         CreateBuildingDefinition(category, "Wood Wall", 50, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 50) });
+        CreateBuildingDefinition(category, "Stone Wall", 100, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[]
+            { CreateMaterialCost(ResourceTypes.Wood, 50),
+              CreateMaterialCost(ResourceTypes.Stone, 50), });
 
     }
 
@@ -96,7 +99,10 @@ public static class BuildModeDefinitions
         string category = "Farming";
 
         CreateBuildingDefinition(category, "Small Garden", 50, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[]
-            { CreateMaterialCost(ResourceTypes.Wood, 20) });
+            { CreateMaterialCost(ResourceTypes.Wood, 50) });
+        CreateBuildingDefinition(category, "Farm", 100, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[]
+            { CreateMaterialCost(ResourceTypes.Wood, 100) });
+
     }
 
     private static void InitHousingBuildings()
@@ -104,8 +110,12 @@ public static class BuildModeDefinitions
         string category = "Housing";
 
         CreateBuildingDefinition(category, "Small House", 100, _MaterialRecoveryRate, 1, false, 0.0f, new MaterialCost[]
-            { CreateMaterialCost(ResourceTypes.Wood, 40),
-              CreateMaterialCost(ResourceTypes.Stone, 20), });
+            { CreateMaterialCost(ResourceTypes.Wood, 50),
+              CreateMaterialCost(ResourceTypes.Stone, 50), });
+        CreateBuildingDefinition(category, "Medium House", 150, _MaterialRecoveryRate, 2, false, 0.0f, new MaterialCost[]
+            { CreateMaterialCost(ResourceTypes.Wood, 100),
+              CreateMaterialCost(ResourceTypes.Stone, 100), });
+
     }
 
 

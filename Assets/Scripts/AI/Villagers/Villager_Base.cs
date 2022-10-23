@@ -91,7 +91,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
             // Find a non-empty resource node of the same type as the lowest resource stockpile.
             ResourceTypes lowest = _ResourceManager.GetLowestResourceStockpileType();
-            ResourceNode possibleTargetResourceNode = _ResourceManager.FindNearestResourceNodeOfType(transform.position, lowest);
+            ResourceNode possibleTargetResourceNode = _ResourceManager.FindNearestResourceNode(transform.position, lowest);
             
             // If we didn't find a resource node of the same type as the lowest resource stockpile, then find a non-empty one of any type.
             if (possibleTargetResourceNode == null)
