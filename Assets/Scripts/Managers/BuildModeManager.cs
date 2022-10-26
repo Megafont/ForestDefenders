@@ -38,7 +38,6 @@ public class BuildModeManager : MonoBehaviour
     private GameObject _SelectedBuildingPrefab;
 
     private RadialMenu _RadialMenu;
-    private WaitForSecondsRealtime _RadialMenuCloseDelay = new WaitForSecondsRealtime(0.1f);
     private string _TempCategory; // Tracks the selected category while the second building selection menu is open.
 
 
@@ -175,7 +174,7 @@ public class BuildModeManager : MonoBehaviour
         _RadialMenu.ShowRadialMenu("Select Building Type", BuildModeDefinitions.GetBuildingCategoriesList());
 
         while (!_RadialMenu.MenuConfirmed && !_RadialMenu.MenuCancelled)
-            yield return _RadialMenuCloseDelay;
+            yield return null;
 
 
         _TempCategory = _RadialMenu.SelectedItemName;
@@ -189,9 +188,9 @@ public class BuildModeManager : MonoBehaviour
 
 
 
-        // This prevents the building menu we display in the line after this one from instantly closing, because the input hasn't had time to change yet.
-        // So we give this slight delay so the button will be released by the time that menu is displayed.
-        yield return _RadialMenuCloseDelay;
+        // Wait until the menu has closed before trying to open a new one.
+        while (_RadialMenu.IsOpen)
+            yield return null;
 
 
 
@@ -203,7 +202,7 @@ public class BuildModeManager : MonoBehaviour
         OnRadialMenuSelectionChangedHandler(null);
 
         while (!_RadialMenu.MenuConfirmed && !_RadialMenu.MenuCancelled)
-            yield return _RadialMenuCloseDelay;
+            yield return null;
 
 
         string building = _RadialMenu.SelectedItemName;
@@ -225,9 +224,13 @@ public class BuildModeManager : MonoBehaviour
 
         SelectBuilding(_TempCategory, building);
 
-        // This prevents the player character from attacking as soon as you close the menu, because the input hasn't had time to change yet.
-        // So we give this slight delay so the button will be released by the time that check happens again.
-        yield return _RadialMenuCloseDelay;
+
+        // Wait until the menu has closed before returning. This prevents the player character from instantly attacking
+        // because the input for that button hasn't had time to turn back off again after the button press.
+        while (_RadialMenu.IsOpen)
+            yield return null;
+
+
         IsSelectingBuilding = false;
 
     }

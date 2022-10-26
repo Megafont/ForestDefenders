@@ -13,9 +13,6 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public abstract class AI_Base : MonoBehaviour
 {
-    public int AttackPower = 3;
-    public float AttackCooldownTime = 2.0f;
-
     public float DeathFadeOutTime = 2.0f;
 
     [Tooltip("This is the maximum movement speed. Make sure the walk/run thresholds are set correctly in the Animator's blend tree node, too.")]
@@ -139,8 +136,9 @@ public abstract class AI_Base : MonoBehaviour
         
         // The part in parantheses shifts the start position of the ray upward so it is in the center of the AI
         // character's body rather than on the ground.
-        Vector3 rayStartPos = transform.position + (Vector3.up * _NavMeshAgent.height / 2);
-        Vector3 rayDirection = Vector3.Normalize(_Target.transform.position - rayStartPos);
+        Vector3 upShift = Vector3.up * (_NavMeshAgent.height / 2);
+        Vector3 rayStartPos = transform.position + upShift;
+        Vector3 rayDirection = Vector3.Normalize(_Target.transform.position - rayStartPos + upShift);
         
 
         // NOTE: This commented code doesn't work right if the origin point of the target object is too hight

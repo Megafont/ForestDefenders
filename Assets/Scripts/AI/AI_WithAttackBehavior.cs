@@ -10,8 +10,12 @@ using UnityEngine.AI;
 /// </summary>
 public abstract class AI_WithAttackBehavior : AI_Base
 {
+    public int AttackPower = 3;
+    public float AttackCooldownTime = 2.0f;
     public float AttackRange = 1.0f;
+
     public float MaxChaseDistance = 10.0f;
+
     public float TargetCheckFrequency = 10.0f;
     public float TargetCheckRadius = 5.0f;
 
@@ -97,7 +101,7 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
     protected virtual void CheckIfInAttackRange()
     {
-        //Debug.Log($"Distance: {GetDistanceToTarget()}    Attack Range: {AttackRange}");
+        //Debug.Log($"Distance: {GetDistanceToTarget()}    Attack Range: {AttackRange}    Target: {_Target.name}");
 
         if (GetDistanceToTarget() <= AttackRange)
         {
@@ -121,7 +125,7 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
     protected virtual void DoAttack()
     {
-        // Debug.Log($"Attacking \"{_Target.name}\"");
+        //Debug.Log($"Attacking \"{_Target.name}\"");
 
         _LastAttackTime = Time.time;
 

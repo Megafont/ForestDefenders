@@ -12,16 +12,23 @@ using UnityEngine.AI;
 /// </summary>
 public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
 {
+    [Tooltip("The number of points earned when this monster is killed.")]
     public int ScoreValue = 10;
+    [Tooltip("The tier this monster is in. Determines which tiers of buildings it can target and destroy.")]
+    public int MonsterTier = 0;
 
 
     private MonsterTargetDetector _NearbyTargetDetector;
+
+    private GameObject _Player;
 
 
 
     protected override void InitAI()
     {
         _NearbyTargetDetector = transform.GetComponentInChildren<MonsterTargetDetector>();
+
+        GameObject _Player = GameManager.Instance.Player;
 
         base.InitAI();
     }
@@ -34,18 +41,27 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
 
     protected override void DoTargetCheck()
     {
-        GameObject player = GameManager.Instance.Player;
-
-
         if (_Target == null)
         {
-            // This monster is not chasing a target. So if the target check time has elapsed, then do a new target check.
-            GameObject possibleNewTarget = Utils_AI.FindNearestObjectOfType(gameObject, typeof(Building_Base));
-            if (possibleNewTarget)
-                SetTarget(possibleNewTarget);
+            // This monster is not chasing a target. So try to find a building to target.
+            GameObject newTarget = Utils_AI.FindNearestBuildingAtOrBelowTier(gameObject, MonsterTier); //Utils_AI.FindNearestObjectOfType(gameObject, typeof(Building_Base));
+
+
+            // If no building was found, then try to find a villager.           
+            if (newTarget == null)
+                newTarget = Utils_AI.FindNearestObjectOfType(gameObject, typeof(Villager_Base));
+
+
+            // If no villager was found, then target the player.
+            if (newTarget == null)
+                newTarget = _Player;
+            
+            
+            SetTarget(newTarget);
         }
+        
         // If this monster is chasing a target and the target gets far enough away, revert to the previous target.
-        else if (_Target == player || _Target.CompareTag("Villager")) // Is the target the player or a villager?
+        else if (_Target == _Player || _Target.CompareTag("Villager")) // Is the target the player or a villager?
         {
             if (Vector3.Distance(transform.position, _Target.transform.position) >= MaxChaseDistance)
             {
@@ -63,11 +79,16 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         {
             return false;
         }
-        else if (target != null && target.tag == "Villager" &&
+        else if (target != null && target.tag == "Villager" && // If we are targeting a villager and the new target is a villager, then return false so we don't switch the target.
                  _Target != null && _Target.tag == "Villager") 
         {
             return false;
         }
+        /*else if (target != null && target == _Player && // If we are targeting the player and the new target already is the player, then return false so we don't try to switch the target.
+                 _Target != null && _Target == _Player)
+        {
+            return false;
+        }*/
         else
         {
             return true;
