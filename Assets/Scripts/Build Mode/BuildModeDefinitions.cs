@@ -11,6 +11,7 @@ public class BuildingDefinition
     public string BuildingName;
     public string Category;
     public int MaxHealth;
+    public int BuildingTier;
 
     public List<MaterialCost> ConstructionCosts = new List<MaterialCost>();
     public float PercentageOfResourcesRecoveredOnDestruction;
@@ -84,11 +85,11 @@ public static class BuildModeDefinitions
     {
         string category = "Defense";
 
-        CreateBuildingDefinition(category, "Barricade", 20, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[] 
+        CreateBuildingDefinition(category, "Barricade", 20, 1, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[] 
             { CreateMaterialCost(ResourceTypes.Wood, 20) });
-        CreateBuildingDefinition(category, "Wood Wall", 50, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Wood Wall", 50, 2, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 50) });
-        CreateBuildingDefinition(category, "Stone Wall", 100, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Stone Wall", 100, 3, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 50),
               CreateMaterialCost(ResourceTypes.Stone, 50), });
 
@@ -98,9 +99,9 @@ public static class BuildModeDefinitions
     {
         string category = "Farming";
 
-        CreateBuildingDefinition(category, "Small Garden", 50, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Small Garden", 50, 1, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 50) });
-        CreateBuildingDefinition(category, "Farm", 100, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Farm", 100, 2, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 100) });
 
     }
@@ -109,17 +110,17 @@ public static class BuildModeDefinitions
     {
         string category = "Housing";
 
-        CreateBuildingDefinition(category, "Small House", 100, _MaterialRecoveryRate, 1, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Small House", 100, 1, _MaterialRecoveryRate, 1, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 50),
               CreateMaterialCost(ResourceTypes.Stone, 50), });
-        CreateBuildingDefinition(category, "Medium House", 150, _MaterialRecoveryRate, 2, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Medium House", 150, 2, _MaterialRecoveryRate, 2, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 100),
               CreateMaterialCost(ResourceTypes.Stone, 100), });
 
     }
 
 
-    private static BuildingDefinition CreateBuildingDefinition(string category, string buildingName, int maxHealth, float percentageOfMaterialsRecoveredOnDestroy, uint populationBoost, bool isRound, float radius, MaterialCost[] constructionCosts)
+    private static BuildingDefinition CreateBuildingDefinition(string category, string buildingName, int maxHealth, int buildingTier, float percentageOfMaterialsRecoveredOnDestroy, uint populationBoost, bool isRound, float radius, MaterialCost[] constructionCosts)
     {
         if (constructionCosts == null)
             throw new ArgumentNullException("The passed in construction costs list is null!");
@@ -132,6 +133,7 @@ public static class BuildModeDefinitions
             BuildingName = buildingName,
             Category = category,
             MaxHealth = maxHealth,
+            BuildingTier = buildingTier,
 
             PercentageOfResourcesRecoveredOnDestruction = percentageOfMaterialsRecoveredOnDestroy,
             ConstructionCosts = new List<MaterialCost>(constructionCosts),

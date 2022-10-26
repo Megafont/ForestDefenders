@@ -65,7 +65,7 @@
                     "id": "c4def3ed-c564-44d1-8bf4-c8aa2f10e50c",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "Hold(duration=1)",
                     "initialStateCheck": false
                 }
             ],
@@ -375,7 +375,7 @@
                 {
                     "name": "",
                     "id": "a5f0badd-aeed-45bd-9e44-bf533c2a9001",
-                    "path": "<Gamepad>/buttonWest",
+                    "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",

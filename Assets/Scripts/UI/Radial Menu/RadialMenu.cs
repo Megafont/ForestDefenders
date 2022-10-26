@@ -30,11 +30,10 @@ public class RadialMenu : MonoBehaviour
     private InputManager _InputManager;
 
     private bool _IsInitializing;
-    private bool _IsOpen;
     private float _MenuItemSizeInDegrees;
     private int _PrevSelectedItemIndex;
 
-    WaitForSecondsRealtime _MenuCloseDelay = new WaitForSecondsRealtime(0.1f);
+    WaitForSecondsRealtime _MenuCloseDelay = new WaitForSecondsRealtime(0.2f);
 
     private GameObject _RadialMenuPanel;
 
@@ -89,7 +88,7 @@ public class RadialMenu : MonoBehaviour
             throw new Exception("The radial menu panel is null!");
 
 
-        if (_IsInitializing || _IsOpen)
+        if (_IsInitializing || IsOpen)
         {
             Debug.LogError("Can't show radial menu because one is already open!");
             return;
@@ -118,10 +117,10 @@ public class RadialMenu : MonoBehaviour
         if (_MenuItems == null)
             throw new Exception("The menu items list is null!");
         else if (_MenuItems.Count == 0)
-            throw new Exception("The menu items list is null!");
+            throw new Exception("The menu items list is empty!");
 
 
-        if (_IsOpen)
+        if (IsOpen)
             throw new Exception("Cannot display the radial menu, because one is already displayed!");
 
 
@@ -130,7 +129,7 @@ public class RadialMenu : MonoBehaviour
 
 
 
-        _IsOpen = true;
+        IsOpen = true;
         Time.timeScale = 0; // Pause the game.
 
         while (true)
@@ -159,7 +158,7 @@ public class RadialMenu : MonoBehaviour
         // Disable the UI controls InputActionMap.
         _InputManager.GetPlayerInputComponent().actions.FindActionMap(InputManager.ACTION_MAP_UI).Disable();
         _RadialMenuPanel.SetActive(false);
-        _IsOpen = false;
+        IsOpen = false;
         Time.timeScale = 1; // Unpause the game.
     }
 
@@ -342,6 +341,7 @@ public class RadialMenu : MonoBehaviour
 
 
 
+    public bool IsOpen { get; private set; }
     public bool MenuConfirmed { get; private set; }
     public bool MenuCancelled { get; private set; }
 

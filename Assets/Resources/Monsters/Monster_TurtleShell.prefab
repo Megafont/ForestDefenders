@@ -1249,6 +1249,7 @@ MonoBehaviour:
   TargetCheckFrequency: 10
   TargetCheckRadius: 5
   ScoreValue: 10
+  MonsterTier: 2
 --- !u!114 &8475241324801309115
 MonoBehaviour:
   m_ObjectHideFlags: 0

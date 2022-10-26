@@ -73,7 +73,8 @@ public class InputManager_Player : InputSubManager
 
     public void OnEndBuildPhase(InputAction.CallbackContext context)
     {
-        EndBuildPhaseInput(context.control.IsPressed());
+        // We use performed here because this control has a hold interaction attached to it in the input action bindings asset.
+        EndBuildPhaseInput(context.performed);
     }
 
 

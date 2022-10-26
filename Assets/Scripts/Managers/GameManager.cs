@@ -157,7 +157,9 @@ public partial class GameManager : MonoBehaviour
     public bool CheckIfGameIsOver()
     {
         // NOTE: We don't check if the player is dead here, as we receive an event when that happens via the OnPlayerDeath() method below, which instantly switches us to the GameOver game state;
-        if (VillageManager.GetTotalBuildingCount() == 0)
+        if (VillageManager.GetTotalBuildingCount() == 0 &&
+            VillageManager.Population == 0 &&
+            Player == null)
         {
             ChangeGameState(GameStates.GameOver);
             return true;
