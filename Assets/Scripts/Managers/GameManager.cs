@@ -194,6 +194,7 @@ public partial class GameManager : MonoBehaviour
         switch (GameState)
         {
             case GameStates.PlayerBuildPhase:
+                ResourceManager.RestoreResourceNodes();
                 UI_TimeToNextWaveText.enabled = true;
                 break;
 

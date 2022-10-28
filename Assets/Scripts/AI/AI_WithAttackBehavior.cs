@@ -84,7 +84,7 @@ public abstract class AI_WithAttackBehavior : AI_Base
                 _PrevTarget = null;
                 _NavMeshAgent.destination = _Target.transform.position;
             }
-            else if (_Target == null)
+            else
             {
                 _Target = null;
                 _PrevTarget = null;

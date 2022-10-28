@@ -4188,6 +4188,7 @@ MonoBehaviour:
   sprint: 0
   Attack: 0
   EnterBuildMode: 0
+  DestroyBuilding: 0
   EndBuildPhase: 0
   analogMovement: 0
   cursorLocked: 1
@@ -4526,6 +4527,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: c9112f04-c035-4987-9a21-e7d2380a7fc3
     m_ActionName: Build Mode/Exit Build Mode[/XInputControllerWindows/rightTrigger,/Mouse/rightButton]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1633597784}
+        m_TargetAssemblyTypeName: InputManager_Player, Assembly-CSharp
+        m_MethodName: OnDestroyBuilding
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 15bb89d9-080a-413e-82d8-c1fda7eb2444
+    m_ActionName: Player/Destroy Building[/XInputControllerWindows/buttonWest,/Keyboard/delete]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -5290,7 +5307,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh28676
+  m_Name: pb_Mesh28696
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2

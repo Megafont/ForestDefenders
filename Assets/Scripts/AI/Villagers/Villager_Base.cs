@@ -1,11 +1,7 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
 
-using UnityEditor.EditorTools;
 using UnityEngine;
-using UnityEngine.AI;
 
 using Random = UnityEngine.Random;
 
@@ -20,7 +16,6 @@ public enum VillagerTasks
 }
 
 
-public delegate void VillagerTaskEventHandler(object sender, VillagerTaskEventArgs e);
 
 
 /// <summary>
@@ -61,7 +56,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
         {
             node.Gather();
 
-            if (node.AmountAvailable == 0)
+            if (node.IsDepleted)
             {
                 SetTarget(null);
                 DoTargetCheck();
@@ -92,10 +87,11 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
             // Find a non-empty resource node of the same type as the lowest resource stockpile.
             ResourceTypes lowest = _ResourceManager.GetLowestResourceStockpileType();
             ResourceNode possibleTargetResourceNode = _ResourceManager.FindNearestResourceNode(transform.position, lowest);
-            
-            // If we didn't find a resource node of the same type as the lowest resource stockpile, then find a non-empty one of any type.
-            if (possibleTargetResourceNode == null)
-                possibleTargetResourceNode = _ResourceManager.FindNearestResourceNode(transform.position);
+
+            // If another villager is already mining the nearest node, randomly choose a different one that is not depleted.
+            if (possibleTargetResourceNode == null || possibleTargetResourceNode.VillagersMiningThisNode > 0)
+                possibleTargetResourceNode = _ResourceManager.GetRandomActiveResourceNode();
+
             
             // Did we find a non-empty resource node?
             if (possibleTargetResourceNode)
@@ -115,6 +111,29 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
         UpdateNearbyTargetDetectorState();
     }
 
+    public override bool SetTarget(GameObject target)
+    {
+        if (ValidateTarget(target))
+        {
+            // If the current target is a resource node, then remove this villager from it's list of villagers currently mining it.
+            if (_Target)
+            {
+                ResourceNode oldNode = _Target.GetComponent<ResourceNode>();
+                if (oldNode != null)
+                    oldNode.RemoveVillagerFromMiningList(this);
+            }
+
+            // If the new target is a resource node, then add this villager to it's list of villagers mining it.
+            if (target)
+            {
+                ResourceNode newNode = target.GetComponent<ResourceNode>();
+                if (newNode != null)
+                    newNode.AddVillagerToMiningList(this);
+            }
+        }
+
+        return base.SetTarget(target);
+    }
 
     public override bool ValidateTarget(GameObject target)
     {               

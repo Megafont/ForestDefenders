@@ -39,7 +39,8 @@ public abstract class AI_Base : MonoBehaviour
         _Health = GetComponent<Health>();
         _NavMeshAgent = GetComponent<NavMeshAgent>();
 
-        GetComponent<Health>().OnDeath += OnDeath;
+
+        _Health.OnDeath += OnDeath;
     }
 
 
@@ -136,9 +137,8 @@ public abstract class AI_Base : MonoBehaviour
         
         // The part in parantheses shifts the start position of the ray upward so it is in the center of the AI
         // character's body rather than on the ground.
-        Vector3 upShift = Vector3.up * (_NavMeshAgent.height / 2);
-        Vector3 rayStartPos = transform.position + upShift;
-        Vector3 rayDirection = Vector3.Normalize(_Target.transform.position - rayStartPos + upShift);
+        Vector3 rayStartPos = transform.position + Vector3.up * (_NavMeshAgent.height / 2);
+        Vector3 rayDirection = Vector3.Normalize(_Target.transform.position - rayStartPos + new Vector3(0, 0.25f, 0));
         
 
         // NOTE: This commented code doesn't work right if the origin point of the target object is too hight

@@ -6,8 +6,12 @@ using UnityEngine;
 
 public interface IVillager
 {
-    public GameObject gameObject { get; }
-    public Health HealthComponent { get; }
+    bool SetTarget(GameObject target);
 
-    public string VillagerType { get; }
+    public GameObject gameObject { get; }
+    public Transform transform { get; }
+
+    Health HealthComponent { get; }
+
+    string VillagerType { get; }
 }

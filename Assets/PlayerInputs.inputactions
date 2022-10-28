@@ -67,6 +67,15 @@
                     "processors": "",
                     "interactions": "Hold(duration=1)",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Destroy Building",
+                    "type": "Button",
+                    "id": "15bb89d9-080a-413e-82d8-c1fda7eb2444",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Hold(duration=1)",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -298,6 +307,28 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "End Build Phase",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1a604040-443d-43e0-84a5-61b0da3050b0",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Destroy Building",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0cf3e2ee-c7ec-4d22-92d2-472d4fa0e9e0",
+                    "path": "<Keyboard>/delete",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Destroy Building",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

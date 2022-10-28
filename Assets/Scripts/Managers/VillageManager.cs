@@ -29,6 +29,9 @@ public class VillageManager : MonoBehaviour
     [Tooltip("The delay between spawning queued up villagers (assuming the spawn location is not blocked).")]
     public float VillagerSpawnDelay = 2.0f;
 
+    [Tooltip("The maximum distance a villager can be from a building in distress and still respond to the call for help.")]
+    public float BackupCallMaxDistance = 20f;
+
 
 
     private ResourceManager _ResourceManager;
@@ -252,6 +255,26 @@ public class VillageManager : MonoBehaviour
             count += GetVillagerCountByType(villagerType);
 
         return count;
+    }
+
+    public void RequestBackup(GameObject buildingInDistress)
+    {
+        // Find the monster closest to the building in distress.
+        GameObject nearestMonster = Utils_AI.FindNearestObjectOfType(buildingInDistress, typeof(Monster_Base));
+
+
+        // Find villagers close enough to help.
+        foreach (IVillager villager in _AllVillagers)
+        {
+            // If the villager is close enough to the building in distress and is not already there, then send them there.
+            if (Vector3.Distance(nearestMonster.transform.position, villager.transform.position) <= BackupCallMaxDistance &&
+                Vector3.Distance(buildingInDistress.transform.position, villager.transform.position) > 5)
+            {
+                villager.SetTarget(nearestMonster);
+            }
+
+        } // end foreach
+
     }
 
     private void InitVillagerTypes()

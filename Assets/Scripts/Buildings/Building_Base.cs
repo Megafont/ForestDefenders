@@ -23,13 +23,21 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
 
 
 
+    private VillageManager _VillageManager;
+
     void Awake()
     {
+        _VillageManager = GameManager.Instance.VillageManager;
+
+
         _Collider = GetComponent<MeshCollider>();
         _Health = GetComponent<Health>();
         _NavMeshObstacle = GetComponent<NavMeshObstacle>();
 
-        GetComponent<Health>().OnDeath += OnDeath;
+        
+        _Health.OnDeath += OnDeath;
+        _Health.OnTakeDamage += OnTakeDamage;
+
 
         InitBuilding();
     }
@@ -81,6 +89,11 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
     protected virtual void OnDeath(GameObject sender)
     {
         StartCoroutine(FadeOutAfterDeath());
+    }
+
+    protected virtual void OnTakeDamage(GameObject sender)
+    {
+        _VillageManager.RequestBackup(gameObject);
     }
 
 

@@ -1,8 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 using UnityEngine;
+
+using Random = UnityEngine.Random;
 
 
 public class ResourceManager : MonoBehaviour
@@ -13,9 +16,14 @@ public class ResourceManager : MonoBehaviour
     private Dictionary<ResourceTypes, GameObject> _ResourceTypeParents;
     private Dictionary<ResourceTypes, int> _ResourceStockpilesByType;
     private Dictionary<ResourceTypes, List<ResourceNode>> _ResourceNodesByType;
+
+
     private List<ResourceNode> _AllResourceNodes;
 
+    private List<ResourceNode> _ActiveResourceNodes;
+    private List<ResourceNode> _DepletedResourceNodes;
 
+    
 
     public Dictionary<ResourceTypes, int> Stockpiles
     {
@@ -45,6 +53,22 @@ public class ResourceManager : MonoBehaviour
     }
 
 
+
+    public void RestoreResourceNodes()
+    {
+        if (_AllResourceNodes == null)
+            return;
+
+
+        foreach (ResourceNode node in _AllResourceNodes)
+            node.RestoreNode();
+
+
+        _ActiveResourceNodes.Clear();
+        _ActiveResourceNodes.AddRange(_AllResourceNodes);
+
+        _DepletedResourceNodes.Clear();
+    }
 
     public ResourceTypes GetLowestResourceStockpileType()
     {
@@ -96,18 +120,43 @@ public class ResourceManager : MonoBehaviour
         return closestNode;
     }
 
+    /// <summary>
+    /// Gets a random resource node that is not depleted.
+    /// </summary>
+    public ResourceNode GetRandomActiveResourceNode()
+    {
+        if (_ActiveResourceNodes.Count == 0)
+            return null;
+
+
+        int index = Random.Range(0, _ActiveResourceNodes.Count);
+        return _ActiveResourceNodes[index];        
+    }
+
     public void AddResourceNode(ResourceNode newNode)
     {
         _AllResourceNodes.Add(newNode);
+
+        if (!newNode.IsDepleted)
+            _ActiveResourceNodes.Add(newNode);
+        else
+            _DepletedResourceNodes.Add(newNode);
+
         _ResourceNodesByType[newNode.ResourceType].Add(newNode);
+
+        newNode.OnNodeDepleted += OnResourceNodeDepleted;
     }
 
     public void RemoveResourceNode(ResourceNode node)
     {
-        Debug.Log($"R Remove Before: {_AllResourceNodes.Count} | {_ResourceNodesByType[node.ResourceType].Count}");
         _AllResourceNodes.Remove(node);
+
+        _ActiveResourceNodes.Remove(node);
+        _DepletedResourceNodes.Remove(node);
+
         _ResourceNodesByType[node.ResourceType].Remove(node);
-        Debug.Log($"R Remove After: {_AllResourceNodes.Count} | {_ResourceNodesByType[node.ResourceType].Count}");
+
+        node.OnNodeDepleted -= OnResourceNodeDepleted;
     }
 
     private void InitResourceTypeParentObjects()
@@ -146,7 +195,10 @@ public class ResourceManager : MonoBehaviour
     private void InitResourceNodeLists()
     {
         _ResourceNodesByType = new Dictionary<ResourceTypes, List<ResourceNode>>();
+        
         _AllResourceNodes = new List<ResourceNode>();
+        _ActiveResourceNodes = new List<ResourceNode>();
+        _DepletedResourceNodes = new List<ResourceNode>();
 
 
         foreach (int i in Enum.GetValues(typeof(ResourceTypes)))
@@ -166,9 +218,25 @@ public class ResourceManager : MonoBehaviour
             _ResourceNodesByType[node.ResourceType].Add(node);
             _AllResourceNodes.Add(node);
 
+            if (!node.IsDepleted)
+                _ActiveResourceNodes.Add(node);
+            else
+                _DepletedResourceNodes.Add(node);
+
             node.transform.parent = _ResourceTypeParents[node.ResourceType].transform;
+            node.OnNodeDepleted += OnResourceNodeDepleted;
+
+
         }
+
+
+        //Debug.Log($"Active Resource Nodes: {_ActiveResourceNodes.Count}    Depleted Resource Nodes: {_DepletedResourceNodes.Count}");
     }
 
+    private void OnResourceNodeDepleted(ResourceNode sender)
+    {
+        _ActiveResourceNodes.Remove(sender);
+        _DepletedResourceNodes.Add(sender);
+    }
 
 }

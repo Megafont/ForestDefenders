@@ -29,17 +29,88 @@ public class ResourceNode : MonoBehaviour
     public int GatherAmountVariance = 2;
 
 
-    public IVillager VillagerWorkingThisNode;
-
 
     private int _AmountAvailable;
+
+    private List<IVillager> _VillagersMiningThisNode;
+
+
+
+    public delegate void ResourceNodeEventHandler(ResourceNode sender);
+
+    public event ResourceNodeEventHandler OnNodeDepleted;
+
+
+
+
+    private void Awake()
+    {
+        AmountAvailable = TotalAmountInNode;
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        _ResourceManager = GameManager.Instance.ResourceManager;
+
+        _VillagersMiningThisNode = new List<IVillager>();
+    }
+
+
+
+    public int Gather()
+    {
+        if (IsDepleted)
+            return 0;
+
+
+        int gatherAmount = CalculateGatherAmount();
+        
+        AmountAvailable -= gatherAmount;
+        _ResourceManager.Stockpiles[ResourceType] += gatherAmount;
+
+
+        if (IsDepleted)
+            OnNodeDepleted?.Invoke(this);
+
+
+        return gatherAmount;
+    }
+
+    /// <summary>
+    /// Sets the node's current resource amount back to the maximum.
+    /// </summary>
+    public void RestoreNode()
+    {
+        _AmountAvailable = TotalAmountInNode;
+    }
+
+    public void AddVillagerToMiningList(IVillager villager)
+    {
+        _VillagersMiningThisNode.Add(villager);
+    }
+
+    public void RemoveVillagerFromMiningList(IVillager villager)
+    {
+        _VillagersMiningThisNode.Remove(villager);
+    }
+
+
+
+    protected int CalculateGatherAmount()
+    {
+        int gatherAmount = AmountGainedPerGather + Random.Range(-GatherAmountVariance, GatherAmountVariance);
+
+        return gatherAmount <= AmountAvailable ? gatherAmount: AmountAvailable;
+    }
+
 
 
     /// <summary>
     /// The amount of resource still available in this node.
     /// </summary>
-    public int AmountAvailable 
-    { 
+    public int AmountAvailable
+    {
         get
         {
             return _AmountAvailable;
@@ -50,34 +121,8 @@ public class ResourceNode : MonoBehaviour
         }
     }
 
+    public bool IsDepleted { get { return _AmountAvailable == 0; } }
 
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        _ResourceManager = GameManager.Instance.ResourceManager;
-
-        AmountAvailable = TotalAmountInNode;
-    }
-
-
-
-    public int Gather()
-    {
-        int gatherAmount = CalculateGatherAmount();
-        
-        AmountAvailable -= gatherAmount;
-        _ResourceManager.Stockpiles[ResourceType] += gatherAmount;
-
-        return gatherAmount;
-    }
-
-
-    protected int CalculateGatherAmount()
-    {
-        int gatherAmount = AmountGainedPerGather + Random.Range(-GatherAmountVariance, GatherAmountVariance);
-
-        return gatherAmount <= AmountAvailable ? gatherAmount: AmountAvailable;
-    }
+    public int VillagersMiningThisNode { get { return _VillagersMiningThisNode.Count; } }
 
 }

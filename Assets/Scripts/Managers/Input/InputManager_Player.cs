@@ -16,6 +16,7 @@ public class InputManager_Player : InputSubManager
 
     public bool Attack;
     public bool EnterBuildMode;
+    public bool DestroyBuilding;
     public bool EndBuildPhase;
 
 
@@ -59,16 +60,21 @@ public class InputManager_Player : InputSubManager
     }
 
 
+
     public void OnAttack(InputAction.CallbackContext context)
     {
         AttackInput(context.control.IsPressed());
     }
 
-
-
     public void OnBuildMode(InputAction.CallbackContext context)
     {
         EnterBuildModeInput(context.control.IsPressed());
+    }
+
+    public void OnDestroyBuilding(InputAction.CallbackContext context)
+    {
+        // We use performed here because this control has a hold interaction attached to it in the input action bindings asset.
+        DestroyBuildingInput(context.performed);
     }
 
     public void OnEndBuildPhase(InputAction.CallbackContext context)
@@ -109,6 +115,11 @@ public class InputManager_Player : InputSubManager
     private void EnterBuildModeInput(bool newEnterBuildModeState)
     {
         EnterBuildMode = newEnterBuildModeState;
+    }
+
+    private void DestroyBuildingInput(bool newDestroyBuildingInput)
+    {
+        DestroyBuilding = newDestroyBuildingInput;
     }
 
     private void EndBuildPhaseInput(bool newEndBuildModeState)

@@ -201,7 +201,20 @@ public class PlayerController : MonoBehaviour
             Move();
 
             DoAttackChecks();
-        }
+
+
+            if (_InputManager.Player.DestroyBuilding)
+            {
+                if (Physics.Raycast(transform.position + Vector3.up * 0.1f,
+                                transform.forward,
+                                out RaycastHit hit,
+                                1.0f,
+                                LayerMask.GetMask("Buildings")))
+                {
+                    DoDestroyAction(hit.collider.gameObject);
+                }
+            }
+}
 
     }
 
@@ -432,15 +445,13 @@ public class PlayerController : MonoBehaviour
 
         RaycastHit[] raycastHits = Physics.SphereCastAll(transform.position + transform.forward * 0.75f, 1.0f, transform.forward, 0.1f);
         foreach (RaycastHit hit in raycastHits)
-        {
+        { 
             Health health = hit.collider.GetComponent<Health>();
+
+
             if (health)
             {
-                if (hit.collider.tag == "Building")
-                {
-                    DoDestroyAction(hit.collider.gameObject);
-                }
-                else if (hit.collider.tag == "Monster")
+                if (hit.collider.tag == "Monster" || hit.collider.tag == "Villager")
                 {
                     health.TakeDamage(AttackPower);
                 }
@@ -448,7 +459,7 @@ public class PlayerController : MonoBehaviour
             
 
             ResourceNode node = hit.collider.GetComponent<ResourceNode>();
-            if (node != null)
+            if (node != null && !node.IsDepleted)
                 node.Gather();
 
         } // end foreach hit
