@@ -28,6 +28,8 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
     protected override void InitAI()
     {
+        _Health.OnTakeDamage += OnTakeDamage;
+
         DoTargetCheck();
     }
 
@@ -72,22 +74,31 @@ public abstract class AI_WithAttackBehavior : AI_Base
             _Target = target;
 
             if (_Target)
+            {
                 _NavMeshAgent.destination = _Target.transform.position;
+                _IsAttacking = false;
+            }
         }
         else                
         {
             result = false;
 
-            if (_Target == null && _PrevTarget != null)
+            if (_Target)
+            {
+                // Do nothing so we keep the current target.
+            }
+            else if (_Target == null && _PrevTarget != null)
             {
                 _Target = _PrevTarget;
                 _PrevTarget = null;
                 _NavMeshAgent.destination = _Target.transform.position;
+                _IsAttacking = false;
             }
             else
             {
                 _Target = null;
                 _PrevTarget = null;
+                _IsAttacking = false;
                 StopMoving();
             }
 
@@ -129,10 +140,27 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
         _LastAttackTime = Time.time;
 
-        if (_Target.GetComponent<Health>().CurrentHealth > 0)
+        Health health = _Target != null ? _Target.GetComponent<Health>() : null;
+        if (_Target && health == null)
+            Debug.LogWarning($"Target \"{_Target.name}\" has no Health component!");
+
+        if (health != null && health.CurrentHealth > 0)
         {
-            _Target.GetComponent<Health>().TakeDamage(AttackPower);
+            health.TakeDamage(AttackPower, gameObject);
             AnimateAttack();
+        }
+
+    }
+
+    protected void OnTakeDamage(GameObject sender, GameObject attacker)
+    {
+        if (sender == null)
+            return;
+
+        if (attacker.CompareTag("Monster") || attacker.CompareTag("Player") || attacker.CompareTag("Villager"))
+        {
+            if (attacker)
+                SetTarget(attacker);
         }
     }
 
@@ -147,5 +175,7 @@ public abstract class AI_WithAttackBehavior : AI_Base
     }
 
 
+
+    public bool IsAttacking { get { return _IsAttacking; } }
 
 }

@@ -16,5 +16,9 @@ public interface IMonster
     public Health HealthComponent { get; }
 
 
+    bool IsAttacking { get; }
+
     int GetScoreValue();
+
+
 }

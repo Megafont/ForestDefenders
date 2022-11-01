@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
+
 
 public class MonsterTargetDetector : MonoBehaviour
 {
     public float DetectionRadius = 5.0f;
 
-    private GameObject _Parent;
+    private IMonster _Parent;
     private SphereCollider _Collider;
 
 
@@ -17,7 +19,7 @@ public class MonsterTargetDetector : MonoBehaviour
         _Collider = GetComponent<SphereCollider>();
         _Collider.radius = DetectionRadius;
 
-        _Parent = transform.parent.gameObject;
+        _Parent = transform.parent.gameObject.GetComponent<Monster_Base>();
     }
 
 
@@ -32,14 +34,13 @@ public class MonsterTargetDetector : MonoBehaviour
         //Debug.Log("Trigger: " + other.name);
 
 
-        if (other.tag == "Monster")
+        if (other.CompareTag("Monster"))
             return;
 
 
-        if (other.tag == "Player" || other.tag == "Villager")
+        if (other.CompareTag("Player") || other.CompareTag("Villager"))
         {
-
-            _Parent.GetComponent<AI_WithAttackBehavior>().SetTarget(other.gameObject);
+            _Parent.SetTarget(other.gameObject);
         }
     }
 

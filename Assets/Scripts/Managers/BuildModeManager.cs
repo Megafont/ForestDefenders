@@ -290,8 +290,8 @@ public class BuildModeManager : MonoBehaviour
             }
             else
             {
-                Mesh mesh = buildingDef.Prefab.GetComponent<MeshFilter>().sharedMesh;
-                _BuildingConstructionGhost.ChangeMesh(mesh, buildingDef);
+                //Mesh mesh = buildingDef.Prefab.GetComponent<IBuilding>().GetMesh();
+                _BuildingConstructionGhost.ChangeMesh(buildingDef.ConstructionGhostMesh, buildingDef);
             }
         } // end if
 

@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
+
 
 public class VillagerTargetDetector : MonoBehaviour
 {
@@ -28,15 +30,15 @@ public class VillagerTargetDetector : MonoBehaviour
     }
 
     void OnTriggerStay(Collider other)
-    {        
-         // Debug.Log("Trigger: " + other.name);
+    {   
+        //Debug.Log("Trigger: " + other.name);
 
 
-        if (other.tag == "Villager")
+        if (other.CompareTag("Villager"))
             return;
 
 
-        if (other.tag == "Monster")
+        if (other.CompareTag("Monster"))
         {
             bool result = _Parent.SetTarget(other.gameObject);
 

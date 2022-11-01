@@ -94,6 +94,15 @@ public abstract class AI_Base : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// This simply resets the destination field of the NavMeshAgent component. It is called in cases where the character's NavMeshAgent is disabled
+    /// so it can be manually controlled temporarily. Knockback is one example.
+    /// </summary>
+    public virtual void ResetTarget()
+    {
+        _NavMeshAgent.destination = _Target.transform.position;
+    }
+
     public virtual bool ValidateTarget(GameObject target)
     {
         if (_NavMeshAgent == null || _Target == target)
@@ -155,7 +164,10 @@ public abstract class AI_Base : MonoBehaviour
         {
             //Debug.Log("Ray hit " + hitInfo.collider.name);
 
-            if (hitInfo.collider.gameObject == _Target)
+            GameObject obj = hitInfo.collider.gameObject;
+
+            if (obj == _Target || 
+                (obj.CompareTag("Building") && obj.transform.IsChildOf(_Target.transform))) // Some buildings don't have their main mesh on the top-level GameObject, so we need this secondary condition.
             {
                 distance = hitInfo.distance;
             }

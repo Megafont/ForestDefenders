@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 
-public class Monster_TurtleShell : Monster_Base
+public class Monster_Plant : Monster_Base
 {
     protected override void InitAI()
     {

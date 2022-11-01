@@ -12,6 +12,9 @@ public class ResourceManager : MonoBehaviour
 {
     public GameObject ResourcesParent;
 
+    public uint ResourceStockpilesStartAmount = 0;
+
+
 
     private Dictionary<ResourceTypes, GameObject> _ResourceTypeParents;
     private Dictionary<ResourceTypes, int> _ResourceStockpilesByType;
@@ -188,7 +191,7 @@ public class ResourceManager : MonoBehaviour
 
 
         foreach (int i in Enum.GetValues(typeof(ResourceTypes)))
-            _ResourceStockpilesByType.Add((ResourceTypes) i, 0);
+            _ResourceStockpilesByType.Add((ResourceTypes) i, (int) ResourceStockpilesStartAmount);
 
     }
 

@@ -59,6 +59,11 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
         return BuildModeDefinitions.GetBuildingDefinition(BuildingCategory, BuildingName);
     }
 
+    public virtual Mesh GetMesh()
+    {
+        return GetComponent<MeshFilter>().sharedMesh;
+    }
+
 
 
     protected void ConfigureBasicBuildingSetup(string buildingCategory, string buildingName)
@@ -68,7 +73,7 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
 
         BuildingDefinition def = BuildModeDefinitions.GetBuildingDefinition(BuildingCategory, BuildingName);
         _Health.MaxHealth = def.MaxHealth;
-        _Health.Heal(def.MaxHealth);
+        _Health.Heal(def.MaxHealth, gameObject);
     }
 
     protected virtual void InitBuilding()
@@ -91,7 +96,7 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
         StartCoroutine(FadeOutAfterDeath());
     }
 
-    protected virtual void OnTakeDamage(GameObject sender)
+    protected virtual void OnTakeDamage(GameObject sender, GameObject attacker)
     {
         _VillageManager.RequestBackup(gameObject);
     }

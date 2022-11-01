@@ -1957,6 +1957,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ResourcesParent: {fileID: 97276842}
+  ResourceStockpilesStartAmount: 250
 --- !u!1 &224973805
 GameObject:
   m_ObjectHideFlags: 0
@@ -2994,6 +2995,7 @@ MonoBehaviour:
   StartingPopulationCap: 3
   VillagerFoodCost: 50
   VillagerSpawnDelay: 2
+  BackupCallMaxDistance: 20
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -3939,7 +3941,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1467471763
 MonoBehaviour:
@@ -4013,6 +4015,7 @@ MonoBehaviour:
   MonsterPrefabs:
   - {fileID: 4154952433616588862, guid: 5003cf80a7fda6d46ae321ce3e77a715, type: 3}
   - {fileID: 6839221177063257845, guid: 4ac77db1ab1c01846bfa9b7525821040, type: 3}
+  - {fileID: 4090874820019227630, guid: 065d8651ff958cf49b8c8b4bf419caf1, type: 3}
   ComboStreakResetTime: 5
   BaseWaveSize: 3
   SpawnPoints:
@@ -5244,6 +5247,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Small House
       objectReference: {fileID: 0}
+    - target: {fileID: 4640929972464725319, guid: 2304fd367b1a1e24aa1efa517faa84d4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5416763362640492541, guid: 2304fd367b1a1e24aa1efa517faa84d4,
         type: 3}
       propertyPath: m_RootOrder
@@ -5307,7 +5315,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh28696
+  m_Name: pb_Mesh28708
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -5663,6 +5671,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Barricade
       objectReference: {fileID: 0}
+    - target: {fileID: 4966292762666781565, guid: ea8df4e4c6fc3fb47b8df27bc4cb216e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5737586303695360455, guid: ea8df4e4c6fc3fb47b8df27bc4cb216e,
         type: 3}
       propertyPath: m_RootOrder
@@ -5789,75 +5802,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 576a32a0c136f294e9775232805eefd8, type: 3}
---- !u!1001 &5426055377700246481
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2643015602872124629, guid: 69c7f60e8d9fc7540aa6779359cf9393,
-        type: 3}
-      propertyPath: m_Name
-      value: Spike Tower
-      objectReference: {fileID: 0}
-    - target: {fileID: 3451499063855439471, guid: 69c7f60e8d9fc7540aa6779359cf9393,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3451499063855439471, guid: 69c7f60e8d9fc7540aa6779359cf9393,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3451499063855439471, guid: 69c7f60e8d9fc7540aa6779359cf9393,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3451499063855439471, guid: 69c7f60e8d9fc7540aa6779359cf9393,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -10
-      objectReference: {fileID: 0}
-    - target: {fileID: 3451499063855439471, guid: 69c7f60e8d9fc7540aa6779359cf9393,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3451499063855439471, guid: 69c7f60e8d9fc7540aa6779359cf9393,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3451499063855439471, guid: 69c7f60e8d9fc7540aa6779359cf9393,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3451499063855439471, guid: 69c7f60e8d9fc7540aa6779359cf9393,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3451499063855439471, guid: 69c7f60e8d9fc7540aa6779359cf9393,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3451499063855439471, guid: 69c7f60e8d9fc7540aa6779359cf9393,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3451499063855439471, guid: 69c7f60e8d9fc7540aa6779359cf9393,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 69c7f60e8d9fc7540aa6779359cf9393, type: 3}
 --- !u!4 &6645695127680863202 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4307675504937250577, guid: 9d79d92c21b8d3347897f6061c7007ba,
@@ -5880,6 +5824,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Small Garden
+      objectReference: {fileID: 0}
+    - target: {fileID: 3498206886117766571, guid: 9d79d92c21b8d3347897f6061c7007ba,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4307675504937250577, guid: 9d79d92c21b8d3347897f6061c7007ba,
         type: 3}

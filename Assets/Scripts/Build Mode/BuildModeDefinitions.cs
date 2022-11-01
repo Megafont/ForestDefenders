@@ -24,6 +24,7 @@ public class BuildingDefinition
                          // do (see the comments for the _BoxCollider and _CapsuleCollider member variables in the BuildingConstructionGhost.cs file).
 
     public GameObject Prefab;
+    public Mesh ConstructionGhostMesh;
 }
 
 public struct MaterialCost
@@ -64,6 +65,7 @@ public static class BuildModeDefinitions
 
         InitBuildingCategories();
         InitBuildingDefinitions();
+        LoadBuildingPrefabs();
     }
 
     private static void InitBuildingCategories()
@@ -86,13 +88,18 @@ public static class BuildModeDefinitions
         string category = "Defense";
 
         CreateBuildingDefinition(category, "Barricade", 20, 1, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[] 
-            { CreateMaterialCost(ResourceTypes.Wood, 20) });
+            { CreateMaterialCost(ResourceTypes.Wood, 25) });
         CreateBuildingDefinition(category, "Wood Wall", 50, 2, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 50) });
         CreateBuildingDefinition(category, "Stone Wall", 100, 3, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[]
-            { CreateMaterialCost(ResourceTypes.Wood, 50),
-              CreateMaterialCost(ResourceTypes.Stone, 50), });
+            { CreateMaterialCost(ResourceTypes.Wood, 100),
+              CreateMaterialCost(ResourceTypes.Stone, 100), });
 
+        
+        CreateBuildingDefinition(category, "Spike Tower", 200, 2, _MaterialRecoveryRate, 0, true, 4f, new MaterialCost[]
+            { CreateMaterialCost(ResourceTypes.Wood, 250),
+              CreateMaterialCost(ResourceTypes.Stone, 250) });
+        
     }
 
     private static void InitFarmingBuildings()
@@ -128,6 +135,7 @@ public static class BuildModeDefinitions
             throw new ArgumentException("The passed in construction costs list is empty!");
 
 
+       
         BuildingDefinition def = new BuildingDefinition()
         {
             BuildingName = buildingName,
@@ -143,7 +151,7 @@ public static class BuildModeDefinitions
             IsRound = isRound,
             Radius = radius,
 
-            Prefab = LoadBuildingPrefab(category, buildingName),
+            // The Prefab and ConstructionGhostMesh properties are left out here on purpose, as they are set by the LoadBuildingPrefabs() function.
         };
 
 
@@ -158,6 +166,41 @@ public static class BuildModeDefinitions
 
         return def;
     }
+
+    private static void LoadBuildingPrefabs()
+    {
+        foreach (KeyValuePair<string, BuildingDefinition> pair in _BuildingDefinitions)
+        {
+            
+            GameObject prefab = LoadBuildingPrefab(pair.Value.Category, pair.Value.BuildingName);
+
+
+            // Create a temperary instance of the prefab.
+            GameObject instance = GameObject.Instantiate(prefab, new Vector3(0, 0, 0), Quaternion.identity);
+
+            // Get a list of all MeshFilter component's in the prefab.
+            List<MeshFilter> meshFilters = new List<MeshFilter>(instance.GetComponentsInChildren<MeshFilter>());
+            if (meshFilters == null)
+                meshFilters = new List<MeshFilter>();
+
+            MeshFilter parentMeshFilter = instance.GetComponent<MeshFilter>();
+            if (parentMeshFilter)
+                meshFilters.Add(parentMeshFilter);
+               
+            // Use it to generate a combined mesh including all parts of the building.
+            Mesh combinedMesh = Utils_Meshes.CombineMeshes(meshFilters.ToArray(),
+                                                           Resources.Load<Material>("Structures/Prefabs/Build Mode Ghost Material"));
+            // Destroy the temporary instance.
+            GameObject.Destroy(instance);
+
+
+            // Store the prefab and construction ghost in the building definition.
+            pair.Value.Prefab = prefab;
+            pair.Value.ConstructionGhostMesh = combinedMesh;
+        }
+
+    }
+
 
     private static MaterialCost CreateMaterialCost(ResourceTypes resource, int amount)
     {

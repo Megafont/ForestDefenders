@@ -26,11 +26,13 @@ public class Health : MonoBehaviour
     public float CurrentHealth { get; private set; }
 
 
-    public delegate void HealthEventHandler(GameObject sender);
-    
-    public event HealthEventHandler OnDeath;
-    public event HealthEventHandler OnHeal;
-    public event HealthEventHandler OnTakeDamage;
+    public delegate void Health_OnDeathEventHandler(GameObject sender);
+    public delegate void Health_OnDamagedEventHandler(GameObject sender, GameObject attacker);
+    public delegate void Health_OnHealedEventHandler(GameObject sender, GameObject healer);
+
+    public event Health_OnDeathEventHandler OnDeath;
+    public event Health_OnDamagedEventHandler OnHeal;
+    public event Health_OnHealedEventHandler OnTakeDamage;
 
 
 
@@ -57,7 +59,7 @@ public class Health : MonoBehaviour
 
     }
 
-    public void TakeDamage(int amount)
+    public void TakeDamage(int amount, GameObject attacker)
     {
         if (amount <= 0)
             throw new Exception("The damage amount must be positive!");
@@ -78,7 +80,7 @@ public class Health : MonoBehaviour
         CurrentHealth -= amount;
 
 
-        OnTakeDamage?.Invoke(gameObject);
+        OnTakeDamage?.Invoke(gameObject, attacker);
 
         if (CurrentHealth <= 0)
         {
@@ -89,7 +91,7 @@ public class Health : MonoBehaviour
 
     }
 
-    public void Heal(int amount)
+    public void Heal(int amount, GameObject healer)
     {
         if (amount <= 0)
             throw new Exception("The damage amount must be positive!");
@@ -100,7 +102,7 @@ public class Health : MonoBehaviour
         if (CurrentHealth >= MaxHealth)
             CurrentHealth = MaxHealth;
 
-        OnHeal?.Invoke(gameObject);
+        OnHeal?.Invoke(gameObject, healer);
     }
 
     private IEnumerator DoDamageFlash()

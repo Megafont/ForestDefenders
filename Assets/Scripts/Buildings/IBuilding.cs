@@ -7,6 +7,7 @@ using UnityEngine;
 public interface IBuilding
 {
     BuildingDefinition GetBuildingDefinition();
+    Mesh GetMesh();
 
     string BuildingCategory { get; }
     string BuildingName { get; }

@@ -141,8 +141,8 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
         {
             return false;
         }
-        else if (target != null && target.tag == "Monster" &&
-                 _Target != null && _Target.tag == "Monster")
+        else if (target != null && target.CompareTag("Monster") &&
+                 _Target != null && _Target.CompareTag("Monster"))
         {
             return false;
         }
@@ -158,7 +158,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
 
         // Check if the villager is doing a work task.
-        if (_Target.tag != "Monster")
+        if (_Target && !_Target.CompareTag("Monster"))
         {
             _LastAttackTime = Time.time;
 
@@ -188,10 +188,8 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
         bool state = true;
         if (_Target == null)
             state = true;
-        else if (_Target && _Target.tag == "Monster") // Don't target a monster if already targeting one.
+        else if (_Target && _Target.CompareTag("Monster")) // Don't target a monster if already targeting one.
             state = false;
-        else
-            state = true;
 
 
         _NearbyTargetDetector.Enable(state);

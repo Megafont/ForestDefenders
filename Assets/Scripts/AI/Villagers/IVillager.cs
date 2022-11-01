@@ -13,5 +13,8 @@ public interface IVillager
 
     Health HealthComponent { get; }
 
+    bool IsAttacking { get; }
+
     string VillagerType { get; }
+
 }

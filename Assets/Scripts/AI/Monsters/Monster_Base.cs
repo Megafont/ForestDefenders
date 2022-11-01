@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+using Random = UnityEngine.Random;
 
 
 /// <summary>
@@ -44,7 +45,7 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         if (_Target == null)
         {
             // This monster is not chasing a target. So try to find a building to target.
-            GameObject newTarget = Utils_AI.FindNearestBuildingAtOrBelowTier(gameObject, MonsterTier); //Utils_AI.FindNearestObjectOfType(gameObject, typeof(Building_Base));
+            GameObject newTarget = Utils_AI.FindNearestBuildingAtOrBelowTier(gameObject, MonsterTier);
 
 
             // If no building was found, then try to find a villager.           
@@ -79,20 +80,24 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         {
             return false;
         }
-        else if (target != null && target.tag == "Villager" && // If we are targeting a villager and the new target is a villager, then return false so we don't switch the target.
-                 _Target != null && _Target.tag == "Villager") 
+        else if (target != null && target.CompareTag("Villager") && // If we are targeting a villager and the new target is another villager, then return false so we don't switch the target.
+                 _Target != null && _Target.CompareTag("Villager")) 
         {
             return false;
         }
-        /*else if (target != null && target == _Player && // If we are targeting the player and the new target already is the player, then return false so we don't try to switch the target.
-                 _Target != null && _Target == _Player)
-        {
-            return false;
-        }*/
         else
         {
             return true;
         }
+    }
+
+    protected override void AnimateAttack()
+    {
+        int n = Random.Range(1, 3);
+
+        string trigger = $"Attack {n}";
+        _Animator.ResetTrigger(trigger);
+        _Animator.SetTrigger(trigger);
     }
 
     public int GetScoreValue()
@@ -105,10 +110,8 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         bool state = true;
         if (_Target == null)
             state = true;
-        else if (_Target && _Target.tag == "Villager")
+        else if (_Target.CompareTag("Villager"))
             state = false;
-        else
-            state = true;
 
 
         _NearbyTargetDetector.Enable(state);

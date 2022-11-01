@@ -81,7 +81,6 @@ public static class Utils
         return position;
     }
 
-
     public static void DestroyAllChildGameObjects(GameObject parent)
     {
         // I couldn't get it to delete all child game objects myself, as there were always

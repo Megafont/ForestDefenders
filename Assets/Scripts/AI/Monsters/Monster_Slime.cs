@@ -17,14 +17,4 @@ public class Monster_Slime : Monster_Base
         base.UpdateAI();
     }
 
-
-    protected override void AnimateAttack()
-    {
-        int n = Random.Range(1, 3);
-
-        string trigger = $"Attack {n}";
-        _Animator.ResetTrigger(trigger);
-        _Animator.SetTrigger(trigger);
-    }
-
 }
