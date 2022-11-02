@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -16,7 +16,7 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
     [Tooltip("The number of points earned when this monster is killed.")]
     public int ScoreValue = 10;
     [Tooltip("The tier this monster is in. Determines which tiers of buildings it can target and destroy.")]
-    public int MonsterTier = 0;
+    public int Tier = 0;
 
 
     private MonsterTargetDetector _NearbyTargetDetector;
@@ -45,7 +45,7 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         if (_Target == null)
         {
             // This monster is not chasing a target. So try to find a building to target.
-            GameObject newTarget = Utils_AI.FindNearestBuildingAtOrBelowTier(gameObject, MonsterTier);
+            GameObject newTarget = Utils_AI.FindNearestBuildingAtOrBelowTier(gameObject, Tier);
 
 
             // If no building was found, then try to find a villager.           
@@ -56,9 +56,10 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
             // If no villager was found, then target the player.
             if (newTarget == null)
                 newTarget = _Player;
-            
-            
-            SetTarget(newTarget);
+
+
+            if (newTarget)
+                SetTarget(newTarget);
         }
         
         // If this monster is chasing a target and the target gets far enough away, revert to the previous target.
@@ -100,6 +101,15 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         _Animator.SetTrigger(trigger);
     }
 
+    public int GetDangerValue()
+    {
+        // We don't use the HealthComponent property here, because we need this method to
+        // also work when called on a prefab. On a prefab, that property returns null
+        // since it is not an instance. That means Start() was never called on it so
+        // the property is uninitialized.
+        return AttackPower + GetComponent<Health>().MaxHealth;
+    }
+
     public int GetScoreValue()
     {
         return ScoreValue;
@@ -114,7 +124,8 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
             state = false;
 
 
-        _NearbyTargetDetector.Enable(state);
+        if (_NearbyTargetDetector)
+            _NearbyTargetDetector.Enable(state);
     }
 
     WaitForSeconds _FadeOutDelay = new WaitForSeconds(2.0f);
@@ -124,5 +135,11 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
 
         Destroy(gameObject);
     }
+
+
+
+    // These are a couple extra methods needed to satisfy the IMonster interface since you can't have fields in an interface.
+    public int GetAttackPower() { return AttackPower; }
+    public int GetTier() { return Tier; }
 
 }

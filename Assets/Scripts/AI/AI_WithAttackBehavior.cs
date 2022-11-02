@@ -73,11 +73,6 @@ public abstract class AI_WithAttackBehavior : AI_Base
             _PrevTarget = _Target;
             _Target = target;
 
-            if (_Target)
-            {
-                _NavMeshAgent.destination = _Target.transform.position;
-                _IsAttacking = false;
-            }
         }
         else                
         {
@@ -102,6 +97,17 @@ public abstract class AI_WithAttackBehavior : AI_Base
                 StopMoving();
             }
 
+        }
+
+
+        if (_Target)
+        {
+            _NavMeshAgent.destination = _Target.transform.position;
+            _IsAttacking = false;
+        }
+        else
+        {
+            StopMoving();
         }
 
 

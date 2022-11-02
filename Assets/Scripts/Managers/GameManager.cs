@@ -237,8 +237,8 @@ public partial class GameManager : MonoBehaviour
 
         int monstersLeft = MonsterManager.MonstersLeft;
 
-        UI_MonstersLeftText.text = $"Monsters Left: {monstersLeft} of {MonsterManager.WaveSize}";
-        UI_WaveNumberText.text = $"Wave #{MonsterManager.WaveNumber} Incoming!";
+        UI_MonstersLeftText.text = $"Monsters Left: {monstersLeft} of {MonsterManager.CurrentWaveSize}";
+        UI_WaveNumberText.text = $"Wave #{MonsterManager.CurrentWaveNumber} Incoming!";
 
         if (MonsterManager.WaveComplete)
         {
@@ -246,7 +246,7 @@ public partial class GameManager : MonoBehaviour
             UI_WaveNumberText.enabled = false;
 
             // Give player a scoring bonus for clearing the wave.
-            AddToScore(MonsterManager.WaveNumber * 100);
+            AddToScore(MonsterManager.CurrentWaveNumber * 100);
 
             ChangeGameState(GameStates.PlayerBuildPhase);
         }

@@ -6,6 +6,7 @@ using UnityEngine;
 
 public interface IMonster
 {
+    void ClearTargets();
     bool SetTarget(GameObject target);
 
 
@@ -18,7 +19,11 @@ public interface IMonster
 
     bool IsAttacking { get; }
 
+    int GetDangerValue();
     int GetScoreValue();
 
 
+    int GetAttackPower();
+    int GetTier();
+    
 }

@@ -58,7 +58,10 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
             if (node.IsDepleted)
             {
+                // Force set _Target to null first before we call SetTarget(). This way we discard the depleted node target, rather that having it shifted into the _PrevTarget field.
+                _Target = null;
                 SetTarget(null);
+
                 DoTargetCheck();
             }
 
@@ -94,7 +97,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
             
             // Did we find a non-empty resource node?
-            if (possibleTargetResourceNode)
+            if (possibleTargetResourceNode && !possibleTargetResourceNode.IsDepleted)
                 SetTarget(possibleTargetResourceNode.gameObject);
 
         }
@@ -192,7 +195,8 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
             state = false;
 
 
-        _NearbyTargetDetector.Enable(state);
+        if (_NearbyTargetDetector)
+            _NearbyTargetDetector.Enable(state);
     }
 
     WaitForSeconds _FadeOutDelay = new WaitForSeconds(2.0f);

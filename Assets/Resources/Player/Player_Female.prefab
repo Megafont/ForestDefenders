@@ -389,7 +389,7 @@ MonoBehaviour:
   Gravity: -15
   JumpTimeout: 0.3
   FallTimeout: 0.15
-  AttackPower: 10
+  AttackPower: 20
   AttackCooldownTime: 0.5
   Grounded: 1
   GroundedOffset: -0.14

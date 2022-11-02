@@ -295,7 +295,7 @@ public class VillageManager : MonoBehaviour
             if (t.Name != "IVillager" && t.Name != "Villager_Base")
             {
                 // Create a parent object for this villager type.
-                GameObject parent = new GameObject(t.Name);
+                GameObject parent = new GameObject(t.Name.Substring(9)); // Set the category game object to the name of this villager type minus the "Villager_" prefix.
                 parent.transform.parent = VillagersParent.transform;
                 _VillagerTypeParents.Add(t.Name, parent);
 

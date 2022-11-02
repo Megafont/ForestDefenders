@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
 
+using Random = UnityEngine.Random;
 
 
 public enum Directions
@@ -79,6 +81,30 @@ public static class Utils
         position.z = RoundToNearestMultiple(position.z, increment);
 
         return position;
+    }
+
+    /// <summary>
+    /// Shuffles a list of any type of object.
+    /// </summary>
+    /// <typeparam name="T">The type of objects in the list.</typeparam>
+    /// <param name="list">The list to shuffle.</param>
+    public static void ShuffleList<T>(List<T> list)
+    {
+        TimeSpan span = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
+        int secondsSinceMidnight = (int) span.TotalSeconds;
+        
+        // Set the random number generator seed based on time so the list order is always different.
+        Random.InitState(secondsSinceMidnight);
+
+        for (int i = 0; i < list.Count; i++)
+        {
+            int randomIndex = Random.Range(0, i + 1);
+
+            T temp = list[i];
+            list[i] = list[randomIndex];
+            list[randomIndex] = temp;
+        } // en for i
+
     }
 
     public static void DestroyAllChildGameObjects(GameObject parent)

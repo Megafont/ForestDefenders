@@ -11,7 +11,7 @@ public class BuildingDefinition
     public string BuildingName;
     public string Category;
     public int MaxHealth;
-    public int BuildingTier;
+    public int Tier;
 
     public List<MaterialCost> ConstructionCosts = new List<MaterialCost>();
     public float PercentageOfResourcesRecoveredOnDestruction;
@@ -141,7 +141,7 @@ public static class BuildModeDefinitions
             BuildingName = buildingName,
             Category = category,
             MaxHealth = maxHealth,
-            BuildingTier = buildingTier,
+            Tier = buildingTier,
 
             PercentageOfResourcesRecoveredOnDestruction = percentageOfMaterialsRecoveredOnDestroy,
             ConstructionCosts = new List<MaterialCost>(constructionCosts),

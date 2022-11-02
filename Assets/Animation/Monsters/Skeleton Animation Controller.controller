@@ -143,7 +143,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: b7053579097a56743bd975bf164ef63c, type: 3}
+  m_Motion: {fileID: 7400000, guid: 947b29ee5c5ffdc4eb8f5686e243bdcf, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -268,7 +268,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 26b827c15f3d06d4bbcce0545bb0aa09, type: 3}
+  m_Motion: {fileID: 7400000, guid: 5d004f45041072445bc59fb665be24e4, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -280,7 +280,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Monster Plant Animation Controller
+  m_Name: Skeleton Animation Controller
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: Speed
@@ -372,7 +372,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: eaabf67901e309b4e9de5e3c1fd7b6b5, type: 3}
+  m_Motion: {fileID: 7400000, guid: 7e32465a0ad0e4b468ff10729ba8752e, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -611,7 +611,7 @@ BlendTree:
   m_Name: Blend Tree
   m_Childs:
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: 23b56f592fe0e9749b0bd1b64e950b82, type: 3}
+    m_Motion: {fileID: 7400000, guid: 90fc4a8be2c7db64b805edc826381353, type: 3}
     m_Threshold: 0
     m_Position: {x: 0, y: 0}
     m_TimeScale: 1
@@ -619,7 +619,7 @@ BlendTree:
     m_DirectBlendParameter: Speed
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: 9a0418154e44dd345939d58ce3218d62, type: 3}
+    m_Motion: {fileID: 7400000, guid: 3f07d83991adcba4f94d3a8a33f4e036, type: 3}
     m_Threshold: 2
     m_Position: {x: 0, y: 0}
     m_TimeScale: 1
@@ -627,8 +627,8 @@ BlendTree:
     m_DirectBlendParameter: Speed
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: 80e6f99994a1c8f4a953552a5ba9d462, type: 3}
-    m_Threshold: 6.0121217
+    m_Motion: {fileID: 7400000, guid: f369502db9d786a4e9396e8299af6475, type: 3}
+    m_Threshold: 4
     m_Position: {x: 0, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0
@@ -637,7 +637,7 @@ BlendTree:
   m_BlendParameter: Speed
   m_BlendParameterY: Speed
   m_MinThreshold: 0
-  m_MaxThreshold: 6.0121217
+  m_MaxThreshold: 4
   m_UseAutomaticThresholds: 0
   m_NormalizedBlendValues: 0
   m_BlendType: 0

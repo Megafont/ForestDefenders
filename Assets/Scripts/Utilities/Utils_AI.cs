@@ -53,7 +53,7 @@ public static class Utils_AI
         {
             GameObject buildingGameObject = obj.GameObject();
             IBuilding buildingComponent = buildingGameObject.GetComponent<IBuilding>();
-            int buildingTier = buildingComponent.GetBuildingDefinition().BuildingTier;
+            int buildingTier = buildingComponent.GetBuildingDefinition().Tier;
 
             float distance = Vector3.Distance(caller.transform.position, buildingGameObject.transform.position);
 

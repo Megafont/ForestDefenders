@@ -1233,7 +1233,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.6
-  m_Speed: 3.5
+  m_Speed: 3
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -1265,8 +1265,8 @@ MonoBehaviour:
   MaxChaseDistance: 10
   TargetCheckFrequency: 10
   TargetCheckRadius: 5
-  ScoreValue: 10
-  MonsterTier: 1
+  ScoreValue: 25
+  Tier: 1
 --- !u!114 &8475241324801309115
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1279,7 +1279,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3950e6e9fcef36478009ff55fcb081e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHealth: 20
+  MaxHealth: 25
   EnableDamageFlash: 1
   DamageFlashColor: {r: 1, g: 0, b: 0, a: 1}
   DamageFlashTime: 0.1

@@ -158,7 +158,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.75
-  m_Speed: 3.5
+  m_Speed: 2.5
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -191,7 +191,7 @@ MonoBehaviour:
   TargetCheckFrequency: 10
   TargetCheckRadius: 5
   ScoreValue: 10
-  MonsterTier: 1
+  Tier: 1
 --- !u!114 &1359677248819273584
 MonoBehaviour:
   m_ObjectHideFlags: 0

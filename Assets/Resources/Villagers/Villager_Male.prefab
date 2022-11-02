@@ -1247,10 +1247,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 873c58d3acab65240baf7ad8da816705, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AttackPower: 3
-  AttackCooldownTime: 2
   DeathFadeOutTime: 2
   MaxMovementSpeed: 8
+  AttackPower: 5
+  AttackCooldownTime: 2
   AttackRange: 1
   MaxChaseDistance: 10
   TargetCheckFrequency: 10

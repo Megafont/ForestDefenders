@@ -6,6 +6,7 @@ using UnityEngine;
 
 public interface IVillager
 {
+    void ClearTargets();
     bool SetTarget(GameObject target);
 
     public GameObject gameObject { get; }
