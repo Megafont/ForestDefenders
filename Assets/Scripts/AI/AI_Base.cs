@@ -77,7 +77,7 @@ public abstract class AI_Base : MonoBehaviour
             float speed = _NavMeshAgent.velocity.magnitude;
             float motionSpeed = (speed == 0) ? 1 : speed / MaxMovementSpeed; // If speed is 0 (the AI is not moving), then set motionSpeed to 1 so the idle animation will play at normal speed.
 
-            Debug.Log($"AI Name: {gameObject.name}    Speed: {speed}    MotionSpeed: {motionSpeed}    MaxSpeed: {MaxMovementSpeed}");
+            //Debug.Log($"AI Name: {gameObject.name}    Speed: {speed}    MotionSpeed: {motionSpeed}    MaxSpeed: {MaxMovementSpeed}");
 
             _Animator.SetFloat("Speed", speed);
             _Animator.SetFloat("MotionSpeed", motionSpeed); // This controls the animation speed of the blend tree in the animation controller. Divide by max. run speed.

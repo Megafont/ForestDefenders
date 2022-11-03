@@ -4016,6 +4016,8 @@ MonoBehaviour:
   - {fileID: 3988121084957535917, guid: 5003cf80a7fda6d46ae321ce3e77a715, type: 3}
   - {fileID: 1978132322001731305, guid: 4ac77db1ab1c01846bfa9b7525821040, type: 3}
   - {fileID: 570609795744236789, guid: 065d8651ff958cf49b8c8b4bf419caf1, type: 3}
+  - {fileID: 6861705712704142444, guid: a5c51504388285141a86ba951e9e3d74, type: 3}
+  - {fileID: 7379400250753777495, guid: a757558f0eb69e449a4278b60acf15c6, type: 3}
   ComboStreakResetTime: 5
   BaseMonsterSpawnAmount: 3
   SpawnPoints:
