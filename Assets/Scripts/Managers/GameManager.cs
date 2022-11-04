@@ -23,7 +23,9 @@ public partial class GameManager : MonoBehaviour
     public TMP_Text UI_WoodCountText;
     public TMP_Text UI_StoneCountText;
 
-
+    public Color ResourceStockPilesVeryLowColor = Color.red;
+    public Color ResourceStockPilesLowColor = new Color32(255, 128, 0, 255);
+    public Color ResourceStockPilesColor = Color.white;
 
     public static GameManager Instance;
 
@@ -93,9 +95,10 @@ public partial class GameManager : MonoBehaviour
     void Update()
     {
         UI_PopulationCountText.text = $"Population: {VillageManager.Population} / {VillageManager.PopulationCap}";
-        UI_FoodCountText.text = $"Food: {ResourceManager.Stockpiles[ResourceTypes.Food]}";
-        UI_WoodCountText.text = $"Wood: {ResourceManager.Stockpiles[ResourceTypes.Wood]}";
-        UI_StoneCountText.text = $"Stone: {ResourceManager.Stockpiles[ResourceTypes.Stone]}";
+
+        UpdateResourceStockpileCounterUI(UI_FoodCountText, "Food: ", ResourceManager.Stockpiles[ResourceTypes.Food]);
+        UpdateResourceStockpileCounterUI(UI_WoodCountText, "Wood: ", ResourceManager.Stockpiles[ResourceTypes.Wood]);
+        UpdateResourceStockpileCounterUI(UI_StoneCountText, "Stone: ", ResourceManager.Stockpiles[ResourceTypes.Stone]);
 
 
         switch (GameState)
@@ -115,6 +118,40 @@ public partial class GameManager : MonoBehaviour
         } // end switch GameState
     }
 
+    private void UpdateResourceStockpileCounterUI(TMP_Text textUI, string labelText, int currentAmount)
+    {
+        textUI.text = $"{labelText}{currentAmount}";
+
+
+        Color startColor = Color.white;
+        Color endColor = Color.white;
+        float colorBlendAmount = 0f;
+
+        float lowThreshold = ResourceManager.ResourceStockPilesLowThreshold;
+        float normalThreshold = ResourceManager.ResourceStockPilesNormalThreshold;
+
+
+        if (currentAmount >= normalThreshold)
+        {
+            textUI.color = ResourceStockPilesColor;
+            return;
+        }
+        else if (currentAmount < lowThreshold)
+        {
+            startColor = ResourceStockPilesVeryLowColor;
+            endColor = ResourceStockPilesLowColor;
+            colorBlendAmount = currentAmount / lowThreshold;
+        }
+        else if (currentAmount < normalThreshold)
+        {
+            startColor = ResourceStockPilesLowColor;
+            endColor = ResourceStockPilesColor;
+            colorBlendAmount = (currentAmount - lowThreshold) / (normalThreshold - lowThreshold);
+        }
+
+
+        textUI.color = Color.Lerp(startColor, endColor, colorBlendAmount);
+    }
 
     private void GetManagerReferences()
     {

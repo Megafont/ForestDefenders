@@ -1957,7 +1957,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ResourcesParent: {fileID: 97276842}
-  ResourceStockpilesStartAmount: 250
+  ResourceStockpilesStartAmount: 0
+  ResourceStockPilesLowThreshold: 100
+  ResourceStockPilesVeryLowThreshold: 50
 --- !u!1 &224973805
 GameObject:
   m_ObjectHideFlags: 0
@@ -4018,6 +4020,7 @@ MonoBehaviour:
   - {fileID: 570609795744236789, guid: 065d8651ff958cf49b8c8b4bf419caf1, type: 3}
   - {fileID: 6861705712704142444, guid: a5c51504388285141a86ba951e9e3d74, type: 3}
   - {fileID: 7379400250753777495, guid: a757558f0eb69e449a4278b60acf15c6, type: 3}
+  - {fileID: 6328135014314387927, guid: a18b69470a7cd3146bea16bf590b6a18, type: 3}
   ComboStreakResetTime: 5
   BaseMonsterSpawnAmount: 3
   SpawnPoints:
@@ -5317,7 +5320,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh28708
+  m_Name: pb_Mesh28724
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2

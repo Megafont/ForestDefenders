@@ -14,6 +14,9 @@ public class ResourceManager : MonoBehaviour
 
     public uint ResourceStockpilesStartAmount = 0;
 
+    public uint ResourceStockPilesNormalThreshold = 200;
+    public uint ResourceStockPilesLowThreshold = 100;
+
 
 
     private Dictionary<ResourceTypes, GameObject> _ResourceTypeParents;
