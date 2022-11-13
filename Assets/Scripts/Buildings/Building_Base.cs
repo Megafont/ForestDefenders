@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -18,12 +18,14 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
 
     public string BuildingCategory { get; protected set; }
     public string BuildingName { get; protected set; }
-
+    
     public Health HealthComponent { get { return _Health; } }
 
 
+    protected BuildingDefinition _BuildingDefinition;
+    protected VillageManager _VillageManager;
 
-    private VillageManager _VillageManager;
+
 
     void Awake()
     {
@@ -47,7 +49,7 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
 
     }
 
-    void Update()
+    void FixedUpdate()
     {
         UpdateBuilding();
     }
@@ -56,7 +58,7 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
 
     public BuildingDefinition GetBuildingDefinition()
     {
-        return BuildModeDefinitions.GetBuildingDefinition(BuildingCategory, BuildingName);
+        return _BuildingDefinition;
     }
 
     public virtual Mesh GetMesh()
@@ -71,9 +73,9 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
         BuildingCategory = buildingCategory;
         BuildingName = buildingName;
 
-        BuildingDefinition def = BuildModeDefinitions.GetBuildingDefinition(BuildingCategory, BuildingName);
-        _Health.MaxHealth = def.MaxHealth;
-        _Health.Heal(def.MaxHealth, gameObject);
+        _BuildingDefinition = BuildModeDefinitions.GetBuildingDefinition(BuildingCategory, BuildingName);
+        _Health.MaxHealth = _BuildingDefinition.MaxHealth;
+        _Health.Heal(_BuildingDefinition.MaxHealth, gameObject);
     }
 
     protected virtual void InitBuilding()
@@ -96,9 +98,9 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
         StartCoroutine(FadeOutAfterDeath());
     }
 
-    protected virtual void OnTakeDamage(GameObject sender, GameObject attacker)
+    protected virtual void OnTakeDamage(GameObject sender, GameObject attacker, float amount)
     {
-        _VillageManager.RequestBackup(gameObject);
+        _VillageManager.RequestBackup(gameObject, attacker);
     }
 
 

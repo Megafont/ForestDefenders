@@ -12,10 +12,11 @@ public class ResourceManager : MonoBehaviour
 {
     public GameObject ResourcesParent;
 
+    [Header("Stockpiles Settings")]
     public uint ResourceStockpilesStartAmount = 0;
 
-    public uint ResourceStockPilesNormalThreshold = 200;
-    public uint ResourceStockPilesLowThreshold = 100;
+    public uint ResourceStockpilesOkThreshold = 200;
+    public uint ResourceStockpilesLowThreshold = 100;
 
 
 

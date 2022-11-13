@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -32,11 +33,13 @@ public abstract class AI_Base : MonoBehaviour
 
     protected bool _MovingToTargetAndIgnoreAllUntilArrived;
 
+    protected WaitForSeconds _DeathFadeOutDelay;
 
 
     private void Awake()
     {
         _Animator = GetComponent<Animator>();
+        _DeathFadeOutDelay = new WaitForSeconds(DeathFadeOutTime);
         _Health = GetComponent<Health>();
         _NavMeshAgent = GetComponent<NavMeshAgent>();
 
@@ -65,6 +68,11 @@ public abstract class AI_Base : MonoBehaviour
         AnimateAI();
     }
 
+    private void OnEnable()
+    {
+        if (_Target && _NavMeshAgent.enabled)
+            _NavMeshAgent.destination = _Target.transform.position;
+    }
 
 
     protected abstract void InitAI();
@@ -99,7 +107,12 @@ public abstract class AI_Base : MonoBehaviour
     {
         if (ValidateTarget(target))
         {
-            _NavMeshAgent.destination = target.transform.position;
+            _PrevTarget = _Target;
+            _Target = target;
+
+            if (_NavMeshAgent.enabled)
+                _NavMeshAgent.destination = target.transform.position;
+
             return true;
         }
 
@@ -112,7 +125,8 @@ public abstract class AI_Base : MonoBehaviour
     /// </summary>
     public virtual void ResetTarget()
     {
-        _NavMeshAgent.destination = _Target.transform.position;
+        if (_NavMeshAgent)
+            _NavMeshAgent.destination = _Target.transform.position;
     }
 
     public virtual bool ValidateTarget(GameObject target)
@@ -131,6 +145,9 @@ public abstract class AI_Base : MonoBehaviour
     {
         if (_NavMeshAgent == null)
             yield break;
+
+        if (!_NavMeshAgent.enabled)
+            throw new Exception("MoveToTargetAndIgnoreAllElseUntilArriving() cannot be called when the NavMeshAgent component is disabled!");
 
 
         _MovingToTargetAndIgnoreAllUntilArrived = true;
@@ -196,12 +213,15 @@ public abstract class AI_Base : MonoBehaviour
     protected void StopMoving()
     {
         // Set the NavMeshAgent's destination to its current position to make it stop moving.
-        _NavMeshAgent.destination = transform.position;
+        if (_NavMeshAgent.enabled)
+            _NavMeshAgent.destination = transform.position;
     }
 
 
     protected virtual void OnDeath(GameObject sender)
     {
+        StopMoving();
+
         _Animator.ResetTrigger("Die");
 
         // Play death animation.
@@ -213,11 +233,14 @@ public abstract class AI_Base : MonoBehaviour
 
     protected virtual IEnumerator FadeOutAfterDeath()
     {
-        yield return new WaitForSeconds(DeathFadeOutTime);
+        //Debug.Log(name + " is starting death fade out!");
+
+        yield return _DeathFadeOutDelay;
+
+        //Debug.Log(name + " finished death fade out!");
 
         Destroy(gameObject);
 
-        yield break;
     }
 
 }

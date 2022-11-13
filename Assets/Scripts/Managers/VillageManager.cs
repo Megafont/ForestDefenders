@@ -5,6 +5,7 @@ using System.Linq;
 
 using UnityEditor.Animations;
 using UnityEngine;
+using UnityEngine.InputSystem.Utilities;
 using Random = UnityEngine.Random;
 
 
@@ -167,6 +168,73 @@ public class VillageManager : MonoBehaviour
         return count;
     }
     
+    public List<IBuilding> GetBuildingsOfType(string category)
+    {
+        List<IBuilding> buildings = new List<IBuilding>();
+
+
+        // Get the parent game object for the specified building type.
+        _BuildingCategoryParents.TryGetValue($"{category}", out GameObject parent);
+
+        if (parent == null)
+            throw new Exception($"Could not get the buildings list for unkown category \"{category}\"!");
+
+
+        foreach (Transform building in parent.transform)
+            buildings.Add((IBuilding)building);
+
+
+        return buildings;
+    }
+
+    public List<Building_MageTower> GetUnoccupiedMageTowers()
+    {
+        List<Building_MageTower > mageTowers = new List<Building_MageTower>();
+
+
+        // Get the parent game object for the specified building type.
+        _BuildingCategoryParents.TryGetValue("Defense/Mage Tower", out GameObject parent);
+
+        if (parent == null)
+            throw new Exception($"Could not get the buildings list for category \"Mage Towers\"!");
+
+
+        foreach (Transform building in parent.transform)
+        {
+            Building_MageTower mageTower = building.GetComponent<Building_MageTower>();
+
+            if (mageTower && !mageTower.IsOccupied)
+                mageTowers.Add(mageTower);
+        }
+
+
+        return mageTowers;
+    }
+
+    public Building_MageTower FindNearestUnoccupiedMageTower(Vector3 callerPosition)
+    {
+        Building_MageTower closestMageTower = null;
+        float minDistance = float.MaxValue;
+
+
+        foreach (Building_MageTower mageTower in GetUnoccupiedMageTowers())
+        {
+            if (mageTower == null)
+                continue;
+
+            float distance = Vector3.Distance(callerPosition, mageTower.transform.position);
+            if (distance < minDistance)
+            {       
+                closestMageTower = mageTower;
+                minDistance = distance;
+            }
+
+        } // end foreach node
+
+
+        return closestMageTower;
+    }
+
     public GameObject SpawnBuilding(GameObject buildingPrefab, string buildingCategory, string buildingName, Vector3 position, Quaternion rotation)
     {
         GameObject newBuilding = Instantiate(buildingPrefab, position, rotation);
@@ -257,20 +325,25 @@ public class VillageManager : MonoBehaviour
         return count;
     }
 
-    public void RequestBackup(GameObject buildingInDistress)
+    public void RequestBackup(GameObject buildingInDistress, GameObject attacker)
     {
-        // Find the monster closest to the building in distress.
-        GameObject nearestMonster = Utils_AI.FindNearestObjectOfType(buildingInDistress, typeof(Monster_Base));
+        if (attacker == null ||
+            attacker.GetComponent<IMonster>() == null)
+        {
+            return;
+        }
 
 
         // Find villagers close enough to help.
         foreach (IVillager villager in _AllVillagers)
         {
             // If the villager is close enough to the building in distress and is not already there, then send them there.
-            if (Vector3.Distance(nearestMonster.transform.position, villager.transform.position) <= BackupCallMaxDistance &&
+            if (Vector3.Distance(attacker.transform.position, villager.transform.position) <= BackupCallMaxDistance &&
                 Vector3.Distance(buildingInDistress.transform.position, villager.transform.position) > 5)
             {
-                villager.SetTarget(nearestMonster);
+                // This check excludes villagers that are occupying Mage Towers.
+                if (villager.gameObject.activeSelf && !villager.IsAttacking)
+                    villager.SetTarget(attacker);
             }
 
         } // end foreach

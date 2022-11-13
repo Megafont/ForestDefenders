@@ -330,7 +330,7 @@ public class BuildingConstructionGhost : MonoBehaviour
         //Debug.Log($"Build ghost object collided with GameObject {other.name}!");
 
 
-        if (collider.tag != "Ground" && 
+        if (collider.gameObject.layer == LayerMask.NameToLayer("Ground") && 
             collider.tag != "EnemyTargetDetector" && collider.tag != "VillagerTargetDetector")
         {
             //Debug.Log($"Can't build here! Build ghost object collided with GameObject {other.name}!");

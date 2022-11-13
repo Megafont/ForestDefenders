@@ -10,7 +10,7 @@ using UnityEngine.AI;
 /// </summary>
 public abstract class AI_WithAttackBehavior : AI_Base
 {
-    public int AttackPower = 3;
+    public float AttackPower = 3;
     public float AttackCooldownTime = 2.0f;
     public float AttackRange = 1.0f;
 
@@ -86,7 +86,6 @@ public abstract class AI_WithAttackBehavior : AI_Base
             {
                 _Target = _PrevTarget;
                 _PrevTarget = null;
-                _NavMeshAgent.destination = _Target.transform.position;
                 _IsAttacking = false;
             }
             else
@@ -102,7 +101,9 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
         if (_Target)
         {
-            _NavMeshAgent.destination = _Target.transform.position;
+            if (_NavMeshAgent.enabled)
+                _NavMeshAgent.destination = _Target.transform.position;
+
             _IsAttacking = false;
         }
         else
@@ -136,7 +137,8 @@ public abstract class AI_WithAttackBehavior : AI_Base
         {
             _IsAttacking = false;
 
-            _NavMeshAgent.destination = _Target.transform.position;
+            if (_NavMeshAgent.enabled)
+                _NavMeshAgent.destination = _Target.transform.position;
         }
     }
 
@@ -152,13 +154,13 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
         if (health != null && health.CurrentHealth > 0)
         {
-            health.TakeDamage(AttackPower, gameObject);
+            health.DealDamage(AttackPower, gameObject);
             AnimateAttack();
         }
 
     }
 
-    protected void OnTakeDamage(GameObject sender, GameObject attacker)
+    protected void OnTakeDamage(GameObject sender, GameObject attacker, float amount)
     {
         if (sender == null)
             return;

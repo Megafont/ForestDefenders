@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-    public int MaxHealth = 100;
+    public float MaxHealth = 100;
 
     public bool EnableDamageFlash = true;
     public Color DamageFlashColor = Color.red;
@@ -27,12 +27,12 @@ public class Health : MonoBehaviour
 
 
     public delegate void Health_OnDeathEventHandler(GameObject sender);
-    public delegate void Health_OnDamagedEventHandler(GameObject sender, GameObject attacker);
-    public delegate void Health_OnHealedEventHandler(GameObject sender, GameObject healer);
+    public delegate void Health_OnDamagedEventHandler(GameObject sender, GameObject attacker, float amount);
+    public delegate void Health_OnHealedEventHandler(GameObject sender, GameObject healer, float amount);
 
     public event Health_OnDeathEventHandler OnDeath;
-    public event Health_OnDamagedEventHandler OnHeal;
-    public event Health_OnHealedEventHandler OnTakeDamage;
+    public event Health_OnHealedEventHandler OnHeal;
+    public event Health_OnDamagedEventHandler OnTakeDamage;
 
 
 
@@ -59,7 +59,7 @@ public class Health : MonoBehaviour
 
     }
 
-    public void TakeDamage(int amount, GameObject attacker)
+    public void DealDamage(float amount, GameObject attacker)
     {
         if (amount <= 0)
             throw new Exception("The damage amount must be positive!");
@@ -74,13 +74,17 @@ public class Health : MonoBehaviour
             Time.time - _LastDamageTime > DamageFlashTime)
         {
             _LastDamageTime = Time.time;
-            StartCoroutine(DoDamageFlash());
+            
+
+            // Only do the damage flash effect if the AI is enabled.
+            if (gameObject.activeSelf)
+                StartCoroutine(DoDamageFlash());
         }
+
             
         CurrentHealth -= amount;
 
-
-        OnTakeDamage?.Invoke(gameObject, attacker);
+        OnTakeDamage?.Invoke(gameObject, attacker, amount);
 
         if (CurrentHealth <= 0)
         {
@@ -88,10 +92,9 @@ public class Health : MonoBehaviour
             OnDeath?.Invoke(gameObject);
         }
         
-
     }
 
-    public void Heal(int amount, GameObject healer)
+    public void Heal(float amount, GameObject healer)
     {
         if (amount <= 0)
             throw new Exception("The damage amount must be positive!");
@@ -102,7 +105,7 @@ public class Health : MonoBehaviour
         if (CurrentHealth >= MaxHealth)
             CurrentHealth = MaxHealth;
 
-        OnHeal?.Invoke(gameObject, healer);
+        OnHeal?.Invoke(gameObject, healer, amount);
     }
 
     private IEnumerator DoDamageFlash()

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
 using UnityEngine;
 
 
@@ -95,7 +96,10 @@ public static class BuildModeDefinitions
             { CreateMaterialCost(ResourceTypes.Wood, 100),
               CreateMaterialCost(ResourceTypes.Stone, 100), });
 
-        
+
+        CreateBuildingDefinition(category, "Mage Tower", 500, 2, _MaterialRecoveryRate, 0, true, 4f, new MaterialCost[]
+            { CreateMaterialCost(ResourceTypes.Wood, 500),
+              CreateMaterialCost(ResourceTypes.Stone, 500) });
         CreateBuildingDefinition(category, "Spike Tower", 200, 2, _MaterialRecoveryRate, 0, true, 4f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 250),
               CreateMaterialCost(ResourceTypes.Stone, 250) });

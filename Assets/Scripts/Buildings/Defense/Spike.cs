@@ -24,7 +24,7 @@ public class Spike : MonoBehaviour
         //Debug.Log($"IMPALED {other.name}!");
 
 
-        health.TakeDamage(AttackPower, gameObject);
+        health.DealDamage(AttackPower, gameObject);
 
         // Get the knockback direction.
         Quaternion rotation = transform.parent.rotation;

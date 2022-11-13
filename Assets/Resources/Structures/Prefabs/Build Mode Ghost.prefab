@@ -115,10 +115,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efecd496e51398646a1de518e7d40e3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxMovementDistances: {x: 8, y: 5}
+  MaxMovementDistances: {x: 12, y: 8}
   GridSnapIncrement: 1
   GridSnapRotationIncrement: 15
-  GridSnapOffIncrement: 0.03
+  GridSnapOffIncrement: 0.1
   GridSnapOffRotationIncrement: 0.5
   CanBuildColor: {r: 0, g: 1, b: 0, a: 0.5019608}
   CanBuildWithGridSnapColor: {r: 0, g: 0.5019608, b: 1, a: 0.5019608}

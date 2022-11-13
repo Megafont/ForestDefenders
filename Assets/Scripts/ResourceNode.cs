@@ -45,6 +45,8 @@ public class ResourceNode : MonoBehaviour
 
     private void Awake()
     {
+        _VillagersMiningThisNode = new List<IVillager>();
+
         AmountAvailable = TotalAmountInNode;
     }
 
@@ -52,8 +54,6 @@ public class ResourceNode : MonoBehaviour
     void Start()
     {
         _ResourceManager = GameManager.Instance.ResourceManager;
-
-        _VillagersMiningThisNode = new List<IVillager>();
     }
 
 

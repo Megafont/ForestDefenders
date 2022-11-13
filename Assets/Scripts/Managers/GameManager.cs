@@ -127,8 +127,8 @@ public partial class GameManager : MonoBehaviour
         Color endColor = Color.white;
         float colorBlendAmount = 0f;
 
-        float lowThreshold = ResourceManager.ResourceStockPilesLowThreshold;
-        float normalThreshold = ResourceManager.ResourceStockPilesNormalThreshold;
+        float lowThreshold = ResourceManager.ResourceStockpilesLowThreshold;
+        float normalThreshold = ResourceManager.ResourceStockpilesOkThreshold;
 
 
         if (currentAmount >= normalThreshold)

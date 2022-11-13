@@ -19,9 +19,9 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
     public int Tier = 0;
 
 
-    private MonsterTargetDetector _NearbyTargetDetector;
+    protected MonsterTargetDetector _NearbyTargetDetector;
 
-    private GameObject _Player;
+    protected GameObject _Player;
 
 
 
@@ -101,7 +101,7 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         _Animator.SetTrigger(trigger);
     }
 
-    public int GetDangerValue()
+    public float GetDangerValue()
     {
         // We don't use the HealthComponent property here, because we need this method to
         // also work when called on a prefab. On a prefab, that property returns null
@@ -128,18 +128,10 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
             _NearbyTargetDetector.Enable(state);
     }
 
-    WaitForSeconds _FadeOutDelay = new WaitForSeconds(2.0f);
-    protected override IEnumerator FadeOutAfterDeath()
-    {
-        yield return _FadeOutDelay;
-
-        Destroy(gameObject);
-    }
-
 
 
     // These are a couple extra methods needed to satisfy the IMonster interface since you can't have fields in an interface.
-    public int GetAttackPower() { return AttackPower; }
+    public float GetAttackPower() { return AttackPower; }
     public int GetTier() { return Tier; }
 
 }

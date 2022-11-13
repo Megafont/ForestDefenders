@@ -453,7 +453,7 @@ public class PlayerController : MonoBehaviour
             {
                 if (hit.collider.CompareTag("Monster") || hit.collider.CompareTag("Villager"))
                 {
-                    health.TakeDamage(AttackPower, gameObject);
+                    health.DealDamage(AttackPower, gameObject);
                 }
             }
             

@@ -21,8 +21,9 @@ public class MonsterManager : MonoBehaviour
 
     public int BaseMonsterSpawnAmount = 3;
 
-    public GameObject[] SpawnPoints = new GameObject[0];
 
+
+    private Transform _SpawnPointsParent;
 
     private List<int> _MonsterSpawnList;
     private bool _WaveIsDoneSpawning;
@@ -36,6 +37,12 @@ public class MonsterManager : MonoBehaviour
     void Start()
     {
         MonsterPrefabs.Sort(CompareMonsters);
+
+
+        // Get the spawn points child object.
+        _SpawnPointsParent = GameObject.Find("Monster Spawn Points").transform;
+        if (_SpawnPointsParent == null)
+            throw new Exception("The monster spawn points parent GameObject was not found!");
 
         _MonsterSpawnList = new List<int>();
         _AliveMonsters = new List<GameObject>();
@@ -67,21 +74,21 @@ public class MonsterManager : MonoBehaviour
         MonstersKilled = 0;
         _WaveIsDoneSpawning = false;
 
-
-        if (SpawnPoints.Length < 1)
-            throw new Exception("Cannot spawn monsters because no spawn points have been specified in the inspector!");
+        int spawnPointCount = _SpawnPointsParent.transform.childCount;
+        if (spawnPointCount < 1)
+            throw new Exception("Cannot spawn monsters because no spawn points have been added under the \"Monster Spawn Points\" parent GameObject!");
 
         GenerateWaveSpawnList();
         for (int i = 0; i < _MonsterSpawnList.Count; i++)
         {
             // Randomly select a spawn point from the list.
-            int spawnPointIndex = UnityEngine.Random.Range(0, SpawnPoints.Length - 1);
+            int spawnPointIndex = UnityEngine.Random.Range(0, spawnPointCount);
 
             // Spawn a monster.
             int monsterIndex = _MonsterSpawnList[i];
             
             GameObject monster = Instantiate(MonsterPrefabs[monsterIndex].gameObject, 
-                                             SpawnPoints[spawnPointIndex].transform.position,
+                                             _SpawnPointsParent.GetChild(spawnPointIndex).transform.position,
                                              Quaternion.identity,
                                              _MonstersParent.transform);
 
@@ -116,7 +123,7 @@ public class MonsterManager : MonoBehaviour
             for (int i = 0; i < monsterCount; i++)
             {
                 _MonsterSpawnList.Add(monsterIndex);
-                Debug.Log($"Added monster index {monsterIndex} to spawn list!");
+                //Debug.Log($"Added monster index {monsterIndex} to spawn list!");
             }
         }
 
@@ -189,8 +196,8 @@ public class MonsterManager : MonoBehaviour
             return 1;
 
 
-        int aDangerLvl = a.GetDangerValue();
-        int bDangerLvl = b.GetDangerValue();
+        float aDangerLvl = a.GetDangerValue();
+        float bDangerLvl = b.GetDangerValue();
 
         if ((aDangerLvl + aDangerLvl) < (bDangerLvl + bDangerLvl))
             return -1;

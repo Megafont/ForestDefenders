@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 using UnityEngine;
 
@@ -23,9 +24,11 @@ public enum VillagerTasks
 /// </summary>
 public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 {
-    private VillagerTargetDetector _NearbyTargetDetector;
+    protected VillagerTargetDetector _NearbyTargetDetector;
 
-    private ResourceManager _ResourceManager;
+    protected GameManager _GameManager;
+    protected ResourceManager _ResourceManager;
+    protected VillageManager _VillageManager;
 
 
 
@@ -33,7 +36,10 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
     {
         _NearbyTargetDetector = transform.GetComponentInChildren<VillagerTargetDetector>();
 
-        _ResourceManager = GameManager.Instance.ResourceManager;
+        _GameManager = GameManager.Instance;
+        _ResourceManager = _GameManager.ResourceManager;
+        _VillageManager = _GameManager.VillageManager;
+
 
         base.InitAI();
 
@@ -72,7 +78,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
         IBuilding building = _Target.GetComponent<IBuilding>();
         if (building != null)
         {
-            throw new NotImplementedException();
+            // Implement code to make it so villagers have to construct new buildings before they become operational.
         }
 
     }
@@ -80,9 +86,17 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
     protected override void DoTargetCheck()
     {
-        GameObject player = GameManager.Instance.Player;
+        if (_GameManager.GameState == GameStates.PlayerBuildPhase)
+            DoTargetCheck_InBuildPhase();
+        else if (_GameManager.GameState == GameStates.MonsterAttackPhase)
+            DoTargetCheck_InMonsterAttackPhase();
 
 
+        UpdateNearbyTargetDetectorState();
+    }
+
+    protected void DoTargetCheck_InBuildPhase()
+    {
         if (_Target == null)
         {
             // This villager is not chasing a target. So if the target check time has elapsed, then do a new target check.                        
@@ -95,14 +109,14 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
             if (possibleTargetResourceNode == null || possibleTargetResourceNode.VillagersMiningThisNode > 0)
                 possibleTargetResourceNode = _ResourceManager.GetRandomActiveResourceNode();
 
-            
+
             // Did we find a non-empty resource node?
             if (possibleTargetResourceNode && !possibleTargetResourceNode.IsDepleted)
                 SetTarget(possibleTargetResourceNode.gameObject);
 
         }
         // If this villager is chasing a target and the target gets far enough away, revert to the previous target.
-        else if (_Target.CompareTag("Monster"))
+        else if (_Target.CompareTag("Monster") || _Target.CompareTag("Player"))
         {
             if (Vector3.Distance(transform.position, _Target.transform.position) >= MaxChaseDistance)
             {
@@ -110,9 +124,22 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
             }
         }
 
-
-        UpdateNearbyTargetDetectorState();
     }
+
+    protected void DoTargetCheck_InMonsterAttackPhase()
+    {
+        // Check if there is an unoccupied Mage Tower.
+        Building_MageTower closestUnnoccupiedTower = _VillageManager.FindNearestUnoccupiedMageTower(transform.position);
+        if (closestUnnoccupiedTower)
+        {
+            // Claim occupancy of the tower so it knows this AI is coming.
+            closestUnnoccupiedTower.ClaimOccupancy(this);
+
+            // Start the AI heading to the tower.
+            SetTarget(closestUnnoccupiedTower.gameObject);           
+        }
+
+   }
 
     public override bool SetTarget(GameObject target)
     {
@@ -161,7 +188,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
 
         // Check if the villager is doing a work task.
-        if (_Target && !_Target.CompareTag("Monster"))
+        if (_Target && !_Target.CompareTag("Monster") && !_Target.CompareTag("Player"))
         {
             _LastAttackTime = Time.time;
 
@@ -197,14 +224,6 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
         if (_NearbyTargetDetector)
             _NearbyTargetDetector.Enable(state);
-    }
-
-    WaitForSeconds _FadeOutDelay = new WaitForSeconds(2.0f);
-    protected override IEnumerator FadeOutAfterDeath()
-    {
-        yield return _FadeOutDelay;
-
-        Destroy(gameObject);
     }
 
 

@@ -19,11 +19,11 @@ public interface IMonster
 
     bool IsAttacking { get; }
 
-    int GetDangerValue();
+    float GetDangerValue();
     int GetScoreValue();
 
 
-    int GetAttackPower();
+    float GetAttackPower();
     int GetTier();
     
 }

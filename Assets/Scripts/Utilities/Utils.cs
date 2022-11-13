@@ -133,4 +133,30 @@ public static class Utils
         }
 
     }
+
+
+    public static bool LayerMaskContains(LayerMask layerMask, int layerToCheck)
+    {
+        return layerMask == (layerMask | (1 << layerToCheck));
+    }
+
+    /// <summary>
+    /// Unlike the Vector2.Angle and Vector3.Angle functions, this one returns the angle as a number from -180 to +180 degrees.
+    /// The previously mentioned Angle functions return the smallest angle between the two vectors as a value from 0-180 degrees.
+    /// </summary>
+    /// <param name="from">The starting vector.</param>
+    /// <param name="to">The vector to measure to.</param>
+    /// <param name="referenceAxis">The axis the rotation is around.</param>
+    /// <returns>The angle between the passed in vectors (0 to 360 degrees).</returns>
+    public static float CalculateSignedAngle(Vector3 from, Vector3 to, Vector3 referenceAxis)
+    {
+        // Get the smallest angle between the two vectors (will be in the range 0 to 180 degrees);
+        float angle = Vector3.Angle(from, to);
+
+        // Change it to be in the range -180 to +180 degrees relative to the from vector.
+        float sign = Mathf.Sign(Vector3.Dot(referenceAxis, Vector3.Cross(from, to)));
+        return angle * sign;
+    }
+
+
 }
