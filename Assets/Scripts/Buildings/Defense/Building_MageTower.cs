@@ -42,6 +42,7 @@ public class Building_MageTower : Building_Base
     {
         base.UpdateBuilding();
 
+
         if (IsOccupied)
         {
             // Draw a vertical line on the tower to show that it is occupied even if the villager hasn't arrived yet.

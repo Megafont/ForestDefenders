@@ -8,6 +8,9 @@ using Random = UnityEngine.Random;
 
 
 
+/// <summary>
+/// NOTE: This is currently unused, but is referenced by the VillagerTaskEventArgs class.
+/// </summary>
 public enum VillagerTasks
 {
     None = 0,
@@ -15,7 +18,6 @@ public enum VillagerTasks
     ConstructBuilding,
     GatherResource,
 }
-
 
 
 
@@ -28,7 +30,8 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
     protected GameManager _GameManager;
     protected ResourceManager _ResourceManager;
-    protected VillageManager _VillageManager;
+    protected VillageManager_Buildings _VillageManager_Buildings;
+    protected VillageManager_Villagers _VillageManager_Villagers;
 
 
 
@@ -38,7 +41,8 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
         _GameManager = GameManager.Instance;
         _ResourceManager = _GameManager.ResourceManager;
-        _VillageManager = _GameManager.VillageManager;
+        _VillageManager_Buildings = _GameManager.VillageManager_Buildings;
+        _VillageManager_Villagers = _GameManager.VillageManager_Villagers;
 
 
         base.InitAI();
@@ -51,7 +55,6 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
     protected override void UpdateAI()
     {
         base.UpdateAI();
-
     }
 
 
@@ -64,9 +67,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
             if (node.IsDepleted)
             {
-                // Force set _Target to null first before we call SetTarget(). This way we discard the depleted node target, rather that having it shifted into the _PrevTarget field.
-                _Target = null;
-                SetTarget(null);
+                SetTarget(null, true);
 
                 DoTargetCheck();
             }
@@ -78,7 +79,20 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
         IBuilding building = _Target.GetComponent<IBuilding>();
         if (building != null)
         {
-            // Implement code to make it so villagers have to construct new buildings before they become operational.
+            if (building.HealthComponent.CurrentHealth < building.HealthComponent.MaxHealth)
+            {
+                building.HealthComponent.Heal(_VillageManager_Villagers.VillagerHealBuildingsAmount, gameObject);
+                
+                if (_ResourceManager.Stockpiles[ResourceTypes.Food] >= _VillageManager_Villagers.VillagerHealBuildingsFoodCost)
+                    _ResourceManager.Stockpiles[ResourceTypes.Food] -= _VillageManager_Villagers.VillagerHealBuildingsFoodCost;
+
+                if (building.HealthComponent.CurrentHealth == building.HealthComponent.MaxHealth)
+                    SetTarget(null, true);
+            }
+            else
+            {
+                // Implement code to make it so villagers have to construct new buildings before they become operational.
+            }
         }
 
     }
@@ -129,7 +143,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
     protected void DoTargetCheck_InMonsterAttackPhase()
     {
         // Check if there is an unoccupied Mage Tower.
-        Building_MageTower closestUnnoccupiedTower = _VillageManager.FindNearestUnoccupiedMageTower(transform.position);
+        Building_MageTower closestUnnoccupiedTower = _VillageManager_Buildings.FindNearestUnoccupiedMageTower(transform.position);
         if (closestUnnoccupiedTower)
         {
             // Claim occupancy of the tower so it knows this AI is coming.
@@ -141,7 +155,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
    }
 
-    public override bool SetTarget(GameObject target)
+    public override bool SetTarget(GameObject target, bool discardTarget = false)
     {
         if (ValidateTarget(target))
         {
@@ -162,7 +176,8 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
             }
         }
 
-        return base.SetTarget(target);
+
+        return base.SetTarget(target, discardTarget);
     }
 
     public override bool ValidateTarget(GameObject target)

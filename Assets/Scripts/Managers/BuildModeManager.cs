@@ -28,6 +28,7 @@ public class BuildModeManager : MonoBehaviour
     private CameraManager _CameraManager;
     private InputManager _InputManager;
     private ResourceManager _ResourceManager;
+    private VillageManager_Buildings _VillageManager_Buildings;
 
     private BuildingConstructionGhost _BuildingConstructionGhost;
 
@@ -55,6 +56,7 @@ public class BuildModeManager : MonoBehaviour
         _CameraManager = GameManager.Instance.CameraManager;
         _InputManager = GameManager.Instance.InputManager;
         _ResourceManager = GameManager.Instance.ResourceManager;
+        _VillageManager_Buildings = GameManager.Instance.VillageManager_Buildings;
 
         _RadialMenu = GameManager.Instance.UI_RadialMenu;
 
@@ -304,11 +306,11 @@ public class BuildModeManager : MonoBehaviour
         {
             ApplyBuildCosts();
 
-            GameManager.Instance.VillageManager.SpawnBuilding(_SelectedBuildingPrefab,
-                                                              _SelectedBuildingCategory,
-                                                              _SelectedBuildingName,
-                                                              _BuildingConstructionGhost.BuildPosition,
-                                                              _BuildingConstructionGhost.transform.rotation);
+            _VillageManager_Buildings.SpawnBuilding(_SelectedBuildingPrefab,
+                                                    _SelectedBuildingCategory,
+                                                    _SelectedBuildingName,
+                                                    _BuildingConstructionGhost.BuildPosition,
+                                                    _BuildingConstructionGhost.transform.rotation);
 
             _LastBuildTime = Time.time;
         }

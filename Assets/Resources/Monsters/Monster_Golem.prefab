@@ -613,7 +613,7 @@ MonoBehaviour:
   AttackCooldownTime: 2
   AttackRange: 2.5
   MaxChaseDistance: 10
-  TargetCheckFrequency: 10
+  TargetCheckFrequency: 5
   TargetCheckRadius: 5
   ScoreValue: 150
   Tier: 2

@@ -7,7 +7,7 @@ using UnityEngine;
 public interface IMonster
 {
     void ClearTargets();
-    bool SetTarget(GameObject target);
+    bool SetTarget(GameObject target, bool discardTarget = false);
 
 
     public GameObject gameObject { get; }
@@ -25,5 +25,11 @@ public interface IMonster
 
     float GetAttackPower();
     int GetTier();
-    
+
+
+
+    bool TargetIsBuilding { get; }
+    bool TargetIsMonster { get; }
+    bool TargetIsResourceNode { get; }
+    bool TargetIsVillager { get; }
 }

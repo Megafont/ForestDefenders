@@ -16,20 +16,22 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
     protected NavMeshObstacle _NavMeshObstacle;
 
 
-    public string BuildingCategory { get; protected set; }
-    public string BuildingName { get; protected set; }
+    public string Category { get; protected set; }
+    public string Name { get; protected set; }
     
     public Health HealthComponent { get { return _Health; } }
 
 
     protected BuildingDefinition _BuildingDefinition;
-    protected VillageManager _VillageManager;
+    protected VillageManager_Buildings _VillageManager_Buildings;
+    protected VillageManager_Villagers _VillageManager_Villagers;
 
 
 
     void Awake()
     {
-        _VillageManager = GameManager.Instance.VillageManager;
+        _VillageManager_Buildings = GameManager.Instance.VillageManager_Buildings;
+        _VillageManager_Villagers = GameManager.Instance.VillageManager_Villagers;
 
 
         _Collider = GetComponent<MeshCollider>();
@@ -70,10 +72,10 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
 
     protected void ConfigureBasicBuildingSetup(string buildingCategory, string buildingName)
     {
-        BuildingCategory = buildingCategory;
-        BuildingName = buildingName;
+        Category = buildingCategory;
+        Name = buildingName;
 
-        _BuildingDefinition = BuildModeDefinitions.GetBuildingDefinition(BuildingCategory, BuildingName);
+        _BuildingDefinition = BuildModeDefinitions.GetBuildingDefinition(Category, Name);
         _Health.MaxHealth = _BuildingDefinition.MaxHealth;
         _Health.Heal(_BuildingDefinition.MaxHealth, gameObject);
     }
@@ -82,8 +84,8 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
     {
         // This class is the only one that sets these fields directly. It does not call the InitBuilding() method like all subclasses, since
         // there is no building with category and name both equal to "None". So calling that method would crash the game.
-        BuildingCategory = "None";
-        BuildingName = "None";
+        Category = "None";
+        Name = "None";
     }
 
 
@@ -100,7 +102,7 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
 
     protected virtual void OnTakeDamage(GameObject sender, GameObject attacker, float amount)
     {
-        _VillageManager.RequestBackup(gameObject, attacker);
+        _VillageManager_Villagers.RequestBackup(gameObject, attacker);
     }
 
 

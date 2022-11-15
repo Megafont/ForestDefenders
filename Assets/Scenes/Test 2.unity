@@ -1881,6 +1881,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 828217629}
+  - component: {fileID: 828217631}
   - component: {fileID: 828217630}
   m_Layer: 0
   m_Name: Village Manager
@@ -1918,12 +1919,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00cb4ea75ce599840b141d476b079784, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BuildingsParent: {fileID: 406806339}
   VillagersParent: {fileID: 1132822149}
   StartingPopulationCap: 3
   VillagerFoodCost: 50
-  VillagerSpawnDelay: 2
-  BackupCallMaxDistance: 20
+  VillagerSpawnFrequency: 2
+  BuildingBackupCallMaxDistance: 20
+  VillagersHealBuildings: 1
+  VillagerHealBuildingsCheckFrequency: 5
+  VillagerHealBuildingsAmount: 5
+  VillagerHealBuildingsFoodCost: 5
+--- !u!114 &828217631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 828217628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22ea295225aaf01449354a1635b7e881, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BuildingsParent: {fileID: 406806339}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0

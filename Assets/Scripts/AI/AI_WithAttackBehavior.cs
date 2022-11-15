@@ -16,7 +16,7 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
     public float MaxChaseDistance = 10.0f;
 
-    public float TargetCheckFrequency = 10.0f;
+    public float TargetCheckFrequency = 5.0f;
     public float TargetCheckRadius = 5.0f;
 
 
@@ -62,7 +62,7 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
     }
 
-    public override bool SetTarget(GameObject target)
+    public override bool SetTarget(GameObject target, bool discardTarget = false)
     {
         bool result;
 
@@ -70,9 +70,11 @@ public abstract class AI_WithAttackBehavior : AI_Base
         {
             result = true;
 
-            _PrevTarget = _Target;
-            _Target = target;
 
+            if (!discardTarget)
+                _PrevTarget = _Target;
+
+            _Target = target;
         }
         else                
         {

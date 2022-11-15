@@ -9,7 +9,7 @@ using UnityEngine;
 
 public class BuildingDefinition
 {
-    public string BuildingName;
+    public string Name;
     public string Category;
     public int MaxHealth;
     public int Tier;
@@ -142,7 +142,7 @@ public static class BuildModeDefinitions
        
         BuildingDefinition def = new BuildingDefinition()
         {
-            BuildingName = buildingName,
+            Name = buildingName,
             Category = category,
             MaxHealth = maxHealth,
             Tier = buildingTier,
@@ -176,7 +176,7 @@ public static class BuildModeDefinitions
         foreach (KeyValuePair<string, BuildingDefinition> pair in _BuildingDefinitions)
         {
             
-            GameObject prefab = LoadBuildingPrefab(pair.Value.Category, pair.Value.BuildingName);
+            GameObject prefab = LoadBuildingPrefab(pair.Value.Category, pair.Value.Name);
 
 
             // Create a temperary instance of the prefab.
@@ -255,7 +255,7 @@ public static class BuildModeDefinitions
 
         List<string> names = new List<string>();
         foreach (BuildingDefinition buildingDef in defs)
-            names.Add(buildingDef.BuildingName);
+            names.Add(buildingDef.Name);
 
         return names.ToArray();
     }

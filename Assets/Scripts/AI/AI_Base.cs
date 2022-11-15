@@ -102,13 +102,17 @@ public abstract class AI_Base : MonoBehaviour
     /// Sets the target.
     /// </summary>
     /// <param name="target">The GameObject to set as the target.</param>
+    /// <param name="discardCurrentTarget">Whether or not the current target should be discarded rather than copied into _PrevTarget.</param>
     /// <returns>True if the target was set and false otherwise.</returns>
-    public virtual bool SetTarget(GameObject target)
+    public virtual bool SetTarget(GameObject target, bool discardCurrentTarget = false)
     {
         if (ValidateTarget(target))
         {
-            _PrevTarget = _Target;
+            if (!discardCurrentTarget)
+                _PrevTarget = _Target;
+
             _Target = target;
+
 
             if (_NavMeshAgent.enabled)
                 _NavMeshAgent.destination = target.transform.position;
@@ -242,5 +246,12 @@ public abstract class AI_Base : MonoBehaviour
         Destroy(gameObject);
 
     }
+
+
+
+    public bool TargetIsBuilding { get { return _Target.GetComponent<IBuilding>() != null; } }
+    public bool TargetIsMonster { get { return _Target.GetComponent<IMonster>() != null; } }
+    public bool TargetIsResourceNode { get { return _Target.GetComponent<ResourceNode>() != null; } }
+    public bool TargetIsVillager { get { return _Target.GetComponent<IVillager>() != null; } }
 
 }

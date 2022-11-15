@@ -36,7 +36,8 @@ public partial class GameManager : MonoBehaviour
     public InputManager InputManager { get; private set; }
     public MonsterManager MonsterManager { get; private set; }
     public ResourceManager ResourceManager { get; private set; }
-    public VillageManager VillageManager { get; private set; }
+    public VillageManager_Buildings VillageManager_Buildings { get; private set; }
+    public VillageManager_Villagers VillageManager_Villagers { get; private set; }
 
 
     public RadialMenu UI_RadialMenu { get; private set; }
@@ -51,6 +52,11 @@ public partial class GameManager : MonoBehaviour
 
 
     public GameStates GameState { get; private set; } = GameStates.Startup;
+
+
+    public delegate void GameManager_GameStateChangedHandler(GameStates newGameState);
+
+    public event GameManager_GameStateChangedHandler OnGameStateChanged;
 
 
     void Awake()
@@ -94,7 +100,7 @@ public partial class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        UI_PopulationCountText.text = $"Population: {VillageManager.Population} / {VillageManager.PopulationCap}";
+        UI_PopulationCountText.text = $"Population: {VillageManager_Villagers.Population} / {VillageManager_Villagers.PopulationCap}";
 
         UpdateResourceStockpileCounterUI(UI_FoodCountText, "Food: ", ResourceManager.Stockpiles[ResourceTypes.Food]);
         UpdateResourceStockpileCounterUI(UI_WoodCountText, "Wood: ", ResourceManager.Stockpiles[ResourceTypes.Wood]);
@@ -160,7 +166,8 @@ public partial class GameManager : MonoBehaviour
         InputManager = GameObject.Find("Input Manager").GetComponent<InputManager>();
         MonsterManager = GameObject.Find("Monster Manager").GetComponent<MonsterManager>();
         ResourceManager = GameObject.Find("Resource Manager").GetComponent<ResourceManager>();
-        VillageManager = GameObject.Find("Village Manager").GetComponent<VillageManager>();
+        VillageManager_Buildings = GameObject.Find("Village Manager").GetComponent<VillageManager_Buildings>();
+        VillageManager_Villagers = GameObject.Find("Village Manager").GetComponent<VillageManager_Villagers>();
     }
 
     private void InitInput()
@@ -194,8 +201,8 @@ public partial class GameManager : MonoBehaviour
     public bool CheckIfGameIsOver()
     {
         // NOTE: We don't check if the player is dead here, as we receive an event when that happens via the OnPlayerDeath() method below, which instantly switches us to the GameOver game state;
-        if (VillageManager.GetTotalBuildingCount() == 0 &&
-            VillageManager.Population == 0 &&
+        if (VillageManager_Buildings.GetTotalBuildingCount() == 0 &&
+            VillageManager_Villagers.Population == 0 &&
             Player == null)
         {
             ChangeGameState(GameStates.GameOver);
@@ -220,11 +227,11 @@ public partial class GameManager : MonoBehaviour
         }
     }
 
-    private void ChangeGameState(GameStates newState)
+    private void ChangeGameState(GameStates newGameState)
     {
         MonsterManager.ResetComboStreak();
 
-        GameState = newState;
+        GameState = newGameState;
         _GameStateStartTime = Time.time;
 
 
@@ -247,6 +254,9 @@ public partial class GameManager : MonoBehaviour
                 break;
 
         } // end switch GameState
+
+
+        OnGameStateChanged?.Invoke(newGameState);
     }
 
     private void GameState_PlayerBuildPhase()

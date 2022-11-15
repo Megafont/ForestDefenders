@@ -9,8 +9,8 @@ public interface IBuilding
     BuildingDefinition GetBuildingDefinition();
     Mesh GetMesh();
 
-    string BuildingCategory { get; }
-    string BuildingName { get; }
+    string Category { get; }
+    string Name { get; }
 
     GameObject gameObject { get; }
     Health HealthComponent { get; }

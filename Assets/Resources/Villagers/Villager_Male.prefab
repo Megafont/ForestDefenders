@@ -1253,7 +1253,7 @@ MonoBehaviour:
   AttackCooldownTime: 2
   AttackRange: 1
   MaxChaseDistance: 10
-  TargetCheckFrequency: 10
+  TargetCheckFrequency: 5
   TargetCheckRadius: 5
 --- !u!114 &3011654070411364966
 MonoBehaviour:

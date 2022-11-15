@@ -470,7 +470,7 @@ public class PlayerController : MonoBehaviour
     {
         IBuilding building = objToDestroy.GetComponent<IBuilding>();
 
-        _BuildModeManager.RestoreBuildingMaterials(building.BuildingCategory, building.BuildingName);
+        _BuildModeManager.RestoreBuildingMaterials(building.Category, building.Name);
 
         Destroy(objToDestroy);
     }

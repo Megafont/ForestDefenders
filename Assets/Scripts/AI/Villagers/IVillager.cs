@@ -7,7 +7,7 @@ using UnityEngine;
 public interface IVillager
 {
     void ClearTargets();
-    bool SetTarget(GameObject target);
+    bool SetTarget(GameObject target, bool discardTarget = false);
 
     public GameObject gameObject { get; }
     public Transform transform { get; }
@@ -18,4 +18,10 @@ public interface IVillager
 
     string VillagerType { get; }
 
+
+
+    bool TargetIsBuilding { get; }
+    bool TargetIsMonster { get; }
+    bool TargetIsResourceNode { get; }
+    bool TargetIsVillager { get; }
 }
