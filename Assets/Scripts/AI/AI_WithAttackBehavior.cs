@@ -11,8 +11,7 @@ using UnityEngine.AI;
 public abstract class AI_WithAttackBehavior : AI_Base
 {
     public float AttackPower = 3;
-    public float AttackCooldownTime = 2.0f;
-    public float AttackRange = 1.0f;
+    public float AttackFrequency = 2.0f;
 
     public float MaxChaseDistance = 10.0f;
 
@@ -35,6 +34,8 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
     protected override void UpdateAI()
     {
+        base.UpdateAI();
+
 
         if (_Target == null ||
             Time.time - _LastTargetCheckTime >= TargetCheckFrequency)
@@ -43,17 +44,25 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
             DoTargetCheck();
         }
+    }
 
+    public override bool SetTarget(GameObject target, bool discardCurrentTarget = false)
+    {
+        _IsAttacking = false;
 
+        return base.SetTarget(target, discardCurrentTarget);
+    }
+
+    protected override void InteractWithTarget()
+    {
         // Check if the target is still alive.
         if (_Target)
         {
-            CheckIfInAttackRange();
+            _IsAttacking = true;
 
             // If the AI is attacking, has the attack cooldown period fully elapsed yet?
-            if (_IsAttacking && Time.time - _LastAttackTime >= AttackCooldownTime)
+            if (Time.time - _LastAttackTime >= AttackFrequency)
                 DoAttack();
-
         }
         else // _Target is null.
         {
@@ -62,87 +71,7 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
     }
 
-    public override bool SetTarget(GameObject target, bool discardTarget = false)
-    {
-        bool result;
-
-        if (ValidateTarget(target))
-        {
-            result = true;
-
-
-            if (!discardTarget)
-                _PrevTarget = _Target;
-
-            _Target = target;
-        }
-        else                
-        {
-            result = false;
-
-            if (_Target)
-            {
-                // Do nothing so we keep the current target.
-            }
-            else if (_Target == null && _PrevTarget != null)
-            {
-                _Target = _PrevTarget;
-                _PrevTarget = null;
-                _IsAttacking = false;
-            }
-            else
-            {
-                _Target = null;
-                _PrevTarget = null;
-                _IsAttacking = false;
-                StopMoving();
-            }
-
-        }
-
-
-        if (_Target)
-        {
-            if (_NavMeshAgent.enabled)
-                _NavMeshAgent.destination = _Target.transform.position;
-
-            _IsAttacking = false;
-        }
-        else
-        {
-            StopMoving();
-        }
-
-
-        return result;
-    }
-
     protected abstract void DoTargetCheck();
-
-    protected virtual void CheckIfInAttackRange()
-    {
-        //Debug.Log($"Distance: {GetDistanceToTarget()}    Attack Range: {AttackRange}    Target: {_Target.name}");
-
-        if (GetDistanceToTarget() <= AttackRange)
-        {
-            _IsAttacking = true;
-
-            StopMoving();
-
-            // Force the AI to face the target since they sometimes end up facing in a somewhat odd direction.
-            // We set y to 0 so the AI doesn't tilt to look up if the target (such as the player) is standing on his head, which looks kind of dumb.
-            transform.LookAt(new Vector3(_Target.transform.position.x, 
-                                         0.0f,
-                                         _Target.transform.position.z));
-        }
-        else
-        {
-            _IsAttacking = false;
-
-            if (_NavMeshAgent.enabled)
-                _NavMeshAgent.destination = _Target.transform.position;
-        }
-    }
 
     protected virtual void DoAttack()
     {
@@ -162,6 +91,10 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
     }
 
+    protected abstract void UpdateNearbyTargetDetectorState();
+
+
+
     protected void OnTakeDamage(GameObject sender, GameObject attacker, float amount)
     {
         if (sender == null)
@@ -176,8 +109,6 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
     protected abstract void AnimateAttack();
 
-
-    protected abstract void UpdateNearbyTargetDetectorState();
 
     protected virtual void OnTargetDeath()
     {

@@ -153,9 +153,9 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
             SetTarget(closestUnnoccupiedTower.gameObject);           
         }
 
-   }
+    }
 
-    public override bool SetTarget(GameObject target, bool discardTarget = false)
+    public override bool SetTarget(GameObject target, bool discardCurrentTarget = false)
     {
         if (ValidateTarget(target))
         {
@@ -177,7 +177,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
         }
 
 
-        return base.SetTarget(target, discardTarget);
+        return base.SetTarget(target, discardCurrentTarget);
     }
 
     public override bool ValidateTarget(GameObject target)
@@ -197,24 +197,24 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
         }
     }
 
-    protected override void DoAttack()
+    protected override void InteractWithTarget()
     {
-        // NOTE: We don't need to call the base class method in here.
-
-
         // Check if the villager is doing a work task.
-        if (_Target && !_Target.CompareTag("Monster") && !_Target.CompareTag("Player"))
+        if (_Target)
         {
-            _LastAttackTime = Time.time;
+            if (_Target.CompareTag("Monster"))
+            {
+                DoAttack();
+            }
+            else
+            {
+                _LastAttackTime = Time.time;
 
-            AnimateAttack();
-            DoTaskWork();
+                AnimateAttack(); // We're just using the attack animation for when they're doing work, too.
+                DoTaskWork();
 
-            return;
-        }
-        else // The villager is not doing a work task, so apply damage to the target.
-        {
-            base.DoAttack();
+                return;
+            }
         }
 
     }

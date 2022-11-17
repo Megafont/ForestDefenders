@@ -20,6 +20,9 @@ public abstract class AI_Base : MonoBehaviour
     [Tooltip("This is the maximum movement speed. Make sure the walk/run thresholds are set correctly in the Animator's blend tree node, too.")]
     public float MaxMovementSpeed = 3.5f; // 3.5 is the default movement speed of NavMeshAgents.
 
+    [Tooltip("How often (in seconds) the AI will interact with a non-combat target such as a resource node.")]
+    public float InteractionFrequency = 2.0f;
+
 
     public Health HealthComponent { get { return _Health; } }
 
@@ -32,6 +35,9 @@ public abstract class AI_Base : MonoBehaviour
     protected GameObject _PrevTarget;
 
     protected bool _MovingToTargetAndIgnoreAllUntilArrived;
+
+    protected float _LastInteractionTime;
+    protected bool _IsInteracting;
 
     protected WaitForSeconds _DeathFadeOutDelay;
 
@@ -76,7 +82,41 @@ public abstract class AI_Base : MonoBehaviour
 
 
     protected abstract void InitAI();
-    protected abstract void UpdateAI();
+    protected virtual void UpdateAI()
+    {
+        // This is here in case another NavMeshAgent bumps this one away from its target.
+        // This allows it to move back to the target and continue working or attacking.
+        if (_Target &&
+            _NavMeshAgent.isStopped &&
+            _NavMeshAgent.enabled)
+        {
+            _NavMeshAgent.isStopped = false;
+        }
+
+
+        if (IsWithinInteractionRange())
+        {
+            if (!_NavMeshAgent.isStopped)
+            {
+                StopMoving();
+
+                // Force the AI to face the target since they sometimes end up facing in a somewhat odd direction.
+                // We set y to 0 so the AI doesn't tilt to look up if the target (such as the player) is standing on his head, which looks kind of dumb.
+                transform.LookAt(new Vector3(_Target.transform.position.x,
+                                             0.0f,
+                                             _Target.transform.position.z));
+            }
+
+            if (Time.time - _LastInteractionTime >= InteractionFrequency)
+            {
+                _LastInteractionTime = Time.time;
+
+                _IsInteracting = true;
+
+                InteractWithTarget();
+            }
+        }
+    }
 
     protected virtual void AnimateAI()
     {
@@ -106,21 +146,62 @@ public abstract class AI_Base : MonoBehaviour
     /// <returns>True if the target was set and false otherwise.</returns>
     public virtual bool SetTarget(GameObject target, bool discardCurrentTarget = false)
     {
+        bool result;
+
+
         if (ValidateTarget(target))
         {
+            result = true;
+
+
             if (!discardCurrentTarget)
                 _PrevTarget = _Target;
 
             _Target = target;
+        }
+        else
+        {
+            result = false;
 
+            if (_Target)
+            {
+                // Do nothing so we keep the current target.
+            }
+            else if (_Target == null && _PrevTarget != null)
+            {
+                _Target = _PrevTarget;
+                _PrevTarget = null;
+            }
+            else
+            {
+                _Target = null;
+                _PrevTarget = null;
 
-            if (_NavMeshAgent.enabled)
-                _NavMeshAgent.destination = target.transform.position;
+                StopMoving();
+            }
 
-            return true;
         }
 
-        return false;
+
+        if (_Target)
+        {
+            if (_NavMeshAgent.enabled)
+                _NavMeshAgent.destination = _Target.transform.position;
+
+            _NavMeshAgent.isStopped = false;
+
+            // Set this NavMeshAgent back to default priority so other moving agents will ignore it.
+            _NavMeshAgent.avoidancePriority = 50;
+        }
+        else
+        {
+            StopMoving();
+        }
+
+
+        _IsInteracting = false;
+
+        return result;
     }
 
     /// <summary>
@@ -130,7 +211,10 @@ public abstract class AI_Base : MonoBehaviour
     public virtual void ResetTarget()
     {
         if (_NavMeshAgent)
+        {
             _NavMeshAgent.destination = _Target.transform.position;
+            _NavMeshAgent.isStopped = false;
+        }
     }
 
     public virtual bool ValidateTarget(GameObject target)
@@ -144,6 +228,8 @@ public abstract class AI_Base : MonoBehaviour
             return true;
         }
     }
+
+    protected abstract void InteractWithTarget();
 
     protected IEnumerator MoveToTargetAndIgnoreAllElseUntilArriving(GameObject target)
     {
@@ -159,9 +245,10 @@ public abstract class AI_Base : MonoBehaviour
 
         _NavMeshAgent.destination = target.transform.position;
 
+        WaitForSeconds delay = new WaitForSeconds(1.0f);
         while (Vector3.Distance(transform.position, target.transform.position) > 3.0f)
         {
-            yield return new WaitForSeconds(1.0f);
+            yield return delay;
         }
 
         StopMoving();
@@ -169,14 +256,16 @@ public abstract class AI_Base : MonoBehaviour
         _MovingToTargetAndIgnoreAllUntilArrived = false;
     }
 
+    protected bool IsWithinInteractionRange()
+    {
+        return GetDistanceToTarget() <= _NavMeshAgent.radius + 0.5f;
+    }
+
     protected float GetDistanceToTarget()
     {
         float distance = float.MaxValue;
 
-
-        //float rayHeightAboveGround = 0.4f;
-        //Vector3 rayStartPos = new Vector3(transform.position.x, rayHeightAboveGround, transform.position.z);
-        
+       
         // The part in parantheses shifts the start position of the ray upward so it is in the center of the AI
         // character's body rather than on the ground.
         Vector3 rayStartPos = transform.position + Vector3.up * (_NavMeshAgent.height / 2);
@@ -207,9 +296,8 @@ public abstract class AI_Base : MonoBehaviour
         }
 
 
-        Debug.DrawLine(rayStartPos, rayStartPos + rayDirection * 5.0f);
         // Debug.Log($"Distance from target: {distance}");
-
+        Debug.DrawLine(rayStartPos, rayStartPos + rayDirection * 5.0f);
 
         return distance;
     }
@@ -217,9 +305,12 @@ public abstract class AI_Base : MonoBehaviour
     protected void StopMoving()
     {
         // Set the NavMeshAgent's destination to its current position to make it stop moving.
-        if (_NavMeshAgent.enabled)
-            _NavMeshAgent.destination = transform.position;
+        _NavMeshAgent.isStopped = true;
+
+        // Set this NavMeshAgent to a high priority so other agents will not ignore it since it is not moving now.
+        _NavMeshAgent.avoidancePriority = 90;
     }
+
 
 
     protected virtual void OnDeath(GameObject sender)
@@ -247,6 +338,9 @@ public abstract class AI_Base : MonoBehaviour
 
     }
 
+
+
+    public bool IsInteracting { get { return _IsInteracting; } }
 
 
     public bool TargetIsBuilding { get { return _Target.GetComponent<IBuilding>() != null; } }

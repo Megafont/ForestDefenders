@@ -18,6 +18,9 @@ public class VillageManager_Villagers : MonoBehaviour
     [Tooltip("The initial population cap of the village.")]
     public int StartingPopulationCap = 3;
 
+    [Tooltip("The largest the population is ever allowed to get in the game.")]
+    public int MaxPopulationCap = 100;
+
     [Tooltip("The amount of food required for a villager to spawn.")]
     public int VillagerFoodCost = 50;
 
@@ -309,14 +312,14 @@ public class VillageManager_Villagers : MonoBehaviour
         // Add the building and villager into our heal tracking dictionary and tell the villager to head to the building.
         if (villager != null)
         {
-            Debug.Log("Sending villager to heal building!");
+            //Debug.Log("Sending villager to heal building!");
 
             _VillagersHealingBuildings.Add(building, villager);
             villager.SetTarget(building.gameObject);
         }
         else
         {
-            Debug.Log("Failed to find an available villager to heal the building!");
+            //Debug.Log("Failed to find an available villager to heal the building!");
         }
     }
 
@@ -330,7 +333,7 @@ public class VillageManager_Villagers : MonoBehaviour
         }
 
 
-        Debug.Log($"Villagers have begun healing {damagedBuildings.Count} buildings...");
+        //Debug.Log($"Villagers have begun healing {damagedBuildings.Count} buildings...");
 
         while (damagedBuildings.Count > 0)
         {
@@ -398,7 +401,12 @@ public class VillageManager_Villagers : MonoBehaviour
 
     private void OnBuildingConstructed(GameObject sender, BuildingDefinition def)
     {
-        _PopulationCap += (int) def.PopulationCapBoost;
+        int temp = _PopulationCap + (int) def.PopulationCapBoost;
+
+        if (temp > MaxPopulationCap)
+            _PopulationCap = MaxPopulationCap;
+        else
+            _PopulationCap = temp;
     }
 
     private void OnBuildingDestroyed(GameObject sender, BuildingDefinition def)

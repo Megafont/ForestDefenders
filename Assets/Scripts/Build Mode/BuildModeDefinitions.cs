@@ -38,13 +38,17 @@ public struct MaterialCost
 public static class BuildModeDefinitions
 {
     private static BuildModeManager _BuildModeManager;
+
     private static Dictionary<string, BuildingDefinition> _BuildingDefinitions;
+    private static Dictionary<string, List<BuildingDefinition>> _BuildingCategories;
     private static List<BuildingDefinition> _Buildings_Defense;
+
     private static List<BuildingDefinition> _Buildings_Farming;
     private static List<BuildingDefinition> _Buildings_Housing;
-    private static Dictionary<string, List<BuildingDefinition>> _BuildingCategories;
+    private static List<BuildingDefinition> _Buildings_Other;
 
     private static float _MaterialRecoveryRate;
+
 
 
     static BuildModeDefinitions()
@@ -54,6 +58,7 @@ public static class BuildModeDefinitions
         _Buildings_Defense = new List<BuildingDefinition>();
         _Buildings_Farming = new List<BuildingDefinition>();
         _Buildings_Housing = new List<BuildingDefinition>();
+        _Buildings_Other = new List<BuildingDefinition>();
 
         _BuildingCategories = new Dictionary<string, List<BuildingDefinition>>();
     }
@@ -74,6 +79,7 @@ public static class BuildModeDefinitions
         _BuildingCategories.Add("Defense", _Buildings_Defense);
         _BuildingCategories.Add("Farming", _Buildings_Farming);
         _BuildingCategories.Add("Housing", _Buildings_Housing);
+        _BuildingCategories.Add("Other", _Buildings_Other);
     }
 
     private static void InitBuildingDefinitions()
@@ -81,6 +87,7 @@ public static class BuildModeDefinitions
         InitDefenseBuildings();
         InitFarmingBuildings();
         InitHousingBuildings();
+        InitOtherBuildings();
     }
 
 
@@ -130,6 +137,13 @@ public static class BuildModeDefinitions
 
     }
 
+    private static void InitOtherBuildings()
+    {
+        string category = "Other";
+
+        CreateBuildingDefinition(category, "Wood Bridge", 250, 3, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[]
+            { CreateMaterialCost(ResourceTypes.Wood, 300), });
+    }
 
     private static BuildingDefinition CreateBuildingDefinition(string category, string buildingName, int maxHealth, int buildingTier, float percentageOfMaterialsRecoveredOnDestroy, uint populationBoost, bool isRound, float radius, MaterialCost[] constructionCosts)
     {
