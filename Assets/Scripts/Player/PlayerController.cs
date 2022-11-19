@@ -133,6 +133,7 @@ public class PlayerController : MonoBehaviour
 
     private BuildModeManager _BuildModeManager;
     private ResourceManager _ResourceManager;
+    private VillageManager_Buildings _VillageManager_Buildings;
 
     private const float _threshold = 0.01f;
 
@@ -171,6 +172,7 @@ public class PlayerController : MonoBehaviour
         _BuildModeManager = GameManager.Instance.BuildModeManager;
         _InputManager = GameManager.Instance.InputManager;
         _ResourceManager = GameManager.Instance.ResourceManager;
+        _VillageManager_Buildings = GameManager.Instance.VillageManager_Buildings;
 
         _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
             
@@ -468,11 +470,19 @@ public class PlayerController : MonoBehaviour
 
     private void DoDestroyAction(GameObject objToDestroy)
     {
-        IBuilding building = objToDestroy.GetComponent<IBuilding>();
+        // We need to get the object with the IBuilding component on it in case
+        // the passed in object is a child of that object. This way we can destroy
+        // the entire building.
+        IBuilding building = objToDestroy.GetComponentInParent<IBuilding>();
 
-        _BuildModeManager.RestoreBuildingMaterials(building.Category, building.Name);
-
-        Destroy(objToDestroy);
+        if (building != null)
+        {
+            _VillageManager_Buildings.DeconstructBuilding(building);
+        }
+        else
+        {
+            Debug.LogError($"GameObject \"{objToDestroy.name}\" cannot be destroyed as it is not a building!");
+        }
     }
 
     private void OnDeath(GameObject sender)

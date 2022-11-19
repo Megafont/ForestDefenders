@@ -10,4 +10,5 @@ public class Building_WoodBridge : Building_Base
     {
         ConfigureBasicBuildingSetup("Other", "Wood Bridge");
     }
+
 }

@@ -32,10 +32,10 @@ public class Projectile_Homing : Projectile_Base
 
 
             // First get the horizontal rotation angle.
-            float angleH = Utils.CalculateSignedAngle(_CurDirection, targetDirection, Vector3.up);
+            float angleH = Utils_Math.CalculateSignedAngle(_CurDirection, targetDirection, Vector3.up);
             
             // Next get the vertical rotation angle (the angle around the local X-axis).
-            float angleV = Utils.CalculateSignedAngle(_CurDirection, targetDirection, transform.right);
+            float angleV = Utils_Math.CalculateSignedAngle(_CurDirection, targetDirection, transform.right);
 
 
             //Debug.Log($" 1: AngleH: {angleH}    AngleV: {angleV}    HomingStr: {_CurHomingStrength}");

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
-
+using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
 
@@ -38,6 +38,15 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
     protected override void InitAI()
     {
         _NearbyTargetDetector = transform.GetComponentInChildren<VillagerTargetDetector>();
+
+        
+        // If we are running in the Unity Editor, display the villager's path.
+        if (DISPLAY_AI_PATHS && Application.isPlaying)
+        {
+            AI_Debug_DrawAIPath debugPathDrawer = gameObject.AddComponent<AI_Debug_DrawAIPath>();
+            debugPathDrawer.SetColorAndWidth(Color.blue, 0.05f);
+        }
+        
 
         _GameManager = GameManager.Instance;
         _ResourceManager = _GameManager.ResourceManager;
@@ -99,17 +108,17 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
 
     protected override void DoTargetCheck()
-    {
+    {      
         if (_GameManager.GameState == GameStates.PlayerBuildPhase)
-            DoTargetCheck_InBuildPhase();
+            DoTargetCheck_BuildPhase();
         else if (_GameManager.GameState == GameStates.MonsterAttackPhase)
-            DoTargetCheck_InMonsterAttackPhase();
+            DoTargetCheck_MonsterAttackPhase();
 
 
         UpdateNearbyTargetDetectorState();
     }
 
-    protected void DoTargetCheck_InBuildPhase()
+    protected void DoTargetCheck_BuildPhase()
     {
         if (_Target == null)
         {
@@ -120,13 +129,15 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
             ResourceNode possibleTargetResourceNode = _ResourceManager.FindNearestResourceNode(transform.position, lowest);
 
             // If another villager is already mining the nearest node, randomly choose a different one that is not depleted.
-            if (possibleTargetResourceNode == null || possibleTargetResourceNode.VillagersMiningThisNode > 0)
+            if (possibleTargetResourceNode == null || possibleTargetResourceNode.VillagersMiningThisNode > 0)            
                 possibleTargetResourceNode = _ResourceManager.GetRandomActiveResourceNode();
 
 
             // Did we find a non-empty resource node?
             if (possibleTargetResourceNode && !possibleTargetResourceNode.IsDepleted)
+            {
                 SetTarget(possibleTargetResourceNode.gameObject);
+            }
 
         }
         // If this villager is chasing a target and the target gets far enough away, revert to the previous target.
@@ -140,7 +151,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
     }
 
-    protected void DoTargetCheck_InMonsterAttackPhase()
+    protected void DoTargetCheck_MonsterAttackPhase()
     {
         // Check if there is an unoccupied Mage Tower.
         Building_MageTower closestUnnoccupiedTower = _VillageManager_Buildings.FindNearestUnoccupiedMageTower(transform.position);
@@ -152,7 +163,10 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
             // Start the AI heading to the tower.
             SetTarget(closestUnnoccupiedTower.gameObject);           
         }
-
+        else
+        {
+            DoTargetCheck_BuildPhase();
+        }
     }
 
     public override bool SetTarget(GameObject target, bool discardCurrentTarget = false)

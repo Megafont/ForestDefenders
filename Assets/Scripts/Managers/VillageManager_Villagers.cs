@@ -290,10 +290,19 @@ public class VillageManager_Villagers : MonoBehaviour
         return _VillagerPrefabs.Values.ToArray()[index];
     }
 
-    private void SendRandomeVillagerToHealBuilding(IBuilding building)
+    private void SendRandomVillagerToHealBuilding(IBuilding building, GameObject attacker)
     {
         int maxTries = 128;
         IVillager villager = null;
+
+        IMonster monster = attacker != null ? attacker.GetComponent<Monster_Base>() : 
+                                              null;
+
+
+        GameObject target = building.gameObject;
+        // Is the attacker a monster
+        if (monster != null)
+            target = monster.gameObject;
 
 
         while (maxTries > 0)
@@ -315,7 +324,7 @@ public class VillageManager_Villagers : MonoBehaviour
             //Debug.Log("Sending villager to heal building!");
 
             _VillagersHealingBuildings.Add(building, villager);
-            villager.SetTarget(building.gameObject);
+            villager.SetTarget(target);
         }
         else
         {
@@ -325,8 +334,9 @@ public class VillageManager_Villagers : MonoBehaviour
 
     private IEnumerator OrderVillagersToHealBuildings()
     {
-        List<IBuilding> damagedBuildings = _VillageManager_Buildings.GetDamagedBuildingsList();
-        if (damagedBuildings.Count == 0 || _AllVillagers.Count == 0)
+        Dictionary<IBuilding, GameObject> damagedBuildings = _VillageManager_Buildings.DamagedBuildingsDictionary;
+        if (damagedBuildings == null ||
+            damagedBuildings.Count == 0 || _AllVillagers.Count == 0)
         {
             //Debug.Log("There are no damaged buildings to heal or no villagers left!");
             yield break;
@@ -376,11 +386,11 @@ public class VillageManager_Villagers : MonoBehaviour
             } // end foreach villager healing a building
 
 
-            foreach (IBuilding building in damagedBuildings)
+            foreach (KeyValuePair<IBuilding, GameObject> pair in damagedBuildings)
             {
                 // Check if the building does NOT have a villager healing it.
-                if (!_VillagersHealingBuildings.ContainsKey(building))
-                    SendRandomeVillagerToHealBuilding(building);
+                if (!_VillagersHealingBuildings.ContainsKey(pair.Key))
+                    SendRandomVillagerToHealBuilding(pair.Key, pair.Value);
 
             } // end foreach damaged building
 
@@ -399,9 +409,9 @@ public class VillageManager_Villagers : MonoBehaviour
 
     // These first two events handle events from the VillageManager_Buildings class.
 
-    private void OnBuildingConstructed(GameObject sender, BuildingDefinition def)
+    private void OnBuildingConstructed(IBuilding building)
     {
-        int temp = _PopulationCap + (int) def.PopulationCapBoost;
+        int temp = _PopulationCap + (int) building.GetBuildingDefinition().PopulationCapBoost;
 
         if (temp > MaxPopulationCap)
             _PopulationCap = MaxPopulationCap;
@@ -409,9 +419,9 @@ public class VillageManager_Villagers : MonoBehaviour
             _PopulationCap = temp;
     }
 
-    private void OnBuildingDestroyed(GameObject sender, BuildingDefinition def)
+    private void OnBuildingDestroyed(IBuilding building, bool wasDeconstructedByPlayer)
     {
-        _PopulationCap -= (int) def.PopulationCapBoost;
+        _PopulationCap -= (int) building.GetBuildingDefinition().PopulationCapBoost;
     }
 
 

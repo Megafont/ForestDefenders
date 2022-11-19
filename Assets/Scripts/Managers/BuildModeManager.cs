@@ -306,11 +306,11 @@ public class BuildModeManager : MonoBehaviour
         {
             ApplyBuildCosts();
 
-            _VillageManager_Buildings.SpawnBuilding(_SelectedBuildingPrefab,
-                                                    _SelectedBuildingCategory,
-                                                    _SelectedBuildingName,
-                                                    _BuildingConstructionGhost.BuildPosition,
-                                                    _BuildingConstructionGhost.transform.rotation);
+            GameObject building = _VillageManager_Buildings.SpawnBuilding(_SelectedBuildingPrefab,
+                                                                          _SelectedBuildingCategory,
+                                                                          _SelectedBuildingName,
+                                                                          _BuildingConstructionGhost.BuildPosition,
+                                                                          _BuildingConstructionGhost.transform.rotation);
 
             _LastBuildTime = Time.time;
         }

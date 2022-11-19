@@ -16,14 +16,17 @@ public class VillageManager_Buildings : MonoBehaviour
     [Header("Buildings Settings")]
 
 
+    private BuildModeManager _BuildModeManager;
+    private NavMeshManager _NavMeshManager;
     private ResourceManager _ResourceManager;
 
     private Dictionary<string, GameObject> _BuildingCategoryParents;
 
-    private List<IBuilding> _DamagedBuildings;
+    private Dictionary<IBuilding, GameObject> _DamagedBuildings;
 
-    public delegate void VillageManager_OnBuildingConstructedHandler(GameObject sender, BuildingDefinition def);
-    public delegate void VillageManager_OnBuildingDestroyedHandler(GameObject sender, BuildingDefinition def);
+
+    public delegate void VillageManager_OnBuildingConstructedHandler(IBuilding building);
+    public delegate void VillageManager_OnBuildingDestroyedHandler(IBuilding building, bool wasDeconstructedByPlayer);
 
     public event VillageManager_OnBuildingConstructedHandler OnBuildingConstructed;
     public event VillageManager_OnBuildingDestroyedHandler OnBuildingDestroyed;
@@ -34,11 +37,13 @@ public class VillageManager_Buildings : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _BuildModeManager = GameManager.Instance.BuildModeManager;
+        _NavMeshManager = GameManager.Instance.NavMeshManager;
         _ResourceManager = GameManager.Instance.ResourceManager;
 
         
         _BuildingCategoryParents = new Dictionary<string, GameObject>();
-        _DamagedBuildings = new List<IBuilding>();
+        _DamagedBuildings = new Dictionary<IBuilding, GameObject>();
 
 
         FindTownCenter();       
@@ -239,10 +244,24 @@ public class VillageManager_Buildings : MonoBehaviour
         return newBuilding;
     }
 
-    public List<IBuilding> GetDamagedBuildingsList()
+    public void DeconstructBuilding(IBuilding building)
     {
-        return _DamagedBuildings;
+        if (building == null)
+        {
+            Debug.LogError("Cannot deconstruct the building, because it is null!");
+            return;
+        }
+
+
+        _BuildModeManager.RestoreBuildingMaterials(building.Category, building.Name);
+
+        OnBuildingDestroyed?.Invoke(building, true);
+
+        RemoveBuilding(building);
+
+        Destroy(building.gameObject);
     }
+
 
     private void AddBuilding(IBuilding building)
     {
@@ -262,13 +281,57 @@ public class VillageManager_Buildings : MonoBehaviour
         building.gameObject.GetComponent<Health>().OnTakeDamage += OnBuildingDamagedHandler;
 
 
-        OnBuildingConstructed?.Invoke(gameObject, building.GetBuildingDefinition());
+        // If the building is a bridge, remove it from the NavMeshManager and regenerate the navmesh.
+        if (building.Name == "Wood Bridge")
+        {
+            _NavMeshManager.RegenerateAllNavMeshes();
+        }
+
+
+        OnBuildingConstructed?.Invoke(building);
 
 
         // If the building has a resource node (like farms do), then add it to the resource manager.
         ResourceNode node = building.gameObject.GetComponent<ResourceNode>();
         if (node)
             _ResourceManager.AddResourceNode(node);
+    }
+
+    private void RemoveBuilding(IBuilding building)
+    {
+        OnBuildingDestroyed?.Invoke(building, false);
+
+
+        // Debug.Log("Building destroyed: " + building.Name);
+
+
+        building.gameObject.GetComponent<Health>().OnDeath -= OnBuildingDestroyedHandler;
+        building.gameObject.GetComponent<Health>().OnHeal -= OnBuildingHealedHandler;
+        building.gameObject.GetComponent<Health>().OnTakeDamage -= OnBuildingDamagedHandler;
+
+
+        // If the building has a resource node (like farms do), then remove it from the resource manager.
+        ResourceNode node = building.gameObject.GetComponent<ResourceNode>();
+        if (node)
+            _ResourceManager.RemoveResourceNode(node);
+
+
+        // If the building is a bridge, remove it from the NavMeshManager and regenerate the navmesh.
+        if (building.Name == "Wood Bridge")
+        {
+            //_NavMeshManager.RegenerateAllNavMeshes();
+            StartCoroutine(WaitForBuildingToDespawn(building.gameObject));
+        }
+
+    }
+
+    private IEnumerator WaitForBuildingToDespawn(GameObject building)
+    {
+        while (building != null)
+            yield return null;
+
+
+        _NavMeshManager.RegenerateAllNavMeshes();
     }
 
 
@@ -282,30 +345,17 @@ public class VillageManager_Buildings : MonoBehaviour
 
         IBuilding building = sender.GetComponent<IBuilding>();
 
+        RemoveBuilding(building);
 
-        OnBuildingDestroyed?.Invoke(gameObject, building.GetBuildingDefinition());
-
-
-        Debug.Log("Building destroyed: " + building.Name);
-
-
-        building.gameObject.GetComponent<Health>().OnDeath -= OnBuildingDestroyedHandler;
-        building.gameObject.GetComponent<Health>().OnHeal -= OnBuildingHealedHandler;
-        building.gameObject.GetComponent<Health>().OnTakeDamage -= OnBuildingDamagedHandler;
-
-
-        // If the building has a resource node (like farms do), then remove it from the resource manager.
-        ResourceNode node = sender.GetComponent<ResourceNode>();
-        if (node)
-            _ResourceManager.RemoveResourceNode(node);
+        OnBuildingDestroyed?.Invoke(building, false);
     }
 
     private void OnBuildingDamagedHandler(GameObject sender, GameObject attacker, float amount)    
     {
         IBuilding building = sender.GetComponent<IBuilding>();
 
-        if (!_DamagedBuildings.Contains(building))
-            _DamagedBuildings.Add(building);
+        if (!_DamagedBuildings.ContainsKey(building))
+            _DamagedBuildings.Add(building, attacker);
     }
 
     private void OnBuildingHealedHandler(GameObject sender, GameObject healer, float amount)
@@ -321,6 +371,7 @@ public class VillageManager_Buildings : MonoBehaviour
     // PROPERTIES
     // ========================================================================================================================================================================================================
 
+    public Dictionary<IBuilding, GameObject> DamagedBuildingsDictionary { get; private set; }
     public GameObject TownCenter { get; private set; }
 
 }

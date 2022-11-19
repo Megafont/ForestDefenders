@@ -15,6 +15,11 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public abstract class AI_Base : MonoBehaviour
 {
+    // Whether or not to display the AI paths.
+    protected const bool DISPLAY_AI_PATHS = true;
+
+
+
     public float DeathFadeOutTime = 2.0f;
 
     [Tooltip("This is the maximum movement speed. Make sure the walk/run thresholds are set correctly in the Animator's blend tree node, too.")]
@@ -36,6 +41,7 @@ public abstract class AI_Base : MonoBehaviour
 
     protected bool _MovingToTargetAndIgnoreAllUntilArrived;
 
+    protected float _InteractionRange;
     protected float _LastInteractionTime;
     protected bool _IsInteracting;
 
@@ -49,6 +55,7 @@ public abstract class AI_Base : MonoBehaviour
         _Health = GetComponent<Health>();
         _NavMeshAgent = GetComponent<NavMeshAgent>();
 
+        _InteractionRange = _NavMeshAgent.radius + 1.0f;
 
         _Health.OnDeath += OnDeath;
     }
@@ -84,6 +91,21 @@ public abstract class AI_Base : MonoBehaviour
     protected abstract void InitAI();
     protected virtual void UpdateAI()
     {
+        // If the path is invalid or partial, set target to null so the AI can find a new one.
+        if (_Target &&
+            _NavMeshAgent.pathStatus == NavMeshPathStatus.PathInvalid ||
+            _NavMeshAgent.pathStatus == NavMeshPathStatus.PathPartial)
+        {
+            // Check if the end of the path is within interaction distance of the target.
+            // If not, set target to null so the AI can try to find a new reachable one.
+            if (Vector3.Distance(_NavMeshAgent.pathEndPosition, _Target.transform.position) > _InteractionRange)
+            {
+                SetTarget(null, true);
+                //Debug.Log("PATH INVALID OR PARTIAL!");
+            }
+        }
+
+
         // This is here in case another NavMeshAgent bumps this one away from its target.
         // This allows it to move back to the target and continue working or attacking.
         if (_Target &&
@@ -94,7 +116,7 @@ public abstract class AI_Base : MonoBehaviour
         }
 
 
-        if (IsWithinInteractionRange())
+        if (_Target && IsWithinInteractionRange())
         {
             if (!_NavMeshAgent.isStopped)
             {
@@ -186,7 +208,11 @@ public abstract class AI_Base : MonoBehaviour
         if (_Target)
         {
             if (_NavMeshAgent.enabled)
-                _NavMeshAgent.destination = _Target.transform.position;
+            {
+                Vector3 randomPoint = Utils_Math.GetRandomPointAroundTarget(_Target.transform);
+                _NavMeshAgent.SetDestination(randomPoint);
+                //Debug.Log($"Target: {_Target.transform.position}    Point: {randomPoint}");
+            }
 
             _NavMeshAgent.isStopped = false;
 
@@ -258,11 +284,15 @@ public abstract class AI_Base : MonoBehaviour
 
     protected bool IsWithinInteractionRange()
     {
-        return GetDistanceToTarget() <= _NavMeshAgent.radius + 0.5f;
+        return GetDistanceToTarget() <= _InteractionRange;                                 
     }
 
     protected float GetDistanceToTarget()
     {
+        if (_Target == null)
+            return 0f;
+
+
         float distance = float.MaxValue;
 
        

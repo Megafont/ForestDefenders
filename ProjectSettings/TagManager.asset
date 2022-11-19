@@ -12,6 +12,7 @@ TagManager:
   - VillagerTargetDetector
   - Monster
   - MonsterTargetDetector
+  - BridgeConstructionZone
   layers:
   - Default
   - TransparentFX

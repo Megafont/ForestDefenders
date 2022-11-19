@@ -1612,9 +1612,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DeathFadeOutTime: 2
   MaxMovementSpeed: 8
+  InteractionFrequency: 2
   AttackPower: 5
-  AttackCooldownTime: 2
-  AttackRange: 1
+  AttackFrequency: 2
   MaxChaseDistance: 10
   TargetCheckFrequency: 5
   TargetCheckRadius: 5

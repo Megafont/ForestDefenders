@@ -11,7 +11,10 @@ using TMPro;
 
 public partial class GameManager : MonoBehaviour
 {
-    [Header("UI")]
+    [Header("Player")]
+    public Transform PlayerSpawnPoint;
+
+    [Header("UI - Elements")]
     public TMP_Text UI_TimeToNextWaveText;
     public TMP_Text UI_WaveNumberText;
     public TMP_Text UI_MonstersLeftText;
@@ -23,9 +26,11 @@ public partial class GameManager : MonoBehaviour
     public TMP_Text UI_WoodCountText;
     public TMP_Text UI_StoneCountText;
 
+    [Header("UI - Stockpile Text Colors")]
     public Color ResourceStockPilesVeryLowColor = Color.red;
     public Color ResourceStockPilesLowColor = new Color32(255, 128, 0, 255);
     public Color ResourceStockPilesColor = Color.white;
+
 
     public static GameManager Instance;
 
@@ -35,6 +40,7 @@ public partial class GameManager : MonoBehaviour
     public CameraManager CameraManager { get; private set; }
     public InputManager InputManager { get; private set; }
     public MonsterManager MonsterManager { get; private set; }
+    public NavMeshManager NavMeshManager { get; private set; }
     public ResourceManager ResourceManager { get; private set; }
     public VillageManager_Buildings VillageManager_Buildings { get; private set; }
     public VillageManager_Villagers VillageManager_Villagers { get; private set; }
@@ -67,12 +73,11 @@ public partial class GameManager : MonoBehaviour
             throw new Exception("There is already a GameManager present in the scene!");
 
 
-        
-        GameObject playerPrefab = Resources.Load<GameObject>("Player/Player_Male");
-        GameObject playerObj = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
+        if (PlayerSpawnPoint == null)
+            throw new Exception("The player spawn point has not been set in the inspector!");
 
-        Player = playerObj.transform.Find("Player Armature").gameObject;
-        Player.GetComponent<Health>().OnDeath += OnPlayerDeath;
+
+        SpawnPlayer();
 
         GetManagerReferences();
 
@@ -124,6 +129,34 @@ public partial class GameManager : MonoBehaviour
         } // end switch GameState
     }
 
+    private void SpawnPlayer()
+    {
+        GameObject playerPrefab = Resources.Load<GameObject>("Player/Player_Male");
+        GameObject playerObj = null;
+
+        float xPos = PlayerSpawnPoint.position.x;
+        float zPos = PlayerSpawnPoint.position.z;
+
+        // Detect the ground height at the player spawn point.
+        if (Utils_Math.DetectGroundHeightAtPos(xPos,
+                                               zPos,
+                                               LayerMask.GetMask(new string[] { "Ground" }),
+                                               out float groundHeight))
+        {
+            playerObj = Instantiate(playerPrefab,
+                                    new Vector3(xPos, groundHeight, zPos),
+                                    Quaternion.identity);
+        }
+        else
+        {
+            throw new Exception("Failed to spawn the player, as there is no ground at the player spawn point!");
+        }
+
+
+        Player = playerObj.transform.Find("Player Armature").gameObject;
+        Player.GetComponent<Health>().OnDeath += OnPlayerDeath;
+    }
+
     private void UpdateResourceStockpileCounterUI(TMP_Text textUI, string labelText, int currentAmount)
     {
         textUI.text = $"{labelText}{currentAmount}";
@@ -165,6 +198,7 @@ public partial class GameManager : MonoBehaviour
         CameraManager = GameObject.Find("Camera Manager").GetComponent<CameraManager>();
         InputManager = GameObject.Find("Input Manager").GetComponent<InputManager>();
         MonsterManager = GameObject.Find("Monster Manager").GetComponent<MonsterManager>();
+        NavMeshManager = GameObject.Find("Nav Mesh Manager").GetComponent<NavMeshManager>();
         ResourceManager = GameObject.Find("Resource Manager").GetComponent<ResourceManager>();
         VillageManager_Buildings = GameObject.Find("Village Manager").GetComponent<VillageManager_Buildings>();
         VillageManager_Villagers = GameObject.Find("Village Manager").GetComponent<VillageManager_Villagers>();

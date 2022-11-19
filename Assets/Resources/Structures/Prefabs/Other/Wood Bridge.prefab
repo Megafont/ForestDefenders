@@ -12,12 +12,12 @@ GameObject:
   - component: {fileID: 562840374471186835}
   - component: {fileID: 441645637650150293}
   - component: {fileID: 2974863581963228669}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Foundation (Left)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &8062424968352755764
 Transform:
@@ -110,12 +110,12 @@ GameObject:
   - component: {fileID: 1478413936654261779}
   - component: {fileID: 3947246439923371588}
   - component: {fileID: 5002834676131445305}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Foundation (Right)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &4679687232370062018
 Transform:
@@ -208,12 +208,12 @@ GameObject:
   - component: {fileID: 1308926132085699301}
   - component: {fileID: 7434370454941199930}
   - component: {fileID: 3236271464181831954}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &7770799466028516475
 Transform:
@@ -305,12 +305,12 @@ GameObject:
   - component: {fileID: 6892418808142749470}
   - component: {fileID: 7386830502981189211}
   - component: {fileID: 81667627049328181}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wood Bridge
-  m_TagString: Untagged
+  m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &6892418808142749470
 Transform:

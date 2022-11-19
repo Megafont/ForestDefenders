@@ -44,7 +44,7 @@ public class NavMeshManager : MonoBehaviour
 
 
     public void RegenerateAllNavMeshes()
-    {
+    {        
         for (int i = 0; i < _NavMeshSurfaces.Count; i++)
         {
             _NavMeshSurfaces[i].BuildNavMesh();
@@ -93,7 +93,7 @@ public class NavMeshManager : MonoBehaviour
     /// <param name="obj">The GameObject to scan.</param>
     /// <param name="addSurfaces">Whether or not to add NavMeshSurfaces from obj into _NavMeshSurfaces. If this parameter is false, the NavMeshSurfaces of obj will be removed from _NavMeshSurfaces instead.</param>
     /// <param name="regenerateNavMeshes">Whether or not surfaces added will also have their nav meshes regenerated at the same time.</param>
-    private void ProcessGameObject(GameObject obj, bool addSurfaces, bool regenerateNavMeshes = true)
+    private void ProcessGameObject(GameObject obj, bool addSurfaces, bool regenerateNavMeshes = false)
     {
         // Add the object to our list if it is not already in it.
         if (addSurfaces && !_NavMeshSurfaceObjects.Contains(obj))
@@ -132,14 +132,20 @@ public class NavMeshManager : MonoBehaviour
             }
 
 
+            /* This code doesn't work currently, because each object in our list gets a separate nav mesh built for it if we do it this way.
+             * So I replaced it with the code below this loop.
             if (regenerateNavMeshes)
             {
                 // Tell this NavMeshSurface to rebuild its nav mesh.                
                 s.BuildNavMesh();
             }
+            */
 
         } // end foreach NavMeshSurface
 
+
+        if (regenerateNavMeshes)
+            RegenerateAllNavMeshes();
 
     }
 

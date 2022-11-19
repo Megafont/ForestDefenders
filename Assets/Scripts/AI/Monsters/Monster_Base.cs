@@ -29,6 +29,15 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
     {
         _NearbyTargetDetector = transform.GetComponentInChildren<MonsterTargetDetector>();
 
+
+        // If we are running in the Unity Editor, display the villager's path.
+        if (DISPLAY_AI_PATHS && Application.isPlaying)
+        {
+            AI_Debug_DrawAIPath debugPathDrawer = gameObject.AddComponent<AI_Debug_DrawAIPath>();
+            debugPathDrawer.SetColorAndWidth(Color.red, 0.05f);
+        }
+
+
         GameObject _Player = GameManager.Instance.Player;
 
         base.InitAI();
