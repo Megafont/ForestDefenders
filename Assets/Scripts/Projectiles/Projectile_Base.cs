@@ -49,7 +49,7 @@ public abstract class Projectile_Base : MonoBehaviour, IProjectile
     // Update is called once per frame
     void Update()
     {
-        UpdateProjectile();    
+        UpdateProjectile();
     }
 
     private void OnTriggerEnter(Collider other)

@@ -77,7 +77,7 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
 
         _BuildingDefinition = BuildModeDefinitions.GetBuildingDefinition(Category, Name);
         _Health.MaxHealth = _BuildingDefinition.MaxHealth;
-        _Health.Heal(_BuildingDefinition.MaxHealth, gameObject);
+        _Health.ResetHealthToMax();
     }
 
     protected virtual void InitBuilding()

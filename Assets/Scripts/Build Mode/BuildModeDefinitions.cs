@@ -19,6 +19,7 @@ public class BuildingDefinition
 
     public uint PopulationCapBoost; // The number of villagers that will spawn after the building is constructed.
 
+    public float Height; // Height of the building.
     // Collider data (used ESPECIALLY for the build mode construction ghost)
     public bool IsRound;
     public float Radius; // This value controls the size of the construction ghost's collider. It can't use a MeshCollider like the building prefabs
@@ -95,19 +96,19 @@ public static class BuildModeDefinitions
     {
         string category = "Defense";
 
-        CreateBuildingDefinition(category, "Barricade", 20, 1, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[] 
+        CreateBuildingDefinition(category, "Barricade", 20, 1, _MaterialRecoveryRate, 0, 1f, false, 0.0f, new MaterialCost[] 
             { CreateMaterialCost(ResourceTypes.Wood, 25) });
-        CreateBuildingDefinition(category, "Wood Wall", 50, 2, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Wood Wall", 50, 2, _MaterialRecoveryRate, 0, 2f, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 50) });
-        CreateBuildingDefinition(category, "Stone Wall", 100, 3, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Stone Wall", 100, 3, _MaterialRecoveryRate, 0, 2f, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 100),
               CreateMaterialCost(ResourceTypes.Stone, 100), });
 
 
-        CreateBuildingDefinition(category, "Mage Tower", 500, 2, _MaterialRecoveryRate, 0, true, 4f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Mage Tower", 500, 2, _MaterialRecoveryRate, 0, 6f, true, 4f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 500),
               CreateMaterialCost(ResourceTypes.Stone, 500) });
-        CreateBuildingDefinition(category, "Spike Tower", 200, 2, _MaterialRecoveryRate, 0, true, 4f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Spike Tower", 200, 2, _MaterialRecoveryRate, 0, 5f, true, 4f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 250),
               CreateMaterialCost(ResourceTypes.Stone, 250) });
         
@@ -117,9 +118,9 @@ public static class BuildModeDefinitions
     {
         string category = "Farming";
 
-        CreateBuildingDefinition(category, "Small Garden", 50, 1, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Small Garden", 50, 1, _MaterialRecoveryRate, 0, 0.5f, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 50) });
-        CreateBuildingDefinition(category, "Farm", 100, 2, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Farm", 100, 2, _MaterialRecoveryRate, 0, 1.0f, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 100) });
 
     }
@@ -128,10 +129,10 @@ public static class BuildModeDefinitions
     {
         string category = "Housing";
 
-        CreateBuildingDefinition(category, "Small House", 100, 1, _MaterialRecoveryRate, 1, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Small House", 100, 1, _MaterialRecoveryRate, 1, 3.0f, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 50),
               CreateMaterialCost(ResourceTypes.Stone, 50), });
-        CreateBuildingDefinition(category, "Medium House", 150, 2, _MaterialRecoveryRate, 2, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Medium House", 150, 2, _MaterialRecoveryRate, 2, 3.0f, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 100),
               CreateMaterialCost(ResourceTypes.Stone, 100), });
 
@@ -141,11 +142,11 @@ public static class BuildModeDefinitions
     {
         string category = "Other";
 
-        CreateBuildingDefinition(category, "Wood Bridge", 250, 3, _MaterialRecoveryRate, 0, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Wood Bridge", 250, 3, _MaterialRecoveryRate, 0, 0.5f, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 300), });
     }
 
-    private static BuildingDefinition CreateBuildingDefinition(string category, string buildingName, int maxHealth, int buildingTier, float percentageOfMaterialsRecoveredOnDestroy, uint populationBoost, bool isRound, float radius, MaterialCost[] constructionCosts)
+    private static BuildingDefinition CreateBuildingDefinition(string category, string buildingName, int maxHealth, int buildingTier, float percentageOfMaterialsRecoveredOnDestroy, uint populationBoost, float height, bool isRound, float radius, MaterialCost[] constructionCosts)
     {
         if (constructionCosts == null)
             throw new ArgumentNullException("The passed in construction costs list is null!");
@@ -166,6 +167,7 @@ public static class BuildModeDefinitions
 
             PopulationCapBoost = populationBoost,
 
+            Height = height,
             IsRound = isRound,
             Radius = radius,
 

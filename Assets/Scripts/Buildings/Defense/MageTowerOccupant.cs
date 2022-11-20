@@ -34,7 +34,7 @@ public class MageTowerOccupant : MonoBehaviour
     void Awake()
     {
         if (_ProjectilePool == null)
-            _ProjectilePool = new ObjectPool<IProjectile>(CreateProjectile, OnReturnedToPool, OnTakenFromPool, OnDestroyPoolObject, true, 128, 1024);
+            _ProjectilePool = new ObjectPool<IProjectile>(CreateProjectile, OnTakenFromPool, OnReturnedToPool, OnDestroyPoolObject, true, 128, 1024);
 
 
         if (_MagicProjectilePrefab == null)

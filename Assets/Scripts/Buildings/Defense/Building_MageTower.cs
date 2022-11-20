@@ -113,7 +113,7 @@ public class Building_MageTower : Building_Base
             else if (_VillagerOccupant is Villager_Male)
                 _ActiveMageInstance = _MaleMageInstance;
 
-            _ActiveMageInstance.HealthComponent.Heal(_VillagerOccupant.HealthComponent.MaxHealth, gameObject);
+            _ActiveMageInstance.HealthComponent.ResetHealthToMax();
             _ActiveMageInstance.gameObject.SetActive(true);
         }
         else

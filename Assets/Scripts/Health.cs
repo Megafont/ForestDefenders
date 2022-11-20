@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.AI;
 
 
 public class Health : MonoBehaviour
@@ -91,7 +92,9 @@ public class Health : MonoBehaviour
             CurrentHealth = 0;
             OnDeath?.Invoke(gameObject);
         }
-        
+
+
+        SpawnHealthPopup(-amount);
     }
 
     public void Heal(float amount, GameObject healer)
@@ -106,6 +109,17 @@ public class Health : MonoBehaviour
             CurrentHealth = MaxHealth;
 
         OnHeal?.Invoke(gameObject, healer, amount);
+
+
+        SpawnHealthPopup(amount);
+    }
+
+    /// <summary>
+    /// Resets health to max without firing any health changed events.
+    /// </summary>
+    public void ResetHealthToMax()
+    {
+        CurrentHealth = MaxHealth;
     }
 
     private IEnumerator DoDamageFlash()
@@ -123,6 +137,21 @@ public class Health : MonoBehaviour
             renderer.material.color = Color.white;
     }
 
+    private void SpawnHealthPopup(float healthChangedAmount)
+    {
+        Vector3 startPos = transform.position;
+        
+        NavMeshAgent agent = GetComponent<NavMeshAgent>();
+        IBuilding building = GetComponent<Building_Base>();
+
+        if (agent != null)
+            startPos.y += agent.height / 2;
+        else if (building != null)
+            startPos.y += building.GetBuildingDefinition().Height - 1.0f;
+
+
+        HealthPopup popup = HealthPopup.ShowHealthPopup(startPos, healthChangedAmount);
+    }
 
     private void FindRenderers()
     {

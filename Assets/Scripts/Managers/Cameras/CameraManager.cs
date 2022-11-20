@@ -71,6 +71,11 @@ public class CameraManager : MonoBehaviour
         return _ActiveCameraID;
     }
 
+    public ICinemachineCamera GetCameraWithID(int cameraID)
+    {
+        return _Cameras[cameraID];
+    }
+
     public void RegisterCamera(int cameraID, ICinemachineCamera newCamera)
     {
         if (newCamera == null)
