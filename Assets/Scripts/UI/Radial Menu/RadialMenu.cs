@@ -52,10 +52,10 @@ public class RadialMenu : MonoBehaviour
         _BuildModeManager = GameManager.Instance.BuildModeManager;
         _InputManager = GameManager.Instance.InputManager;
 
-        _MenuTitleUI = GameObject.Find("Radial Menu/Panel/Title Bar/Title Text (TMP)").GetComponent<TMP_Text>();
-        _MenuBottomBarUI = GameObject.Find("Radial Menu/Panel/Bottom Text Bar/Bottom Text Bar (TMP)").GetComponent<TMP_Text>();
-        _RadialMenuPanel = GameObject.Find("Radial Menu/Panel");
-        _RadialMenuItemsParent = GameObject.Find("Radial Menu/Panel/Menu Items Parent");
+        _MenuTitleUI = GameObject.Find("Radial Menu Canvas/Panel/Title Bar/Title Text (TMP)").GetComponent<TMP_Text>();
+        _MenuBottomBarUI = GameObject.Find("Radial Menu Canvas/Panel/Bottom Text Bar/Bottom Text Bar (TMP)").GetComponent<TMP_Text>();
+        _RadialMenuPanel = GameObject.Find("Radial Menu Canvas/Panel");
+        _RadialMenuItemsParent = GameObject.Find("Radial Menu Canvas/Panel/Menu Items Parent");
 
 
         _MenuItems = new List<RadialMenuItem>();

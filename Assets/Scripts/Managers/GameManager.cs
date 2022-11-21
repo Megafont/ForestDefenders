@@ -15,6 +15,8 @@ public partial class GameManager : MonoBehaviour
     public Transform PlayerSpawnPoint;
 
     [Header("UI - Elements")]
+    public TMP_Text UI_GamePhaseText;
+
     public TMP_Text UI_TimeToNextWaveText;
     public TMP_Text UI_WaveNumberText;
     public TMP_Text UI_MonstersLeftText;
@@ -55,6 +57,8 @@ public partial class GameManager : MonoBehaviour
 
     private int _Score;
 
+    private WaitForSeconds _GamePhaseDisplayDelay = new WaitForSeconds(2.5f);
+
 
 
     public GameStates GameState { get; private set; } = GameStates.Startup;
@@ -63,6 +67,7 @@ public partial class GameManager : MonoBehaviour
     public delegate void GameManager_GameStateChangedHandler(GameStates newGameState);
 
     public event GameManager_GameStateChangedHandler OnGameStateChanged;
+
 
 
     void Awake()
@@ -217,6 +222,8 @@ public partial class GameManager : MonoBehaviour
         UI_TimeToNextWaveText.enabled = false;
         UI_WaveNumberText.enabled = false;
 
+        UI_GamePhaseText.enabled = false;
+
         UI_ScoreText.text = UI_ScoreText.text = "Score: 0000000000";
 
 
@@ -250,7 +257,7 @@ public partial class GameManager : MonoBehaviour
 
     private void InitRadialMenu()
     {
-        GameObject obj = GameObject.Find("Radial Menu");
+        GameObject obj = GameObject.Find("Radial Menu Canvas");
         if (!obj)
             throw new Exception("The radial menu GameObject was not found!");
         else
@@ -265,7 +272,9 @@ public partial class GameManager : MonoBehaviour
     {
         MonsterManager.ResetComboStreak();
 
+        bool prevGameStateWasStartup = GameState == GameStates.Startup;
         GameState = newGameState;
+        
         _GameStateStartTime = Time.time;
 
 
@@ -274,11 +283,16 @@ public partial class GameManager : MonoBehaviour
             case GameStates.PlayerBuildPhase:
                 ResourceManager.RestoreResourceNodes();
                 UI_TimeToNextWaveText.enabled = true;
+                
+                if (!prevGameStateWasStartup)
+                    StartCoroutine(ShowGamePhaseText("Monster Attack Defeated!", Color.green));
+
                 break;
 
             case GameStates.MonsterAttackPhase:
                 UI_MonstersLeftText.enabled = true;
                 UI_WaveNumberText.enabled = true;
+                StartCoroutine(ShowGamePhaseText("Monsters Are Attacking!", Color.red));
 
                 MonsterManager.BeginNextWave();
                 break;
@@ -364,5 +378,33 @@ public partial class GameManager : MonoBehaviour
         UI_StoneCountText.enabled = false;
     }
 
+    private IEnumerator ShowGamePhaseText(string text, Color32 color)
+    {
+        UI_GamePhaseText.text = text;
+        UI_GamePhaseText.fontMaterial.SetColor("_FaceColor", color);
+        UI_GamePhaseText.outlineColor = Color.black;
+
+        UI_GamePhaseText.enabled = true;
+
+
+        yield return _GamePhaseDisplayDelay;
+
+
+        float fadeStartTime = Time.time;
+        float elapsedTime = 0;
+
+        float fadeTime = 2.5f;
+        while(elapsedTime < fadeTime)
+        {
+            elapsedTime += Time.deltaTime;
+
+            UI_GamePhaseText.fontMaterial.SetColor("_FaceColor", Color.Lerp(color, Color.clear, elapsedTime));
+            UI_GamePhaseText.outlineColor = Color.Lerp(Color.black, Color.clear, elapsedTime);
+
+            yield return null;
+        }
+
+        UI_GamePhaseText.enabled = false;
+    }
 }
 
