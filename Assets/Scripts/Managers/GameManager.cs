@@ -33,10 +33,15 @@ public partial class GameManager : MonoBehaviour
     public Color ResourceStockPilesLowColor = new Color32(255, 128, 0, 255);
     public Color ResourceStockPilesColor = Color.white;
 
+    [Header("UI - Settings")]
+    public float GamePhaseTextFadeOutTime = 3.0f;
+
 
     public static GameManager Instance;
 
     public GameObject Player { get; private set; }
+
+    public SceneSwitcher SceneSwitcher { get; private set; }
 
     public BuildModeManager BuildModeManager { get; private set; }
     public CameraManager CameraManager { get; private set; }
@@ -58,6 +63,7 @@ public partial class GameManager : MonoBehaviour
     private int _Score;
 
     private WaitForSeconds _GamePhaseDisplayDelay = new WaitForSeconds(2.5f);
+    
 
 
 
@@ -80,6 +86,9 @@ public partial class GameManager : MonoBehaviour
 
         if (PlayerSpawnPoint == null)
             throw new Exception("The player spawn point has not been set in the inspector!");
+
+
+        SceneSwitcher = FindObjectOfType<SceneSwitcher>();
 
 
         SpawnPlayer();
@@ -105,6 +114,10 @@ public partial class GameManager : MonoBehaviour
 
         // Make sure the main camera is active.
         CameraManager.SwitchToCamera((int) CameraIDs.PlayerFollow);
+
+
+        // Fade in the scene.
+        SceneSwitcher.FadeIn();
     }
 
     // Update is called once per frame
@@ -393,8 +406,7 @@ public partial class GameManager : MonoBehaviour
         float fadeStartTime = Time.time;
         float elapsedTime = 0;
 
-        float fadeTime = 2.5f;
-        while(elapsedTime < fadeTime)
+        while(elapsedTime < GamePhaseTextFadeOutTime)
         {
             elapsedTime += Time.deltaTime;
 

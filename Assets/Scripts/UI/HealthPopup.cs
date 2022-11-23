@@ -14,7 +14,7 @@ public class HealthPopup : MonoBehaviour
 
     [SerializeField]
     [Range(0f, 5f)]
-    private float _FadeStartDelay = 1.0f;
+    private float _FadeStartDelay = 2.0f;
 
     [SerializeField]
     [Range(0f, 5f)]
@@ -59,12 +59,9 @@ public class HealthPopup : MonoBehaviour
         }
         else if (_ElapsedTime - _FadeStartDelay <= _FadeOutTime)
         {
-            byte alpha = (byte)(((_ElapsedTime - _FadeStartDelay) / _FadeOutTime) * 255f);
-            alpha = (byte)(255 - alpha);
+            float percent = (_ElapsedTime - _FadeStartDelay) / _FadeOutTime;
 
-            Color32 color = _TMP_Text.color;
-            color.a = alpha;
-            _TMP_Text.color = color;
+            _TMP_Text.color = Color.Lerp(_TMP_Text.color, Color.clear, percent);
         }
         else
         {
