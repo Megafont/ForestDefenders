@@ -7,12 +7,13 @@ using UnityEngine;
 using Cinemachine;
 
 using TMPro;
-
+using UnityEngine.InputSystem;
 
 public partial class GameManager : MonoBehaviour
 {
     [Header("Player")]
     public Transform PlayerSpawnPoint;
+    public float FallOutOfWorldDeathHeight = -32;
 
     [Header("UI - Elements")]
     public TMP_Text UI_GamePhaseText;
@@ -108,12 +109,7 @@ public partial class GameManager : MonoBehaviour
         _BuildPhaseLength = BuildModeManager.BuildPhaseBaseLength;
 
 
-        // Register main camera.
-        ICinemachineCamera mainCam = GameObject.Find("PlayerFollowCamera").GetComponent<ICinemachineCamera>();
-        CameraManager.RegisterCamera((int)CameraIDs.PlayerFollow, mainCam);
-
-        // Make sure the main camera is active.
-        CameraManager.SwitchToCamera((int) CameraIDs.PlayerFollow);
+        InitCameras();
 
 
         // Fade in the scene.
@@ -145,6 +141,11 @@ public partial class GameManager : MonoBehaviour
                 break;
 
         } // end switch GameState
+
+
+        if (GameState != GameStates.GameOver)
+            CheckIfGameIsOver();
+
     }
 
     private void SpawnPlayer()
@@ -222,6 +223,22 @@ public partial class GameManager : MonoBehaviour
         VillageManager_Villagers = GameObject.Find("Village Manager").GetComponent<VillageManager_Villagers>();
     }
 
+    private void InitCameras()
+    {
+        // Register main camera.
+        ICinemachineCamera mainCam = GameObject.Find("CM Player Follow Camera").GetComponent<ICinemachineCamera>();
+        CameraManager.RegisterCamera((int) CameraIDs.PlayerFollow, mainCam);
+
+        // Register game over camera.
+        ICinemachineCamera gameOverCam = GameObject.Find("CM Game Over Cam").GetComponent<ICinemachineCamera>();
+        gameOverCam.Follow = Player.transform;
+        gameOverCam.LookAt = Player.transform;
+        CameraManager.RegisterCamera((int) CameraIDs.GameOver, gameOverCam);
+
+        // Make sure the main camera is active.
+        CameraManager.SwitchToCamera((int) CameraIDs.PlayerFollow);
+    }
+
     private void InitInput()
     {
         InputManager.RegisterInputActionMap((int) InputActionMapIDs.Player, "Player", true);
@@ -257,9 +274,27 @@ public partial class GameManager : MonoBehaviour
         // NOTE: We don't check if the player is dead here, as we receive an event when that happens via the OnPlayerDeath() method below, which instantly switches us to the GameOver game state;
         if (VillageManager_Buildings.GetTotalBuildingCount() == 0 &&
             VillageManager_Villagers.Population == 0 &&
-            Player == null)
+            Player == null ||
+            Player.transform.position.y <= FallOutOfWorldDeathHeight)
         {
+
+            ICinemachineCamera gameOvercam = CameraManager.GetCameraWithID((int)CameraIDs.GameOver);
+            if (Player.transform.position.y <= FallOutOfWorldDeathHeight)
+            {
+                Transform townCenterTransform = VillageManager_Buildings.TownCenter.transform;
+                gameOvercam.LookAt = townCenterTransform;
+                gameOvercam.Follow = townCenterTransform;
+            }
+            else
+            {
+                gameOvercam.LookAt = Player.transform;
+                gameOvercam.Follow = Player.transform;
+            }
+
+
             ChangeGameState(GameStates.GameOver);
+
+
             return true;
         }
         else
@@ -298,20 +333,33 @@ public partial class GameManager : MonoBehaviour
                 UI_TimeToNextWaveText.enabled = true;
                 
                 if (!prevGameStateWasStartup)
-                    StartCoroutine(ShowGamePhaseText("Monster Attack Defeated!", Color.green));
+                    StartCoroutine(ShowGamePhaseTextAndFadeOut("Monster Attack Defeated!", Color.green));
 
                 break;
 
             case GameStates.MonsterAttackPhase:
                 UI_MonstersLeftText.enabled = true;
                 UI_WaveNumberText.enabled = true;
-                StartCoroutine(ShowGamePhaseText("Monsters Are Attacking!", Color.red));
+                StartCoroutine(ShowGamePhaseTextAndFadeOut("Monsters Are Attacking!", Color.red));
 
                 MonsterManager.BeginNextWave();
                 break;
 
             case GameStates.GameOver:
-                DisableHUD();
+                // Disable HUD.
+                EnableHUD(false);
+
+                // Disable player input.
+                InputManager.EnableInputActionMap((int) InputActionMapIDs.Player, false);
+
+                // Switch to game over camera.
+                CameraManager.SwitchToCamera((int)CameraIDs.GameOver);
+
+                // Fade the screen to somewhat red.
+                SceneSwitcher.FadeOut(new Color32(128, 0, 0, 180), 2.5f);
+
+                ShowGamePhaseText("Game Over!", Color.red);
+
                 break;
 
         } // end switch GameState
@@ -340,9 +388,6 @@ public partial class GameManager : MonoBehaviour
 
     private void GameState_MonsterAttackPhase()
     {
-        CheckIfGameIsOver();
-
-
         int monstersLeft = MonsterManager.MonstersLeft;
 
         UI_MonstersLeftText.text = $"Monsters Left: {monstersLeft} of {MonsterManager.CurrentWaveSize}";
@@ -363,7 +408,7 @@ public partial class GameManager : MonoBehaviour
 
     private void GameState_GameOver()
     {
-        Debug.LogError("Game Over!");
+        //Debug.LogError("Game Over!");
     }
 
     private void UpdateWaveTimer(float timeToNextWave)
@@ -380,18 +425,20 @@ public partial class GameManager : MonoBehaviour
         ChangeGameState(GameStates.GameOver);
     }
 
-    private void DisableHUD()
+    private void EnableHUD(bool state = true)
     {
-        UI_MonstersLeftText.enabled = false;
-        UI_ScoreText.enabled = false;
-        UI_TimeToNextWaveText.enabled = false;
-        UI_WaveNumberText.enabled = false;
+        UI_MonstersLeftText.enabled = state;
+        UI_ScoreText.enabled = state;
+        UI_TimeToNextWaveText.enabled = state;
+        UI_WaveNumberText.enabled = state;
 
-        UI_WoodCountText.enabled = false;
-        UI_StoneCountText.enabled = false;
+        UI_PopulationCountText.enabled = state;
+        UI_FoodCountText.enabled = state;
+        UI_WoodCountText.enabled = state;
+        UI_StoneCountText.enabled = state;
     }
 
-    private IEnumerator ShowGamePhaseText(string text, Color32 color)
+    private IEnumerator ShowGamePhaseTextAndFadeOut(string text, Color32 color)
     {
         UI_GamePhaseText.text = text;
         UI_GamePhaseText.fontMaterial.SetColor("_FaceColor", color);
@@ -418,5 +465,15 @@ public partial class GameManager : MonoBehaviour
 
         UI_GamePhaseText.enabled = false;
     }
+    
+    private void ShowGamePhaseText(string text, Color32 color)
+    {
+        UI_GamePhaseText.text = text;
+        UI_GamePhaseText.fontMaterial.SetColor("_FaceColor", color);
+        UI_GamePhaseText.outlineColor = Color.black;
+
+        UI_GamePhaseText.enabled = true;
+    }
+    
 }
 

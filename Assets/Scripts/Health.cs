@@ -148,7 +148,9 @@ public class Health : MonoBehaviour
             startPos.y += agent.height / 2;
         else if (building != null)
             startPos.y += building.GetBuildingDefinition().Height - 1.0f;
-
+        else if (gameObject.CompareTag("Player"))
+            startPos.y += 1;
+        
 
         HealthPopup popup = HealthPopup.ShowHealthPopup(startPos, healthChangedAmount);
     }

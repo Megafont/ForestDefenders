@@ -1616,7 +1616,7 @@ MonoBehaviour:
   AttackPower: 5
   AttackFrequency: 2
   MaxChaseDistance: 10
-  TargetCheckFrequency: 5
+  TargetCheckFrequency: 3
   TargetCheckRadius: 5
 --- !u!114 &424017842529653000
 MonoBehaviour:

@@ -73,7 +73,7 @@ public class HealthPopup : MonoBehaviour
         // We need to use the parent here, because the text component is on a child object rotated 180 degrees so it always faces the right way.
         // Otherwise it ends up backwards when the parent object turns around to face the camera. The text is facing down the negative Z-axis by default.
         transform.parent.position += Vector3.up * _MoveSpeed * Time.deltaTime;
-        transform.parent.LookAt(GameManager.Instance.Player.transform); // Make the text always face the player's camera.
+        transform.parent.LookAt(_PlayerCamera.transform); // Make the text always face the player's camera.
     }
 
     public void ResetHealthPopup(float healthChangedAmount)
@@ -103,6 +103,7 @@ public class HealthPopup : MonoBehaviour
 
         if (_HealthPopupsParent == null)
             _HealthPopupsParent = GameObject.Find("UI/Health Popups");
+
 
         HealthPopup healthPopup = _HealthPopupPool.Get();
         healthPopup.transform.parent.position = startPosition; // See comments in Update() for why we're accessing the parent here.

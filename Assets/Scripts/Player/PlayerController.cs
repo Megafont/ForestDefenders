@@ -495,6 +495,7 @@ public class PlayerController : MonoBehaviour
         // Play death animation.
         _animator.SetTrigger("Die");
 
+
         //Destroy(gameObject);
     }
 

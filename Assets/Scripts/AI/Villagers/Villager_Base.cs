@@ -108,11 +108,13 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
 
     protected override void DoTargetCheck()
-    {      
+    {
         if (_GameManager.GameState == GameStates.PlayerBuildPhase)
             DoTargetCheck_BuildPhase();
         else if (_GameManager.GameState == GameStates.MonsterAttackPhase)
             DoTargetCheck_MonsterAttackPhase();
+        else if (_GameManager.GameState == GameStates.GameOver)
+            DoTargetCheck_BuildPhase(); // Make the villagers keep working on the game over screen.
 
 
         UpdateNearbyTargetDetectorState();

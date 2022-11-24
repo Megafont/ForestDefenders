@@ -93,8 +93,8 @@ public abstract class AI_Base : MonoBehaviour
     {
         // If the path is invalid or partial, set target to null so the AI can find a new one.
         if (_Target &&
-            _NavMeshAgent.pathStatus == NavMeshPathStatus.PathInvalid ||
-            _NavMeshAgent.pathStatus == NavMeshPathStatus.PathPartial)
+            (_NavMeshAgent.pathStatus == NavMeshPathStatus.PathInvalid ||
+            _NavMeshAgent.pathStatus == NavMeshPathStatus.PathPartial))
         {
             // Check if the end of the path is within interaction distance of the target.
             // If not, set target to null so the AI can try to find a new reachable one.
@@ -112,7 +112,15 @@ public abstract class AI_Base : MonoBehaviour
             _NavMeshAgent.isStopped &&
             _NavMeshAgent.enabled)
         {
-            _NavMeshAgent.isStopped = false;
+            StartMoving();
+        }
+
+
+        // Is the target a moving target? If so, then update the _NavMeshAgent's destination location.
+        if (_Target && 
+            (_Target.CompareTag("Player") || _Target.CompareTag("Villager")))
+        {
+            _NavMeshAgent.SetDestination(_Target.transform.position);
         }
 
 
@@ -123,9 +131,9 @@ public abstract class AI_Base : MonoBehaviour
                 StopMoving();
 
                 // Force the AI to face the target since they sometimes end up facing in a somewhat odd direction.
-                // We set y to 0 so the AI doesn't tilt to look up if the target (such as the player) is standing on his head, which looks kind of dumb.
+                // We set Y to our own Y-position so the AI doesn't tilt to look up or down if the target (such as the player) is above or below it, which looks kind of dumb.
                 transform.LookAt(new Vector3(_Target.transform.position.x,
-                                             0.0f,
+                                             transform.position.y,
                                              _Target.transform.position.z));
             }
 
@@ -138,6 +146,14 @@ public abstract class AI_Base : MonoBehaviour
                 InteractWithTarget();
             }
         }
+        else
+        {
+            if (_Target && _NavMeshAgent.isStopped)
+                StartMoving();
+
+            _IsInteracting = false;
+        }
+
     }
 
     protected virtual void AnimateAI()
@@ -198,8 +214,6 @@ public abstract class AI_Base : MonoBehaviour
             {
                 _Target = null;
                 _PrevTarget = null;
-
-                StopMoving();
             }
 
         }
@@ -209,19 +223,19 @@ public abstract class AI_Base : MonoBehaviour
         {
             if (_NavMeshAgent.enabled)
             {
+                // Is the target a moving target?                   
                 Vector3 randomPoint = Utils_Math.GetRandomPointAroundTarget(_Target.transform);
                 _NavMeshAgent.SetDestination(randomPoint);
+
+                StartMoving();
+
                 //Debug.Log($"Target: {_Target.transform.position}    Point: {randomPoint}");
             }
-
-            _NavMeshAgent.isStopped = false;
-
-            // Set this NavMeshAgent back to default priority so other moving agents will ignore it.
-            _NavMeshAgent.avoidancePriority = 50;
         }
         else
         {
-            StopMoving();
+            if (_NavMeshAgent.enabled)
+                StopMoving();
         }
 
 
@@ -334,13 +348,19 @@ public abstract class AI_Base : MonoBehaviour
 
     protected void StopMoving()
     {
-        // Set the NavMeshAgent's destination to its current position to make it stop moving.
         _NavMeshAgent.isStopped = true;
 
         // Set this NavMeshAgent to a high priority so other agents will not ignore it since it is not moving now.
         _NavMeshAgent.avoidancePriority = 90;
     }
 
+    protected void StartMoving()
+    {
+        _NavMeshAgent.isStopped = false;
+
+        // Set this NavMeshAgent back to default priority so other moving agents will ignore it.
+        _NavMeshAgent.avoidancePriority = 50;
+    }
 
 
     protected virtual void OnDeath(GameObject sender)

@@ -38,7 +38,7 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         }
 
 
-        GameObject _Player = GameManager.Instance.Player;
+        _Player = GameManager.Instance.Player;
 
         base.InitAI();
     }
@@ -74,10 +74,18 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         // If this monster is chasing a target and the target gets far enough away, revert to the previous target.
         else if (_Target == _Player || _Target.CompareTag("Villager")) // Is the target the player or a villager?
         {
-            if (Vector3.Distance(transform.position, _Target.transform.position) >= MaxChaseDistance)
+            float distanceToTarget = Vector3.Distance(transform.position, _Target.transform.position);
+            if (distanceToTarget > MaxChaseDistance)
             {
                 SetTarget(_PrevTarget);
             }
+            else if (distanceToTarget > _InteractionRange)
+            {
+                // The target is outside of our interaction range, so enable movement again so we can chase it!
+                StartMoving();
+                _IsAttacking = false;
+            }
+            
         }
 
 
@@ -129,8 +137,10 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         bool state = true;
         if (_Target == null)
             state = true;
-        else if (_Target.CompareTag("Villager"))
+        else if (_Target.CompareTag("Player") || _Target.CompareTag("Villager"))
             state = false;
+        else
+            state = true;
 
 
         if (_NearbyTargetDetector)

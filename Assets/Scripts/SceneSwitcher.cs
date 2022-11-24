@@ -143,7 +143,10 @@ public class SceneSwitcher : MonoBehaviour
 
 
         _ScreenFader.color = endColor;
-        _ScreenFader.gameObject.SetActive(false);
+        
+        // If the alpha level of end color is 0, then deactivate the screen fader panel since we no longer need it if it is completely transparent.
+        if (endColor.a == 0)
+            _ScreenFader.gameObject.SetActive(false);
     }
 
 }

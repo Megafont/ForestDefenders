@@ -13,9 +13,9 @@ public abstract class AI_WithAttackBehavior : AI_Base
     public float AttackPower = 3;
     public float AttackFrequency = 2.0f;
 
-    public float MaxChaseDistance = 10.0f;
+    public float MaxChaseDistance = 20.0f;
 
-    public float TargetCheckFrequency = 5.0f;
+    public float TargetCheckFrequency = 3.0f;
     public float TargetCheckRadius = 5.0f;
 
 

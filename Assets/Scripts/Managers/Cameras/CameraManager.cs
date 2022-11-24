@@ -41,8 +41,8 @@ public class CameraManager : MonoBehaviour
     public void SwitchToCamera(int cameraID)
     {
         // Simply return if the requested camera is already active.
-        if (cameraID == _ActiveCameraID)
-            return;
+        //if (cameraID == _ActiveCameraID)
+        //    return;
 
 
         // Disable active cameras.

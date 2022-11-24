@@ -51,7 +51,6 @@ public class VillageManager_Villagers : MonoBehaviour
     private VillageManager_Buildings _VillageManager_Buildings;
 
     private Dictionary<string, GameObject> _VillagerCategoryParents;
-    private GameObject _TownCenter;
 
 
     private Dictionary<string, GameObject> _VillagerTypeParents;
@@ -91,16 +90,7 @@ public class VillageManager_Villagers : MonoBehaviour
         _VillagerTypeParents = new Dictionary<string, GameObject>();
         _VillagerPrefabs = new Dictionary<string, GameObject>();
         _AllVillagers = new List<IVillager>();
-
-
-        GameObject[] objs = GameObject.FindGameObjectsWithTag("Town Center");
-        if (objs.Length > 1)
-            Debug.LogWarning("There should only be one Town Center in the level!");
-        else if (objs.Length < 1)
-            throw new Exception("This level does not contain a Town Center!");
-        
-        _TownCenter = objs[0];
-        
+      
 
         InitVillagerTypes();
 
@@ -245,13 +235,14 @@ public class VillageManager_Villagers : MonoBehaviour
 
     private IEnumerator SpawnVillagers()
     {
-        if (_TownCenter == null)
+        if (_VillageManager_Buildings.TownCenter == null)
             throw new Exception("Cannot spawn a villager. The town center is null!");
 
 
         WaitForSeconds delay = new WaitForSeconds(2.0f);
         yield return delay;
 
+        GameObject townCenter = _VillageManager_Buildings.TownCenter;
         while (true)
         {
             if (_AllVillagers.Count < _PopulationCap &&
@@ -260,10 +251,10 @@ public class VillageManager_Villagers : MonoBehaviour
                 GameObject prefab = SelectVillagerPrefab();
                 _ResourceManager.Stockpiles[ResourceTypes.Food] -= VillagerFoodCost;
 
-                
+
                 GameObject newVillager = Instantiate(prefab,
-                                                     _TownCenter.transform.position,
-                                                     _TownCenter.transform.rotation,
+                                                     townCenter.transform.position,
+                                                     townCenter.transform.rotation,
                                                      _VillagerTypeParents[prefab.name].transform);
 
                 AddVillager(newVillager.GetComponent<IVillager>());
