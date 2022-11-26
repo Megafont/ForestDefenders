@@ -3,39 +3,42 @@ using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.UI;
 
 using Cinemachine;
-
 using TMPro;
-using UnityEngine.InputSystem;
+
 
 public partial class GameManager : MonoBehaviour
 {
     [Header("Player")]
+    public bool EnablePlayerSpawn = true;
     public Transform PlayerSpawnPoint;
     public float FallOutOfWorldDeathHeight = -32;
 
-    [Header("UI - Elements")]
+    [Header("UI Elements")]
     public TMP_Text UI_GamePhaseText;
-
-    public TMP_Text UI_TimeToNextWaveText;
-    public TMP_Text UI_WaveNumberText;
-    public TMP_Text UI_MonstersLeftText;
-
-    public TMP_Text UI_ScoreText;
-
-    public TMP_Text UI_PopulationCountText;
-    public TMP_Text UI_FoodCountText;
-    public TMP_Text UI_WoodCountText;
-    public TMP_Text UI_StoneCountText;
-
-    [Header("UI - Stockpile Text Colors")]
-    public Color ResourceStockPilesVeryLowColor = Color.red;
-    public Color ResourceStockPilesLowColor = new Color32(255, 128, 0, 255);
-    public Color ResourceStockPilesColor = Color.white;
-
-    [Header("UI - Settings")]
     public float GamePhaseTextFadeOutTime = 3.0f;
+    public RadialMenu UI_RadialMenu;
+
+    [Header("UI Elements (Top Bar)")]
+    public Image UI_TopBar;
+        public TMP_Text UI_TimeToNextWaveText;
+        public TMP_Text UI_WaveNumberText;
+        public TMP_Text UI_MonstersLeftText;
+        public TMP_Text UI_ScoreText;
+
+    [Header("UI Elements (Bottom Bar)")]
+    public Image UI_BottomBar;
+        public TMP_Text UI_PopulationCountText;
+        public TMP_Text UI_FoodCountText;
+        public TMP_Text UI_WoodCountText;
+        public TMP_Text UI_StoneCountText;
+
+        public Color ResourceStockPilesVeryLowColor = Color.red;
+        public Color ResourceStockPilesLowColor = new Color32(255, 128, 0, 255);
+        public Color ResourceStockPilesColor = Color.white;
+
 
 
     public static GameManager Instance;
@@ -53,8 +56,6 @@ public partial class GameManager : MonoBehaviour
     public VillageManager_Buildings VillageManager_Buildings { get; private set; }
     public VillageManager_Villagers VillageManager_Villagers { get; private set; }
 
-
-    public RadialMenu UI_RadialMenu { get; private set; }
 
 
     private float _BuildPhaseLength;
@@ -92,13 +93,18 @@ public partial class GameManager : MonoBehaviour
         SceneSwitcher = FindObjectOfType<SceneSwitcher>();
 
 
-        SpawnPlayer();
+        if (EnablePlayerSpawn)
+            SpawnPlayer();
 
         GetManagerReferences();
 
         InitUI();
 
-        ChangeGameState(GameStates.PlayerBuildPhase);
+
+        if (PlayerIsInGame())
+            ChangeGameState(GameStates.PlayerBuildPhase);
+        else
+            ChangeGameState(GameStates.Menu);
     }
 
     private void Start()
@@ -116,6 +122,8 @@ public partial class GameManager : MonoBehaviour
         SceneSwitcher.FadeIn();
     }
 
+
+    bool _PrintedWarning = false;
     // Update is called once per frame
     void Update()
     {
@@ -128,6 +136,10 @@ public partial class GameManager : MonoBehaviour
 
         switch (GameState)
         {
+            case GameStates.Menu:
+                GameState_Menu();
+                break;
+
             case GameStates.PlayerBuildPhase:
                 GameState_PlayerBuildPhase();
                 break;
@@ -143,8 +155,19 @@ public partial class GameManager : MonoBehaviour
         } // end switch GameState
 
 
-        if (GameState != GameStates.GameOver)
+        if (GameState != GameStates.GameOver &&
+            PlayerIsInGame()) // Are we in a level?
+        {
             CheckIfGameIsOver();
+        }
+        else
+        {
+            if (!_PrintedWarning)
+            {
+                Debug.LogWarning("CheckIfGameIsOver() is disabled in this scene.");
+                _PrintedWarning = true;
+            }
+        }
 
     }
 
@@ -225,7 +248,39 @@ public partial class GameManager : MonoBehaviour
 
     private void InitCameras()
     {
-        // Register main camera.
+        switch (SceneSwitcher.ActiveSceneName)
+        {
+            case "Menu":
+                InitCameras_MenuScene();
+                break;
+
+            case "Test":
+                InitCameras_TestScene();
+                break;
+
+
+            default:
+                throw new Exception($"No camera initialization function has been implemented for this scene (\"{SceneSwitcher.ActiveSceneName}\")!");
+        } // end switch
+
+    }
+
+    private void InitCameras_MenuScene()
+    {
+        // Register game over camera.
+        ICinemachineCamera gameOverCam = GameObject.Find("CM Game Over Cam").GetComponent<ICinemachineCamera>();
+        gameOverCam.Follow = VillageManager_Buildings.TownCenter.transform;
+        gameOverCam.LookAt = VillageManager_Buildings.TownCenter.transform;
+        CameraManager.RegisterCamera((int) CameraIDs.GameOver, gameOverCam);
+
+
+        // Switch to the main camera for this scene.
+        CameraManager.SwitchToCamera((int) CameraIDs.GameOver);
+    }
+
+    private void InitCameras_TestScene()
+    {
+        // Register player follow camera.
         ICinemachineCamera mainCam = GameObject.Find("CM Player Follow Camera").GetComponent<ICinemachineCamera>();
         CameraManager.RegisterCamera((int) CameraIDs.PlayerFollow, mainCam);
 
@@ -235,8 +290,9 @@ public partial class GameManager : MonoBehaviour
         gameOverCam.LookAt = Player.transform;
         CameraManager.RegisterCamera((int) CameraIDs.GameOver, gameOverCam);
 
-        // Make sure the main camera is active.
-        CameraManager.SwitchToCamera((int) CameraIDs.PlayerFollow);
+
+        // Switch to the main camera for this scene.
+        CameraManager.SwitchToCamera((int)CameraIDs.PlayerFollow);
     }
 
     private void InitInput()
@@ -249,15 +305,11 @@ public partial class GameManager : MonoBehaviour
     private void InitUI()
     {
         UI_MonstersLeftText.enabled = false;
-        UI_TimeToNextWaveText.enabled = false;
         UI_WaveNumberText.enabled = false;
 
         UI_GamePhaseText.enabled = false;
 
         UI_ScoreText.text = UI_ScoreText.text = "Score: 0000000000";
-
-
-        InitRadialMenu();
     }
 
     public void AddToScore(int amount)
@@ -278,7 +330,7 @@ public partial class GameManager : MonoBehaviour
             Player.transform.position.y <= FallOutOfWorldDeathHeight)
         {
 
-            ICinemachineCamera gameOvercam = CameraManager.GetCameraWithID((int)CameraIDs.GameOver);
+            ICinemachineCamera gameOvercam = CameraManager.GetCameraWithID((int) CameraIDs.GameOver);
             if (Player.transform.position.y <= FallOutOfWorldDeathHeight)
             {
                 Transform townCenterTransform = VillageManager_Buildings.TownCenter.transform;
@@ -303,17 +355,9 @@ public partial class GameManager : MonoBehaviour
         }
     }
 
-    private void InitRadialMenu()
+    public bool PlayerIsInGame()
     {
-        GameObject obj = GameObject.Find("Radial Menu Canvas");
-        if (!obj)
-            throw new Exception("The radial menu GameObject was not found!");
-        else
-        {
-            UI_RadialMenu = obj.GetComponent<RadialMenu>();
-            if (UI_RadialMenu == null)
-                throw new Exception("The radial menu GameObject does not have a RadialMenu component!");
-        }
+        return SceneSwitcher.ActiveSceneName == "Test";
     }
 
     private void ChangeGameState(GameStates newGameState)
@@ -328,6 +372,10 @@ public partial class GameManager : MonoBehaviour
 
         switch (GameState)
         {
+            case GameStates.Menu:
+                EnableHUD(false);
+                break;
+
             case GameStates.PlayerBuildPhase:
                 ResourceManager.RestoreResourceNodes();
                 UI_TimeToNextWaveText.enabled = true;
@@ -366,6 +414,24 @@ public partial class GameManager : MonoBehaviour
 
 
         OnGameStateChanged?.Invoke(newGameState);
+    }
+
+    private void GameState_Menu()
+    {
+        float timeToNextWave = _BuildPhaseLength - (Time.time - _GameStateStartTime);
+
+        if (timeToNextWave <= 0)
+        {
+            // Reset the start time of the current game state to force the build mode timer to restart.
+            // This is because the menu game state does not switch to monster attack phase, so we have to do this manually here.
+            _GameStateStartTime = Time.time;
+
+            // Instead of switching to a monster attack phase, we just restore resource nodes so the villagers can stay busy.
+            ResourceManager.RestoreResourceNodes();
+
+            return;
+        }
+
     }
 
     private void GameState_PlayerBuildPhase()
@@ -427,15 +493,23 @@ public partial class GameManager : MonoBehaviour
 
     private void EnableHUD(bool state = true)
     {
+        UI_TopBar.gameObject.SetActive(state);
+        /*
+        UI_TopBar.enabled = state;
         UI_MonstersLeftText.enabled = state;
         UI_ScoreText.enabled = state;
         UI_TimeToNextWaveText.enabled = state;
         UI_WaveNumberText.enabled = state;
-
+        */
+        
+        UI_BottomBar.gameObject.SetActive(state);
+        /*
+        UI_BottomBar.enabled = state;        
         UI_PopulationCountText.enabled = state;
         UI_FoodCountText.enabled = state;
         UI_WoodCountText.enabled = state;
         UI_StoneCountText.enabled = state;
+        */
     }
 
     private IEnumerator ShowGamePhaseTextAndFadeOut(string text, Color32 color)

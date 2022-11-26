@@ -51,7 +51,8 @@ public class BuildModeManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _Player = GameManager.Instance.Player.GetComponentInChildren<PlayerController>();
+        // This is using the ?. operator, because the player reference will be null if we are not in a gameplay scene (like the main menu for example).
+        _Player = GameManager.Instance.Player?.GetComponentInChildren<PlayerController>();
 
         _CameraManager = GameManager.Instance.CameraManager;
         _InputManager = GameManager.Instance.InputManager;
@@ -79,7 +80,7 @@ public class BuildModeManager : MonoBehaviour
             StartCoroutine(EnableBuildMode(input));
             
         
-        // Do build mode checks only when build mode is on. We wait until input is false, because otherwise
+        // Do build mode checks only when build mode is on.
         if (IsBuildModeActive && !input)
             DoBuildModeChecks();
     }

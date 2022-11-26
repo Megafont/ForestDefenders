@@ -149,4 +149,8 @@ public class SceneSwitcher : MonoBehaviour
             _ScreenFader.gameObject.SetActive(false);
     }
 
+
+
+    public string ActiveSceneName { get { return SceneManager.GetActiveScene().name; } }
+
 }

@@ -7,12 +7,9 @@ using UnityEngine;
 using Cinemachine;
 
 
-
 public class CameraManager : MonoBehaviour
 {
     private Dictionary<int, ICinemachineCamera> _Cameras;
-
-    private CinemachineBrain _ActiveBrain;
 
     private ICinemachineCamera _ActiveCamera;
     private int _ActiveCameraID;
@@ -22,8 +19,6 @@ public class CameraManager : MonoBehaviour
     private void Awake()
     {
         _Cameras = new Dictionary<int, ICinemachineCamera>();
-
-        _ActiveBrain = CinemachineCore.Instance.GetActiveBrain(0);
     }
 
     // Start is called before the first frame update
@@ -48,8 +43,7 @@ public class CameraManager : MonoBehaviour
         // Disable active cameras.
         foreach (ICinemachineCamera camera in _Cameras.Values)
         {
-            camera.Priority = 0;
-            camera.VirtualCameraGameObject.SetActive(false);
+            DisableCamera(camera);
         }
 
 
@@ -58,7 +52,6 @@ public class CameraManager : MonoBehaviour
         _ActiveCamera.Priority = 10;
         _ActiveCamera.VirtualCameraGameObject.SetActive(true);
         _ActiveCameraID = cameraID;
-
     }
 
     public bool IsActiveCamera(int cameraID)
@@ -69,6 +62,11 @@ public class CameraManager : MonoBehaviour
     public int GetActiveCameraID()
     {
         return _ActiveCameraID;
+    }
+
+    public ICinemachineCamera GetActiveCamera()
+    {
+        return _ActiveCamera;
     }
 
     public ICinemachineCamera GetCameraWithID(int cameraID)
@@ -82,7 +80,15 @@ public class CameraManager : MonoBehaviour
             throw new Exception($"The passed in camera of type \"{cameraID}\" is null!");
 
 
-        _Cameras.Add(cameraID, newCamera);       
+        _Cameras.Add(cameraID, newCamera);
+
+        DisableCamera(newCamera);
+    }
+
+    private void DisableCamera(ICinemachineCamera camera)
+    {
+        camera.Priority = 0;
+        camera.VirtualCameraGameObject.SetActive(false);
     }
 
 }
