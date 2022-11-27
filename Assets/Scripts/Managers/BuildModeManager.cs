@@ -59,7 +59,7 @@ public class BuildModeManager : MonoBehaviour
         _ResourceManager = GameManager.Instance.ResourceManager;
         _VillageManager_Buildings = GameManager.Instance.VillageManager_Buildings;
 
-        _RadialMenu = GameManager.Instance.UI_RadialMenu;
+        _RadialMenu = GameManager.Instance.RadialMenu;
 
         InitBuildingGhost();
 

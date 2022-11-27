@@ -67,12 +67,18 @@ public static class BuildModeDefinitions
 
     public static void InitBuildingDefinitionLookupTables()
     {
+        if (IsInitialized)
+            return;
+
+
         _BuildModeManager = GameManager.Instance.BuildModeManager;
         _MaterialRecoveryRate = _BuildModeManager.PercentageOfMaterialsRecoveredOnBuildingDestruction;
 
         InitBuildingCategories();
         InitBuildingDefinitions();
         LoadBuildingPrefabs();
+
+        IsInitialized = true;
     }
 
     private static void InitBuildingCategories()
@@ -296,4 +302,6 @@ public static class BuildModeDefinitions
     }
 
 
+
+    public static bool IsInitialized { get; private set; }
 }

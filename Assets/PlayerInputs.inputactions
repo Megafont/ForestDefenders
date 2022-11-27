@@ -85,7 +85,7 @@
                     "path": "<Gamepad>/leftStick",
                     "interactions": "",
                     "processors": "StickDeadzone",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Xbox Controller;PS4 Controller",
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -107,7 +107,7 @@
                     "path": "<Gamepad>/rightStick",
                     "interactions": "",
                     "processors": "InvertVector2(invertX=false),StickDeadzone,ScaleVector2(x=300,y=300)",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Xbox Controller;PS4 Controller",
                     "action": "Look",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -129,7 +129,7 @@
                     "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Xbox Controller;PS4 Controller",
                     "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -151,7 +151,7 @@
                     "path": "<Gamepad>/leftTrigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Xbox Controller;PS4 Controller",
                     "action": "Sprint",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -261,7 +261,7 @@
                     "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Xbox Controller;PS4 Controller",
                     "action": "Attack",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -283,7 +283,7 @@
                     "path": "<Gamepad>/rightTrigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Xbox Controller;PS4 Controller",
                     "action": "Enter Build Mode",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -305,7 +305,7 @@
                     "path": "<Gamepad>/buttonNorth",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Xbox Controller;PS4 Controller",
                     "action": "End Build Phase",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -316,7 +316,7 @@
                     "path": "<Gamepad>/buttonWest",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Xbox Controller;PS4 Controller",
                     "action": "Destroy Building",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -409,7 +409,7 @@
                     "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Xbox Controller;PS4 Controller",
                     "action": "Build",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -431,7 +431,7 @@
                     "path": "<Gamepad>/rightStickPress",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Xbox Controller;PS4 Controller",
                     "action": "Select Building",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -453,7 +453,7 @@
                     "path": "<Gamepad>/leftStick",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Xbox Controller;PS4 Controller",
                     "action": "Move Build Position",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -464,7 +464,7 @@
                     "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Xbox Controller;PS4 Controller",
                     "action": "Rotate Build Left",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -475,7 +475,7 @@
                     "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Xbox Controller;PS4 Controller",
                     "action": "Rotate Build Right",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -486,7 +486,7 @@
                     "path": "<Gamepad>/buttonNorth",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Xbox Controller;PS4 Controller",
                     "action": "Grid Snap",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -497,7 +497,7 @@
                     "path": "<Gamepad>/rightTrigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Xbox Controller;PS4 Controller",
                     "action": "Exit Build Mode",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -550,22 +550,22 @@
             "bindings": [
                 {
                     "name": "",
-                    "id": "5ae19bd0-4d67-4473-ae63-1ff00330f158",
-                    "path": "<Mouse>/delta",
+                    "id": "0bf564b5-21e5-43b3-bd8c-a7163a2bc0f3",
+                    "path": "<Gamepad>/leftStick",
                     "interactions": "",
-                    "processors": "InvertVector2(invertX=false),ScaleVector2(x=0.05,y=0.05)",
-                    "groups": "KeyboardMouse",
+                    "processors": "StickDeadzone,ScaleVector2",
+                    "groups": "Gamepad;Xbox Controller;PS4 Controller",
                     "action": "Navigate",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "0bf564b5-21e5-43b3-bd8c-a7163a2bc0f3",
-                    "path": "<Gamepad>/leftStick",
+                    "id": "db092739-0926-43ea-a834-6b674855fc32",
+                    "path": "<Gamepad>/dpad",
                     "interactions": "",
-                    "processors": "InvertVector2(invertX=false),StickDeadzone,ScaleVector2(x=300,y=300)",
-                    "groups": "Gamepad",
+                    "processors": "",
+                    "groups": "Gamepad;Xbox Controller",
                     "action": "Navigate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -576,18 +576,7 @@
                     "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
-                    "action": "Confirm",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "c7a4869a-5b42-4f01-91db-235854e57cf5",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "KeyboardMouse",
+                    "groups": "Gamepad;Xbox Controller;PS4 Controller",
                     "action": "Confirm",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -609,7 +598,7 @@
                     "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
+                    "groups": "Gamepad;Xbox Controller;PS4 Controller",
                     "action": "Cancel",
                     "isComposite": false,
                     "isPartOfComposite": false

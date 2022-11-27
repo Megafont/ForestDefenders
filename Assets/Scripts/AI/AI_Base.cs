@@ -96,6 +96,8 @@ public abstract class AI_Base : MonoBehaviour
             (_NavMeshAgent.pathStatus == NavMeshPathStatus.PathInvalid ||
             _NavMeshAgent.pathStatus == NavMeshPathStatus.PathPartial))
         {
+            StopMoving();
+
             // Check if the end of the path is within interaction distance of the target.
             // If not, set target to null so the AI can try to find a new reachable one.
             if (Vector3.Distance(_NavMeshAgent.pathEndPosition, _Target.transform.position) > _InteractionRange)
@@ -104,13 +106,12 @@ public abstract class AI_Base : MonoBehaviour
                 //Debug.Log("PATH INVALID OR PARTIAL!");
             }
         }
-
-
         // This is here in case another NavMeshAgent bumps this one away from its target.
         // This allows it to move back to the target and continue working or attacking.
-        if (_Target &&
+        else if (_Target &&
             _NavMeshAgent.isStopped &&
-            _NavMeshAgent.enabled)
+            _NavMeshAgent.enabled &&
+            _NavMeshAgent.pathStatus == NavMeshPathStatus.PathComplete)
         {
             StartMoving();
         }
@@ -147,13 +148,16 @@ public abstract class AI_Base : MonoBehaviour
             }
         }
         else
+            _IsInteracting = false;
+        /*
+        else
         {
             if (_Target && _NavMeshAgent.isStopped)
                 StartMoving();
 
             _IsInteracting = false;
         }
-
+        */
     }
 
     protected virtual void AnimateAI()
@@ -219,6 +223,9 @@ public abstract class AI_Base : MonoBehaviour
         }
 
 
+        if (_NavMeshAgent.enabled)
+            StopMoving();
+
         if (_Target)
         {
             if (_NavMeshAgent.enabled)
@@ -226,8 +233,6 @@ public abstract class AI_Base : MonoBehaviour
                 // Is the target a moving target?                   
                 Vector3 randomPoint = Utils_Math.GetRandomPointAroundTarget(_Target.transform);
                 _NavMeshAgent.SetDestination(randomPoint);
-
-                StartMoving();
 
                 //Debug.Log($"Target: {_Target.transform.position}    Point: {randomPoint}");
             }

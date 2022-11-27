@@ -16,6 +16,9 @@ using UnityEngine.UI;
 ///                on root objects according to the documentation. I still made it accessible through GameManager, though.</remarks>
 public class SceneSwitcher : MonoBehaviour
 {
+    public static SceneSwitcher Instance;
+
+
     public Color32 DefaultScreenFadeColor = Color.black;
     public float DefaultScreenFadeDuration = 2.5f;
 
@@ -26,6 +29,16 @@ public class SceneSwitcher : MonoBehaviour
 
     private void Awake()
     {
+        // If there is already an instance of SceneSwitcher, then destroy this one.
+        if (Instance)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+
+        Instance = this;
+
         DontDestroyOnLoad(gameObject);
 
         string screenFaderName = "Screen Fader";
@@ -62,70 +75,95 @@ public class SceneSwitcher : MonoBehaviour
         
     }
 
-    public void ChangeToScene(string sceneName)
+    public void FadeToScene(string sceneName)
     {
-        StartCoroutine(FadeToScene(sceneName, DefaultScreenFadeColor, DefaultScreenFadeDuration));
+        StartCoroutine(DoFadeToScene(sceneName, DefaultScreenFadeColor, DefaultScreenFadeDuration));
     }
 
-    public void ChangeToScene(int sceneBuildIndex)
+    public void FadeToScene(int sceneBuildIndex)
     {
-        StartCoroutine(FadeToScene(sceneBuildIndex, DefaultScreenFadeColor, DefaultScreenFadeDuration));
+        StartCoroutine(DoFadeToScene(sceneBuildIndex, DefaultScreenFadeColor, DefaultScreenFadeDuration));
     }
 
-    public void ChangeToScene(string sceneName, Color32 fadeColor, float fadeDuration)
+    public void FadeToScene(string sceneName, Color32 fadeColor, float fadeDuration)
     {
-        StartCoroutine(FadeToScene(sceneName, fadeColor, fadeDuration));
+        StartCoroutine(DoFadeToScene(sceneName, fadeColor, fadeDuration));
     }
 
-    public void ChangeToScene(int sceneBuildIndex, Color32 fadeColor, float fadeDuration)
+    public void FadeToScene(int sceneBuildIndex, Color32 fadeColor, float fadeDuration)
     {
-        StartCoroutine(FadeToScene(sceneBuildIndex, fadeColor, fadeDuration));
+        StartCoroutine(DoFadeToScene(sceneBuildIndex, fadeColor, fadeDuration));
     }
 
     public void FadeIn(Color32 fadeColor, float fadeDuration)
     {
-        StartCoroutine(FadeScreen(fadeColor, Color.clear, fadeDuration));
+        StartCoroutine(DoScreenFade(fadeColor, Color.clear, fadeDuration));
     }
 
     public void FadeIn()
     {
-        StartCoroutine(FadeScreen(DefaultScreenFadeColor, Color.clear, DefaultScreenFadeDuration));
+        StartCoroutine(DoScreenFade(DefaultScreenFadeColor, Color.clear, DefaultScreenFadeDuration));
     }
 
     public void FadeOut(Color32 fadeColor, float fadeDuration)
     {
-        StartCoroutine(FadeScreen(Color.clear, fadeColor, fadeDuration));
+        StartCoroutine(DoScreenFade(Color.clear, fadeColor, fadeDuration));
     }
 
     public void FadeOut()
     {
-        StartCoroutine(FadeScreen(Color.clear, DefaultScreenFadeColor, DefaultScreenFadeDuration));
+        StartCoroutine(DoScreenFade(Color.clear, DefaultScreenFadeColor, DefaultScreenFadeDuration));
     }
 
 
 
-    private IEnumerator FadeToScene(string sceneName, Color32 fadeColor, float fadeDuration)
+    private IEnumerator DoFadeToScene(string sceneName, Color32 fadeColor, float fadeDuration)
     {
-        // Fade out the current scene, and wait for the fade to complete.
-        yield return StartCoroutine(FadeScreen(fadeColor, Color.clear, fadeDuration));
+        // If a transition is already in progress, then simply cancel this one.
+        if (IsTransitioningToScene)
+        {
+            Debug.LogWarning("Cannot start a scene transition when one is already underway!");
+            yield break;
+        }
 
-        // Load the new scene.
+
+        IsTransitioningToScene = true;
+
+
+        // Fade out the current scene, and wait for the fade to complete.
+        yield return StartCoroutine(DoScreenFade(Color.clear, fadeColor, fadeDuration));
+
+        // Load the new scene.        
         SceneManager.LoadScene(sceneName);
 
         // Fade in the new scene, and wait for the fade to complete.
-        yield return StartCoroutine(FadeScreen(Color.clear, fadeColor, fadeDuration));
+        yield return StartCoroutine(DoScreenFade(fadeColor, Color.clear, fadeDuration));
+
+
+        IsTransitioningToScene = false;
 
     }
 
-    private IEnumerator FadeToScene(int sceneBuildIndex, Color32 fadeColor, float fadeDuration)
+    private IEnumerator DoFadeToScene(int sceneBuildIndex, Color32 fadeColor, float fadeDuration)
     {
-        return FadeToScene(SceneManager.GetSceneByBuildIndex(sceneBuildIndex).name, fadeColor, fadeDuration);
+        return DoFadeToScene(SceneManager.GetSceneByBuildIndex(sceneBuildIndex).name, fadeColor, fadeDuration);
     }
 
-    private IEnumerator FadeScreen(Color32 startColor, Color32 endColor, float fadeDuration)
+    private IEnumerator DoScreenFade(Color32 startColor, Color32 endColor, float fadeDuration)
     {
-        _ScreenFader.color = startColor;
+        // If a fade is already in progress, then simply cancel this one.
+        if (IsFading)
+        {
+            Debug.LogWarning("Cannot start a screen fade when one is already underway!");
+            yield break;
+        }
+
+
+        IsFading = true;
+
+
         _ScreenFader.gameObject.SetActive(true);
+        _ScreenFader.color = startColor;
 
 
         float elapsedTime = 0;
@@ -147,10 +185,16 @@ public class SceneSwitcher : MonoBehaviour
         // If the alpha level of end color is 0, then deactivate the screen fader panel since we no longer need it if it is completely transparent.
         if (endColor.a == 0)
             _ScreenFader.gameObject.SetActive(false);
+
+
+        IsFading = false;
     }
 
 
 
     public string ActiveSceneName { get { return SceneManager.GetActiveScene().name; } }
+
+    public bool IsFading { get; private set; }
+    public bool IsTransitioningToScene { get; private set; }
 
 }
