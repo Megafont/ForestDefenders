@@ -120,7 +120,7 @@ public class SceneSwitcher : MonoBehaviour
     private IEnumerator DoFadeToScene(string sceneName, Color32 fadeColor, float fadeDuration)
     {
         // If a transition is already in progress, then simply cancel this one.
-        if (IsTransitioningToScene)
+        if (IsTransitioningToScene || IsFading)
         {
             Debug.LogWarning("Cannot start a scene transition when one is already underway!");
             yield break;
