@@ -110,6 +110,24 @@ public class MainMenu : MonoBehaviour
         _SceneSwitcher.FadeToScene("Test");
     }
 
+    public void OnHighScores()
+    {
+        /*
+        PlayerPrefs.DeleteAll();
+
+        HighScores.RegisterHighScore(new HighScoreData { Name = "Test", Score = 10000, Time = 250 });
+        HighScores.RegisterHighScore(new HighScoreData { Name = "Sam", Score = 7500, Time = 300 });
+        HighScores.RegisterHighScore(new HighScoreData { Name = "Fred", Score = 10000, Time = 400 });
+        HighScores.RegisterHighScore(new HighScoreData { Name = "Michael", Score = 12000, Time = 300 });
+        */
+        List<HighScoreData> table = HighScores.GetHighScoresTable(HighScoreTypes.Score);
+        //List<HighScoreData> table2 = HighScores.GetHighScoresTable(HighScoreTypes.Time);
+
+        HighScores.DEBUG_LogHighScoresTable(table, HighScoreTypes.Score);
+        //HighScores.DEBUG_LogHighScoresTable(table2, HighScoreTypes.Time);
+
+    }
+
     public void OnExitGame()
     {
         Application.Quit();

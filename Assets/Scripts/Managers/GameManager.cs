@@ -504,11 +504,7 @@ public partial class GameManager : MonoBehaviour
 
     private void UpdateWaveTimer(float timeToNextWave)
     {
-        int minutes = Mathf.FloorToInt(timeToNextWave / 60f);
-        int seconds = Mathf.FloorToInt(timeToNextWave - minutes * 60);
-
-        _UI_TimeToNextWaveText.text = $"Next Wave In: {minutes:0}:{seconds:00}";
-
+        _UI_TimeToNextWaveText.text = $"Next Wave In: {HighScores.TimeValueToString(timeToNextWave)}";
     }
 
     private void OnPlayerDeath(GameObject sender)
