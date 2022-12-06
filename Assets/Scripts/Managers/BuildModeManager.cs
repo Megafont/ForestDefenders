@@ -38,7 +38,7 @@ public class BuildModeManager : MonoBehaviour
     private string _SelectedBuildingCategory;
     private GameObject _SelectedBuildingPrefab;
 
-    private RadialMenu _RadialMenu;
+    private RadialMenuDialog _RadialMenu;
     private string _TempCategory; // Tracks the selected category while the second building selection menu is open.
 
 

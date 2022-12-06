@@ -1267,7 +1267,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3950e6e9fcef36478009ff55fcb081e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHealth: 100
+  MaxHealth: 50
   EnableDamageFlash: 1
   DamageFlashColor: {r: 1, g: 0, b: 0, a: 1}
   DamageFlashTime: 0.1

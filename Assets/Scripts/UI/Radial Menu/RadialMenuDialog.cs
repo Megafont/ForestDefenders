@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 using TMPro;
 
 
-public class RadialMenu : MonoBehaviour
+public class RadialMenuDialog : MonoBehaviour
 {
     public GameObject RadialMenuItemPrefab;
 

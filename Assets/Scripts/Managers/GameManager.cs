@@ -27,13 +27,15 @@ public partial class GameManager : MonoBehaviour
 
 
     private TMP_Text _UI_GamePhaseText;
-    private RadialMenu _UI_RadialMenu;
+    private RadialMenuDialog _UI_RadialMenu;
+    private HighScoreNameEntryDialog _UI_HighScoreNameEntryDialog;
 
     private Image _UI_TopBar;
     private TMP_Text _UI_TimeToNextWaveText;
     private TMP_Text _UI_WaveNumberText;
     private TMP_Text _UI_MonstersLeftText;
     private TMP_Text _UI_ScoreText;
+    private TMP_Text _UI_SurvivalTimeText;
 
     [Header("UI Elements (Bottom Bar)")]
     private Image _UI_BottomBar;
@@ -60,13 +62,13 @@ public partial class GameManager : MonoBehaviour
     public VillageManager_Buildings VillageManager_Buildings { get; private set; }
     public VillageManager_Villagers VillageManager_Villagers { get; private set; }
 
-
+    public int Score { get; private set; }
+    public float SurvivalTime { get; private set; } // The total amount of time the player has survived so far.
 
     private float _BuildPhaseLength;
 
     private float _GameStateStartTime;
 
-    private int _Score;
 
     private WaitForSeconds _GamePhaseDisplayDelay = new WaitForSeconds(2.5f);
 
@@ -135,6 +137,14 @@ public partial class GameManager : MonoBehaviour
         UpdateResourceStockpileCounterUI(_UI_FoodCountText, "Food: ", ResourceManager.Stockpiles[ResourceTypes.Food]);
         UpdateResourceStockpileCounterUI(_UI_WoodCountText, "Wood: ", ResourceManager.Stockpiles[ResourceTypes.Wood]);
         UpdateResourceStockpileCounterUI(_UI_StoneCountText, "Stone: ", ResourceManager.Stockpiles[ResourceTypes.Stone]);
+
+
+        if (GameState == GameStates.MonsterAttackPhase ||
+            GameState==GameStates.PlayerBuildPhase)
+        {
+            SurvivalTime += Time.deltaTime;
+            _UI_SurvivalTimeText.text = $"Survival Time: {HighScores.TimeValueToString(SurvivalTime)}";
+        }
 
 
         switch (GameState)
@@ -253,7 +263,7 @@ public partial class GameManager : MonoBehaviour
     {
         switch (SceneSwitcher.ActiveSceneName)
         {
-            case "Menu":
+            case "Main Menu":
                 InitCameras_MenuScene();
                 break;
 
@@ -321,13 +331,15 @@ public partial class GameManager : MonoBehaviour
     private void GetUIReferences()
     {
         _UI_GamePhaseText = GameObject.Find("UI/HUD Canvas/Game Phase Text Canvas/Game Phase Text (TMP)").GetComponent<TMP_Text>();
-        _UI_RadialMenu = GameObject.Find("UI/Radial Menu Canvas").GetComponent<RadialMenu>();
+        _UI_RadialMenu = GameObject.Find("UI/Radial Menu Canvas").GetComponent<RadialMenuDialog>();
+        _UI_HighScoreNameEntryDialog = GameObject.Find("UI/High Scores Name Entry Canvas").GetComponent<HighScoreNameEntryDialog>();
 
         _UI_TopBar = GameObject.Find("UI/HUD Canvas/Top Bar").GetComponent<Image>();
         _UI_TimeToNextWaveText = GameObject.Find("UI/HUD Canvas/Top Bar/Time To Next Wave Text (TMP)").GetComponent<TMP_Text>();
         _UI_WaveNumberText = GameObject.Find("UI/HUD Canvas/Top Bar/Wave Number Text (TMP)").GetComponent<TMP_Text>();
         _UI_MonstersLeftText = GameObject.Find("UI/HUD Canvas/Top Bar/Monsters Left Text (TMP)").GetComponent<TMP_Text>();
         _UI_ScoreText = GameObject.Find("UI/HUD Canvas/Top Bar/Score Text (TMP)").GetComponent<TMP_Text>();
+        _UI_SurvivalTimeText = GameObject.Find("UI/HUD Canvas/Top Bar/Survival Time Text (TMP)").GetComponent<TMP_Text>();
 
         _UI_BottomBar = GameObject.Find("UI/HUD Canvas/Bottom Bar").GetComponent<Image>();
         _UI_PopulationCountText = GameObject.Find("UI/HUD Canvas/Bottom Bar/Population Count Text (TMP)").GetComponent<TMP_Text>();
@@ -341,8 +353,8 @@ public partial class GameManager : MonoBehaviour
         if (amount <= 0)
             Debug.LogError("The amount to add to the score must be positive!");
 
-        _Score += amount;
-        _UI_ScoreText.text = $"Score: {_Score:0000000000}";
+        Score += amount;
+        _UI_ScoreText.text = $"Score: {Score:0000000000}";
     }
 
     public bool CheckIfGameIsOver()
@@ -432,6 +444,12 @@ public partial class GameManager : MonoBehaviour
 
                 ShowGamePhaseText("Game Over!", Color.red);
 
+                if (HighScores.IsNewHighScore(Score, SurvivalTime))
+                {
+                    // Activate the parent canvas of the name entry dialog to show the dialog.
+                    _UI_HighScoreNameEntryDialog.gameObject.SetActive(true);
+                }
+
                 break;
 
         } // end switch GameState
@@ -498,13 +516,18 @@ public partial class GameManager : MonoBehaviour
     }
 
     private void GameState_GameOver()
-    {
+    {        
+        if (!SceneSwitcher.IsFading && !SceneSwitcher.IsTransitioningToScene)
+        {
+            //SceneSwitcher.FadeToScene("Main Menu");
+        }
+
         //Debug.LogError("Game Over!");
     }
 
     private void UpdateWaveTimer(float timeToNextWave)
     {
-        _UI_TimeToNextWaveText.text = $"Next Wave In: {HighScores.TimeValueToString(timeToNextWave)}";
+        _UI_TimeToNextWaveText.text = $"Next Wave In: {HighScores.TimeValueToString(timeToNextWave, false)}";
     }
 
     private void OnPlayerDeath(GameObject sender)
@@ -572,7 +595,7 @@ public partial class GameManager : MonoBehaviour
 
 
 
-    public RadialMenu RadialMenu
+    public RadialMenuDialog RadialMenu
     {
         get { return _UI_RadialMenu; }
     }

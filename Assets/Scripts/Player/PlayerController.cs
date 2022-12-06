@@ -140,6 +140,7 @@ public class PlayerController : MonoBehaviour
     private bool _hasAnimator;
 
     private bool _IsAttacking;
+    private bool _IsDead;
 
     private float _AttackCooldownRemainingTime;
        
@@ -196,7 +197,7 @@ public class PlayerController : MonoBehaviour
     {
         _hasAnimator = TryGetComponent(out _animator);
 
-        if (!_BuildModeManager.IsSelectingBuilding)
+        if (!_BuildModeManager.IsSelectingBuilding && !_IsDead)
         {
             JumpAndGravity();
             GroundedCheck();
@@ -489,6 +490,8 @@ public class PlayerController : MonoBehaviour
     {
         Debug.Log("Player died!");
 
+
+        _IsDead = true;
 
         _animator.ResetTrigger("Die");
 

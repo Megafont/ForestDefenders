@@ -9,7 +9,10 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
+    [Tooltip("This much time in seconds must elapse before the menu will respond to another input event to keep it from moving too fast.")]
     public float GamepadMenuSelectionDelay = 0.1f;
+
+    [SerializeField] GameObject _HighScoresDialog;
 
 
     private GameManager _GameManager;
@@ -26,7 +29,7 @@ public class MainMenu : MonoBehaviour
     {
         _GameManager = GameManager.Instance;
 
-        _MenuItems = transform.Find("Menu Items").transform;
+        _MenuItems = transform.Find("Menu Items").transform;   
     }
 
     // Start is called before the first frame update
@@ -34,7 +37,7 @@ public class MainMenu : MonoBehaviour
     {
         _InputManager_UI = _GameManager.InputManager.UI;
 
-        _GameManager.InputManager.SwitchToActionMap((int)InputActionMapIDs.UI);
+        _GameManager.InputManager.SwitchToActionMap((int) InputActionMapIDs.UI);
         _SceneSwitcher = _GameManager.SceneSwitcher;
 
         foreach (Transform t in _MenuItems)
@@ -93,11 +96,12 @@ public class MainMenu : MonoBehaviour
 
     }
 
-    private void OnGUI()
+    void OnGUI()
     {        
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
+
 
     public void OnButtonClicked(GameObject sender)
     {
@@ -112,20 +116,8 @@ public class MainMenu : MonoBehaviour
 
     public void OnHighScores()
     {
-        /*
-        PlayerPrefs.DeleteAll();
-
-        HighScores.RegisterHighScore(new HighScoreData { Name = "Test", Score = 10000, Time = 250 });
-        HighScores.RegisterHighScore(new HighScoreData { Name = "Sam", Score = 7500, Time = 300 });
-        HighScores.RegisterHighScore(new HighScoreData { Name = "Fred", Score = 10000, Time = 400 });
-        HighScores.RegisterHighScore(new HighScoreData { Name = "Michael", Score = 12000, Time = 300 });
-        */
-        List<HighScoreData> table = HighScores.GetHighScoresTable(HighScoreTypes.Score);
-        //List<HighScoreData> table2 = HighScores.GetHighScoresTable(HighScoreTypes.Time);
-
-        HighScores.DEBUG_LogHighScoresTable(table, HighScoreTypes.Score);
-        //HighScores.DEBUG_LogHighScoresTable(table2, HighScoreTypes.Time);
-
+        _HighScoresDialog.SetActive(true);
+        gameObject.SetActive(false);
     }
 
     public void OnExitGame()
