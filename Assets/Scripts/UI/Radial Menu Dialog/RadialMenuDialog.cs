@@ -52,10 +52,10 @@ public class RadialMenuDialog : MonoBehaviour
         _BuildModeManager = GameManager.Instance.BuildModeManager;
         _InputManager = GameManager.Instance.InputManager;
 
-        _MenuTitleUI = GameObject.Find("Radial Menu Canvas/Panel/Title Bar/Title Text (TMP)").GetComponent<TMP_Text>();
-        _MenuBottomBarUI = GameObject.Find("Radial Menu Canvas/Panel/Bottom Text Bar/Bottom Text Bar (TMP)").GetComponent<TMP_Text>();
-        _RadialMenuPanel = GameObject.Find("Radial Menu Canvas/Panel");
-        _RadialMenuItemsParent = GameObject.Find("Radial Menu Canvas/Panel/Menu Items Parent");
+        _MenuTitleUI = GameObject.Find("Radial Menu Dialog/Panel/Title Bar/Title Text (TMP)").GetComponent<TMP_Text>();
+        _MenuBottomBarUI = GameObject.Find("Radial Menu Dialog/Panel/Bottom Text Bar/Bottom Text Bar (TMP)").GetComponent<TMP_Text>();
+        _RadialMenuPanel = GameObject.Find("Radial Menu Dialog/Panel");
+        _RadialMenuItemsParent = GameObject.Find("Radial Menu Dialog/Panel/Menu Items Parent");
 
 
         _MenuItems = new List<RadialMenuItem>();
@@ -63,7 +63,8 @@ public class RadialMenuDialog : MonoBehaviour
         GameObject newItem = Instantiate(RadialMenuItemPrefab, Vector3.zero, Quaternion.identity, _RadialMenuItemsParent.transform);
         _MenuItems.Add(newItem.GetComponent<RadialMenuItem>());
 
-        _RadialMenuPanel.SetActive(false);
+
+        CloseDialog();
 
     }
 
@@ -156,9 +157,7 @@ public class RadialMenuDialog : MonoBehaviour
         yield return _MenuCloseDelay;
 
         // Disable the UI controls InputActionMap.
-        _InputManager.GetPlayerInputComponent().actions.FindActionMap(InputManager.ACTION_MAP_UI).Disable();
-        _RadialMenuPanel.SetActive(false);
-        IsOpen = false;
+        CloseDialog();
         Time.timeScale = 1; // Unpause the game.
     }
 
@@ -187,6 +186,7 @@ public class RadialMenuDialog : MonoBehaviour
     private void GetSelectedItemIndex()
     {
         Vector2 dir = _InputManager.UI.Navigate;
+        dir.y *= -1;
 
 
         // Filter out inputs that are zero. Otherwise it will reselect the top item
@@ -337,6 +337,14 @@ public class RadialMenuDialog : MonoBehaviour
                                              _RadialMenuItemsParent.transform);
 
         _MenuItems.Add(newMenuItem.GetComponent<RadialMenuItem>());
+    }
+
+    public void CloseDialog()
+    {
+        _InputManager.GetPlayerInputComponent().actions.FindActionMap(InputManager.ACTION_MAP_UI).Disable();
+
+        IsOpen = false;
+        _RadialMenuPanel.SetActive(false);
     }
 
 

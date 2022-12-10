@@ -16,6 +16,7 @@ public class InputManager_Player : InputSubManager
 
     public bool Attack;
     public bool EnterBuildMode;
+    public bool OpenTechTree;
     public bool DestroyBuilding;
     public bool EndBuildPhase;
 
@@ -71,6 +72,14 @@ public class InputManager_Player : InputSubManager
         EnterBuildModeInput(context.control.IsPressed());
     }
 
+    public void OnTechTree(InputAction.CallbackContext context)
+    {
+        // NOTE: This used to be "context.control.IsPressed()". However, this apparently caused a bug where sometimes this callback would not set the
+        //       input value to false when the button is released. Changing it to "context.performed" fixes this problem.
+        //       This issue does not seem to affect the player button controls like attack and jump for some reason, though.
+        OpenTechTreeInput(context.performed);
+    }
+
     public void OnDestroyBuilding(InputAction.CallbackContext context)
     {
         // We use performed here because this control has a hold interaction attached to it in the input action bindings asset.
@@ -115,6 +124,11 @@ public class InputManager_Player : InputSubManager
     private void EnterBuildModeInput(bool newEnterBuildModeState)
     {
         EnterBuildMode = newEnterBuildModeState;
+    }
+
+    private void OpenTechTreeInput(bool newOpenTechTreeInput)
+    {
+        OpenTechTree = newOpenTechTreeInput;
     }
 
     private void DestroyBuildingInput(bool newDestroyBuildingInput)

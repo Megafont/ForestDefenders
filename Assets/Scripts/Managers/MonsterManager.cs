@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -86,9 +86,18 @@ public class MonsterManager : MonoBehaviour
 
             // Spawn a monster.
             int monsterIndex = _MonsterSpawnList[i];
-            
+
+            Vector3 spawnPos = _SpawnPointsParent.GetChild(spawnPointIndex).transform.position;
+            NavMeshHit hit;
+            bool result = NavMesh.SamplePosition(spawnPos, out hit, 5.0f, NavMesh.AllAreas);
+            if (!result)
+            {
+                Debug.LogError($"Failed to find position on nav mesh near {spawnPos}!");
+                continue;
+            }
+
             GameObject monster = Instantiate(MonsterPrefabs[monsterIndex].gameObject, 
-                                             _SpawnPointsParent.GetChild(spawnPointIndex).transform.position,
+                                             hit.position,
                                              Quaternion.identity,
                                              _MonstersParent.transform);
 

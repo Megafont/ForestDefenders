@@ -13,6 +13,7 @@ TagManager:
   - Monster
   - MonsterTargetDetector
   - BridgeConstructionZone
+  - Building Prefab
   layers:
   - Default
   - TransparentFX

@@ -22,7 +22,7 @@ public class BuildModeManager : MonoBehaviour
     public bool IsSelectingBuilding { get; private set; }
 
 
-
+    private GameManager _GameManager;
     private PlayerController _Player;
 
     private CameraManager _CameraManager;
@@ -54,12 +54,13 @@ public class BuildModeManager : MonoBehaviour
         // This is using the ?. operator, because the player reference will be null if we are not in a gameplay scene (like the main menu for example).
         _Player = GameManager.Instance.Player?.GetComponentInChildren<PlayerController>();
 
-        _CameraManager = GameManager.Instance.CameraManager;
-        _InputManager = GameManager.Instance.InputManager;
-        _ResourceManager = GameManager.Instance.ResourceManager;
-        _VillageManager_Buildings = GameManager.Instance.VillageManager_Buildings;
+        _GameManager = GameManager.Instance;
+        _CameraManager = _GameManager.CameraManager;
+        _InputManager = _GameManager.InputManager;
+        _ResourceManager = _GameManager.ResourceManager;
+        _VillageManager_Buildings = _GameManager.VillageManager_Buildings;
 
-        _RadialMenu = GameManager.Instance.RadialMenu;
+        _RadialMenu = _GameManager.RadialMenuDialog;
 
         InitBuildingGhost();
 
@@ -76,7 +77,7 @@ public class BuildModeManager : MonoBehaviour
     {
         // Check if player is entering build mode.
         bool input = _InputManager.Player.EnterBuildMode;
-        if (input && !IsBuildModeActive)
+        if (input && !IsBuildModeActive && !_GameManager.IsAnyDialogOpen())
             StartCoroutine(EnableBuildMode(input));
             
         
@@ -115,7 +116,7 @@ public class BuildModeManager : MonoBehaviour
 
 
         // If the player pressed the select building button, and we are not already in the process of selecting a building, then open the buildings menu.
-        if (_InputManager.BuildMode.SelectBuilding && !IsSelectingBuilding)
+        if (_InputManager.BuildMode.SelectBuilding && !IsSelectingBuilding && !_GameManager.IsAnyDialogOpen())
         {
             StartCoroutine(DisplaySelectBuildingMenu());
             return;

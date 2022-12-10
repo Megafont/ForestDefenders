@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 
+
 /// <summary>
 /// This class updates the nav mesh when necessary. It will also look at the children of objects added into the list.
 /// </summary>
@@ -44,7 +45,7 @@ public class NavMeshManager : MonoBehaviour
 
 
     public void RegenerateAllNavMeshes()
-    {        
+    {
         for (int i = 0; i < _NavMeshSurfaces.Count; i++)
         {
             _NavMeshSurfaces[i].BuildNavMesh();
@@ -95,6 +96,11 @@ public class NavMeshManager : MonoBehaviour
     /// <param name="regenerateNavMeshes">Whether or not surfaces added will also have their nav meshes regenerated at the same time.</param>
     private void ProcessGameObject(GameObject obj, bool addSurfaces, bool regenerateNavMeshes = false)
     {
+        // If this game object is a monster, the player, or a villager, then simply return. Otherwise it may mess up the nav meshes.
+        if (obj.layer == LayerMask.NameToLayer("Monsters") || obj.layer == LayerMask.NameToLayer("Player") || obj.layer == LayerMask.NameToLayer("Villagers"))
+            return;
+
+
         // Add the object to our list if it is not already in it.
         if (addSurfaces && !_NavMeshSurfaceObjects.Contains(obj))
             _NavMeshSurfaceObjects.Add(obj);

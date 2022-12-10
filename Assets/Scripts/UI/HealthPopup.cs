@@ -120,7 +120,7 @@ public class HealthPopup : MonoBehaviour
     private static HealthPopup CreateHealthPopup()
     {
         if (_HealthPopupPrefab == null)
-            _HealthPopupPrefab = Resources.Load<GameObject>("UI/HealthPopup");
+            _HealthPopupPrefab = Resources.Load<GameObject>("UI/Common/HealthPopup");
 
 
         // Instantiate a new health popup underneath the world so the player can't see it spawn in.

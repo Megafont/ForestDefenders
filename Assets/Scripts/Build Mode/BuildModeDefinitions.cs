@@ -203,6 +203,7 @@ public static class BuildModeDefinitions
 
             // Create a temperary instance of the prefab.
             GameObject instance = GameObject.Instantiate(prefab, new Vector3(0, 0, 0), Quaternion.identity);
+            instance.tag = "Building Prefab";
 
             // Get a list of all MeshFilter component's in the prefab.
             List<MeshFilter> meshFilters = new List<MeshFilter>(instance.GetComponentsInChildren<MeshFilter>());

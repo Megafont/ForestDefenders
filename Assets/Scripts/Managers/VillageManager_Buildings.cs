@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem.Utilities;
 
@@ -23,8 +22,6 @@ public class VillageManager_Buildings : MonoBehaviour
     private ResourceManager _ResourceManager;
 
     private Dictionary<string, GameObject> _BuildingCategoryParents;
-
-    private Dictionary<IBuilding, GameObject> _DamagedBuildings;
 
 
     public delegate void VillageManager_OnBuildingConstructedHandler(IBuilding building);
@@ -50,7 +47,7 @@ public class VillageManager_Buildings : MonoBehaviour
 
         
         _BuildingCategoryParents = new Dictionary<string, GameObject>();
-        _DamagedBuildings = new Dictionary<IBuilding, GameObject>();
+        DamagedBuildingsDictionary = new Dictionary<IBuilding, GameObject>();
 
 
         InitBuildingCategoryParentObjects();
@@ -124,10 +121,10 @@ public class VillageManager_Buildings : MonoBehaviour
         IBuilding[] buildings = FindObjectsOfType<Building_Base>();
         foreach (IBuilding building in buildings)
         {
-            if (building != null)
+            if (building != null && building.gameObject.tag != "Building Prefab")
             {
                 AddBuilding(building);
-                //Debug.Log($"Found pre-existing building: {building.BuildingCategory}/{building.BuildingName}");
+                //Debug.Log($"Found pre-existing building: {building.Category}/{building.Name} at {building.gameObject.transform.position}");
             }
 
         } // end foreach obj
@@ -359,8 +356,8 @@ public class VillageManager_Buildings : MonoBehaviour
     {
         IBuilding building = sender.GetComponent<IBuilding>();
 
-        if (!_DamagedBuildings.ContainsKey(building))
-            _DamagedBuildings.Add(building, attacker);
+        if (!DamagedBuildingsDictionary.ContainsKey(building))
+            DamagedBuildingsDictionary.Add(building, attacker);
     }
 
     private void OnBuildingHealedHandler(GameObject sender, GameObject healer, float amount)
@@ -368,7 +365,7 @@ public class VillageManager_Buildings : MonoBehaviour
         IBuilding building = sender.GetComponent<IBuilding>();
 
         if (building.HealthComponent.CurrentHealth == building.HealthComponent.MaxHealth)
-            _DamagedBuildings.Remove(building);
+            DamagedBuildingsDictionary.Remove(building);
     }
 
 

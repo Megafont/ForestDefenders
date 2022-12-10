@@ -60,6 +60,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Open Tech Tree",
+                    "type": "Button",
+                    "id": "37b774cc-ca51-4a37-986f-25a4ac785427",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "End Build Phase",
                     "type": "Button",
                     "id": "c4def3ed-c564-44d1-8bf4-c8aa2f10e50c",
@@ -301,11 +310,33 @@
                 },
                 {
                     "name": "",
+                    "id": "df9dabe9-c8bd-4e57-90aa-547881390fe9",
+                    "path": "<Keyboard>/b",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Enter Build Mode",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "7cefe24f-677a-4515-833a-03a1234ee750",
                     "path": "<Gamepad>/buttonNorth",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad;Xbox Controller;PS4 Controller",
+                    "action": "End Build Phase",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "197465be-ea66-4919-b196-596681d67bed",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
                     "action": "End Build Phase",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -329,6 +360,28 @@
                     "processors": "",
                     "groups": "KeyboardMouse",
                     "action": "Destroy Building",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8eb05d0c-e76f-4095-8430-393783d7f6be",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad;Xbox Controller;PS4 Controller",
+                    "action": "Open Tech Tree",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "797d4815-87cf-4902-bca9-f25eca5384bb",
+                    "path": "<Keyboard>/t",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse;Gamepad",
+                    "action": "Open Tech Tree",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

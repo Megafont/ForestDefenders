@@ -15,6 +15,8 @@ public partial class GameManager : MonoBehaviour
     public bool EnablePlayerSpawn = true;
     public Transform PlayerSpawnPoint;
     public float FallOutOfWorldDeathHeight = -32;
+    public int XP_EarnedPerWave = 2;
+    public int StartingXP = 0;
 
     [Header("UI Elements")]
     public float GamePhaseTextFadeOutTime = 3.0f;
@@ -27,8 +29,9 @@ public partial class GameManager : MonoBehaviour
 
 
     private TMP_Text _UI_GamePhaseText;
-    private RadialMenuDialog _UI_RadialMenu;
     private HighScoreNameEntryDialog _UI_HighScoreNameEntryDialog;
+    private RadialMenuDialog _UI_RadialMenuDialog;
+    private TechTreeDialog _UI_TechTreeDialog;
 
     private Image _UI_TopBar;
     private TMP_Text _UI_TimeToNextWaveText;
@@ -40,6 +43,7 @@ public partial class GameManager : MonoBehaviour
     [Header("UI Elements (Bottom Bar)")]
     private Image _UI_BottomBar;
     private TMP_Text _UI_PopulationCountText;
+    private TMP_Text _UI_XPCountText;
     private TMP_Text _UI_FoodCountText;
     private TMP_Text _UI_WoodCountText;
     private TMP_Text _UI_StoneCountText;
@@ -102,6 +106,10 @@ public partial class GameManager : MonoBehaviour
         GetManagerReferences();
 
         InitUI();
+
+
+        if (StartingXP > 0)
+            _UI_TechTreeDialog.AddXP(StartingXP);
     }
 
     private void Start()
@@ -133,6 +141,7 @@ public partial class GameManager : MonoBehaviour
     void Update()
     {
         _UI_PopulationCountText.text = $"Population: {VillageManager_Villagers.Population} / {VillageManager_Villagers.PopulationCap}";
+        _UI_XPCountText.text = $"XP: {_UI_TechTreeDialog.AvailableXP}";
 
         UpdateResourceStockpileCounterUI(_UI_FoodCountText, "Food: ", ResourceManager.Stockpiles[ResourceTypes.Food]);
         UpdateResourceStockpileCounterUI(_UI_WoodCountText, "Wood: ", ResourceManager.Stockpiles[ResourceTypes.Wood]);
@@ -325,27 +334,29 @@ public partial class GameManager : MonoBehaviour
 
         _UI_GamePhaseText.enabled = false;
 
-        _UI_ScoreText.text = _UI_ScoreText.text = "Score: 0000000000";
+        _UI_ScoreText.text = $"Score: 0000000000";
     }
 
     private void GetUIReferences()
     {
-        _UI_GamePhaseText = GameObject.Find("UI/HUD Canvas/Game Phase Text Canvas/Game Phase Text (TMP)").GetComponent<TMP_Text>();
-        _UI_RadialMenu = GameObject.Find("UI/Radial Menu Canvas").GetComponent<RadialMenuDialog>();
-        _UI_HighScoreNameEntryDialog = GameObject.Find("UI/High Scores Name Entry Canvas").GetComponent<HighScoreNameEntryDialog>();
+        _UI_GamePhaseText = GameObject.Find("UI/HUD/Game Phase Text Canvas/Game Phase Text (TMP)").GetComponent<TMP_Text>();
+        _UI_HighScoreNameEntryDialog = GameObject.Find("UI/High Scores Name Entry Dialog").GetComponent<HighScoreNameEntryDialog>();
+        _UI_RadialMenuDialog = GameObject.Find("UI/Radial Menu Dialog").GetComponent<RadialMenuDialog>();
+        _UI_TechTreeDialog = GameObject.Find("UI/Tech Tree Dialog").GetComponent<TechTreeDialog>();
 
-        _UI_TopBar = GameObject.Find("UI/HUD Canvas/Top Bar").GetComponent<Image>();
-        _UI_TimeToNextWaveText = GameObject.Find("UI/HUD Canvas/Top Bar/Time To Next Wave Text (TMP)").GetComponent<TMP_Text>();
-        _UI_WaveNumberText = GameObject.Find("UI/HUD Canvas/Top Bar/Wave Number Text (TMP)").GetComponent<TMP_Text>();
-        _UI_MonstersLeftText = GameObject.Find("UI/HUD Canvas/Top Bar/Monsters Left Text (TMP)").GetComponent<TMP_Text>();
-        _UI_ScoreText = GameObject.Find("UI/HUD Canvas/Top Bar/Score Text (TMP)").GetComponent<TMP_Text>();
-        _UI_SurvivalTimeText = GameObject.Find("UI/HUD Canvas/Top Bar/Survival Time Text (TMP)").GetComponent<TMP_Text>();
+        _UI_TopBar = GameObject.Find("UI/HUD/Top Bar").GetComponent<Image>();
+        _UI_TimeToNextWaveText = GameObject.Find("UI/HUD/Top Bar/Time To Next Wave Text (TMP)").GetComponent<TMP_Text>();
+        _UI_WaveNumberText = GameObject.Find("UI/HUD/Top Bar/Wave Number Text (TMP)").GetComponent<TMP_Text>();
+        _UI_MonstersLeftText = GameObject.Find("UI/HUD/Top Bar/Monsters Left Text (TMP)").GetComponent<TMP_Text>();
+        _UI_ScoreText = GameObject.Find("UI/HUD/Top Bar/Score Text (TMP)").GetComponent<TMP_Text>();
+        _UI_SurvivalTimeText = GameObject.Find("UI/HUD/Top Bar/Survival Time Text (TMP)").GetComponent<TMP_Text>();
 
-        _UI_BottomBar = GameObject.Find("UI/HUD Canvas/Bottom Bar").GetComponent<Image>();
-        _UI_PopulationCountText = GameObject.Find("UI/HUD Canvas/Bottom Bar/Population Count Text (TMP)").GetComponent<TMP_Text>();
-        _UI_FoodCountText = GameObject.Find("UI/HUD Canvas/Bottom Bar/Food Count Text (TMP)").GetComponent<TMP_Text>();
-        _UI_WoodCountText = GameObject.Find("UI/HUD Canvas/Bottom Bar/Wood Count Text (TMP)").GetComponent<TMP_Text>();
-        _UI_StoneCountText = GameObject.Find("UI/HUD Canvas/Bottom Bar/Stone Count Text (TMP)").GetComponent<TMP_Text>();
+        _UI_BottomBar = GameObject.Find("UI/HUD/Bottom Bar").GetComponent<Image>();
+        _UI_PopulationCountText = GameObject.Find("UI/HUD/Bottom Bar/Population Count Text (TMP)").GetComponent<TMP_Text>();
+        _UI_XPCountText = GameObject.Find("UI/HUD/Bottom Bar/XP Count Text (TMP)").GetComponent<TMP_Text>();
+        _UI_FoodCountText = GameObject.Find("UI/HUD/Bottom Bar/Food Count Text (TMP)").GetComponent<TMP_Text>();
+        _UI_WoodCountText = GameObject.Find("UI/HUD/Bottom Bar/Wood Count Text (TMP)").GetComponent<TMP_Text>();
+        _UI_StoneCountText = GameObject.Find("UI/HUD/Bottom Bar/Stone Count Text (TMP)").GetComponent<TMP_Text>();
     }
 
     public void AddToScore(int amount)
@@ -504,6 +515,8 @@ public partial class GameManager : MonoBehaviour
 
         if (MonsterManager.WaveComplete)
         {
+            _UI_TechTreeDialog.AddXP(XP_EarnedPerWave);
+
             _UI_MonstersLeftText.enabled = false;
             _UI_WaveNumberText.enabled = false;
 
@@ -556,6 +569,12 @@ public partial class GameManager : MonoBehaviour
         */
     }
 
+    private void CloseAllDialogs()
+    {
+        _UI_RadialMenuDialog.GetComponent<RadialMenuDialog>().CloseDialog();
+        _UI_TechTreeDialog.GetComponent<TechTreeDialog>().CloseDialog();        
+    }
+
     private IEnumerator ShowGamePhaseTextAndFadeOut(string text, Color32 color)
     {
         _UI_GamePhaseText.text = text;
@@ -593,11 +612,33 @@ public partial class GameManager : MonoBehaviour
         _UI_GamePhaseText.enabled = true;
     }
 
-
-
-    public RadialMenuDialog RadialMenu
+    public bool IsAnyDialogOpen()
     {
-        get { return _UI_RadialMenu; }
+        /*
+        Debug.Log($"Radial Dialog IsOpen: {_UI_RadialMenuDialog.IsOpen}");
+        Debug.Log($"Tech Tree Dialog IsOpen: {_UI_TechTreeDialog.IsOpen}");
+        */
+
+        if (_UI_RadialMenuDialog.IsOpen ||
+            _UI_TechTreeDialog.IsOpen)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+
+    public RadialMenuDialog RadialMenuDialog
+    {
+        get { return _UI_RadialMenuDialog; }
+    }
+
+    public TechTreeDialog TechTreeDialog
+    {
+        get { return _UI_TechTreeDialog; }
     }
 
 }

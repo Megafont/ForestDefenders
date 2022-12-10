@@ -59,10 +59,12 @@ public class VillageManager_Villagers : MonoBehaviour
 
     private Dictionary<IBuilding, IVillager> _VillagersHealingBuildings; // Tracks villagers that are busy healing buildings.
 
-    private WaitForSeconds _BuildingHealCheckWaitTime        ;
+    private WaitForSeconds _BuildingHealCheckWaitTime;
     private WaitForSeconds _VillagerSpawnWaitTime;
 
     private int _PopulationCap;
+
+    Coroutine _VillagerHealBuildingsCoroutine;
 
 
 
@@ -323,14 +325,33 @@ public class VillageManager_Villagers : MonoBehaviour
         }
     }
 
+    public void EnableVillagersHealBuildings()
+    {
+        VillagersHealBuildings = true;
+
+        if (_VillagerHealBuildingsCoroutine == null && GameManager.Instance.GameState == GameStates.PlayerBuildPhase)
+            _VillagerHealBuildingsCoroutine = StartCoroutine(OrderVillagersToHealBuildings());
+    }
+
     private IEnumerator OrderVillagersToHealBuildings()
     {
         Dictionary<IBuilding, GameObject> damagedBuildings = _VillageManager_Buildings.DamagedBuildingsDictionary;
-        if (damagedBuildings == null ||
-            damagedBuildings.Count == 0 || _AllVillagers.Count == 0)
+
+
+
+        while (damagedBuildings == null ||
+               damagedBuildings.Count == 0 || _AllVillagers.Count == 0)
         {
-            //Debug.Log("There are no damaged buildings to heal or no villagers left!");
-            yield break;
+            if (damagedBuildings == null)
+            { 
+                damagedBuildings = _VillageManager_Buildings.DamagedBuildingsDictionary;
+            }
+            else
+            {
+                //Debug.Log("There are no damaged buildings to heal or no villagers left!");
+            }
+
+            yield return _BuildingHealCheckWaitTime;
         }
 
 
@@ -381,7 +402,9 @@ public class VillageManager_Villagers : MonoBehaviour
             {
                 // Check if the building does NOT have a villager healing it.
                 if (!_VillagersHealingBuildings.ContainsKey(pair.Key))
+                {
                     SendRandomVillagerToHealBuilding(pair.Key, pair.Value);
+                }
 
             } // end foreach damaged building
 
@@ -391,7 +414,6 @@ public class VillageManager_Villagers : MonoBehaviour
         } // end while
 
 
-        Debug.Log("Villagers finished healing all damaged buildings!");
     }
 
 
@@ -418,19 +440,25 @@ public class VillageManager_Villagers : MonoBehaviour
 
     private void OnGameStateChanged(GameStates newGameState)
     {
+        //Debug.Log("GameState Changed to: " + newGameState);
+
         if (newGameState == GameStates.PlayerBuildPhase)
         {
             _VillagersHealingBuildings.Clear();
 
             if (VillagersHealBuildings)
             {
-                StartCoroutine(OrderVillagersToHealBuildings());
+                if (_VillagerHealBuildingsCoroutine != null)
+                    StopCoroutine(_VillagerHealBuildingsCoroutine);
+
+                _VillagerHealBuildingsCoroutine = StartCoroutine(OrderVillagersToHealBuildings());
             }
         }
         else
         {
             // Stop the coroutine if it is still running due to not enough villagers or something.
-            StopCoroutine(OrderVillagersToHealBuildings());
+            if (_VillagerHealBuildingsCoroutine != null)
+                StopCoroutine(_VillagerHealBuildingsCoroutine);
         }
     }
 

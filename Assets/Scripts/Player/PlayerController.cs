@@ -123,6 +123,7 @@ public class PlayerController : MonoBehaviour
 
 
     private InputManager _InputManager;
+    private InputManager_Player _InputManager_Player;
 
     //private PlayerInput _playerInput;
     //private StarterAssetsInputs _input;
@@ -131,6 +132,7 @@ public class PlayerController : MonoBehaviour
     private CharacterController _controller;
     private GameObject _mainCamera;
 
+    private GameManager _GameManager;
     private BuildModeManager _BuildModeManager;
     private ResourceManager _ResourceManager;
     private VillageManager_Buildings _VillageManager_Buildings;
@@ -170,10 +172,13 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        _BuildModeManager = GameManager.Instance.BuildModeManager;
-        _InputManager = GameManager.Instance.InputManager;
-        _ResourceManager = GameManager.Instance.ResourceManager;
-        _VillageManager_Buildings = GameManager.Instance.VillageManager_Buildings;
+        _GameManager = GameManager.Instance;
+
+        _BuildModeManager = _GameManager.BuildModeManager;
+        _InputManager = _GameManager.InputManager;
+        _InputManager_Player = _InputManager.Player;
+        _ResourceManager = _GameManager.ResourceManager;
+        _VillageManager_Buildings = _GameManager.VillageManager_Buildings;
 
         _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
             
@@ -206,7 +211,12 @@ public class PlayerController : MonoBehaviour
             DoAttackChecks();
 
 
-            if (_InputManager.Player.DestroyBuilding)
+            if (_InputManager_Player.OpenTechTree && !_GameManager.IsAnyDialogOpen())
+            {
+                _GameManager.TechTreeDialog.gameObject.SetActive(true);
+            }
+
+            if (_InputManager_Player.DestroyBuilding)
             {
                 if (Physics.Raycast(transform.position + Vector3.up * 0.1f,
                                 transform.forward,
