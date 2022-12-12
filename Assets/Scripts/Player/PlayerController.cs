@@ -533,6 +533,11 @@ public class PlayerController : MonoBehaviour
             GroundedRadius);
     }
 
+
+
+    // NOTE: The methods below are called by animation events.
+    // ====================================================================================================
+
     private void OnFootstep(AnimationEvent animationEvent)
     {
         if (animationEvent.animatorClipInfo.weight > 0.5f)
@@ -547,10 +552,11 @@ public class PlayerController : MonoBehaviour
 
     private void OnLand(AnimationEvent animationEvent)
     {
-        if (animationEvent.animatorClipInfo.weight > 0.5f)
-        {
+        // I disabled this if statement since it is not needed with our player animation.
+        //if (animationEvent.animatorClipInfo.weight > 0.5f)
+        //{
             AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
-        }
+        //}
     }
     
 }

@@ -1,0 +1,10 @@
+
+NOTE:
+The player animations in this folder are MODIFIED versions of the ones in the
+RPG Tiny Hero Wave asset pack.
+
+The original animation clips are read-only. The solution I found online was to
+duplicate each animation clip file, and then I could modify it. I needed to add
+animation triggers to call the OnFootStep() and OnLand() methods in the PlayerController
+script, which play the sound effects.
+

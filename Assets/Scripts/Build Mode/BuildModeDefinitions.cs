@@ -13,6 +13,7 @@ public class BuildingDefinition
     public string Category;
     public int MaxHealth;
     public int Tier;
+    public TechDefinitionIDs TechID;
 
     public List<MaterialCost> ConstructionCosts = new List<MaterialCost>();
     public float PercentageOfResourcesRecoveredOnDestruction;
@@ -102,19 +103,19 @@ public static class BuildModeDefinitions
     {
         string category = "Defense";
 
-        CreateBuildingDefinition(category, "Barricade", 20, 1, _MaterialRecoveryRate, 0, 1f, false, 0.0f, new MaterialCost[] 
+        CreateBuildingDefinition(category, "Barricade", 20, 1, TechDefinitionIDs.NOT_APPLICABLE, _MaterialRecoveryRate, 0, 1f, false, 0.0f, new MaterialCost[] 
             { CreateMaterialCost(ResourceTypes.Wood, 25) });
-        CreateBuildingDefinition(category, "Wood Wall", 50, 2, _MaterialRecoveryRate, 0, 2f, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Wood Wall", 50, 2, TechDefinitionIDs.Buildings_WoodWall, _MaterialRecoveryRate, 0, 2f, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 50) });
-        CreateBuildingDefinition(category, "Stone Wall", 100, 3, _MaterialRecoveryRate, 0, 2f, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Stone Wall", 100, 3, TechDefinitionIDs.Buildings_StoneWall, _MaterialRecoveryRate, 0, 2f, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 100),
               CreateMaterialCost(ResourceTypes.Stone, 100), });
 
 
-        CreateBuildingDefinition(category, "Mage Tower", 500, 2, _MaterialRecoveryRate, 0, 6f, true, 4f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Mage Tower", 500, 2, TechDefinitionIDs.NOT_APPLICABLE, _MaterialRecoveryRate, 0, 6f, true, 4f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 500),
               CreateMaterialCost(ResourceTypes.Stone, 500) });
-        CreateBuildingDefinition(category, "Spike Tower", 200, 2, _MaterialRecoveryRate, 0, 5f, true, 4f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Spike Tower", 200, 2, TechDefinitionIDs.NOT_APPLICABLE, _MaterialRecoveryRate, 0, 5f, true, 4f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 250),
               CreateMaterialCost(ResourceTypes.Stone, 250) });
         
@@ -124,9 +125,9 @@ public static class BuildModeDefinitions
     {
         string category = "Farming";
 
-        CreateBuildingDefinition(category, "Small Garden", 50, 1, _MaterialRecoveryRate, 0, 0.5f, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Small Garden", 50, 1, TechDefinitionIDs.NOT_APPLICABLE, _MaterialRecoveryRate, 0, 0.5f, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 50) });
-        CreateBuildingDefinition(category, "Farm", 100, 2, _MaterialRecoveryRate, 0, 1.0f, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Farm", 100, 2, TechDefinitionIDs.NOT_APPLICABLE, _MaterialRecoveryRate, 0, 1.0f, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 100) });
 
     }
@@ -135,10 +136,10 @@ public static class BuildModeDefinitions
     {
         string category = "Housing";
 
-        CreateBuildingDefinition(category, "Small House", 100, 1, _MaterialRecoveryRate, 1, 3.0f, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Small House", 100, 1, TechDefinitionIDs.NOT_APPLICABLE, _MaterialRecoveryRate, 1, 3.0f, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 50),
               CreateMaterialCost(ResourceTypes.Stone, 50), });
-        CreateBuildingDefinition(category, "Medium House", 150, 2, _MaterialRecoveryRate, 2, 3.0f, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Medium House", 150, 2, TechDefinitionIDs.NOT_APPLICABLE, _MaterialRecoveryRate, 2, 3.0f, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 100),
               CreateMaterialCost(ResourceTypes.Stone, 100), });
 
@@ -148,11 +149,11 @@ public static class BuildModeDefinitions
     {
         string category = "Other";
 
-        CreateBuildingDefinition(category, "Wood Bridge", 250, 3, _MaterialRecoveryRate, 0, 0.5f, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Wood Bridge", 250, 3, TechDefinitionIDs.NOT_APPLICABLE, _MaterialRecoveryRate, 0, 0.5f, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 300), });
     }
 
-    private static BuildingDefinition CreateBuildingDefinition(string category, string buildingName, int maxHealth, int buildingTier, float percentageOfMaterialsRecoveredOnDestroy, uint populationBoost, float height, bool isRound, float radius, MaterialCost[] constructionCosts)
+    private static BuildingDefinition CreateBuildingDefinition(string category, string buildingName, int maxHealth, uint buildingTier, TechDefinitionIDs techID, float percentageOfMaterialsRecoveredOnDestroy, uint populationBoost, float height, bool isRound, float radius, MaterialCost[] constructionCosts)
     {
         if (constructionCosts == null)
             throw new ArgumentNullException("The passed in construction costs list is null!");
@@ -166,7 +167,9 @@ public static class BuildModeDefinitions
             Name = buildingName,
             Category = category,
             MaxHealth = maxHealth,
-            Tier = buildingTier,
+            Tier = (int) buildingTier,
+
+            TechID = techID,
 
             PercentageOfResourcesRecoveredOnDestruction = percentageOfMaterialsRecoveredOnDestroy,
             ConstructionCosts = new List<MaterialCost>(constructionCosts),
@@ -279,6 +282,30 @@ public static class BuildModeDefinitions
         List<string> names = new List<string>();
         foreach (BuildingDefinition buildingDef in defs)
             names.Add(buildingDef.Name);
+
+        return names.ToArray();
+    }
+
+    public static string[] GetResearchedBuildingNamesListForCategory(string category)
+    {
+        BuildingDefinition[] defs;
+
+        defs = GetBuildingDefinitionsListForCategory(category);
+
+
+        GameManager gameManager = GameManager.Instance;
+
+        List<string> names = new List<string>();
+        foreach (BuildingDefinition buildingDef in defs)
+        {
+            // Has this building been researched yet?
+            TechDefinitionIDs techId = buildingDef.TechID;
+            if (techId == TechDefinitionIDs.NOT_APPLICABLE || // Building is not researchable if this is its ID
+                gameManager.TechTreeDialog.IsTechnologyResearched(buildingDef.TechID))
+            {
+                names.Add(buildingDef.Name);
+            }
+        }
 
         return names.ToArray();
     }

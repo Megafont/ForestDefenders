@@ -40,10 +40,11 @@ public class TechTreeDialog : MonoBehaviour
     private TMP_Text _BottomBarText;
 
     private GameObject _ScrollViewContentObject;
-    private List<TechTreeTileGroup> _TechTileGroups;
 
-    private Dictionary<string, TechTreeTile> _TechTreeTilesLookup;
+    private Dictionary<TechDefinitionIDs, TechTreeTile> _TechTreeTilesLookup;
+    private List<TechTreeTileGroup> _TechTreeTileGroups;
 
+    private TechTreeTile _LastTileHighlighted;
 
 
     // Start is called before the first frame update
@@ -58,8 +59,8 @@ public class TechTreeDialog : MonoBehaviour
 
         _ScrollViewContentObject = transform.Find("Panel/Scroll View/Viewport/Content").gameObject;
 
-        _TechTreeTilesLookup = new Dictionary<string, TechTreeTile>();
-
+        _TechTreeTilesLookup = new Dictionary<TechDefinitionIDs, TechTreeTile>();
+        _TechTreeTileGroups = new List<TechTreeTileGroup>();
 
         TechDefinitions.GetTechDefinitions(this);
 
@@ -110,6 +111,40 @@ public class TechTreeDialog : MonoBehaviour
         AvailableXP += amount;
     }
 
+    public void AddResearchGroup(string headerText, List<TechTreeTileData> techTiles)
+    {
+        if (string.IsNullOrWhiteSpace(headerText))
+            throw new Exception("The passed in header text is null, empty, or whitespace!");
+        if (techTiles == null)
+            throw new Exception("The passed in TileData list is null!");
+        if (techTiles.Count == 0)
+            throw new Exception("The passed in TileData list is empty!");
+        if (GroupExists(headerText))
+            throw new Exception($"A tech group named \"headerText\" has already been added into the tech tree!");
+
+
+        TMP_Text header = Instantiate(_TileGroupHeaderPrefab).GetComponent<TMP_Text>();
+
+        // We set the parent here, because by default the engine keeps the prefab's original world position.
+        // So we have to set the parent this way, rather than just passing it into the Instantiate() call above.
+        // This false parameter tells it not to keep the original world position.
+        header.transform.SetParent(_ScrollViewContentObject.transform);
+        header.text = headerText;
+
+
+        CreateTechTileGroupObject(techTiles, headerText);
+    }
+
+    public bool IsTechnologyLocked(TechDefinitionIDs techID)
+    {
+        return _TechTreeTilesLookup[techID].TileData.IsLocked;
+    }
+
+    public bool IsTechnologyResearched(TechDefinitionIDs techID)
+    {
+        return _TechTreeTilesLookup[techID].TileData.IsResearched;
+    }
+
     private void OnTileClicked(TechTreeTile sender)
     {
         // Debug.Log($"Tile \"{sender.TileData.Title}\" clicked!");
@@ -126,48 +161,49 @@ public class TechTreeDialog : MonoBehaviour
 
             sender.SetResearchedFlag(true);
 
-            RefreshTileUIColors(sender);
 
-            EnableTechs.EnableTech(sender.TileData.Title);
+            // Unlock the next tile in the row if there is one.
+            Vector2Int tileIndices = sender.TileData.TileIndices;
+            TechTreeTileGroup tileGroup = _TechTreeTileGroups[tileIndices.y];
+            if (tileIndices.x < tileGroup.TechTiles.Count - 1)
+            {
+                TechTreeTile nextTile = tileGroup.TechTiles[tileIndices.x + 1];
+                nextTile.SetLockedFlag(false);
+            }
+
+
+            // Update the description text if necessary.
+            ShowDescriptionText(sender);
+
+
+            // Enable the technology referenced by this tile.
+            //TechEnabler.EnableTech(sender.TileData.Title);
         }
 
     }
 
     private void OnTileMouseEnter(TechTreeTile sender)
     {
-        _BottomBarText.text = sender.TileData.IsLocked ? _LockedTileDescriptionText : sender.TileData.DescriptionText;
+        ShowDescriptionText(sender);
+
+        _LastTileHighlighted = sender;
+    }
+
+    private void ShowDescriptionText(TechTreeTile techTile)
+    {
+        _BottomBarText.text = techTile.TileData.IsLocked ? _LockedTileDescriptionText : techTile.TileData.DescriptionText;
     }
 
     private void RefreshTileUIColors(TechTreeTile curTile)
     { 
-        foreach (KeyValuePair<string, TechTreeTile> pair in _TechTreeTilesLookup)
+        foreach (KeyValuePair<TechDefinitionIDs, TechTreeTile> pair in _TechTreeTilesLookup)
         {
             if (pair.Value != curTile)
                 pair.Value.UpdateUIColors();
         }
     }
 
-    public void AddResearchGroup(string headerText, List<TechTreeTileData> techTiles)
-    {
-        if (techTiles == null)
-            throw new Exception("The passed in TileData list is null!");
-        if (techTiles.Count == 0)
-            throw new Exception("The passed in TileData list is empty!");
-
-
-        TMP_Text header = Instantiate(_TileGroupHeaderPrefab).GetComponent<TMP_Text>();
-        
-        // We set the parent here, because by default the engine keeps the prefab's original world position.
-        // So we have to set the parent this way, rather than just passing it into the Instantiate() call above.
-        // This false parameter tells it not to keep the original world position.
-        header.transform.SetParent(_ScrollViewContentObject.transform);
-        header.text = headerText;
-
-
-        CreateTechTileGroupObject(techTiles);
-    }
-
-    private void CreateTechTileGroupObject(List<TechTreeTileData> techTilesData) 
+    private void CreateTechTileGroupObject(List<TechTreeTileData> techTilesData, string name) 
     {
         GameObject groupObj = Instantiate(_TileGroupPrefab);
 
@@ -176,6 +212,11 @@ public class TechTreeDialog : MonoBehaviour
         // This false parameter tells it not to keep the original world position.
         groupObj.transform.SetParent(_ScrollViewContentObject.transform);
 
+
+        TechTreeTileGroup newGroup = new TechTreeTileGroup() { CategoryName = name,
+                                                               TechTiles = new List<TechTreeTile>() };
+
+        int rowIndex = _TechTreeTileGroups.Count;
 
         //Debug.Log($"Tile Count: {techTilesData.Count}");
         for (int i = 0; i < techTilesData.Count; i++)
@@ -192,12 +233,32 @@ public class TechTreeDialog : MonoBehaviour
             newTile.OnClick += OnTileClicked;
             newTile.OnMouseOver += OnTileMouseEnter;
 
+            // Store the column and row indices of this tile into the tile data.
+            tileData.TileIndices = new Vector2Int(i, rowIndex);
+
 
             // Add this research tile to the lookup table.
-            _TechTreeTilesLookup.Add(tileData.Title, newTile);
+            _TechTreeTilesLookup.Add(tileData.TechID, newTile);
+
+            // Also add research tile into the current group data block.
+            newGroup.TechTiles.Add(newTile);
 
         } // end foreach tileData
 
+
+        _TechTreeTileGroups.Add(newGroup);
+    }
+
+    private bool GroupExists(string headerText)
+    {
+        foreach (TechTreeTileGroup group in _TechTreeTileGroups)
+        {
+            if (group.CategoryName == headerText)
+                return true;
+        }
+
+
+        return false;
     }
 
     private void UpdateXPCountText()

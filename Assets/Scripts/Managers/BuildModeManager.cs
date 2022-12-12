@@ -202,7 +202,7 @@ public class BuildModeManager : MonoBehaviour
         // ----------------------------------------------------------------------------------------------------
 
         _RadialMenu.OnSelectionChanged += OnRadialMenuSelectionChangedHandler;
-        _RadialMenu.ShowRadialMenu($"Select {_TempCategory} Building", BuildModeDefinitions.GetBuildingNamesListForCategory(_TempCategory));
+        _RadialMenu.ShowRadialMenu($"Select {_TempCategory} Building", BuildModeDefinitions.GetResearchedBuildingNamesListForCategory(_TempCategory));
         OnRadialMenuSelectionChangedHandler(null);
 
         while (!_RadialMenu.MenuConfirmed && !_RadialMenu.MenuCancelled)

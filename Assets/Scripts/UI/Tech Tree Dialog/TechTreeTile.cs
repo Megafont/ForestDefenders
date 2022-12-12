@@ -68,7 +68,6 @@ public class TechTreeTile : MonoBehaviour, IPointerEnterHandler
         if (_TileData.IsResearched)
         {
             color = _ParentDialog.ResearchedColor;
-            _XPCostText.text = null;
         }
         else
         {
@@ -95,6 +94,7 @@ public class TechTreeTile : MonoBehaviour, IPointerEnterHandler
         _TileData.IsLocked = value;
 
         UpdateUIColors();
+        UpdateGUI();
     }
 
     public void SetResearchedFlag(bool value)
@@ -102,6 +102,7 @@ public class TechTreeTile : MonoBehaviour, IPointerEnterHandler
         _TileData.IsResearched = value;
 
         UpdateUIColors();
+        UpdateGUI();
     }
 
     public void SetTileData(TechTreeDialog parentDialog, TechTreeTileData tileData)
@@ -114,7 +115,7 @@ public class TechTreeTile : MonoBehaviour, IPointerEnterHandler
     {
         _TitleText.text = !_TileData.IsLocked ? _TileData.Title : _ParentDialog.LockedTileDescriptionText;
 
-        _XPCostText.text = $"Cost: {_TileData.XPCost} XP";
+        _XPCostText.text = !_TileData.IsResearched ? $"Cost: {_TileData.XPCost} XP" : null; // Display the XP only if the tech item has NOT been researched yet.
     }
 
     

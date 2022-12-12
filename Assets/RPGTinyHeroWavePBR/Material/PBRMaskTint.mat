@@ -8,7 +8,10 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: PBRMaskTint
-  m_Shader: {fileID: -6465566751694194690, guid: 122ce928207ad5f41a908f23d3a05130, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 122ce928207ad5f41a908f23d3a05130,
+    type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -17,6 +20,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -107,7 +111,8 @@ Material:
     - Color_B672769A: {r: 0.8018868, g: 0, b: 0.09161724, a: 0}
     - Color_C5D962E7: {r: 0.043965846, g: 0.22023174, b: 0.7169812, a: 0}
     - Color_E64BA0E: {r: 1, g: 0.52179044, b: 0, a: 0}
-    - Color_df356a6b29d64aee805a61f7bcdc2368: {r: 24.84706, g: 24.84706, b: 24.84706, a: 0}
+    - Color_df356a6b29d64aee805a61f7bcdc2368: {r: 24.84706, g: 24.84706, b: 24.84706,
+        a: 0}
     - _Color01: {r: 0.06550375, g: 0.1724677, b: 0.6037736, a: 0}
     - _Color02: {r: 0.10457456, g: 0.20204146, b: 0.8867924, a: 0}
     - _Color03: {r: 0.16967781, g: 0.32275674, b: 0.8773585, a: 0}
@@ -132,4 +137,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 5
+  version: 7

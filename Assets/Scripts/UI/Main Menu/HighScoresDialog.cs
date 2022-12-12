@@ -114,7 +114,7 @@ public class HighScoresDialog : MonoBehaviour
             highScoresTable = _HighScoresTable;
         else if (_SelectedTableType == HighScoreTypes.SurvivalTime)
             highScoresTable = _HighTimesTable;
-
+        
 
         if (highScoresTable == null)
         {
