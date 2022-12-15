@@ -9,7 +9,7 @@ using Cinemachine;
 using TMPro;
 
 
-public partial class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
     [Header("Player")]
     public bool EnablePlayerSpawn = true;
@@ -17,6 +17,10 @@ public partial class GameManager : MonoBehaviour
     public float FallOutOfWorldDeathHeight = -32;
     public int XP_EarnedPerWave = 2;
     public int StartingXP = 0;
+    
+    [Header("Sound & Music")]
+    public MusicParams MusicParams;
+    public SoundParams SoundParams;
 
     [Header("UI Elements")]
     public float GamePhaseTextFadeOutTime = 3.0f;
@@ -27,6 +31,8 @@ public partial class GameManager : MonoBehaviour
     public Color ResourceStockPilesColor = Color.white;
 
 
+
+    private PlayerHealthBar _UI_PlayerHealthBar;
 
     private TMP_Text _UI_GamePhaseText;
     private HighScoreNameEntryDialog _UI_HighScoreNameEntryDialog;
@@ -40,9 +46,9 @@ public partial class GameManager : MonoBehaviour
     private TMP_Text _UI_ScoreText;
     private TMP_Text _UI_SurvivalTimeText;
 
-    [Header("UI Elements (Bottom Bar)")]
     private Image _UI_BottomBar;
-    private TMP_Text _UI_PopulationCountText;
+    private TMP_Text _UI_VillagerCountText;
+    private TMP_Text _UI_BuildingCountText;
     private TMP_Text _UI_XPCountText;
     private TMP_Text _UI_FoodCountText;
     private TMP_Text _UI_WoodCountText;
@@ -53,21 +59,10 @@ public partial class GameManager : MonoBehaviour
 
     public static GameManager Instance;
 
-    public GameObject Player { get; private set; }
-
-    public SceneSwitcher SceneSwitcher { get; private set; }
-
-    public BuildModeManager BuildModeManager { get; private set; }
-    public CameraManager CameraManager { get; private set; }
-    public InputManager InputManager { get; private set; }
-    public MonsterManager MonsterManager { get; private set; }
-    public NavMeshManager NavMeshManager { get; private set; }
-    public ResourceManager ResourceManager { get; private set; }
-    public VillageManager_Buildings VillageManager_Buildings { get; private set; }
-    public VillageManager_Villagers VillageManager_Villagers { get; private set; }
 
     public int Score { get; private set; }
     public float SurvivalTime { get; private set; } // The total amount of time the player has survived so far.
+
 
     private float _BuildPhaseLength;
 
@@ -77,9 +72,6 @@ public partial class GameManager : MonoBehaviour
     private WaitForSeconds _GamePhaseDisplayDelay = new WaitForSeconds(2.5f);
 
 
-
-
-    public GameStates GameState { get; private set; } = GameStates.Startup;
 
 
     public delegate void GameManager_GameStateChangedHandler(GameStates newGameState);
@@ -110,6 +102,15 @@ public partial class GameManager : MonoBehaviour
 
         if (StartingXP > 0)
             _UI_TechTreeDialog.AddXP(StartingXP);
+
+
+        if (MusicPlayer.Instance)
+            MusicPlayer = MusicPlayer.Instance;
+        else
+        {
+            MusicPlayer prefab = Resources.Load<GameObject>("Music Player").GetComponent<MusicPlayer>();
+            MusicPlayer = Instantiate(prefab, Vector3.zero, Quaternion.identity);
+        }
     }
 
     private void Start()
@@ -131,6 +132,7 @@ public partial class GameManager : MonoBehaviour
         InitCameras();
 
 
+
         // Fade in the scene.        
         SceneSwitcher.FadeIn();
     }
@@ -140,7 +142,8 @@ public partial class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _UI_PopulationCountText.text = $"Population: {VillageManager_Villagers.Population} / {VillageManager_Villagers.PopulationCap}";
+        _UI_VillagerCountText.text = $"Population: {VillageManager_Villagers.Population} / {VillageManager_Villagers.PopulationCap}";
+        _UI_BuildingCountText.text = $"Buildings: {VillageManager_Buildings.TotalBuildingCount}";
         _UI_XPCountText.text = $"XP: {_UI_TechTreeDialog.AvailableXP}";
 
         UpdateResourceStockpileCounterUI(_UI_FoodCountText, "Food: ", ResourceManager.Stockpiles[ResourceTypes.Food]);
@@ -327,8 +330,7 @@ public partial class GameManager : MonoBehaviour
     private void InitUI()
     {
         GetUIReferences();
-
-
+       
         _UI_MonstersLeftText.enabled = false;
         _UI_WaveNumberText.enabled = false;
 
@@ -339,6 +341,8 @@ public partial class GameManager : MonoBehaviour
 
     private void GetUIReferences()
     {
+        _UI_PlayerHealthBar = GameObject.Find("Player Health Bar").GetComponent<PlayerHealthBar>();
+
         _UI_GamePhaseText = GameObject.Find("UI/HUD/Game Phase Text Canvas/Game Phase Text (TMP)").GetComponent<TMP_Text>();
         _UI_HighScoreNameEntryDialog = GameObject.Find("UI/High Scores Name Entry Dialog").GetComponent<HighScoreNameEntryDialog>();
         _UI_RadialMenuDialog = GameObject.Find("UI/Radial Menu Dialog").GetComponent<RadialMenuDialog>();
@@ -352,7 +356,8 @@ public partial class GameManager : MonoBehaviour
         _UI_SurvivalTimeText = GameObject.Find("UI/HUD/Top Bar/Survival Time Text (TMP)").GetComponent<TMP_Text>();
 
         _UI_BottomBar = GameObject.Find("UI/HUD/Bottom Bar").GetComponent<Image>();
-        _UI_PopulationCountText = GameObject.Find("UI/HUD/Bottom Bar/Population Count Text (TMP)").GetComponent<TMP_Text>();
+        _UI_VillagerCountText = GameObject.Find("UI/HUD/Bottom Bar/Villager Count Text (TMP)").GetComponent<TMP_Text>();
+        _UI_BuildingCountText = GameObject.Find("UI/HUD/Bottom Bar/Building Count Text (TMP)").GetComponent<TMP_Text>();
         _UI_XPCountText = GameObject.Find("UI/HUD/Bottom Bar/XP Count Text (TMP)").GetComponent<TMP_Text>();
         _UI_FoodCountText = GameObject.Find("UI/HUD/Bottom Bar/Food Count Text (TMP)").GetComponent<TMP_Text>();
         _UI_WoodCountText = GameObject.Find("UI/HUD/Bottom Bar/Wood Count Text (TMP)").GetComponent<TMP_Text>();
@@ -411,6 +416,7 @@ public partial class GameManager : MonoBehaviour
     {
         MonsterManager.ResetComboStreak();
 
+        GameStates prevGameState = GameState;
         bool prevGameStateWasStartup = GameState == GameStates.Startup;
         GameState = newGameState;
 
@@ -420,10 +426,14 @@ public partial class GameManager : MonoBehaviour
         switch (GameState)
         {
             case GameStates.Menu:
+                MusicPlayer.FadeToTrack(MusicParams.PlayerBuildPhaseMusic, false, MusicParams.PlayerBuildPhaseMusicVolume);
+
                 EnableHUD(false);
                 break;
 
             case GameStates.PlayerBuildPhase:
+                MusicPlayer.FadeToTrack(MusicParams.PlayerBuildPhaseMusic, false, MusicParams.PlayerBuildPhaseMusicVolume);
+
                 ResourceManager.RestoreResourceNodes();
                 _UI_TimeToNextWaveText.enabled = true;
 
@@ -433,6 +443,8 @@ public partial class GameManager : MonoBehaviour
                 break;
 
             case GameStates.MonsterAttackPhase:
+                MusicPlayer.FadeToTrack(MusicParams.MonsterAttackPhaseMusic, true, MusicParams.MonsterAttackPhaseMusicVolume);
+
                 _UI_MonstersLeftText.enabled = true;
                 _UI_WaveNumberText.enabled = true;
                 StartCoroutine(ShowGamePhaseTextAndFadeOut("Monsters Are Attacking!", Color.red));
@@ -441,6 +453,9 @@ public partial class GameManager : MonoBehaviour
                 break;
 
             case GameStates.GameOver:
+                if (prevGameState != GameStates.MonsterAttackPhase)
+                    MusicPlayer.FadeToTrack(MusicParams.MonsterAttackPhaseMusic, true, MusicParams.MonsterAttackPhaseMusicVolume);
+
                 // Disable HUD.
                 EnableHUD(false);
 
@@ -640,5 +655,23 @@ public partial class GameManager : MonoBehaviour
     {
         get { return _UI_TechTreeDialog; }
     }
+
+
+
+    public GameStates GameState { get; private set; } = GameStates.Startup;
+
+    public GameObject Player { get; private set; }
+
+    public MusicPlayer MusicPlayer { get; private set; }
+    public SceneSwitcher SceneSwitcher { get; private set; }
+
+    public BuildModeManager BuildModeManager { get; private set; }
+    public CameraManager CameraManager { get; private set; }
+    public InputManager InputManager { get; private set; }
+    public MonsterManager MonsterManager { get; private set; }
+    public NavMeshManager NavMeshManager { get; private set; }
+    public ResourceManager ResourceManager { get; private set; }
+    public VillageManager_Buildings VillageManager_Buildings { get; private set; }
+    public VillageManager_Villagers VillageManager_Villagers { get; private set; }
 
 }

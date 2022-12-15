@@ -1,16 +1,13 @@
 using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
-
+using Unity.VisualScripting;
 using UnityEngine;
 
 
-
+[RequireComponent(typeof(SoundSetPlayer))]
 public class ResourceNode : MonoBehaviour
-{
-    protected ResourceManager _ResourceManager;
-
-
+{  
     [Header("Node Settings")]
 
     [Tooltip("The type of resource provided by this node.")]
@@ -30,6 +27,10 @@ public class ResourceNode : MonoBehaviour
 
 
 
+    private ResourceManager _ResourceManager;
+    private SoundSetPlayer _SoundSetPlayer;
+    private SoundSet _SoundSet;
+
     private int _AmountAvailable;
 
     private List<IVillager> _VillagersMiningThisNode;
@@ -45,6 +46,11 @@ public class ResourceNode : MonoBehaviour
 
     private void Awake()
     {
+        _ResourceManager = GameManager.Instance.ResourceManager;
+
+        _SoundSetPlayer = GetComponent<SoundSetPlayer>();
+        GetSoundSet();
+
         _VillagersMiningThisNode = new List<IVillager>();
 
         AmountAvailable = TotalAmountInNode;
@@ -53,7 +59,6 @@ public class ResourceNode : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _ResourceManager = GameManager.Instance.ResourceManager;
     }
 
 
@@ -69,12 +74,21 @@ public class ResourceNode : MonoBehaviour
         AmountAvailable -= gatherAmount;
         _ResourceManager.Stockpiles[ResourceType] += gatherAmount;
 
+        _SoundSetPlayer.PlaySound();
 
         if (IsDepleted)
             OnNodeDepleted?.Invoke(this);
 
 
         return gatherAmount;
+    }
+
+    /// <summary>
+    /// Sets the node's current resource amount to 0.
+    /// </summary>
+    public void ClearNode()
+    {
+        _AmountAvailable = 0;
     }
 
     /// <summary>
@@ -95,9 +109,30 @@ public class ResourceNode : MonoBehaviour
         _VillagersMiningThisNode.Remove(villager);
     }
 
+    private void GetSoundSet()
+    {
+        switch (ResourceType)
+        {
+            case ResourceTypes.Food:
+                _SoundSetPlayer.SoundSet = GameManager.Instance.SoundParams.GetSoundSet("Sound Set - Gathering Food");
+                break;
+
+            case ResourceTypes.Stone:
+                _SoundSetPlayer.SoundSet = GameManager.Instance.SoundParams.GetSoundSet("Sound Set - Mining Stone");
+                break;
+
+            case ResourceTypes.Wood:
+                _SoundSetPlayer.SoundSet = GameManager.Instance.SoundParams.GetSoundSet("Sound Set - Chopping Wood");
+                break;
 
 
-    protected int CalculateGatherAmount()
+            default:
+                Debug.LogError("Could not find sound set for resource type \"ResourceType\"!");
+                break;
+        }
+    }
+
+    private int CalculateGatherAmount()
     {
         int gatherAmount = AmountGainedPerGather + Random.Range(-GatherAmountVariance, GatherAmountVariance);
 

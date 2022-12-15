@@ -175,7 +175,7 @@ public class BuildModeManager : MonoBehaviour
         // ----------------------------------------------------------------------------------------------------
 
         _RadialMenu.BottomBarText = "";
-        _RadialMenu.ShowRadialMenu("Select Building Type", BuildModeDefinitions.GetBuildingCategoriesList());
+        _RadialMenu.ShowRadialMenu("Select Building Type", BuildModeDefinitions.GetList_BuildingCategoriesContainingResearchedBuildings());
 
         while (!_RadialMenu.MenuConfirmed && !_RadialMenu.MenuCancelled)
             yield return null;
@@ -202,7 +202,7 @@ public class BuildModeManager : MonoBehaviour
         // ----------------------------------------------------------------------------------------------------
 
         _RadialMenu.OnSelectionChanged += OnRadialMenuSelectionChangedHandler;
-        _RadialMenu.ShowRadialMenu($"Select {_TempCategory} Building", BuildModeDefinitions.GetResearchedBuildingNamesListForCategory(_TempCategory));
+        _RadialMenu.ShowRadialMenu($"Select {_TempCategory} Building", BuildModeDefinitions.GetList_NamesOfResearchedbuildingsInCategory(_TempCategory));
         OnRadialMenuSelectionChangedHandler(null);
 
         while (!_RadialMenu.MenuConfirmed && !_RadialMenu.MenuCancelled)
@@ -251,7 +251,7 @@ public class BuildModeManager : MonoBehaviour
 
         StringBuilder b = new StringBuilder("Construction Cost:  ");
 
-        List<MaterialCost> constructionCosts = BuildModeDefinitions.GetBuildingConstructionCosts(_TempCategory, _RadialMenu.SelectedItemName);
+        List<MaterialCost> constructionCosts = BuildModeDefinitions.GetList_BuildingConstructionCosts(_TempCategory, _RadialMenu.SelectedItemName);
 
         for (int i = 0; i < constructionCosts.Count; i++)
         {

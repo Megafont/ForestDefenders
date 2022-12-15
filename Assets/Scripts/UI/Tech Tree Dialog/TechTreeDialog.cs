@@ -35,6 +35,7 @@ public class TechTreeDialog : MonoBehaviour
 
 
     private InputManager _InputManager;
+    private InputManager_UI _InputManager_UI;
 
     private TMP_Text _AvailableXPText;
     private TMP_Text _BottomBarText;
@@ -47,10 +48,12 @@ public class TechTreeDialog : MonoBehaviour
     private TechTreeTile _LastTileHighlighted;
 
 
+
     // Start is called before the first frame update
     void Start()
     {
         _InputManager = GameManager.Instance.InputManager;
+        _InputManager_UI = _InputManager.UI;
 
         _AvailableXPText = transform.Find("Panel/XP Count Text (TMP)").GetComponent<TMP_Text>();
 
@@ -80,6 +83,15 @@ public class TechTreeDialog : MonoBehaviour
         RefreshTileUIColors(null);
 
         IsOpen = true;
+    }
+
+    void Update()
+    {
+        if (_InputManager_UI != null &&
+            _InputManager_UI.CloseTechTree)
+        {
+            CloseDialog();
+        }    
     }
 
     void OnGUI()

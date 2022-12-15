@@ -30,11 +30,12 @@ public class Health : MonoBehaviour
     public delegate void Health_OnDeathEventHandler(GameObject sender);
     public delegate void Health_OnDamagedEventHandler(GameObject sender, GameObject attacker, float amount);
     public delegate void Health_OnHealedEventHandler(GameObject sender, GameObject healer, float amount);
+    public delegate void Health_OnHealthChangedEventHandler(GameObject sender, GameObject changeSource, float changeAmount);
 
     public event Health_OnDeathEventHandler OnDeath;
     public event Health_OnHealedEventHandler OnHeal;
     public event Health_OnDamagedEventHandler OnTakeDamage;
-
+    public event Health_OnHealthChangedEventHandler OnHealthChanged;
 
 
     private void Awake()
@@ -85,6 +86,7 @@ public class Health : MonoBehaviour
             
         CurrentHealth -= amount;
 
+        OnHealthChanged?.Invoke(gameObject, attacker, -amount);
         OnTakeDamage?.Invoke(gameObject, attacker, amount);
 
         if (CurrentHealth <= 0)
@@ -108,8 +110,8 @@ public class Health : MonoBehaviour
         if (CurrentHealth >= MaxHealth)
             CurrentHealth = MaxHealth;
 
+        OnHealthChanged?.Invoke(gameObject, healer, amount);
         OnHeal?.Invoke(gameObject, healer, amount);
-
 
         SpawnHealthPopup(amount);
     }

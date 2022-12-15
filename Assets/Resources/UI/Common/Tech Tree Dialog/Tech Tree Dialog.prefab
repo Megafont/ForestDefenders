@@ -1092,7 +1092,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 79498568417683816}
   m_HandleRect: {fileID: 4147189039199008804}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -1733,7 +1733,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.78431374}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.49019608}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1769,7 +1769,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 5
+  m_ScrollSensitivity: 10
   m_Viewport: {fileID: 2303250242757146184}
   m_HorizontalScrollbar: {fileID: 423118132407613872}
   m_VerticalScrollbar: {fileID: 1231639846531544407}

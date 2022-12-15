@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c879c265787dc14381f3d6b4dfbf8ff, type: 3}
+  m_Name: Sound Set - Mining Stone
+  m_EditorClassIdentifier: 
+  SoundsList:
+  - {fileID: 8300000, guid: c71017fbf3808e8499c5a4269fb807a4, type: 3}
+  - {fileID: 8300000, guid: 64d81066c49da064ab40efb463a265d5, type: 3}
+  - {fileID: 8300000, guid: 9add12bb601f30e499cb6cb955085969, type: 3}
+  - {fileID: 8300000, guid: 133c3e16aad99974683c5e4df55d1cbc, type: 3}
+  - {fileID: 8300000, guid: 61add7343ba471d47ac68257eabe56c6, type: 3}
+  Volume: 1

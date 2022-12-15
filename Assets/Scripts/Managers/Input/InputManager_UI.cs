@@ -12,6 +12,7 @@ public class InputManager_UI : InputSubManager
     public bool Confirm;
     public bool Cancel;
 
+    public bool CloseTechTree;
 
 
     protected override void Init()
@@ -42,6 +43,14 @@ public class InputManager_UI : InputSubManager
         CancelInput(context.performed);
     }
 
+    public void OnTechTree(InputAction.CallbackContext context)
+    {
+        // NOTE: This used to be "context.control.IsPressed()". However, this apparently caused a bug where sometimes this callback would not set the
+        //       input value to false when the button is released. Changing it to "context.performed" fixes this problem.
+        //       This issue does not seem to affect the player button controls like attack and jump for some reason, though.
+        CloseTechTreeInput(context.performed);
+    }
+
 
 
     private void NavigateInput(Vector2 newUINavigateDirection)
@@ -57,6 +66,11 @@ public class InputManager_UI : InputSubManager
     private void CancelInput(bool newUICancelState)
     {
         Cancel = newUICancelState;
+    }
+
+    private void CloseTechTreeInput(bool newOpenTechTreeInput)
+    {
+        CloseTechTree = newOpenTechTreeInput;
     }
 
 

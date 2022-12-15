@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c879c265787dc14381f3d6b4dfbf8ff, type: 3}
+  m_Name: Sound Set - Gathering Food
+  m_EditorClassIdentifier: 
+  SoundsList:
+  - {fileID: 8300000, guid: 92aa0e7cc69bc364abe6440a897c4e8e, type: 3}
+  - {fileID: 8300000, guid: fe251e0628fb090469a08c9fc8c23193, type: 3}
+  - {fileID: 8300000, guid: 7b06d6123fa01f34cb3648508a83228a, type: 3}
+  - {fileID: 8300000, guid: cf1e1c99639b8ab4c88827bf7216f0f2, type: 3}
+  - {fileID: 8300000, guid: 770f6426dc8abbd419b17f4bff358bd4, type: 3}
+  Volume: 1

@@ -598,6 +598,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Close Tech Tree",
+                    "type": "Button",
+                    "id": "e72d98d3-7f99-4705-ae77-4b7fd2b5c3a3",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -664,6 +673,28 @@
                     "processors": "",
                     "groups": "KeyboardMouse",
                     "action": "Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d88c74ee-d034-4870-ad43-90a93ab7d056",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad;Xbox Controller;PS4 Controller",
+                    "action": "Close Tech Tree",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6773ddf4-ed45-4d55-bff2-17b21d1bc3a5",
+                    "path": "<Keyboard>/t",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse;Gamepad",
+                    "action": "Close Tech Tree",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

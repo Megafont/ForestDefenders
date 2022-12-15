@@ -8,7 +8,7 @@ public class Building_WoodBridge : Building_Base
 {
     protected override void InitBuilding()
     {
-        ConfigureBasicBuildingSetup("Other", "Wood Bridge");
+        ConfigureBasicBuildingSetup("Bridges", "Wood Bridge");
     }
 
 }

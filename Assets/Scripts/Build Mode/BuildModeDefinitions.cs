@@ -75,33 +75,24 @@ public static class BuildModeDefinitions
         _BuildModeManager = GameManager.Instance.BuildModeManager;
         _MaterialRecoveryRate = _BuildModeManager.PercentageOfMaterialsRecoveredOnBuildingDestruction;
 
-        InitBuildingCategories();
         InitBuildingDefinitions();
         LoadBuildingPrefabs();
 
         IsInitialized = true;
     }
 
-    private static void InitBuildingCategories()
-    {
-        _BuildingCategories.Add("Defense", _Buildings_Defense);
-        _BuildingCategories.Add("Farming", _Buildings_Farming);
-        _BuildingCategories.Add("Housing", _Buildings_Housing);
-        _BuildingCategories.Add("Other", _Buildings_Other);
-    }
-
     private static void InitBuildingDefinitions()
     {
-        InitDefenseBuildings();
-        InitFarmingBuildings();
-        InitHousingBuildings();
-        InitOtherBuildings();
+        InitBuildDefinitions_Defense();
+        InitBuildDefinitions_Farming();
+        InitBuildDefinitions_Housing();
+        InitBuildDefinitions_Bridges();
     }
 
-
-    private static void InitDefenseBuildings()
+    private static void InitBuildDefinitions_Defense()
     {
         string category = "Defense";
+        _BuildingCategories.Add(category, _Buildings_Defense);
 
         CreateBuildingDefinition(category, "Barricade", 20, 1, TechDefinitionIDs.NOT_APPLICABLE, _MaterialRecoveryRate, 0, 1f, false, 0.0f, new MaterialCost[] 
             { CreateMaterialCost(ResourceTypes.Wood, 25) });
@@ -112,44 +103,46 @@ public static class BuildModeDefinitions
               CreateMaterialCost(ResourceTypes.Stone, 100), });
 
 
-        CreateBuildingDefinition(category, "Mage Tower", 500, 2, TechDefinitionIDs.NOT_APPLICABLE, _MaterialRecoveryRate, 0, 6f, true, 4f, new MaterialCost[]
-            { CreateMaterialCost(ResourceTypes.Wood, 500),
-              CreateMaterialCost(ResourceTypes.Stone, 500) });
-        CreateBuildingDefinition(category, "Spike Tower", 200, 2, TechDefinitionIDs.NOT_APPLICABLE, _MaterialRecoveryRate, 0, 5f, true, 4f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Spike Tower", 200, 2, TechDefinitionIDs.Buildings_SpikeTower, _MaterialRecoveryRate, 0, 5f, true, 4f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 250),
               CreateMaterialCost(ResourceTypes.Stone, 250) });
-        
+        CreateBuildingDefinition(category, "Mage Tower", 500, 2, TechDefinitionIDs.Buildings_MageTower, _MaterialRecoveryRate, 0, 6f, true, 4f, new MaterialCost[]
+            { CreateMaterialCost(ResourceTypes.Wood, 500),
+              CreateMaterialCost(ResourceTypes.Stone, 500) });        
     }
 
-    private static void InitFarmingBuildings()
+    private static void InitBuildDefinitions_Farming()
     {
         string category = "Farming";
+        _BuildingCategories.Add(category, _Buildings_Farming);
 
         CreateBuildingDefinition(category, "Small Garden", 50, 1, TechDefinitionIDs.NOT_APPLICABLE, _MaterialRecoveryRate, 0, 0.5f, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 50) });
-        CreateBuildingDefinition(category, "Farm", 100, 2, TechDefinitionIDs.NOT_APPLICABLE, _MaterialRecoveryRate, 0, 1.0f, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Farm", 100, 2, TechDefinitionIDs.Buildings_Farm, _MaterialRecoveryRate, 0, 1.0f, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 100) });
 
     }
 
-    private static void InitHousingBuildings()
+    private static void InitBuildDefinitions_Housing()
     {
         string category = "Housing";
+        _BuildingCategories.Add(category, _Buildings_Housing);
 
         CreateBuildingDefinition(category, "Small House", 100, 1, TechDefinitionIDs.NOT_APPLICABLE, _MaterialRecoveryRate, 1, 3.0f, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 50),
               CreateMaterialCost(ResourceTypes.Stone, 50), });
-        CreateBuildingDefinition(category, "Medium House", 150, 2, TechDefinitionIDs.NOT_APPLICABLE, _MaterialRecoveryRate, 2, 3.0f, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Medium House", 150, 2, TechDefinitionIDs.Buildings_MediumHouse, _MaterialRecoveryRate, 2, 3.0f, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 100),
               CreateMaterialCost(ResourceTypes.Stone, 100), });
 
     }
 
-    private static void InitOtherBuildings()
+    private static void InitBuildDefinitions_Bridges()
     {
-        string category = "Other";
+        string category = "Bridges";
+        _BuildingCategories.Add(category, _Buildings_Other);
 
-        CreateBuildingDefinition(category, "Wood Bridge", 250, 3, TechDefinitionIDs.NOT_APPLICABLE, _MaterialRecoveryRate, 0, 0.5f, false, 0.0f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Wood Bridge", 250, 3, TechDefinitionIDs.Buildings_WoodBridge, _MaterialRecoveryRate, 0, 0.5f, false, 0.0f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 300), });
     }
 
@@ -252,7 +245,7 @@ public static class BuildModeDefinitions
         return def.Prefab.gameObject;
     }
 
-    public static List<MaterialCost> GetBuildingConstructionCosts(string category, string buildingName)
+    public static List<MaterialCost> GetList_BuildingConstructionCosts(string category, string buildingName)
     {
         BuildingDefinition def = GetBuildingDefinition(category, buildingName);
 
@@ -264,7 +257,22 @@ public static class BuildModeDefinitions
         return _BuildingCategories.Keys.ToArray();
     }
 
-    public static BuildingDefinition[] GetBuildingDefinitionsListForCategory(string category)
+    public static string[] GetList_BuildingCategoriesContainingResearchedBuildings()
+    {
+        List<string> categoriesWithResearchedBuildings = new List<string>();
+
+
+        foreach (string category in _BuildingCategories.Keys) 
+        {
+            if (GetList_NamesOfResearchedbuildingsInCategory(category).Length > 0)
+                categoriesWithResearchedBuildings.Add(category);
+        }
+
+
+        return categoriesWithResearchedBuildings.ToArray();
+    }
+
+    public static BuildingDefinition[] GetList_BuildingDefinitionsInCategory(string category)
     {
         if (_BuildingCategories.TryGetValue(category, out List<BuildingDefinition> buildings))
             return buildings.ToArray();
@@ -272,11 +280,11 @@ public static class BuildModeDefinitions
             throw new Exception($"Cannot get menu items for unknown building category: \"{category}\"");
     }
 
-    public static string[] GetBuildingNamesListForCategory(string category)
+    public static string[] GetList_BuildingNamesInCategory(string category)
     {
         BuildingDefinition[] defs;
 
-        defs = GetBuildingDefinitionsListForCategory(category);
+        defs = GetList_BuildingDefinitionsInCategory(category);
 
 
         List<string> names = new List<string>();
@@ -286,11 +294,11 @@ public static class BuildModeDefinitions
         return names.ToArray();
     }
 
-    public static string[] GetResearchedBuildingNamesListForCategory(string category)
+    public static string[] GetList_NamesOfResearchedbuildingsInCategory(string category)
     {
         BuildingDefinition[] defs;
 
-        defs = GetBuildingDefinitionsListForCategory(category);
+        defs = GetList_BuildingDefinitionsInCategory(category);
 
 
         GameManager gameManager = GameManager.Instance;

@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c879c265787dc14381f3d6b4dfbf8ff, type: 3}
+  m_Name: Sound Set - Chopping Wood
+  m_EditorClassIdentifier: 
+  SoundsList:
+  - {fileID: 8300000, guid: 003fa738b0a903c498fb969dbe86664b, type: 3}
+  - {fileID: 8300000, guid: 18b1e504b0a308346994057841e9c626, type: 3}
+  - {fileID: 8300000, guid: e1aa915cd09292b42bca71a2a6eb3977, type: 3}
+  - {fileID: 8300000, guid: f03579c49471b444c9e054d20cf138b7, type: 3}
+  - {fileID: 8300000, guid: e8e9d3abb56984c4a8bd39e002d7ff27, type: 3}
+  Volume: 1

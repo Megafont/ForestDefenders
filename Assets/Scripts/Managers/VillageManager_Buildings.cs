@@ -30,7 +30,7 @@ public class VillageManager_Buildings : MonoBehaviour
     public event VillageManager_OnBuildingConstructedHandler OnBuildingConstructed;
     public event VillageManager_OnBuildingDestroyedHandler OnBuildingDestroyed;
 
-
+    
 
 
     private void Awake()
@@ -100,7 +100,7 @@ public class VillageManager_Buildings : MonoBehaviour
 
 
             // Create a parent game object for each building type in the category.
-            foreach (string buildingName in BuildModeDefinitions.GetBuildingNamesListForCategory(category))
+            foreach (string buildingName in BuildModeDefinitions.GetList_BuildingNamesInCategory(category))
             {
                 GameObject buildingTypeParent = new GameObject($"{buildingName}s");
 
@@ -240,6 +240,13 @@ public class VillageManager_Buildings : MonoBehaviour
     {
         GameObject newBuilding = Instantiate(buildingPrefab, position, rotation);
         
+        
+        // If this building provides a resource, clear the node so it doesn't provide any resources until the next player build phase.
+        ResourceNode resourceNode = newBuilding.GetComponent<ResourceNode>();
+        if (resourceNode)
+            resourceNode.ClearNode();
+
+
         IBuilding building = newBuilding.GetComponent<IBuilding>();
         AddBuilding(building);
         
@@ -267,6 +274,8 @@ public class VillageManager_Buildings : MonoBehaviour
 
     private void AddBuilding(IBuilding building)
     {
+        TotalBuildingCount++;
+
         _BuildingCategoryParents.TryGetValue($"{building.Category}/{building.Name}", out GameObject parent);
 
         // Set the parent of the building.
@@ -301,6 +310,8 @@ public class VillageManager_Buildings : MonoBehaviour
 
     private void RemoveBuilding(IBuilding building)
     {
+        TotalBuildingCount--;
+
         OnBuildingDestroyed?.Invoke(building, false);
 
 
@@ -375,5 +386,6 @@ public class VillageManager_Buildings : MonoBehaviour
 
     public Dictionary<IBuilding, GameObject> DamagedBuildingsDictionary { get; private set; }
     public GameObject TownCenter { get; private set; }
+    public int TotalBuildingCount { get; private set; }
 
 }
