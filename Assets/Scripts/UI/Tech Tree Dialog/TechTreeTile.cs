@@ -8,7 +8,7 @@ using UnityEngine.UI;
 using TMPro;
 
 
-public class TechTreeTile : MonoBehaviour, IPointerEnterHandler
+public class TechTreeTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     private TechTreeTileData _TileData;
 
@@ -23,6 +23,7 @@ public class TechTreeTile : MonoBehaviour, IPointerEnterHandler
 
     public event TechTreeTile_EventHandler OnClick;
     public event TechTreeTile_EventHandler OnMouseOver;
+    public event TechTreeTile_EventHandler OnMouseExit;
 
 
 
@@ -53,6 +54,11 @@ public class TechTreeTile : MonoBehaviour, IPointerEnterHandler
     public void OnPointerEnter(PointerEventData eventData)
     {
         OnMouseOver?.Invoke(this);
+    }
+
+    public void OnPointerExit(PointerEventData eventData) 
+    {
+        OnMouseExit?.Invoke(this);
     }
 
     public void UpdateUIColors()

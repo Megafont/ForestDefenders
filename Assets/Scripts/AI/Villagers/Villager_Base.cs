@@ -114,7 +114,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
         else if (_GameManager.GameState == GameStates.MonsterAttackPhase)
             DoTargetCheck_MonsterAttackPhase();
         else // Use the normal build phase behavior in game states like menu and game over.
-            DoTargetCheck_BuildPhase(); // Make the villagers keep working on the game over screen.
+            DoTargetCheck_BuildPhase();
 
 
         UpdateNearbyTargetDetectorState();

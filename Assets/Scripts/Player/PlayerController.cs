@@ -1,6 +1,4 @@
-﻿using StarterAssets;
-using System;
-using System.Collections;
+﻿using System;
 
 using UnityEngine;
 
@@ -9,8 +7,9 @@ using UnityEngine;
     using UnityEngine.InputSystem.iOS;
 #endif
 
-
 using Random = UnityEngine.Random;
+
+using StarterAssets;
 
 
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
@@ -21,6 +20,7 @@ using Random = UnityEngine.Random;
 /// This third person character controller is a modified version of Unity's third person character controller asset.
 /// </summary>
 [RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(SoundSetPlayer))]
 public class PlayerController : MonoBehaviour
 {
     [Header("Player")]
@@ -38,8 +38,6 @@ public class PlayerController : MonoBehaviour
     public float SpeedChangeRate = 10.0f;
 
     public AudioClip LandingAudioClip;
-    public AudioClip[] FootstepAudioClips;
-    [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
 
     [Space(10)]
     [Tooltip("The height the player can jump")]
@@ -57,7 +55,7 @@ public class PlayerController : MonoBehaviour
 
         
     [Header("Player Stats")]
-    public int AttackPower = 10;
+    public float AttackPower = 10;
     public float AttackCooldownTime = 0.5f;
        
 
@@ -145,7 +143,11 @@ public class PlayerController : MonoBehaviour
     private bool _IsDead;
 
     private float _AttackCooldownRemainingTime;
-       
+
+
+    private SoundSetPlayer _SoundSetPlayer;
+    private SoundParams _SoundParams;
+
 
 
     private bool IsCurrentDeviceMouse
@@ -168,17 +170,27 @@ public class PlayerController : MonoBehaviour
         {
             _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
         }
+
+
+        _GameManager = GameManager.Instance;
+
+        _ResourceManager = _GameManager.ResourceManager;
+
+        _SoundSetPlayer = GetComponent<SoundSetPlayer>();
+        _SoundParams = _GameManager.SoundParams;
+        _SoundSetPlayer.SoundSet = _SoundParams.GetSoundSet("Sound Set - Player Footsteps");
+
+
+        _VillageManager_Buildings = _GameManager.VillageManager_Buildings;
     }
 
     private void Start()
     {
-        _GameManager = GameManager.Instance;
-
         _BuildModeManager = _GameManager.BuildModeManager;
+
         _InputManager = _GameManager.InputManager;
         _InputManager_Player = _InputManager.Player;
-        _ResourceManager = _GameManager.ResourceManager;
-        _VillageManager_Buildings = _GameManager.VillageManager_Buildings;
+
 
         _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
             
@@ -211,9 +223,9 @@ public class PlayerController : MonoBehaviour
             DoAttackChecks();
 
 
-            if (_InputManager_Player.OpenTechTree && !_GameManager.IsAnyDialogOpen())
+            if (_InputManager_Player.OpenTechTree && _GameManager.GameState == GameStates.PlayerBuildPhase && !Dialog_Base.AreAnyDialogsOpen())
             {
-                _GameManager.TechTreeDialog.gameObject.SetActive(true);
+                _GameManager.TechTreeDialog.OpenDialog();
             }
 
             if (_InputManager_Player.DestroyBuilding)
@@ -541,13 +553,7 @@ public class PlayerController : MonoBehaviour
     private void OnFootstep(AnimationEvent animationEvent)
     {
         if (animationEvent.animatorClipInfo.weight > 0.5f)
-        {
-            if (FootstepAudioClips.Length > 0)
-            {
-                var index = Random.Range(0, FootstepAudioClips.Length);
-                AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.TransformPoint(_controller.center), FootstepAudioVolume);
-            }
-        }
+            _SoundSetPlayer.PlaySound();
     }
 
     private void OnLand(AnimationEvent animationEvent)
@@ -555,7 +561,7 @@ public class PlayerController : MonoBehaviour
         // I disabled this if statement since it is not needed with our player animation.
         //if (animationEvent.animatorClipInfo.weight > 0.5f)
         //{
-            AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
+            AudioSource.PlayClipAtPoint(_SoundParams.PlayerLandingSound, transform.TransformPoint(_controller.center), _SoundParams.PlayerLandingSoundVolume);
         //}
     }
     

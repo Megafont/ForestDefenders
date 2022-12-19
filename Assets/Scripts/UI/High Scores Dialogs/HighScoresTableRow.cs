@@ -42,7 +42,7 @@ public class HighScoresTableRow : MonoBehaviour
         else
             NameText.text = scoreData.Name;
 
-        ScoreText.text = scoreData.Score.ToString();
+        ScoreText.text = scoreData.Score.ToString("n0");
         TimeText.text = HighScores.TimeValueToString(scoreData.SurvivalTime);
     }
 }

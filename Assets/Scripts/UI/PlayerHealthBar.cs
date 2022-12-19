@@ -21,28 +21,36 @@ public class PlayerHealthBar : MonoBehaviour
     public Color32 MediumColor = new Color32(255, 170, 0, 255);
     public Color32 LowColor = Color.red;
 
-    RectTransform _RectTransform;
 
-    Image _UI_HealthBarBackgroundImage;
-    Image _UI_HealthBarImage;
-    TMP_Text _UI_HealthBarText;
-   
-    Health _PlayerHealthComponent;
 
-    bool _HealthChanged = true; // This is set to true to force an initial update of the health bar.
+    private RectTransform _RectTransform;
+
+    private Image _UI_HealthBarBackgroundImage;
+    private Image _UI_HealthBarImage;
+    private TMP_Text _UI_HealthBarText;
+
+    private GameManager _GameManager;
+    private Health _PlayerHealthComponent;
+
+    private bool _HealthChanged = true; // This is set to true to force an initial update of the health bar.
 
 
     // Start is called before the first frame update
     void Start()
     {
+        _GameManager = GameManager.Instance;
+
         GameObject healthBarBackgroundObj = transform.Find("Health Bar Background").gameObject;
         _UI_HealthBarBackgroundImage = healthBarBackgroundObj.GetComponent<Image>();
 
         GameObject healthBarObj = transform.Find("Health Bar").gameObject;
         _UI_HealthBarImage = healthBarObj.GetComponent<Image>();
 
-        _PlayerHealthComponent = GameManager.Instance.Player.GetComponent<Health>();
-        _PlayerHealthComponent.OnHealthChanged += OnPlayerHealthChanged;
+        if (GameManager.Instance.PlayerIsInGame())
+        {
+            _PlayerHealthComponent = _GameManager.Player.GetComponent<Health>();
+            _PlayerHealthComponent.OnHealthChanged += OnPlayerHealthChanged;
+        }
 
         GameObject healthBarTextObj = transform.Find("Health Bar Text (TMP)").gameObject;
         _UI_HealthBarText = healthBarTextObj.GetComponent<TMP_Text>();
@@ -62,7 +70,7 @@ public class PlayerHealthBar : MonoBehaviour
     private void UpdateHealthBar()
     {
         // Is the health bar UI initialized?
-        if (_UI_HealthBarImage == null || _UI_HealthBarText == null)
+        if (_PlayerHealthComponent == null || _UI_HealthBarImage == null || _UI_HealthBarText == null)
             return;
 
 

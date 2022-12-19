@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -92,9 +91,7 @@ public abstract class AI_Base : MonoBehaviour
     protected virtual void UpdateAI()
     {
         // If the path is invalid or partial, set target to null so the AI can find a new one.
-        if (_Target &&
-            (_NavMeshAgent.pathStatus == NavMeshPathStatus.PathInvalid ||
-            _NavMeshAgent.pathStatus == NavMeshPathStatus.PathPartial))
+        if (_Target && _NavMeshAgent.pathStatus != NavMeshPathStatus.PathComplete)
         {
             StopMoving();
 
@@ -102,7 +99,7 @@ public abstract class AI_Base : MonoBehaviour
             // If not, set target to null so the AI can try to find a new reachable one.
             if (Vector3.Distance(_NavMeshAgent.pathEndPosition, _Target.transform.position) > _InteractionRange)
             {
-                SetTarget(null, true);
+                //SetTarget(null, true);
                 //Debug.Log("PATH INVALID OR PARTIAL!");
             }
         }
@@ -223,19 +220,17 @@ public abstract class AI_Base : MonoBehaviour
         }
 
 
-        if (_NavMeshAgent.enabled)
-            StopMoving();
+        //if (_NavMeshAgent.enabled)
+        //    StopMoving();
 
-        if (_Target)
+        if (_Target && _NavMeshAgent.enabled)
         {
-            if (_NavMeshAgent.enabled)
-            {
-                // Is the target a moving target?                   
-                Vector3 randomPoint = Utils_Math.GetRandomPointAroundTarget(_Target.transform);
-                _NavMeshAgent.SetDestination(randomPoint);
+            // Is the target a moving target?                   
+            Vector3 randomPoint = Utils_Math.GetRandomPointAroundTarget(_Target.transform);
+            _NavMeshAgent.SetDestination(randomPoint);
 
-                //Debug.Log($"Target: {_Target.transform.position}    Point: {randomPoint}");
-            }
+
+            //Debug.Log($"Target: {_Target.transform.position}    Point: {randomPoint}");
         }
         else
         {
@@ -366,7 +361,6 @@ public abstract class AI_Base : MonoBehaviour
         // Set this NavMeshAgent back to default priority so other moving agents will ignore it.
         _NavMeshAgent.avoidancePriority = 50;
     }
-
 
     protected virtual void OnDeath(GameObject sender)
     {

@@ -46,7 +46,7 @@ public class VillageManager_Villagers : MonoBehaviour
     public int VillagerHealBuildingsFoodCost = 5;
 
 
-
+    private GameManager _GameManager;
     private ResourceManager _ResourceManager;
     private VillageManager_Buildings _VillageManager_Buildings;
 
@@ -70,9 +70,10 @@ public class VillageManager_Villagers : MonoBehaviour
 
     private void Awake()
     {
+        _GameManager = GameManager.Instance;
         _PopulationCap = StartingPopulationCap;
 
-        _VillageManager_Buildings = GameManager.Instance.VillageManager_Buildings;
+        _VillageManager_Buildings = _GameManager.VillageManager_Buildings;
         _VillageManager_Buildings.OnBuildingConstructed += OnBuildingConstructed;
         _VillageManager_Buildings.OnBuildingDestroyed += OnBuildingDestroyed;
 
@@ -81,7 +82,7 @@ public class VillageManager_Villagers : MonoBehaviour
         _BuildingHealCheckWaitTime = new WaitForSeconds(VillagerHealBuildingsCheckFrequency);
         _VillagerSpawnWaitTime = new WaitForSeconds(VillagerSpawnFrequency);
 
-        GameManager.Instance.OnGameStateChanged+= OnGameStateChanged;
+        _GameManager.OnGameStateChanged+= OnGameStateChanged;
     }
 
     // Start is called before the first frame update
@@ -217,6 +218,27 @@ public class VillageManager_Villagers : MonoBehaviour
 
     }
 
+    public void BuffVillagers(bool buffMaxHealth)
+    {
+        for (int i = 0; i < _AllVillagers.Count; i++)
+        {
+            IVillager villagerComponent = _AllVillagers[i];
+
+            if (buffMaxHealth)
+            {
+                // Set the villager's max health, and reset their health to max.
+                Health vHealth = villagerComponent.HealthComponent;
+                vHealth.MaxHealth = _GameManager.LevelUpDialog.CurrentVillagerMaxHealth;
+                vHealth.ResetHealthToMax();
+            }
+            else
+            {
+                // Set the villager's attack power.
+                (villagerComponent as AI_WithAttackBehavior).AttackPower = _GameManager.LevelUpDialog.CurrentVillagerAttackPower;
+            }
+        } // end for i
+    }
+
     private GameObject LoadVillagerPrefab(string villagerType)
     {
         GameObject prefab = Resources.Load<GameObject>($"Villagers/{villagerType}");
@@ -259,7 +281,20 @@ public class VillageManager_Villagers : MonoBehaviour
                                                      townCenter.transform.rotation,
                                                      _VillagerTypeParents[prefab.name].transform);
 
-                AddVillager(newVillager.GetComponent<IVillager>());
+
+                IVillager villagerComponent = newVillager.GetComponent<IVillager>();
+
+                // Set the villager's max health, and reset their health to max.
+                Health vHealth = villagerComponent.HealthComponent;
+                vHealth.MaxHealth = _GameManager.LevelUpDialog.CurrentVillagerMaxHealth;
+                vHealth.ResetHealthToMax();
+
+                // Set the villager's attack power.
+                (villagerComponent as AI_WithAttackBehavior).AttackPower = _GameManager.LevelUpDialog.CurrentVillagerAttackPower;
+
+                AddVillager(villagerComponent);
+
+                TotalVillagersSpawned++;
             }
 
             yield return _VillagerSpawnWaitTime;
@@ -467,6 +502,8 @@ public class VillageManager_Villagers : MonoBehaviour
         sender.GetComponent<Health>().OnDeath -= OnVillagerDeath;
        
         _AllVillagers.Remove(sender.GetComponent<IVillager>());
+
+        TotalVillagersLost++;
     }
 
 
@@ -476,5 +513,8 @@ public class VillageManager_Villagers : MonoBehaviour
 
     public int Population { get { return _AllVillagers.Count; } }
     public int PopulationCap {  get { return _PopulationCap; } }
+
+    public int TotalVillagersSpawned { get; private set; }
+    public int TotalVillagersLost { get; private set; }
 
 }

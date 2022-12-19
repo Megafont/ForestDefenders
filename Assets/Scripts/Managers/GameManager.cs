@@ -15,9 +15,16 @@ public class GameManager : MonoBehaviour
     public bool EnablePlayerSpawn = true;
     public Transform PlayerSpawnPoint;
     public float FallOutOfWorldDeathHeight = -32;
-    public int XP_EarnedPerWave = 2;
+    public float Player_StartingAttackPower = 20f;
+    public float Player_StartingMaxHealth = 100f;
+
+    [Header("Village")]
+    public float BuffAmountPerLevelUp = 5f;
+    public float Villagers_StartingAttackPower = 5f;
+    public float Villagers_StartingMaxHealth = 25f;
     public int StartingXP = 0;
-    
+    public int XP_EarnedPerWave = 2;
+
     [Header("Sound & Music")]
     public MusicParams MusicParams;
     public SoundParams SoundParams;
@@ -36,6 +43,7 @@ public class GameManager : MonoBehaviour
 
     private TMP_Text _UI_GamePhaseText;
     private HighScoreNameEntryDialog _UI_HighScoreNameEntryDialog;
+    private LevelUpDialog _UI_LevelUpDialog;
     private RadialMenuDialog _UI_RadialMenuDialog;
     private TechTreeDialog _UI_TechTreeDialog;
 
@@ -43,8 +51,10 @@ public class GameManager : MonoBehaviour
     private TMP_Text _UI_TimeToNextWaveText;
     private TMP_Text _UI_WaveNumberText;
     private TMP_Text _UI_MonstersLeftText;
-    private TMP_Text _UI_ScoreText;
+    private TMP_Text _UI_VillagersLostCountText;
+    private TMP_Text _UI_MonstersKilledCountText;
     private TMP_Text _UI_SurvivalTimeText;
+    private TMP_Text _UI_ScoreText;
 
     private Image _UI_BottomBar;
     private TMP_Text _UI_VillagerCountText;
@@ -60,17 +70,12 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
 
-    public int Score { get; private set; }
-    public float SurvivalTime { get; private set; } // The total amount of time the player has survived so far.
-
-
     private float _BuildPhaseLength;
 
     private float _GameStateStartTime;
 
-
+    
     private WaitForSeconds _GamePhaseDisplayDelay = new WaitForSeconds(2.5f);
-
 
 
 
@@ -137,26 +142,14 @@ public class GameManager : MonoBehaviour
         SceneSwitcher.FadeIn();
     }
 
-
     bool _PrintedWarning = false;
     // Update is called once per frame
     void Update()
     {
-        _UI_VillagerCountText.text = $"Population: {VillageManager_Villagers.Population} / {VillageManager_Villagers.PopulationCap}";
-        _UI_BuildingCountText.text = $"Buildings: {VillageManager_Buildings.TotalBuildingCount}";
-        _UI_XPCountText.text = $"XP: {_UI_TechTreeDialog.AvailableXP}";
-
-        UpdateResourceStockpileCounterUI(_UI_FoodCountText, "Food: ", ResourceManager.Stockpiles[ResourceTypes.Food]);
-        UpdateResourceStockpileCounterUI(_UI_WoodCountText, "Wood: ", ResourceManager.Stockpiles[ResourceTypes.Wood]);
-        UpdateResourceStockpileCounterUI(_UI_StoneCountText, "Stone: ", ResourceManager.Stockpiles[ResourceTypes.Stone]);
-
-
-        if (GameState == GameStates.MonsterAttackPhase ||
-            GameState==GameStates.PlayerBuildPhase)
-        {
+        if (GameState != GameStates.GameOver)
             SurvivalTime += Time.deltaTime;
-            _UI_SurvivalTimeText.text = $"Survival Time: {HighScores.TimeValueToString(SurvivalTime)}";
-        }
+
+        UpdateCommonHUDStats();
 
 
         switch (GameState)
@@ -196,6 +189,29 @@ public class GameManager : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Updates all HUD stats that are not specific to a given GameState.
+    /// </summary>
+    private void UpdateCommonHUDStats()
+    {
+        // Update the top bar stats.
+        _UI_VillagersLostCountText.text = $"Villagers Lost: {VillageManager_Villagers.TotalVillagersLost:n0}";
+        _UI_MonstersKilledCountText.text = $"Monsters Killed: {MonsterManager.TotalMonstersKilled:n0}";
+        _UI_SurvivalTimeText.text = $"Survival Time: {HighScores.TimeValueToString(SurvivalTime):n0}";
+        _UI_ScoreText.text = $"Score: {Score:n0}";
+
+
+        // Update the bottom bar stats.
+        _UI_VillagerCountText.text = $"Population: {VillageManager_Villagers.Population:n0} / {VillageManager_Villagers.PopulationCap:n0}";
+        _UI_BuildingCountText.text = $"Buildings: {VillageManager_Buildings.TotalBuildingCount:n0}";
+        _UI_XPCountText.text = $"XP: {_UI_TechTreeDialog.AvailableXP:n0}";
+
+        UpdateResourceStockpileCounterUI(_UI_FoodCountText, "Food: ", ResourceManager.Stockpiles[ResourceTypes.Food]);
+        UpdateResourceStockpileCounterUI(_UI_WoodCountText, "Wood: ", ResourceManager.Stockpiles[ResourceTypes.Wood]);
+        UpdateResourceStockpileCounterUI(_UI_StoneCountText, "Stone: ", ResourceManager.Stockpiles[ResourceTypes.Stone]);
+
+    }
+
     private void SpawnPlayer()
     {
         GameObject playerPrefab = Resources.Load<GameObject>("Player/Player_Male");
@@ -226,7 +242,7 @@ public class GameManager : MonoBehaviour
 
     private void UpdateResourceStockpileCounterUI(TMP_Text textUI, string labelText, int currentAmount)
     {
-        textUI.text = $"{labelText}{currentAmount}";
+        textUI.text = $"{labelText}{currentAmount:n0}";
 
 
         Color startColor = Color.white;
@@ -335,8 +351,6 @@ public class GameManager : MonoBehaviour
         _UI_WaveNumberText.enabled = false;
 
         _UI_GamePhaseText.enabled = false;
-
-        _UI_ScoreText.text = $"Score: 0000000000";
     }
 
     private void GetUIReferences()
@@ -344,7 +358,8 @@ public class GameManager : MonoBehaviour
         _UI_PlayerHealthBar = GameObject.Find("Player Health Bar").GetComponent<PlayerHealthBar>();
 
         _UI_GamePhaseText = GameObject.Find("UI/HUD/Game Phase Text Canvas/Game Phase Text (TMP)").GetComponent<TMP_Text>();
-        _UI_HighScoreNameEntryDialog = GameObject.Find("UI/High Scores Name Entry Dialog").GetComponent<HighScoreNameEntryDialog>();
+        _UI_HighScoreNameEntryDialog = GameObject.Find("UI/High Score Name Entry Dialog").GetComponent<HighScoreNameEntryDialog>();
+        _UI_LevelUpDialog = GameObject.Find("UI/Level Up Dialog").GetComponent<LevelUpDialog>();
         _UI_RadialMenuDialog = GameObject.Find("UI/Radial Menu Dialog").GetComponent<RadialMenuDialog>();
         _UI_TechTreeDialog = GameObject.Find("UI/Tech Tree Dialog").GetComponent<TechTreeDialog>();
 
@@ -352,8 +367,10 @@ public class GameManager : MonoBehaviour
         _UI_TimeToNextWaveText = GameObject.Find("UI/HUD/Top Bar/Time To Next Wave Text (TMP)").GetComponent<TMP_Text>();
         _UI_WaveNumberText = GameObject.Find("UI/HUD/Top Bar/Wave Number Text (TMP)").GetComponent<TMP_Text>();
         _UI_MonstersLeftText = GameObject.Find("UI/HUD/Top Bar/Monsters Left Text (TMP)").GetComponent<TMP_Text>();
-        _UI_ScoreText = GameObject.Find("UI/HUD/Top Bar/Score Text (TMP)").GetComponent<TMP_Text>();
+        _UI_VillagersLostCountText = GameObject.Find("UI/HUD/Top Bar/Villagers Lost Count Text (TMP)").GetComponent<TMP_Text>();
+        _UI_MonstersKilledCountText = GameObject.Find("UI/HUD/Top Bar/Monsters Killed Count Text (TMP)").GetComponent<TMP_Text>();
         _UI_SurvivalTimeText = GameObject.Find("UI/HUD/Top Bar/Survival Time Text (TMP)").GetComponent<TMP_Text>();
+        _UI_ScoreText = GameObject.Find("UI/HUD/Top Bar/Score Text (TMP)").GetComponent<TMP_Text>();
 
         _UI_BottomBar = GameObject.Find("UI/HUD/Bottom Bar").GetComponent<Image>();
         _UI_VillagerCountText = GameObject.Find("UI/HUD/Bottom Bar/Villager Count Text (TMP)").GetComponent<TMP_Text>();
@@ -370,7 +387,6 @@ public class GameManager : MonoBehaviour
             Debug.LogError("The amount to add to the score must be positive!");
 
         Score += amount;
-        _UI_ScoreText.text = $"Score: {Score:0000000000}";
     }
 
     public bool CheckIfGameIsOver()
@@ -412,11 +428,29 @@ public class GameManager : MonoBehaviour
         return SceneSwitcher.ActiveSceneName == "Test";
     }
 
+    public void TogglePauseGameState()
+    {
+        if (!GameIsPaused)
+        {
+            GameIsPaused = true;
+            Time.timeScale = 0.0f;
+
+            ShowGamePhaseText("Game Paused!", Color.cyan);
+        }
+        else
+        {
+            _UI_GamePhaseText.enabled = false;
+
+            Time.timeScale = 1.0f;
+            GameIsPaused = false;
+        }
+    }
+
     private void ChangeGameState(GameStates newGameState)
     {
         MonsterManager.ResetComboStreak();
 
-        GameStates prevGameState = GameState;
+        PreviousGameState = GameState;
         bool prevGameStateWasStartup = GameState == GameStates.Startup;
         GameState = newGameState;
 
@@ -453,11 +487,11 @@ public class GameManager : MonoBehaviour
                 break;
 
             case GameStates.GameOver:
-                if (prevGameState != GameStates.MonsterAttackPhase)
+                if (PreviousGameState != GameStates.MonsterAttackPhase)
                     MusicPlayer.FadeToTrack(MusicParams.MonsterAttackPhaseMusic, true, MusicParams.MonsterAttackPhaseMusicVolume);
 
                 // Disable HUD.
-                EnableHUD(false);
+                //EnableHUD(false);
 
                 // Disable player input.
                 InputManager.EnableInputActionMap((int)InputActionMapIDs.Player, false);
@@ -470,11 +504,13 @@ public class GameManager : MonoBehaviour
 
                 ShowGamePhaseText("Game Over!", Color.red);
 
+
                 if (HighScores.IsNewHighScore(Score, SurvivalTime))
                 {
                     // Activate the parent canvas of the name entry dialog to show the dialog.
-                    _UI_HighScoreNameEntryDialog.gameObject.SetActive(true);
+                    _UI_HighScoreNameEntryDialog.OpenDialog();
                 }
+
 
                 break;
 
@@ -508,7 +544,9 @@ public class GameManager : MonoBehaviour
         float timeToNextWave = _BuildPhaseLength - (Time.time - _GameStateStartTime);
 
         if (timeToNextWave <= 0 ||
-            (InputManager.Player.EnterBuildMode == false && InputManager.Player.EndBuildPhase)) // Is the player pressing the end build phase button while NOT in build mode?
+            (InputManager.Player.EndBuildPhase && !BuildModeManager.IsBuildModeActive &&                    // Is the player pressing the end build phase button while not in build mode
+             !Dialog_Base.AreAnyDialogsOpen() && !GamePhaseTextIsVisible &&                                 // With no dialogs or game phase text currently open
+             !SceneSwitcher.IsFading && !SceneSwitcher.IsTransitioningToScene && !MusicPlayer.IsFading))    // And no transitions taking place?
         {
             timeToNextWave = 0;
             _UI_TimeToNextWaveText.enabled = false;
@@ -527,6 +565,7 @@ public class GameManager : MonoBehaviour
 
         _UI_MonstersLeftText.text = $"Monsters Left: {monstersLeft} of {MonsterManager.CurrentWaveSize}";
         _UI_WaveNumberText.text = $"Wave #{MonsterManager.CurrentWaveNumber} Incoming!";
+        
 
         if (MonsterManager.WaveComplete)
         {
@@ -545,11 +584,6 @@ public class GameManager : MonoBehaviour
 
     private void GameState_GameOver()
     {        
-        if (!SceneSwitcher.IsFading && !SceneSwitcher.IsTransitioningToScene)
-        {
-            //SceneSwitcher.FadeToScene("Main Menu");
-        }
-
         //Debug.LogError("Game Over!");
     }
 
@@ -565,6 +599,10 @@ public class GameManager : MonoBehaviour
 
     private void EnableHUD(bool state = true)
     {
+        if (_UI_PlayerHealthBar)
+            _UI_PlayerHealthBar.gameObject.SetActive(state);
+
+
         _UI_TopBar.gameObject.SetActive(state);
         /*
         UI_TopBar.enabled = state;
@@ -584,12 +622,6 @@ public class GameManager : MonoBehaviour
         */
     }
 
-    private void CloseAllDialogs()
-    {
-        _UI_RadialMenuDialog.GetComponent<RadialMenuDialog>().CloseDialog();
-        _UI_TechTreeDialog.GetComponent<TechTreeDialog>().CloseDialog();        
-    }
-
     private IEnumerator ShowGamePhaseTextAndFadeOut(string text, Color32 color)
     {
         _UI_GamePhaseText.text = text;
@@ -605,6 +637,14 @@ public class GameManager : MonoBehaviour
         float fadeStartTime = Time.time;
         float elapsedTime = 0;
 
+
+        if (GameState == GameStates.PlayerBuildPhase &&
+            PreviousGameState == GameStates.MonsterAttackPhase)
+        {
+            StartCoroutine(ShowLevelUpDialogAfter(GamePhaseTextFadeOutTime - 1.25f));
+        }
+
+
         while (elapsedTime < GamePhaseTextFadeOutTime)
         {
             elapsedTime += Time.deltaTime;
@@ -615,7 +655,15 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
+
         _UI_GamePhaseText.enabled = false;
+    }
+
+    private IEnumerator ShowLevelUpDialogAfter(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        _UI_LevelUpDialog.OpenDialog();
     }
 
     private void ShowGamePhaseText(string text, Color32 color)
@@ -627,24 +675,12 @@ public class GameManager : MonoBehaviour
         _UI_GamePhaseText.enabled = true;
     }
 
-    public bool IsAnyDialogOpen()
+
+
+    public LevelUpDialog LevelUpDialog
     {
-        /*
-        Debug.Log($"Radial Dialog IsOpen: {_UI_RadialMenuDialog.IsOpen}");
-        Debug.Log($"Tech Tree Dialog IsOpen: {_UI_TechTreeDialog.IsOpen}");
-        */
-
-        if (_UI_RadialMenuDialog.IsOpen ||
-            _UI_TechTreeDialog.IsOpen)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        get { return _UI_LevelUpDialog; }
     }
-
 
     public RadialMenuDialog RadialMenuDialog
     {
@@ -658,7 +694,10 @@ public class GameManager : MonoBehaviour
 
 
 
+    public GameStates PreviousGameState { get; private set; } = GameStates.Startup;
     public GameStates GameState { get; private set; } = GameStates.Startup;
+    public bool GameIsPaused { get; private set; }
+    public bool GamePhaseTextIsVisible {  get { return _UI_GamePhaseText.enabled; } }
 
     public GameObject Player { get; private set; }
 
@@ -671,7 +710,15 @@ public class GameManager : MonoBehaviour
     public MonsterManager MonsterManager { get; private set; }
     public NavMeshManager NavMeshManager { get; private set; }
     public ResourceManager ResourceManager { get; private set; }
+
+    public int TotalMonstersKilled { get; private set; }
+
     public VillageManager_Buildings VillageManager_Buildings { get; private set; }
     public VillageManager_Villagers VillageManager_Villagers { get; private set; }
+
+
+    public int Score { get; private set; }
+    public float SurvivalTime { get; private set; } // The total amount of time the player has survived so far.
+
 
 }

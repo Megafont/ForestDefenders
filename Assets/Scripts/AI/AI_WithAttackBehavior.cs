@@ -37,13 +37,18 @@ public abstract class AI_WithAttackBehavior : AI_Base
         base.UpdateAI();
 
 
-        if (_Target == null ||
-            Time.time - _LastTargetCheckTime >= TargetCheckFrequency)
+        // Is it time for the next target check?
+        if (Time.time - _LastTargetCheckTime >= TargetCheckFrequency)
         {
             _LastTargetCheckTime = Time.time;
 
-            DoTargetCheck();
+            if (_Target != null && _NavMeshAgent.pathPending == false && _NavMeshAgent.pathStatus != NavMeshPathStatus.PathComplete)
+                SetTarget(null, true);
+            
+
+            DoTargetCheck();             
         }
+
     }
 
     public override bool SetTarget(GameObject target, bool discardCurrentTarget = false)

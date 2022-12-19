@@ -77,7 +77,7 @@ public class BuildModeManager : MonoBehaviour
     {
         // Check if player is entering build mode.
         bool input = _InputManager.Player.EnterBuildMode;
-        if (input && !IsBuildModeActive && !_GameManager.IsAnyDialogOpen())
+        if (input && _GameManager.GameState == GameStates.PlayerBuildPhase && !_GameManager.GamePhaseTextIsVisible && !IsBuildModeActive && !Dialog_Base.AreAnyDialogsOpen())
             StartCoroutine(EnableBuildMode(input));
             
         
@@ -116,7 +116,7 @@ public class BuildModeManager : MonoBehaviour
 
 
         // If the player pressed the select building button, and we are not already in the process of selecting a building, then open the buildings menu.
-        if (_InputManager.BuildMode.SelectBuilding && !IsSelectingBuilding && !_GameManager.IsAnyDialogOpen())
+        if (_InputManager.BuildMode.SelectBuilding && !IsSelectingBuilding && !Dialog_Base.AreAnyDialogsOpen())
         {
             StartCoroutine(DisplaySelectBuildingMenu());
             return;
@@ -175,7 +175,17 @@ public class BuildModeManager : MonoBehaviour
         // ----------------------------------------------------------------------------------------------------
 
         _RadialMenu.BottomBarText = "";
-        _RadialMenu.ShowRadialMenu("Select Building Type", BuildModeDefinitions.GetList_BuildingCategoriesContainingResearchedBuildings());
+        _RadialMenu.SetMenuParams("Select Building Type", BuildModeDefinitions.GetList_BuildingCategoriesContainingResearchedBuildings());
+        _RadialMenu.OpenDialog();
+
+
+
+        if (!_RadialMenu.IsOpen())
+        {
+            IsSelectingBuilding = false;
+            yield break;
+        }
+
 
         while (!_RadialMenu.MenuConfirmed && !_RadialMenu.MenuCancelled)
             yield return null;
@@ -193,7 +203,7 @@ public class BuildModeManager : MonoBehaviour
 
 
         // Wait until the menu has closed before trying to open a new one.
-        while (_RadialMenu.IsOpen)
+        while (_RadialMenu.IsOpen())
             yield return null;
 
 
@@ -202,7 +212,17 @@ public class BuildModeManager : MonoBehaviour
         // ----------------------------------------------------------------------------------------------------
 
         _RadialMenu.OnSelectionChanged += OnRadialMenuSelectionChangedHandler;
-        _RadialMenu.ShowRadialMenu($"Select {_TempCategory} Building", BuildModeDefinitions.GetList_NamesOfResearchedbuildingsInCategory(_TempCategory));
+        _RadialMenu.SetMenuParams($"Select {_TempCategory} Building", BuildModeDefinitions.GetList_NamesOfResearchedbuildingsInCategory(_TempCategory));
+        _RadialMenu.OpenDialog();
+
+
+        if (!_RadialMenu.IsOpen())
+        {
+            IsSelectingBuilding = false;
+            yield break;
+        }
+
+
         OnRadialMenuSelectionChangedHandler(null);
 
         while (!_RadialMenu.MenuConfirmed && !_RadialMenu.MenuCancelled)
@@ -231,7 +251,7 @@ public class BuildModeManager : MonoBehaviour
 
         // Wait until the menu has closed before returning. This prevents the player character from instantly attacking
         // because the input for that button hasn't had time to turn back off again after the button press.
-        while (_RadialMenu.IsOpen)
+        while (_RadialMenu.IsOpen())
             yield return null;
 
 

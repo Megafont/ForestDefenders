@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -19,6 +19,7 @@ public class InputManager_Player : InputSubManager
     public bool OpenTechTree;
     public bool DestroyBuilding;
     public bool EndBuildPhase;
+    public bool Pause;
 
 
     [Header("Movement Settings")]
@@ -35,6 +36,17 @@ public class InputManager_Player : InputSubManager
 
     }
 
+
+
+    public void Reset()
+    {
+        Attack = false;
+        EnterBuildMode = false;
+        OpenTechTree = false;
+        DestroyBuilding = false;
+        EndBuildPhase = false;
+        Pause = false;
+    }
 
 
     public void OnMove(InputAction.CallbackContext context)
@@ -92,6 +104,16 @@ public class InputManager_Player : InputSubManager
         EndBuildPhaseInput(context.performed);
     }
 
+    public void OnPause(InputAction.CallbackContext context)
+    {
+        //Debug.Log($"C: {context.canceled}    P: {context.performed}    S: {context.started}");
+
+        // Only call if the button was released.
+        if (context.canceled)
+            GameManager.Instance.TogglePauseGameState();
+
+        PauseInput(context.control.IsPressed());
+    }
 
 
     public void MoveInput(Vector2 newMoveDirection)
@@ -141,6 +163,10 @@ public class InputManager_Player : InputSubManager
         EndBuildPhase = newEndBuildModeState;
     }
 
+    private void PauseInput(bool newPauseState)
+    {
+        Pause = newPauseState;
+    }
 
 
 

@@ -7,16 +7,15 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 
-public class MainMenu : MonoBehaviour
+public class MainMenuDialog : Dialog_Base, IDialog
 {
     [Tooltip("This much time in seconds must elapse before the menu will respond to another input event to keep it from moving too fast.")]
     public float GamepadMenuSelectionDelay = 0.1f;
 
-    [SerializeField] GameObject _HighScoresDialog;
+    [SerializeField] GameObject _TitleDisplayCanvas;
+    [SerializeField] HighScoresDialog _HighScoresDialog;
 
 
-    private GameManager _GameManager;
-    private InputManager_UI _InputManager_UI;
     private SceneSwitcher _SceneSwitcher;
     private Transform _MenuItems;
 
@@ -25,28 +24,29 @@ public class MainMenu : MonoBehaviour
     private int _SelectedMenuItemIndex;
 
 
-    private void Awake()
-    {
-        _GameManager = GameManager.Instance;
 
-        _MenuItems = transform.Find("Menu Items").transform;   
+    protected override void Dialog_OnAwake()
+    {
+        _MenuItems = transform.Find("Panel/Menu Items").transform;
     }
 
-    // Start is called before the first frame update
-    void Start()
+    protected override void Dialog_OnStart()
     {
-        _InputManager_UI = _GameManager.InputManager.UI;
-
-        _GameManager.InputManager.SwitchToActionMap((int) InputActionMapIDs.UI);
         _SceneSwitcher = _GameManager.SceneSwitcher;
 
         foreach (Transform t in _MenuItems)
             t.GetComponent<MainMenuItem>().OnMouseUp += OnButtonClicked;
 
+        OpenDialog();
     }
 
-    // Update is called once per frame
-    void Update()
+    protected override void Dialog_OnEnable()
+    {
+        if (_TitleDisplayCanvas)
+            _TitleDisplayCanvas.SetActive(true);
+    }
+
+    protected override void Dialog_OnUpdate()
     {        
         if (Time.time - _LastGamepadSelectionChange >= GamepadMenuSelectionDelay)
         {
@@ -96,12 +96,14 @@ public class MainMenu : MonoBehaviour
 
     }
 
-    void OnGUI()
-    {        
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-    }
 
+    public override void OpenDialog(bool closeOtherOpenDialogs = true)
+    {
+        if (_TitleDisplayCanvas)
+            _TitleDisplayCanvas.SetActive(true);
+
+        base.OpenDialog(closeOtherOpenDialogs);
+    }
 
     public void OnButtonClicked(GameObject sender)
     {
@@ -116,8 +118,10 @@ public class MainMenu : MonoBehaviour
 
     public void OnHighScores()
     {
-        _HighScoresDialog.SetActive(true);
-        gameObject.SetActive(false);
+        _HighScoresDialog.OpenDialog();
+
+        _TitleDisplayCanvas.SetActive(false);
+        CloseDialog();
     }
 
     public void OnExitGame()

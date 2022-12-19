@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -140,7 +140,7 @@ public class MusicPlayer : MonoBehaviour
     ///                that way the crossfade won't be affected if for some reason those values changed while a fade is happening.</remarks></remrks>
     private IEnumerator DoCrossFade(float volume = -1.0f, float fadeTime = -1.0f)
     {
-        float prevTrackVolume = _Volume;
+        float prevTrackVolume = _PreviousTrack.volume;
 
 
         fadeTime = ValidateFadeTime(fadeTime);
@@ -155,6 +155,8 @@ public class MusicPlayer : MonoBehaviour
             yield break;
         }
 
+
+        IsFading = true;
 
 
         float elapsedTime = 0;
@@ -179,6 +181,8 @@ public class MusicPlayer : MonoBehaviour
         
         _PreviousTrack.Stop();
         _FadeCoroutine = null; // Clear the reference to this coroutine since it has finished.
+
+        IsFading = false;
     }
 
 
@@ -210,6 +214,8 @@ public class MusicPlayer : MonoBehaviour
             yield break;
         }
 
+
+        IsFading = true;
 
 
         float elapsedTime = 0;
@@ -244,6 +250,10 @@ public class MusicPlayer : MonoBehaviour
 
         _PreviousTrack.Stop();
         _FadeCoroutine = null; // Clear the reference to this coroutine since it has finished.
+
+        IsFading = false;
     }
 
+
+    public bool IsFading { get; private set; }
 }

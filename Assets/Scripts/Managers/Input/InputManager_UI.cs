@@ -22,6 +22,14 @@ public class InputManager_UI : InputSubManager
 
 
 
+    public void Reset()
+    {
+        Confirm = false;
+        Cancel = false;
+    }
+
+
+
     public void OnNavigate(InputAction.CallbackContext context)
     {
         NavigateInput(context.ReadValue<Vector2>());

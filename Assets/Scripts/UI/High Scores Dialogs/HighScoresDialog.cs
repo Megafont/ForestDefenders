@@ -8,7 +8,7 @@ using UnityEngine.UI;
 using TMPro;
 
 
-public class HighScoresDialog : MonoBehaviour
+public class HighScoresDialog : Dialog_Base, IDialog
 {
     [SerializeField] private GameObject _MainMenuParent;    
     [SerializeField] private GameObject _ScrollViewContentArea;
@@ -30,8 +30,7 @@ public class HighScoresDialog : MonoBehaviour
     private List<HighScoreData> _HighTimesTable;
 
 
-    // Start is called before the first frame update
-    void Start()
+    protected override void Dialog_OnStart()
     {
         if (_ScrollViewContentArea == null)
             throw new Exception("The ScrollViewContentArea property has not been set in the inspector!");
@@ -55,18 +54,6 @@ public class HighScoresDialog : MonoBehaviour
 
         gameObject.SetActive(false);
     }
-
-    void OnEnable()
-    {
-        DisplayScoreTable();
-    }
-
-    void OnGUI()
-    {
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-    }
-
 
     private void InitHighScoresTableRows()
     {
@@ -94,6 +81,13 @@ public class HighScoresDialog : MonoBehaviour
     {        
         _HighScoresTable = HighScores.GetHighScoresTable(HighScoreTypes.Score);
         _HighTimesTable = HighScores.GetHighScoresTable(HighScoreTypes.SurvivalTime);
+    }
+
+    public override void OpenDialog(bool closeOtherOpenDialogs = true)
+    {
+        DisplayScoreTable();
+
+        base.OpenDialog(closeOtherOpenDialogs);
     }
 
     private void DisplayScoreTable()

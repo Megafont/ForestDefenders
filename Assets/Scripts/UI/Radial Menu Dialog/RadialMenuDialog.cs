@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 using TMPro;
 
 
-public class RadialMenuDialog : MonoBehaviour
+public class RadialMenuDialog : Dialog_Base, IDialog
 {
     public GameObject RadialMenuItemPrefab;
 
@@ -27,8 +27,6 @@ public class RadialMenuDialog : MonoBehaviour
 
     private BuildModeManager _BuildModeManager;
 
-    private InputManager _InputManager;
-
     private bool _IsInitializing;
     private float _MenuItemSizeInDegrees;
     private int _PrevSelectedItemIndex;
@@ -43,40 +41,32 @@ public class RadialMenuDialog : MonoBehaviour
     private Color32 _MenuTitleTextColor = new Color32(255, 160, 0, 0);
 
     private GameObject _RadialMenuItemsParent;
-    
-    
 
-    // Start is called before the first frame update
-    void Start()
+
+
+    protected override void Dialog_OnAwake()
     {
-        _BuildModeManager = GameManager.Instance.BuildModeManager;
-        _InputManager = GameManager.Instance.InputManager;
-
         _MenuTitleUI = GameObject.Find("Radial Menu Dialog/Panel/Title Bar/Title Text (TMP)").GetComponent<TMP_Text>();
         _MenuBottomBarUI = GameObject.Find("Radial Menu Dialog/Panel/Bottom Text Bar/Bottom Text Bar (TMP)").GetComponent<TMP_Text>();
         _RadialMenuPanel = GameObject.Find("Radial Menu Dialog/Panel");
         _RadialMenuItemsParent = GameObject.Find("Radial Menu Dialog/Panel/Menu Items Parent");
+    }
 
+    protected override void Dialog_OnStart()
+    {
+        _BuildModeManager = _GameManager.BuildModeManager;
 
         _MenuItems = new List<RadialMenuItem>();
+
         // Create one menu item so the list isn't empty (to prevent errors).
         GameObject newItem = Instantiate(RadialMenuItemPrefab, Vector3.zero, Quaternion.identity, _RadialMenuItemsParent.transform);
         _MenuItems.Add(newItem.GetComponent<RadialMenuItem>());
 
-
-        CloseDialog();
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
 
 
-    public void ShowRadialMenu(string title, string[] names, int defaultItemIndex = 0)
+    public void SetMenuParams(string title, string[] names, int defaultItemIndex = 0)
     {
         if (names.Length == 0)
             throw new Exception("The passed in menu items list is empty!");
@@ -89,7 +79,7 @@ public class RadialMenuDialog : MonoBehaviour
             throw new Exception("The radial menu panel is null!");
 
 
-        if (_IsInitializing || IsOpen)
+        if (_IsInitializing || IsOpen())
         {
             Debug.LogError("Can't show radial menu because one is already open!");
             return;
@@ -109,8 +99,18 @@ public class RadialMenuDialog : MonoBehaviour
         SelectedItemIndex = 0;
 
         _IsInitializing = false;
+    }
 
-        StartCoroutine(DoRadialMenu());
+    public override void OpenDialog(bool closeOtherOpenDialogs = false)
+    {
+        if (IsOpen())
+            throw new Exception("Cannot display the radial menu, because one is already displayed!");
+
+
+        base.OpenDialog(closeOtherOpenDialogs);
+
+        if (IsOpen())
+            StartCoroutine(DoRadialMenu());
     }
 
     private IEnumerator DoRadialMenu()
@@ -121,17 +121,10 @@ public class RadialMenuDialog : MonoBehaviour
             throw new Exception("The menu items list is empty!");
 
 
-        if (IsOpen)
-            throw new Exception("Cannot display the radial menu, because one is already displayed!");
-
-
         // Enable the UI controls InputActionMap.
         _InputManager.GetPlayerInputComponent().actions.FindActionMap(InputManager.ACTION_MAP_UI).Enable();
 
 
-
-        IsOpen = true;
-        Time.timeScale = 0; // Pause the game.
 
         while (true)
         {
@@ -158,7 +151,6 @@ public class RadialMenuDialog : MonoBehaviour
 
         // Disable the UI controls InputActionMap.
         CloseDialog();
-        Time.timeScale = 1; // Unpause the game.
     }
 
     private void DoUIChecks()
@@ -339,17 +331,8 @@ public class RadialMenuDialog : MonoBehaviour
         _MenuItems.Add(newMenuItem.GetComponent<RadialMenuItem>());
     }
 
-    public void CloseDialog()
-    {
-        _InputManager.GetPlayerInputComponent().actions.FindActionMap(InputManager.ACTION_MAP_UI).Disable();
-
-        IsOpen = false;
-        _RadialMenuPanel.SetActive(false);
-    }
 
 
-
-    public bool IsOpen { get; private set; }
     public bool MenuConfirmed { get; private set; }
     public bool MenuCancelled { get; private set; }
 
@@ -415,4 +398,6 @@ public class RadialMenuDialog : MonoBehaviour
             }
         }
     }
+
+
 }

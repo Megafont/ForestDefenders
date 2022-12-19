@@ -9,8 +9,13 @@ public class SoundParams : ScriptableObject
 {
     public static float DEFAULT_SOUND_VOLUME = 1.0f;
 
-    
+
+    [Header("Sound Sets")]
     public List<SoundSet> SoundSets = new List<SoundSet>();
+
+    [Header("Player")]
+    public AudioClip PlayerLandingSound;
+    [Range(0, 1)] public float PlayerLandingSoundVolume = SoundParams.DEFAULT_SOUND_VOLUME;
 
 
     private Dictionary<string, SoundSet> _SoundSetsByName;

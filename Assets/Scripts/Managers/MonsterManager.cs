@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,14 +10,7 @@ public class MonsterManager : MonoBehaviour
 {
     public List<Monster_Base> MonsterPrefabs;
 
-    public int CurrentComboStreak { get; private set; }
     public float ComboStreakResetTime = 5.0f;
-
-    public int MonstersKilled { get; private set; }
-    public int MonstersLeft { get { return CurrentWaveSize - MonstersKilled; } }
-    public bool WaveComplete { get { return _WaveIsDoneSpawning && _AliveMonsters.Count == 0; } }
-    public int CurrentWaveNumber { get; private set; }
-    public int CurrentWaveSize { get; private set; }
 
     public int BaseMonsterSpawnAmount = 3;
 
@@ -174,6 +167,7 @@ public class MonsterManager : MonoBehaviour
 
 
         MonstersKilled++;
+        TotalMonstersKilled++;
 
 
         int enemyScoreValue = sender.GetComponent<IMonster>().GetScoreValue();
@@ -215,5 +209,17 @@ public class MonsterManager : MonoBehaviour
         else
             return 0;
     }
+
+
+
+    public int CurrentComboStreak { get; private set; }
+
+    public int MonstersKilled { get; private set; }
+    public int TotalMonstersKilled { get; private set; } // Total monsters killed across all waves so far.
+    public int MonstersLeft { get { return CurrentWaveSize - MonstersKilled; } }
+    public bool WaveComplete { get { return _WaveIsDoneSpawning && _AliveMonsters.Count == 0; } }
+    public int CurrentWaveNumber { get; private set; }
+    public int CurrentWaveSize { get; private set; }
+
 
 }

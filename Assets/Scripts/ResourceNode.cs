@@ -1,7 +1,7 @@
 using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+
 using UnityEngine;
 
 
@@ -29,7 +29,6 @@ public class ResourceNode : MonoBehaviour
 
     private ResourceManager _ResourceManager;
     private SoundSetPlayer _SoundSetPlayer;
-    private SoundSet _SoundSet;
 
     private int _AmountAvailable;
 

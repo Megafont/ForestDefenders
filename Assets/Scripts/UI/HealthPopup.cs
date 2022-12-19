@@ -102,7 +102,7 @@ public class HealthPopup : MonoBehaviour
             _HealthPopupPool = new ObjectPool<HealthPopup>(CreateHealthPopup, OnTakenFromPool, OnReturnedToPool, OnDestroyPoolObject, true, 128, 1024);
 
         if (_HealthPopupsParent == null)
-            _HealthPopupsParent = GameObject.Find("UI/Health Popups");
+            _HealthPopupsParent = GameObject.Find("Health Popups");
 
 
         HealthPopup healthPopup = _HealthPopupPool.Get();

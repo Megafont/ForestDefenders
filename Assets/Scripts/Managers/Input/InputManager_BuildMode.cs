@@ -21,6 +21,19 @@ public class InputManager_BuildMode : InputSubManager
 
 
 
+    public void Reset()
+    {
+        Build = false;
+        SelectBuilding = false;
+        MoveBuildPosition = Vector2.zero;
+        RotateBuildLeft = false;
+        RotateBuildRight = false;
+        GridSnap = false;
+        ExitBuildMode = false;
+    }
+
+
+
     protected override void Init()
     {
         

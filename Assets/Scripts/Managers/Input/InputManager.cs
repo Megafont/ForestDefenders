@@ -97,6 +97,13 @@ public class InputManager : MonoBehaviour
         _InputActionMaps.Add(inputActionMapID, actionMap);
     }
 
+    public void ResetAllInputMapControlValues()
+    {
+        BuildMode.Reset();
+        Player.Reset();
+        UI.Reset();
+    }
+
 
 
     public InputManager_BuildMode BuildMode { get; private set; }

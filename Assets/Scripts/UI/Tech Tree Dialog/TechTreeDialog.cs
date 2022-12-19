@@ -8,7 +8,7 @@ using TMPro;
 using UnityEngine.UI;
 
 
-public class TechTreeDialog : MonoBehaviour
+public class TechTreeDialog : Dialog_Base, IDialog
 {
     [SerializeField] private GameObject _TileGroupHeaderPrefab;
     [SerializeField] private GameObject _TileGroupPrefab;
@@ -34,9 +34,6 @@ public class TechTreeDialog : MonoBehaviour
     }
 
 
-    private InputManager _InputManager;
-    private InputManager_UI _InputManager_UI;
-
     private TMP_Text _AvailableXPText;
     private TMP_Text _BottomBarText;
 
@@ -46,12 +43,17 @@ public class TechTreeDialog : MonoBehaviour
     private List<TechTreeTileGroup> _TechTreeTileGroups;
 
     private TechTreeTile _LastTileHighlighted;
+    private TechTreeTile _LastTileSelected;
 
 
 
-    // Start is called before the first frame update
-    void Start()
+    protected override void Dialog_OnAwake()
     {
+        _PauseGameWhileDialogOpen = true;
+    }
+
+    protected override void Dialog_OnStart()
+    {        
         _InputManager = GameManager.Instance.InputManager;
         _InputManager_UI = _InputManager.UI;
 
@@ -71,21 +73,7 @@ public class TechTreeDialog : MonoBehaviour
 
     }
 
-    void OnEnable()
-    {
-        if (_InputManager == null)
-            return;
-
-        _InputManager.GetPlayerInputComponent().actions.FindActionMap(InputManager.ACTION_MAP_PLAYER).Disable();
-        _InputManager.GetPlayerInputComponent().actions.FindActionMap(InputManager.ACTION_MAP_UI).Enable();
-
-        UpdateXPCountText();
-        RefreshTileUIColors(null);
-
-        IsOpen = true;
-    }
-
-    void Update()
+    protected override void Dialog_OnUpdate()
     {
         if (_InputManager_UI != null &&
             _InputManager_UI.CloseTechTree)
@@ -94,25 +82,17 @@ public class TechTreeDialog : MonoBehaviour
         }    
     }
 
-    void OnGUI()
+    public override void OpenDialog(bool closeOtherOpenDialogs = false)
     {
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-    }
+        UpdateXPCountText();
+        RefreshTileUIColors(null);
 
+        base.OpenDialog(closeOtherOpenDialogs);
+    }
 
     public void OnDoneClick()
     {
         CloseDialog();
-    }
-
-    public void CloseDialog()
-    {
-        _InputManager.GetPlayerInputComponent().actions.FindActionMap(InputManager.ACTION_MAP_PLAYER).Enable();
-        _InputManager.GetPlayerInputComponent().actions.FindActionMap(InputManager.ACTION_MAP_UI).Disable();
-
-        gameObject.SetActive(false);
-        IsOpen = false;
     }
 
     public void AddXP(int amount)
@@ -161,6 +141,10 @@ public class TechTreeDialog : MonoBehaviour
     {
         // Debug.Log($"Tile \"{sender.TileData.Title}\" clicked!");
 
+
+        _LastTileSelected = sender;
+
+
         if (sender.TileData.IsResearched)
             return;
 
@@ -185,7 +169,7 @@ public class TechTreeDialog : MonoBehaviour
 
 
             // Update the description text if necessary.
-            ShowDescriptionText(sender);
+            UpdateDescriptionText(sender);
 
 
             // Enable the technology referenced by this tile.
@@ -196,14 +180,26 @@ public class TechTreeDialog : MonoBehaviour
 
     private void OnTileMouseEnter(TechTreeTile sender)
     {
-        ShowDescriptionText(sender);
+        UpdateDescriptionText(sender);
 
         _LastTileHighlighted = sender;
     }
 
-    private void ShowDescriptionText(TechTreeTile techTile)
+    public void OnTileMouseExit(TechTreeTile sender)
     {
-        _BottomBarText.text = techTile.TileData.IsLocked ? _LockedTileDescriptionText : techTile.TileData.DescriptionText;
+        // Since the mouse left this tile, display the description text for the selected tile if there is one.
+        if (_LastTileSelected != null)
+            UpdateDescriptionText(_LastTileSelected);
+        else
+            UpdateDescriptionText(null);      
+    }
+
+    private void UpdateDescriptionText(TechTreeTile techTile)
+    {
+        if (techTile == null || techTile.TileData.IsLocked)
+            _BottomBarText.text = _LockedTileDescriptionText;
+        else
+            _BottomBarText.text = techTile.TileData.DescriptionText;
     }
 
     private void RefreshTileUIColors(TechTreeTile curTile)
@@ -244,6 +240,7 @@ public class TechTreeDialog : MonoBehaviour
             newTile.SetTileData(this, tileData);
             newTile.OnClick += OnTileClicked;
             newTile.OnMouseOver += OnTileMouseEnter;
+            newTile.OnMouseExit += OnTileMouseExit;
 
             // Store the column and row indices of this tile into the tile data.
             tileData.TileIndices = new Vector2Int(i, rowIndex);
@@ -314,7 +311,6 @@ public class TechTreeDialog : MonoBehaviour
 
 
     public int AvailableXP { get; private set; }
-    public bool IsOpen { get; private set; }
 
 
     public string LockedTileDescriptionText { get { return _LockedTileDescriptionText; } }

@@ -16,3 +16,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: cf1e788effede0e4ca70cbfd7eabb4f9, type: 2}
   - {fileID: 11400000, guid: 2c455a39b5785d146baca2cfa53adedf, type: 2}
   - {fileID: 11400000, guid: 64319d96921401f40b750b3d084f07ca, type: 2}
+  - {fileID: 11400000, guid: f35a3381b1bded04384f8100255cd2a9, type: 2}
+  PlayerLandingSound: {fileID: 8300000, guid: ff697d3070687ce4583faa0561a145a2, type: 3}
+  PlayerLandingSoundVolume: 1
