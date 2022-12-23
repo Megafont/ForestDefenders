@@ -485,7 +485,7 @@ public class PlayerController : MonoBehaviour
 
             ResourceNode node = hit.collider.GetComponent<ResourceNode>();
             if (node != null && !node.IsDepleted)
-                node.Gather();
+                node.Gather(gameObject);
 
         } // end foreach hit
 
@@ -508,7 +508,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void OnDeath(GameObject sender)
+    private void OnDeath(GameObject sender, GameObject attacker)
     {
         Debug.Log("Player died!");
 

@@ -15,6 +15,10 @@ public class HighScoreNameEntryDialog : Dialog_Base, IDialog
     [SerializeField] TMP_Text _SurvivalTimeText;
 
 
+    protected override void Dialog_OnAwake()
+    {
+        _IgnoreGamePhaseText = true;
+    }
 
     public override void OpenDialog(bool closeOtherOpenDialogs = true)
     {

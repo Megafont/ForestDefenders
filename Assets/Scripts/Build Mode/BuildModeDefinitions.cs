@@ -318,6 +318,15 @@ public static class BuildModeDefinitions
         return names.ToArray();
     }
 
+    public static bool BuildingIsBridge(BuildingDefinition buildingDef)
+    {
+        if (buildingDef.Name == "Wooden Bridge")
+            return true;
+
+
+        return false;
+    }
+
     private static GameObject LoadBuildingPrefab(string category, string buildingName)
     {
         GameObject prefab = Resources.Load<GameObject>($"Structures/Prefabs/{category}/{buildingName}");

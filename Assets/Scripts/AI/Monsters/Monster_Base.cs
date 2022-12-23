@@ -74,7 +74,7 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         // If this monster is chasing a target and the target gets far enough away, revert to the previous target.
         else if (_Target == _Player || _Target.CompareTag("Villager")) // Is the target the player or a villager?
         {
-            float distanceToTarget = Vector3.Distance(transform.position, _Target.transform.position);
+            float distanceToTarget = GetDistanceToTarget();
             if (distanceToTarget > MaxChaseDistance)
             {
                 SetTarget(_PrevTarget);

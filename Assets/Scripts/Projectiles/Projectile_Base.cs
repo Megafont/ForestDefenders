@@ -78,7 +78,7 @@ public abstract class Projectile_Base : MonoBehaviour, IProjectile
         // layers for this projectile, then deal damage to it.
         Health targetHealth = objectHit.GetComponent<Health>();
         if (targetHealth &&
-            Utils.LayerMaskContains(TargetLayers, objectHit.gameObject.layer))
+            Utils.LayerMaskContains(TargetLayers.value, objectHit.gameObject.layer))
         {
             targetHealth.DealDamage(_CurAttackPower, gameObject);
         }

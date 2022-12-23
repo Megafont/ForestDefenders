@@ -80,7 +80,6 @@ public class BuildingConstructionGhost : MonoBehaviour
 
     private List<Vector3> _GroundSamplePoints;
 
-    private BridgeConstructionZone _CurrentBridgeZone; // The bridge zone the construction ghost is currently overlapping or null otherwise.
     private bool _IsBridgeCompletelyInsideBridgeZone; // Whether or not the construction ghost is completely inside the bounds of _CurrentBridgeZone.
 
 
@@ -131,9 +130,9 @@ public class BuildingConstructionGhost : MonoBehaviour
         _OverlappingObjects.Remove(other);
 
 
-        if (_CurrentBridgeZone != null && other.gameObject == _CurrentBridgeZone.gameObject)
+        if (ParentBridgeConstructionZone != null && other.gameObject == ParentBridgeConstructionZone.gameObject)
         {
-            _CurrentBridgeZone = null;
+            ParentBridgeConstructionZone = null;
             _IsBridgeCompletelyInsideBridgeZone = false;
         }
 
@@ -227,7 +226,7 @@ public class BuildingConstructionGhost : MonoBehaviour
 
 
         if (_IsBridgeCompletelyInsideBridgeZone)
-            _CurrentBridgeZone.ApplyConstraints(transform);
+            ParentBridgeConstructionZone.ApplyConstraints(transform);
     }
 
     /// <summary>
@@ -243,7 +242,7 @@ public class BuildingConstructionGhost : MonoBehaviour
 
         // Get the necessary ground sample points depending on which type of building is currently selected
         // and calculate the ground's Y position under the construction ghost.
-        if (_BuildingDefinition.Name == "Wood Bridge")
+        if (BuildModeDefinitions.BuildingIsBridge(_BuildingDefinition)) // Is the building a bridge?
         {
             GetLeftAndRightCenterGroundSamplePoints_XandZCoords();
             groundHeight = CalculateGroundHeight(CalculateGroundPositionOps.Max);
@@ -530,13 +529,13 @@ public class BuildingConstructionGhost : MonoBehaviour
         
 
         // Check if we are completely inside a bridge construction zone while trying to build a bridge.
-        if (_BuildingDefinition.Name == "Wood Bridge" &&
+        if (BuildModeDefinitions.BuildingIsBridge(_BuildingDefinition) &&
             collider.CompareTag("BridgeConstructionZone") &&
             Utils_Math.ObjectIsCompletelyInsideBoxCollider((BoxCollider) collider, _MeshFilter.mesh.bounds, transform))
         {
             //Debug.Log("Can build bridge!");
 
-            _CurrentBridgeZone = collider.GetComponent<BridgeConstructionZone>();
+            ParentBridgeConstructionZone = collider.GetComponent<BridgeConstructionZone>();
             _IsBridgeCompletelyInsideBridgeZone = true;
 
         }
@@ -558,19 +557,24 @@ public class BuildingConstructionGhost : MonoBehaviour
         bool result = false;
 
 
-        if (_CurrentBridgeZone)
+        if (ParentBridgeConstructionZone)
         {
+            // The building is overlapping a bridge zone.
+            // If IsBridgeCompletelyInsideBridgeZone is true, it means the building is a bridge AND it is completely within this bridge construction zone.
             result = !_IsBridgeCompletelyInsideBridgeZone;
         }
-        else if (_OverlappingObjects.Count < 1)
+        else if (_OverlappingObjects.Count < 1) 
         {
-            if (_BuildingDefinition.Name == "Wood Bridge")
+            // The building is not overlapping anything else.
+            // It is not considered obstructed unless it is a bridge that is outside a bridge construction zone.
+            if (BuildModeDefinitions.BuildingIsBridge(_BuildingDefinition))
                 result = true;
             else
                 result = false;
         }
         else
         {
+            // The building is obstructed since it is overlapping one or more other things.
             result = true;
         }
 
@@ -598,4 +602,11 @@ public class BuildingConstructionGhost : MonoBehaviour
         }
     }
     
+    /// <summary>
+    /// Returns the bridge construction zone the construction ghost is currently overlapping, or null
+    /// if it is not overlapping one.
+    /// </summary>
+    public BridgeConstructionZone ParentBridgeConstructionZone { get; private set; }
+
+
 }

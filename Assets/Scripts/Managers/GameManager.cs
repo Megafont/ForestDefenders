@@ -15,15 +15,19 @@ public class GameManager : MonoBehaviour
     public bool EnablePlayerSpawn = true;
     public Transform PlayerSpawnPoint;
     public float FallOutOfWorldDeathHeight = -32;
-    public float Player_StartingAttackPower = 20f;
-    public float Player_StartingMaxHealth = 100f;
+    public float PlayerStartingAttackPower = 20f;
+    public float PlayerStartingMaxHealth = 50f;
 
     [Header("Village")]
     public float BuffAmountPerLevelUp = 5f;
-    public float Villagers_StartingAttackPower = 5f;
-    public float Villagers_StartingMaxHealth = 25f;
+    public float VillagersStartingAttackPower = 5f;
+    public float VillagersStartingMaxHealth = 25f;
     public int StartingXP = 0;
     public int XP_EarnedPerWave = 2;
+
+    [Header("Scoring")]
+    public int PlayerGatheringScoreMultiplier = 2;
+    public int PlayerResearchScoreMultiplier = 100;
 
     [Header("Sound & Music")]
     public MusicParams MusicParams;
@@ -173,16 +177,16 @@ public class GameManager : MonoBehaviour
         } // end switch GameState
 
 
-        if (GameState != GameStates.GameOver &&
-            PlayerIsInGame()) // Are we in a level?
+        if (PlayerIsInGame()) // Are we in a level?
         {
-            CheckIfGameIsOver();
+            if (GameState != GameStates.GameOver)
+                CheckIfGameIsOver();
         }
         else
         {
             if (!_PrintedWarning)
             {
-                Debug.LogWarning($"GameManager.CheckIfGameIsOver() is disabled in this scene (\"{SceneSwitcher.ActiveSceneName}\"). Make sure this is intentional.");
+                Debug.LogWarning($"GameManager.CheckIfGameIsOver() is disabled in scene (\"{SceneSwitcher.ActiveSceneName}\"). Make sure this is intentional.");
                 _PrintedWarning = true;
             }
         }
@@ -383,6 +387,11 @@ public class GameManager : MonoBehaviour
 
     public void AddToScore(int amount)
     {
+        // If the player is dead, simply return. This ignores any additional points being earned by villagers killing monsters.
+        if (Player == null || (Player != null && Player.GetComponent<Health>().CurrentHealth == 0))
+            return;
+
+
         if (amount <= 0)
             Debug.LogError("The amount to add to the score must be positive!");
 
@@ -398,7 +407,7 @@ public class GameManager : MonoBehaviour
             Player.transform.position.y <= FallOutOfWorldDeathHeight)
         {
 
-            ICinemachineCamera gameOvercam = CameraManager.GetCameraWithID((int)CameraIDs.GameOver);
+            ICinemachineCamera gameOvercam = CameraManager.GetCameraWithID((int) CameraIDs.GameOver);
             if (Player.transform.position.y <= FallOutOfWorldDeathHeight)
             {
                 Transform townCenterTransform = VillageManager_Buildings.TownCenter.transform;
@@ -592,7 +601,7 @@ public class GameManager : MonoBehaviour
         _UI_TimeToNextWaveText.text = $"Next Wave In: {HighScores.TimeValueToString(timeToNextWave, false)}";
     }
 
-    private void OnPlayerDeath(GameObject sender)
+    private void OnPlayerDeath(GameObject sender, GameObject attacker)
     {
         ChangeGameState(GameStates.GameOver);
     }

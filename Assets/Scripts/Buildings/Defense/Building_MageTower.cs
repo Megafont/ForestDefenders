@@ -186,7 +186,7 @@ public class Building_MageTower : Building_Base
         }
     }
 
-    private void OnOccupantDeath(GameObject sender)
+    private void OnOccupantDeath(GameObject sender, GameObject attacker)
     {
         EnableMageInstance(false);
     }

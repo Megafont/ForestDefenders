@@ -328,11 +328,18 @@ public class BuildModeManager : MonoBehaviour
         {
             ApplyBuildCosts();
 
-            GameObject building = _VillageManager_Buildings.SpawnBuilding(_SelectedBuildingPrefab,
-                                                                          _SelectedBuildingCategory,
-                                                                          _SelectedBuildingName,
-                                                                          _BuildingConstructionGhost.BuildPosition,
-                                                                          _BuildingConstructionGhost.transform.rotation);
+            GameObject buildingObj = _VillageManager_Buildings.SpawnBuilding(_SelectedBuildingPrefab,
+                                                                             _SelectedBuildingCategory,
+                                                                             _SelectedBuildingName,
+                                                                             _BuildingConstructionGhost.BuildPosition,
+                                                                             _BuildingConstructionGhost.transform.rotation);
+
+            // If the bridge is a building, we need to add it to the list in the parent bridge construction zone,
+            // to keep track of whether the zone is bridged or not.
+            IBuilding building = buildingObj.GetComponent<IBuilding>();
+            if (BuildModeDefinitions.BuildingIsBridge(building.GetBuildingDefinition()))
+                _BuildingConstructionGhost.ParentBridgeConstructionZone.AddBridge(building);
+
 
             _LastBuildTime = Time.time;
         }

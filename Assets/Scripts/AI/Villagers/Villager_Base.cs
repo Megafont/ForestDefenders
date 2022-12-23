@@ -72,7 +72,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
         ResourceNode node = _Target.GetComponent<ResourceNode>();
         if (node)
         {
-            node.Gather();
+            node.Gather(gameObject);
 
             if (node.IsDepleted)
             {
@@ -145,7 +145,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
         // If this villager is chasing a target and the target gets far enough away, revert to the previous target.
         else if (_Target.CompareTag("Monster") || _Target.CompareTag("Player"))
         {
-            if (Vector3.Distance(transform.position, _Target.transform.position) >= MaxChaseDistance)
+            if (!TargetIsWithinChaseRange())
             {
                 SetTarget(_PrevTarget);
             }

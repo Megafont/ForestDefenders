@@ -49,19 +49,28 @@ public abstract class AI_WithAttackBehavior : AI_Base
             DoTargetCheck();             
         }
 
+
+        if (_Target)
+            DoAttackCheck();
     }
 
     public override bool SetTarget(GameObject target, bool discardCurrentTarget = false)
     {
         _IsAttacking = false;
+        _LastAttackTime = Time.time;
 
         return base.SetTarget(target, discardCurrentTarget);
     }
 
     protected override void InteractWithTarget()
     {
+        
+    }
+
+    protected virtual void DoAttackCheck()
+    {
         // Check if the target is still alive.
-        if (_Target)
+        if (_Target && TargetIsWithinAttackRange())
         {
             _IsAttacking = true;
 
@@ -71,11 +80,15 @@ public abstract class AI_WithAttackBehavior : AI_Base
         }
         else // _Target is null.
         {
+            // We set this here to prevent monsters from attacking instantaneously when they first get near the player.
+            // We subtract one second so the game will think the last attack was one second ago from now, thus there will only be a one second delay before the monster's first attack, rather than the normal value of AttackFrequency.
+            _LastAttackTime = Time.time;
+
             _IsAttacking = false;
         }
 
     }
-
+     
     protected abstract void DoTargetCheck();
 
     protected virtual void DoAttack()
@@ -83,6 +96,7 @@ public abstract class AI_WithAttackBehavior : AI_Base
         //Debug.Log($"Attacking \"{_Target.name}\"");
 
         _LastAttackTime = Time.time;
+
 
         Health health = _Target != null ? _Target.GetComponent<Health>() : null;
         if (_Target && health == null)
@@ -94,6 +108,16 @@ public abstract class AI_WithAttackBehavior : AI_Base
             AnimateAttack();
         }
 
+    }
+
+    protected bool TargetIsWithinAttackRange()
+    {
+        return GetDistanceToTarget() <= _InteractionRange;
+    }
+
+    protected bool TargetIsWithinChaseRange()
+    {
+        return GetDistanceToTarget() <= MaxChaseDistance;
     }
 
     protected abstract void UpdateNearbyTargetDetectorState();

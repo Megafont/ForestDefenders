@@ -102,6 +102,9 @@ public class MainMenuDialog : Dialog_Base, IDialog
         if (_TitleDisplayCanvas)
             _TitleDisplayCanvas.SetActive(true);
 
+        // Select the first menu item.
+        EventSystem.current.SetSelectedGameObject(_MenuItems.GetChild(0).gameObject);
+
         base.OpenDialog(closeOtherOpenDialogs);
     }
 

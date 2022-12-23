@@ -497,7 +497,7 @@ public class VillageManager_Villagers : MonoBehaviour
         }
     }
 
-    private void OnVillagerDeath(GameObject sender)
+    private void OnVillagerDeath(GameObject sender, GameObject attacker)
     {
         sender.GetComponent<Health>().OnDeath -= OnVillagerDeath;
        

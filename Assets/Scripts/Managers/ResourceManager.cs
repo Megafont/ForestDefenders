@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 using UnityEngine;
 
@@ -11,6 +10,7 @@ using Random = UnityEngine.Random;
 public class ResourceManager : MonoBehaviour
 {
     public GameObject ResourcesParent;
+    public GameObject BridgeConstructionZones;
 
     [Header("Stockpiles Settings")]
     public uint ResourceStockpilesStartAmount = 0;
@@ -24,7 +24,6 @@ public class ResourceManager : MonoBehaviour
     private Dictionary<ResourceTypes, int> _ResourceStockpilesByType;
     private Dictionary<ResourceTypes, List<ResourceNode>> _ResourceNodesByType;
 
-
     private List<ResourceNode> _AllResourceNodes;
 
     private List<ResourceNode> _ActiveResourceNodes;
@@ -37,12 +36,15 @@ public class ResourceManager : MonoBehaviour
         get { return _ResourceStockpilesByType; }
     }
 
-
+    
 
     void Awake()
     {
-        _ResourceTypeParents = new Dictionary<ResourceTypes, GameObject>();
+        _ResourceTypeParents = new Dictionary<ResourceTypes, GameObject>();        
+    }
 
+    private void Start()
+    {
         InitResourceTypeParentObjects();
         InitResourceStockpiles();
         InitResourceNodeLists();
@@ -73,6 +75,9 @@ public class ResourceManager : MonoBehaviour
 
         _ActiveResourceNodes.Clear();
         _ActiveResourceNodes.AddRange(_AllResourceNodes);
+
+
+        // ONLY ADD ONES BACK IN THE LIST THAT ARE ACCESSIBLE!
 
         _DepletedResourceNodes.Clear();
     }
@@ -142,12 +147,15 @@ public class ResourceManager : MonoBehaviour
 
     public void AddResourceNode(ResourceNode newNode)
     {
-        _AllResourceNodes.Add(newNode);
+        if (!_AllResourceNodes.Contains(newNode))
+            _AllResourceNodes.Add(newNode);
 
-        if (!newNode.IsDepleted)
+
+        if (!newNode.IsDepleted && !_ActiveResourceNodes.Contains(newNode))
             _ActiveResourceNodes.Add(newNode);
-        else
+        else if (!_DepletedResourceNodes.Contains(newNode))
             _DepletedResourceNodes.Add(newNode);
+
 
         _ResourceNodesByType[newNode.ResourceType].Add(newNode);
 
@@ -206,7 +214,7 @@ public class ResourceManager : MonoBehaviour
         _AllResourceNodes = new List<ResourceNode>();
         _ActiveResourceNodes = new List<ResourceNode>();
         _DepletedResourceNodes = new List<ResourceNode>();
-
+      
 
         foreach (int i in Enum.GetValues(typeof(ResourceTypes)))
             _ResourceNodesByType.Add((ResourceTypes) i, new List<ResourceNode>());
@@ -222,23 +230,33 @@ public class ResourceManager : MonoBehaviour
 
         foreach (ResourceNode node in resourceNodes)
         {
-            _ResourceNodesByType[node.ResourceType].Add(node);
-            _AllResourceNodes.Add(node);
+            // If this resource node is a building, skip it.
+            IBuilding building = node.GetComponent<IBuilding>();
+            if (building != null /*&& building.gameObject.tag == "Building Prefab"*/)
+                continue;
 
-            if (!node.IsDepleted)
+
+            _ResourceNodesByType[node.ResourceType].Add(node);
+            
+            if (!_AllResourceNodes.Contains(node))
+                _AllResourceNodes.Add(node);
+
+            if (!node.IsDepleted && !_ActiveResourceNodes.Contains(node))
                 _ActiveResourceNodes.Add(node);
-            else
+            else if (!_DepletedResourceNodes.Contains(node))
                 _DepletedResourceNodes.Add(node);
 
-            node.transform.parent = _ResourceTypeParents[node.ResourceType].transform;
+
+            //node.transform.parent = _ResourceTypeParents[node.ResourceType].transform;
             node.OnNodeDepleted += OnResourceNodeDepleted;
 
-
-        }
+        } // end foreach node
 
 
         //Debug.Log($"Active Resource Nodes: {_ActiveResourceNodes.Count}    Depleted Resource Nodes: {_DepletedResourceNodes.Count}");
     }
+
+
 
     private void OnResourceNodeDepleted(ResourceNode sender)
     {

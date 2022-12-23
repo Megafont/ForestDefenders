@@ -172,8 +172,11 @@ public class TechTreeDialog : Dialog_Base, IDialog
             UpdateDescriptionText(sender);
 
 
+            _GameManager.AddToScore(sender.TileData.XPCost * _GameManager.PlayerResearchScoreMultiplier * _GameManager.MonsterManager.CurrentWaveNumber);
+
+
             // Enable the technology referenced by this tile.
-            //TechEnabler.EnableTech(sender.TileData.Title);
+            TechEnabler.EnableTech(sender.TileData.Title);
         }
 
     }

@@ -156,7 +156,7 @@ public class MonsterManager : MonoBehaviour
         return count;
     }
 
-    private void OnDeath(GameObject sender)
+    private void OnDeath(GameObject sender, GameObject attacker)
     {
         if (Time.time - _LastMonsterDeathTime >= ComboStreakResetTime)
             ResetComboStreak();

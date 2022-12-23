@@ -38,10 +38,10 @@ public class LevelUpDialog : Dialog_Base
         _DescriptionText = transform.Find("Panel/Description Text (TMP)").GetComponent<TMP_Text>();
         _MenuItems = transform.Find("Panel/Menu Items").transform;
 
-        CurrentPlayerAttackPower = _GameManager.Player_StartingAttackPower;
-        CurrentPlayerMaxHealth = _GameManager.Player_StartingMaxHealth;
-        CurrentVillagerAttackPower = _GameManager.Villagers_StartingAttackPower;
-        CurrentVillagerMaxHealth = _GameManager.Villagers_StartingMaxHealth;
+        CurrentPlayerAttackPower = _GameManager.PlayerStartingAttackPower;
+        CurrentPlayerMaxHealth = _GameManager.PlayerStartingMaxHealth;
+        CurrentVillagerAttackPower = _GameManager.VillagersStartingAttackPower;
+        CurrentVillagerMaxHealth = _GameManager.VillagersStartingMaxHealth;
     }
 
     protected override void Dialog_OnStart()
@@ -117,13 +117,16 @@ public class LevelUpDialog : Dialog_Base
     {
         float buffAmount = _GameManager.BuffAmountPerLevelUp;
 
-        _DescriptionText.text = $"Select a +{buffAmount} Buff:";
+        _DescriptionText.text = $"Select A Buff:";
 
-        _MenuItems.GetChild(0).GetComponent<TMP_Text>().text = $"Player Attack Power  ({CurrentPlayerAttackPower + buffAmount})";
-        _MenuItems.GetChild(1).GetComponent<TMP_Text>().text = $"Player Max Health  ({CurrentPlayerMaxHealth + buffAmount})";
-        _MenuItems.GetChild(2).GetComponent<TMP_Text>().text = $"Villagers' Attack Power  ({CurrentVillagerAttackPower + buffAmount})";
-        _MenuItems.GetChild(3).GetComponent<TMP_Text>().text = $"Villagers' Max Health  ({CurrentVillagerMaxHealth + buffAmount})";
+        _MenuItems.GetChild(0).GetComponent<TMP_Text>().text = $"Player Attack Power\t\t+{buffAmount}  ({CurrentPlayerAttackPower + buffAmount})";
+        _MenuItems.GetChild(1).GetComponent<TMP_Text>().text = $"Player Max Health\t\t+{buffAmount}  ({CurrentPlayerMaxHealth + buffAmount})";
+        _MenuItems.GetChild(2).GetComponent<TMP_Text>().text = $"Villagers' Attack Power\t+{buffAmount}  ({CurrentVillagerAttackPower + buffAmount})";
+        _MenuItems.GetChild(3).GetComponent<TMP_Text>().text = $"Villagers' Max Health\t\t+{buffAmount}  ({CurrentVillagerMaxHealth + buffAmount})";
+        _MenuItems.GetChild(4).GetComponent<TMP_Text>().text = $"Heal Player"; // "Up To {_GameManager.PlayerHealAmount} HP";
 
+        // Select the first menu item.
+        EventSystem.current.SetSelectedGameObject(_MenuItems.GetChild(0).gameObject);
 
         base.OpenDialog(closeOtherOpenDialogs);
     }
@@ -194,5 +197,12 @@ public class LevelUpDialog : Dialog_Base
         _VillageManager_Villagers.BuffVillagers(true);
     }
 
+    public void OnBuffHealPlayer()
+    {
+        CloseDialog();
+
+        Health playerHealth = _Player.GetComponent<Health>();
+        playerHealth.ResetHealthToMax();
+    }
 
 }

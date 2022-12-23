@@ -351,7 +351,7 @@ public class VillageManager_Buildings : MonoBehaviour
     // EVENT METHODS
     // ========================================================================================================================================================================================================
 
-    private void OnBuildingDestroyedHandler(GameObject sender)
+    private void OnBuildingDestroyedHandler(GameObject sender, GameObject attacker)
     {
         sender.GetComponent<Health>().OnDeath -= OnBuildingDestroyedHandler;
 

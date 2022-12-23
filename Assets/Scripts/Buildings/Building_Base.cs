@@ -94,7 +94,7 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
             return;
     }
 
-    protected virtual void OnDeath(GameObject sender)
+    protected virtual void OnDeath(GameObject sender, GameObject attacker)
     {
         StartCoroutine(FadeOutAfterDeath());
     }

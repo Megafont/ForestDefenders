@@ -97,7 +97,7 @@ public abstract class AI_Base : MonoBehaviour
 
             // Check if the end of the path is within interaction distance of the target.
             // If not, set target to null so the AI can try to find a new reachable one.
-            if (Vector3.Distance(_NavMeshAgent.pathEndPosition, _Target.transform.position) > _InteractionRange)
+            if (GetDistanceToTarget() > _InteractionRange)
             {
                 //SetTarget(null, true);
                 //Debug.Log("PATH INVALID OR PARTIAL!");
@@ -122,7 +122,7 @@ public abstract class AI_Base : MonoBehaviour
         }
 
 
-        if (_Target && IsWithinInteractionRange())
+        if (_Target && TargetIsWithinInteractionRange())
         {
             if (!_NavMeshAgent.isStopped)
             {
@@ -237,7 +237,7 @@ public abstract class AI_Base : MonoBehaviour
             if (_NavMeshAgent.enabled)
                 StopMoving();
         }
-
+        
 
         _IsInteracting = false;
 
@@ -286,7 +286,7 @@ public abstract class AI_Base : MonoBehaviour
         _NavMeshAgent.destination = target.transform.position;
 
         WaitForSeconds delay = new WaitForSeconds(1.0f);
-        while (Vector3.Distance(transform.position, target.transform.position) > 3.0f)
+        while (GetDistanceToTarget() > _InteractionRange)
         {
             yield return delay;
         }
@@ -296,7 +296,7 @@ public abstract class AI_Base : MonoBehaviour
         _MovingToTargetAndIgnoreAllUntilArrived = false;
     }
 
-    protected bool IsWithinInteractionRange()
+    protected bool TargetIsWithinInteractionRange()
     {
         return GetDistanceToTarget() <= _InteractionRange;                                 
     }
@@ -362,7 +362,7 @@ public abstract class AI_Base : MonoBehaviour
         _NavMeshAgent.avoidancePriority = 50;
     }
 
-    protected virtual void OnDeath(GameObject sender)
+    protected virtual void OnDeath(GameObject sender, GameObject attacker)
     {
         StopMoving();
 

@@ -7,7 +7,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(SoundSetPlayer))]
 public class ResourceNode : MonoBehaviour
-{  
+{
     [Header("Node Settings")]
 
     [Tooltip("The type of resource provided by this node.")]
@@ -26,14 +26,13 @@ public class ResourceNode : MonoBehaviour
     public int GatherAmountVariance = 2;
 
 
-
+    private GameManager _GameManager;
     private ResourceManager _ResourceManager;
     private SoundSetPlayer _SoundSetPlayer;
 
     private int _AmountAvailable;
 
     private List<IVillager> _VillagersMiningThisNode;
-
 
 
     public delegate void ResourceNodeEventHandler(ResourceNode sender);
@@ -45,7 +44,8 @@ public class ResourceNode : MonoBehaviour
 
     private void Awake()
     {
-        _ResourceManager = GameManager.Instance.ResourceManager;
+        _GameManager = GameManager.Instance;
+        _ResourceManager = _GameManager.ResourceManager;
 
         _SoundSetPlayer = GetComponent<SoundSetPlayer>();
         GetSoundSet();
@@ -62,21 +62,32 @@ public class ResourceNode : MonoBehaviour
 
 
 
-    public int Gather()
+    public int Gather(GameObject gatherer)
     {
         if (IsDepleted)
             return 0;
 
+        int amountBeforeGather = AmountAvailable;
 
         int gatherAmount = CalculateGatherAmount();
-        
+
         AmountAvailable -= gatherAmount;
         _ResourceManager.Stockpiles[ResourceType] += gatherAmount;
 
+
+        if (gatherer.CompareTag("Player"))
+            _GameManager.AddToScore(gatherAmount * _GameManager.PlayerGatheringScoreMultiplier);
+
+
         _SoundSetPlayer.PlaySound();
 
-        if (IsDepleted)
+        // Only fire the NodeDepleted event if the node is depleted, and it wasn't at the start of this function. Then we know this particular gather is the one that depleted it.
+        // This way, we only fire the event once.
+        if (IsDepleted && amountBeforeGather > 0)
+        {
+            _GameManager.AddToScore(TotalAmountInNode * _GameManager.PlayerGatheringScoreMultiplier);
             OnNodeDepleted?.Invoke(this);
+        }
 
 
         return gatherAmount;
@@ -108,6 +119,11 @@ public class ResourceNode : MonoBehaviour
         _VillagersMiningThisNode.Remove(villager);
     }
 
+    public bool IsAccessible()
+    {
+        return false;
+    }
+
     private void GetSoundSet()
     {
         switch (ResourceType)
@@ -135,7 +151,7 @@ public class ResourceNode : MonoBehaviour
     {
         int gatherAmount = AmountGainedPerGather + Random.Range(-GatherAmountVariance, GatherAmountVariance);
 
-        return gatherAmount <= AmountAvailable ? gatherAmount: AmountAvailable;
+        return gatherAmount <= AmountAvailable ? gatherAmount : AmountAvailable;
     }
 
 

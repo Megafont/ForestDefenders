@@ -1,4 +1,4 @@
-using Cinemachine.Utility;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -7,14 +7,34 @@ using UnityEngine;
 
 public class BridgeConstructionZone : MonoBehaviour
 {
+    // How far the player must move the construction ghost to cause it to unlock from the bridge constuction zone.
+    const float GHOST_UNLOCK_DISTANCE = 1f;
+
+
+    [Header("Zone Settings")]
+
+    [Tooltip("The group of resource nodes that is accessed by building a bridge across this bridge construction zone.")]
+    public GameObject ObstructedResourceNodeRegion;
+
+    public List<GameObject> _BridgesInThisZone;
+
+
+    [Header("Bridge Construction Settings")]
+
     [Tooltip("The Y-axis rotation (in degrees) that bridges will always be locked to when built in this construction zone.")]
     [Range(0f, 359f)]
     public float LockRotation = 0f;
 
 
-    // How far the player must move the construction ghost to cause it to unlock from the bridge constuction zone.
-    const float UNLOCK_DISTANCE = 1f;
 
+    private ResourceManager _ResourceManager;
+
+
+
+    private void Awake()
+    {
+        _ResourceManager = GameManager.Instance.ResourceManager;
+    }
 
 
     public void ApplyConstraints(Transform gameObject)
@@ -37,7 +57,7 @@ public class BridgeConstructionZone : MonoBehaviour
 
         // If the player has tried to move the construction ghost by more than UnlockDistance, then allow
         // it to unlock from the bridge construction zone.
-        if (Vector3.Distance(gameObject.position, position) > UNLOCK_DISTANCE)
+        if (Vector3.Distance(gameObject.position, position) > GHOST_UNLOCK_DISTANCE)
             return;
 
 
@@ -46,5 +66,38 @@ public class BridgeConstructionZone : MonoBehaviour
         gameObject.transform.position = position;
         gameObject.transform.rotation = Quaternion.Euler(rotation);
     }
+
+    public void AddBridge(IBuilding bridge)
+    {
+        if (bridge == null)
+            throw new Exception("The passed in bridge is null!");
+
+        if (bridge is not Building_WoodBridge)
+            throw new Exception($"The passed in building \"{bridge.gameObject.name}\" is not a bridge!");
+
+
+        _BridgesInThisZone.Add(bridge.gameObject);
+        bridge.gameObject.GetComponent<Health>().OnDeath += OnBridgeDestroyed;
+    }
+
+    private void OnBridgeDestroyed(GameObject sender, GameObject attacker)
+    {
+        _BridgesInThisZone.Remove(sender.gameObject);
+        sender.GetComponent<Health>().OnDeath -= OnBridgeDestroyed;
+    }
+    
+
+
+    /// <summary>
+    /// Returns true if there is at least one bridge crossing this zone, or false otherwise.
+    /// </summary>
+    public bool IsBridged
+    {
+        get
+        {
+            return _BridgesInThisZone.Count > 0;
+        }
+    }
+
 
 }

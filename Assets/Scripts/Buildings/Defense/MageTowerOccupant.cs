@@ -39,7 +39,7 @@ public class MageTowerOccupant : MonoBehaviour
 
         if (_MagicProjectilePrefab == null)
         {
-            string projectilePrefabPath = "Projectiles/Projectile - Homing";
+            string projectilePrefabPath = "Projectiles/Projectile - Mage Tower - Male";
             _MagicProjectilePrefab = Resources.Load<GameObject>(projectilePrefabPath);
 
             if (_MagicProjectilePrefab == null)
@@ -179,7 +179,6 @@ public class MageTowerOccupant : MonoBehaviour
 
 
 
-    public int AttackPower { get; set; }
     public Health HealthComponent { get { return _Health; } }
 
 

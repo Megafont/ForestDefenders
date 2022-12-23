@@ -10,7 +10,7 @@ public class Projectile_Homing : Projectile_Base
     public float DefaultHomingStrength = 0.5f;
 
 
-    private float _CurHomingStrength;
+    protected float _CurHomingStrength;
 
 
     protected override void UpdateProjectile()
