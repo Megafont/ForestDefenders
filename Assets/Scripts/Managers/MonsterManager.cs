@@ -47,14 +47,15 @@ public class MonsterManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if (Time.time - _LastMonsterDeathTime >= ComboStreakResetTime)
+            ResetComboStreak();
     }
 
     public void BeginNextWave()
-    {
-        CurrentWaveNumber++;
-        
+    {       
         StartCoroutine(SpawnWave());
+
+        CurrentWaveNumber++;
     }
 
     public void ResetComboStreak()
@@ -158,10 +159,6 @@ public class MonsterManager : MonoBehaviour
 
     private void OnDeath(GameObject sender, GameObject attacker)
     {
-        if (Time.time - _LastMonsterDeathTime >= ComboStreakResetTime)
-            ResetComboStreak();
-
-
         _LastMonsterDeathTime = Time.time;        
         CurrentComboStreak++;
 
@@ -218,7 +215,7 @@ public class MonsterManager : MonoBehaviour
     public int TotalMonstersKilled { get; private set; } // Total monsters killed across all waves so far.
     public int MonstersLeft { get { return CurrentWaveSize - MonstersKilled; } }
     public bool WaveComplete { get { return _WaveIsDoneSpawning && _AliveMonsters.Count == 0; } }
-    public int CurrentWaveNumber { get; private set; }
+    public int CurrentWaveNumber { get; private set; } = 1;
     public int CurrentWaveSize { get; private set; }
 
 

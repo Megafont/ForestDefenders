@@ -34,7 +34,7 @@ public class VillageManager_Villagers : MonoBehaviour
     [Header("Build Phase Heal Building Settings")]
 
     [Tooltip("Specifies whether or not villagers will heal damaged buildings at the beginning of the player build phase.")]
-    public bool VillagersHealBuildings = true;
+    public bool VillagersCanHealBuildings = false;
 
     [Tooltip("The delay (in seconds) between each time a damaged building check is performed at the beginning of the build phase until all buildings get healed (if there is enough food in the stockpile).")]
     public float VillagerHealBuildingsCheckFrequency = 5.0f;
@@ -42,16 +42,13 @@ public class VillageManager_Villagers : MonoBehaviour
     [Tooltip("The amount a villager heals a building each time they \"hit\" it.")]
     public float VillagerHealBuildingsAmount = 5.0f;
 
-    [Tooltip("The amount of food expended each time a villager heals a building.")]
-    public int VillagerHealBuildingsFoodCost = 5;
+    [Tooltip("The amount of food expended each time a villager heals a building is the number of HP healed times this multiplier.")]
+    public float BuildingHealFoodCostMultiplier = 5f;
 
 
     private GameManager _GameManager;
     private ResourceManager _ResourceManager;
     private VillageManager_Buildings _VillageManager_Buildings;
-
-    private Dictionary<string, GameObject> _VillagerCategoryParents;
-
 
     private Dictionary<string, GameObject> _VillagerTypeParents;
     private Dictionary<string, GameObject> _VillagerPrefabs;
@@ -172,8 +169,8 @@ public class VillageManager_Villagers : MonoBehaviour
 
     public int GetVillagerCountByType(string villagerType)
     {
-        // Get the parent game object for the specified building type.
-        _VillagerCategoryParents.TryGetValue($"villagerType", out GameObject parent);
+        // Get the parent game object for the specified villager type.
+        _VillagerTypeParents.TryGetValue($"villagerType", out GameObject parent);
 
         if (parent == null)
             throw new Exception($"Could not get the villager count for unkown villager type \"{villagerType}\"!");
@@ -362,7 +359,7 @@ public class VillageManager_Villagers : MonoBehaviour
 
     public void EnableVillagersHealBuildings()
     {
-        VillagersHealBuildings = true;
+        VillagersCanHealBuildings = true;
 
         if (_VillagerHealBuildingsCoroutine == null && GameManager.Instance.GameState == GameStates.PlayerBuildPhase)
             _VillagerHealBuildingsCoroutine = StartCoroutine(OrderVillagersToHealBuildings());
@@ -394,6 +391,11 @@ public class VillageManager_Villagers : MonoBehaviour
 
         while (damagedBuildings.Count > 0)
         {
+            // Don't send villagers to repair buildings if stockpiles are low.
+            if (_ResourceManager.Stockpiles[ResourceTypes.Food] < _ResourceManager.ResourceStockpilesLowThreshold)
+                continue;
+
+
             for (int i = 0; i < _VillagersHealingBuildings.Keys.Count; i++)
             {
                 KeyValuePair<IBuilding, IVillager> pair = _VillagersHealingBuildings.ElementAt(i);
@@ -481,7 +483,7 @@ public class VillageManager_Villagers : MonoBehaviour
         {
             _VillagersHealingBuildings.Clear();
 
-            if (VillagersHealBuildings)
+            if (VillagersCanHealBuildings)
             {
                 if (_VillagerHealBuildingsCoroutine != null)
                     StopCoroutine(_VillagerHealBuildingsCoroutine);

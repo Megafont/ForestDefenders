@@ -476,7 +476,8 @@ public class PlayerController : MonoBehaviour
 
             if (health)
             {
-                if (hit.collider.CompareTag("Monster") || hit.collider.CompareTag("Villager"))
+                if (hit.collider.CompareTag("Monster") || 
+                    (_GameManager.PlayerCanDamageVillagers && hit.collider.CompareTag("Villager")))
                 {
                     health.DealDamage(AttackPower, gameObject);
                 }

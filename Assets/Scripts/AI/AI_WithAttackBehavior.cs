@@ -11,7 +11,7 @@ using UnityEngine.AI;
 public abstract class AI_WithAttackBehavior : AI_Base
 {
     public float AttackPower = 3;
-    public float AttackFrequency = 2.0f;
+    public float AttackFrequency = 1.0f;
 
     public float MaxChaseDistance = 20.0f;
 

@@ -115,20 +115,95 @@ public class LevelUpDialog : Dialog_Base
 
     public override void OpenDialog(bool closeOtherOpenDialogs = true)
     {
-        float buffAmount = _GameManager.BuffAmountPerLevelUp;
-
         _DescriptionText.text = $"Select A Buff:";
 
-        _MenuItems.GetChild(0).GetComponent<TMP_Text>().text = $"Player Attack Power\t\t+{buffAmount}  ({CurrentPlayerAttackPower + buffAmount})";
-        _MenuItems.GetChild(1).GetComponent<TMP_Text>().text = $"Player Max Health\t\t+{buffAmount}  ({CurrentPlayerMaxHealth + buffAmount})";
-        _MenuItems.GetChild(2).GetComponent<TMP_Text>().text = $"Villagers' Attack Power\t+{buffAmount}  ({CurrentVillagerAttackPower + buffAmount})";
-        _MenuItems.GetChild(3).GetComponent<TMP_Text>().text = $"Villagers' Max Health\t\t+{buffAmount}  ({CurrentVillagerMaxHealth + buffAmount})";
-        _MenuItems.GetChild(4).GetComponent<TMP_Text>().text = $"Heal Player"; // "Up To {_GameManager.PlayerHealAmount} HP";
+
+        RefreshMenuItems();
+
 
         // Select the first menu item.
         EventSystem.current.SetSelectedGameObject(_MenuItems.GetChild(0).gameObject);
 
         base.OpenDialog(closeOtherOpenDialogs);
+    }
+
+    private void RefreshMenuItems()
+    {
+        float buffAmount = _GameManager.BuffAmountPerLevelUp;
+
+
+        // Setup the buff player attack option
+        Transform menuItem = _MenuItems.GetChild(0);
+        if (CurrentPlayerAttackPower < _GameManager.PlayerMaxAttackCap)
+        {
+            menuItem.GetComponent<TMP_Text>().text = $"Player Attack Power\t\t+{buffAmount}  ({CurrentPlayerAttackPower + buffAmount})";
+            menuItem.GetComponent<Button>().interactable = true;
+        }
+        else
+        {
+            menuItem.GetComponent<TMP_Text>().text = $"Player Attack Power";
+            menuItem.GetComponent<Button>().interactable = false;
+        }
+
+
+        // Setup the buff player max health option
+        menuItem = _MenuItems.GetChild(1);
+        if (CurrentPlayerMaxHealth < _GameManager.PlayerMaxHealthCap)
+        {
+            menuItem.GetComponent<TMP_Text>().text = $"Player Max Health\t\t+{buffAmount}  ({CurrentPlayerMaxHealth + buffAmount})";
+            menuItem.GetComponent<Button>().interactable = true;
+        }
+        else
+        {
+            menuItem.GetComponent<TMP_Text>().text = $"Player Max Health";
+            menuItem.GetComponent<Button>().interactable = false;
+        }
+
+
+        // Setup the buff villager attack option
+        menuItem = _MenuItems.GetChild(2);
+        if (CurrentVillagerAttackPower < _GameManager.VillagersMaxAttackCap)
+        {
+            menuItem.GetComponent<TMP_Text>().text = $"Villagers' Attack Power\t+{buffAmount}  ({CurrentVillagerAttackPower + buffAmount})";
+            menuItem.GetComponent<Button>().interactable = true;
+        }
+        else
+        {
+            menuItem.GetComponent<TMP_Text>().text = $"Villagers' Attack Power";
+            menuItem.GetComponent<Button>().interactable = false;
+        }
+
+
+        // Setup the buff villager max health option
+        menuItem = _MenuItems.GetChild(3);
+        if (CurrentVillagerMaxHealth < _GameManager.VillagersMaxHealthCap)
+        {
+            menuItem.GetComponent<TMP_Text>().text = $"Villagers' Max Health\t\t+{buffAmount}  ({CurrentVillagerMaxHealth + buffAmount})";
+            menuItem.GetComponent<Button>().interactable = true;
+        }
+        else
+        {
+            menuItem.GetComponent<TMP_Text>().text = $"Villagers' Max Health\t\t+{buffAmount}  ({CurrentVillagerMaxHealth + buffAmount})";
+            menuItem.GetComponent<Button>().interactable = false;
+        }
+
+
+        // Setup the heal player option.
+        menuItem = _MenuItems.GetChild(4);
+        Health pHealth = _Player.GetComponent<Health>();
+        float amountToHeal = pHealth.MaxHealth - pHealth.CurrentHealth;
+
+        if (pHealth.CurrentHealth < pHealth.MaxHealth &&
+            _GameManager.ResourceManager.Stockpiles[ResourceTypes.Food] >= amountToHeal)
+        {
+            menuItem.GetComponent<TMP_Text>().text = $"Heal Player\t\t\t(-{amountToHeal} Food)"; // "Up To {_GameManager.PlayerHealAmount} HP";
+            menuItem.GetComponent<Button>().interactable = true;
+        }
+        else
+        {
+            menuItem.GetComponent<TMP_Text>().text = $"Heal Player";
+            menuItem.GetComponent<Button>().interactable = false;
+        }
     }
 
     private int GetIndexOfMenuItem(Transform child)
@@ -202,7 +277,11 @@ public class LevelUpDialog : Dialog_Base
         CloseDialog();
 
         Health playerHealth = _Player.GetComponent<Health>();
+        float healAmount = playerHealth.MaxHealth - playerHealth.CurrentHealth;
         playerHealth.ResetHealthToMax();
+
+        _GameManager.ResourceManager.Stockpiles[ResourceTypes.Food] -= Mathf.CeilToInt(healAmount * _GameManager.PlayerHealFoodCostMultiplier);
+
     }
 
 }

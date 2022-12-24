@@ -34,7 +34,7 @@ public static class TechDefinitions
 
         List<TechTreeTileData> tilesData = new List<TechTreeTileData>()
         {
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_Farm, Title = "Farm", DescriptionText = "Gain the technology to build Farms.", XPCost = 5 },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_Farm, Title = "Farm", DescriptionText = "Gain the technology to build Farms.", XPCost = 10 },
         };
 
 
@@ -48,7 +48,7 @@ public static class TechDefinitions
 
         List<TechTreeTileData> tilesData = new List<TechTreeTileData>()
         {
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_MediumHouse, Title = "Medium House", DescriptionText = "Gain the technology to build medium size houses.", XPCost = 5 },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_MediumHouse, Title = "Medium House", DescriptionText = "Gain the technology to build medium size houses, which increase max population by 2.", XPCost = 20 },
         };
 
 
@@ -77,8 +77,8 @@ public static class TechDefinitions
 
         List<TechTreeTileData> tilesData = new List<TechTreeTileData>()
         {
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_SpikeTower, Title = "Spike Tower", DescriptionText = "Gain the technology to build spike towers.", XPCost = 5 },
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_MageTower, Title = "Mage Tower", DescriptionText = "Gain the technology to build mage towers.", XPCost = 10 },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_SpikeTower, Title = "Spike Tower", DescriptionText = "Gain the technology to build spike towers.", XPCost = 10 },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_MageTower, Title = "Mage Tower", DescriptionText = "Gain the technology to build mage towers.", XPCost = 20 },
         };
 
 
@@ -92,7 +92,7 @@ public static class TechDefinitions
 
         List<TechTreeTileData> tilesData = new List<TechTreeTileData>()
         {
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_WoodBridge, Title = "Wood Bridge", DescriptionText = "Gain the technology to build wooden bridges and reach new areas.", XPCost = 10 },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_WoodBridge, Title = "Wood Bridge", DescriptionText = "Gain the technology to build wooden bridges and reach new areas.", XPCost = 20 },
         };
 
 

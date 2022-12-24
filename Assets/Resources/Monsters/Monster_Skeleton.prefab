@@ -1971,8 +1971,8 @@ MonoBehaviour:
   DeathFadeOutTime: 2
   MaxMovementSpeed: 3
   InteractionFrequency: 2
-  AttackPower: 3
-  AttackFrequency: 2
+  AttackPower: 5
+  AttackFrequency: 1
   MaxChaseDistance: 10
   TargetCheckFrequency: 3
   TargetCheckRadius: 5

@@ -84,11 +84,14 @@ public class Health : MonoBehaviour
                 StartCoroutine(DoDamageFlash());
         }
 
-            
-        CurrentHealth -= amount;
 
-        OnHealthChanged?.Invoke(gameObject, attacker, -amount);
-        OnTakeDamage?.Invoke(gameObject, attacker, amount);
+        float changeAmount = amount;        
+        CurrentHealth -= amount;
+        if (CurrentHealth < 0)
+            changeAmount = amount + CurrentHealth;
+
+        OnHealthChanged?.Invoke(gameObject, attacker, -changeAmount);
+        OnTakeDamage?.Invoke(gameObject, attacker, changeAmount);
 
         if (CurrentHealth <= 0)
         {
@@ -97,7 +100,7 @@ public class Health : MonoBehaviour
         }
 
 
-        SpawnHealthPopup(-amount);
+        SpawnHealthPopup(-changeAmount);
     }
 
     public void Heal(float amount, GameObject healer)
@@ -108,13 +111,18 @@ public class Health : MonoBehaviour
 
         CurrentHealth += amount;
 
-        if (CurrentHealth >= MaxHealth)
+        float changeAmount = amount;
+        if (CurrentHealth > MaxHealth)
+        {
+            changeAmount = CurrentHealth - MaxHealth;
             CurrentHealth = MaxHealth;
+        }
+            
 
-        OnHealthChanged?.Invoke(gameObject, healer, amount);
-        OnHeal?.Invoke(gameObject, healer, amount);
+        OnHealthChanged?.Invoke(gameObject, healer, changeAmount);
+        OnHeal?.Invoke(gameObject, healer, changeAmount);
 
-        SpawnHealthPopup(amount);
+        SpawnHealthPopup(changeAmount);
     }
 
     /// <summary>

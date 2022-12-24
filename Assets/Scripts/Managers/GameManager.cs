@@ -13,15 +13,21 @@ public class GameManager : MonoBehaviour
 {
     [Header("Player")]
     public bool EnablePlayerSpawn = true;
+    public bool PlayerCanDamageVillagers = true;
     public Transform PlayerSpawnPoint;
     public float FallOutOfWorldDeathHeight = -32;
     public float PlayerStartingAttackPower = 20f;
     public float PlayerStartingMaxHealth = 50f;
+    public float PlayerMaxAttackCap = 100f;
+    public float PlayerMaxHealthCap = 200f;
 
     [Header("Village")]
     public float BuffAmountPerLevelUp = 5f;
     public float VillagersStartingAttackPower = 5f;
     public float VillagersStartingMaxHealth = 25f;
+    public float VillagersMaxAttackCap = 100f;
+    public float VillagersMaxHealthCap = 200f;
+    public float PlayerHealFoodCostMultiplier = 2f;
     public int StartingXP = 0;
     public int XP_EarnedPerWave = 2;
 
@@ -43,8 +49,6 @@ public class GameManager : MonoBehaviour
 
 
 
-    private PlayerHealthBar _UI_PlayerHealthBar;
-
     private TMP_Text _UI_GamePhaseText;
     private HighScoreNameEntryDialog _UI_HighScoreNameEntryDialog;
     private LevelUpDialog _UI_LevelUpDialog;
@@ -59,6 +63,9 @@ public class GameManager : MonoBehaviour
     private TMP_Text _UI_MonstersKilledCountText;
     private TMP_Text _UI_SurvivalTimeText;
     private TMP_Text _UI_ScoreText;
+
+    private PlayerHealthBar _UI_PlayerHealthBar;
+    private TMP_Text _UI_KillComboCountText;
 
     private Image _UI_BottomBar;
     private TMP_Text _UI_VillagerCountText;
@@ -203,6 +210,13 @@ public class GameManager : MonoBehaviour
         _UI_MonstersKilledCountText.text = $"Monsters Killed: {MonsterManager.TotalMonstersKilled:n0}";
         _UI_SurvivalTimeText.text = $"Survival Time: {HighScores.TimeValueToString(SurvivalTime):n0}";
         _UI_ScoreText.text = $"Score: {Score:n0}";
+
+
+        float comboCount = MonsterManager.CurrentComboStreak;
+        if (comboCount > 0)
+            _UI_KillComboCountText.text = $"Kill Combo: {comboCount}";
+        else
+            _UI_KillComboCountText.text = null;
 
 
         // Update the bottom bar stats.
@@ -359,8 +373,6 @@ public class GameManager : MonoBehaviour
 
     private void GetUIReferences()
     {
-        _UI_PlayerHealthBar = GameObject.Find("Player Health Bar").GetComponent<PlayerHealthBar>();
-
         _UI_GamePhaseText = GameObject.Find("UI/HUD/Game Phase Text Canvas/Game Phase Text (TMP)").GetComponent<TMP_Text>();
         _UI_HighScoreNameEntryDialog = GameObject.Find("UI/High Score Name Entry Dialog").GetComponent<HighScoreNameEntryDialog>();
         _UI_LevelUpDialog = GameObject.Find("UI/Level Up Dialog").GetComponent<LevelUpDialog>();
@@ -375,6 +387,9 @@ public class GameManager : MonoBehaviour
         _UI_MonstersKilledCountText = GameObject.Find("UI/HUD/Top Bar/Monsters Killed Count Text (TMP)").GetComponent<TMP_Text>();
         _UI_SurvivalTimeText = GameObject.Find("UI/HUD/Top Bar/Survival Time Text (TMP)").GetComponent<TMP_Text>();
         _UI_ScoreText = GameObject.Find("UI/HUD/Top Bar/Score Text (TMP)").GetComponent<TMP_Text>();
+
+        _UI_PlayerHealthBar = GameObject.Find("Player Health Bar").GetComponent<PlayerHealthBar>();
+        _UI_KillComboCountText = GameObject.Find("UI/HUD/Kill Combo Count Text (TMP)").GetComponent<TMP_Text>();
 
         _UI_BottomBar = GameObject.Find("UI/HUD/Bottom Bar").GetComponent<Image>();
         _UI_VillagerCountText = GameObject.Find("UI/HUD/Bottom Bar/Villager Count Text (TMP)").GetComponent<TMP_Text>();
@@ -457,8 +472,6 @@ public class GameManager : MonoBehaviour
 
     private void ChangeGameState(GameStates newGameState)
     {
-        MonsterManager.ResetComboStreak();
-
         PreviousGameState = GameState;
         bool prevGameStateWasStartup = GameState == GameStates.Startup;
         GameState = newGameState;

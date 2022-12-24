@@ -317,7 +317,7 @@ RectTransform:
   - {fileID: 4917586927449106605}
   - {fileID: 86682339}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -579,7 +579,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ResourcesParent: {fileID: 97276842}
   BridgeConstructionZones: {fileID: 649040214}
-  ResourceStockpilesStartAmount: 50
+  ResourceStockpilesStartAmount: 0
   ResourceStockpilesOkThreshold: 200
   ResourceStockpilesLowThreshold: 100
 --- !u!1 &224973805
@@ -1027,7 +1027,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!114 &410087042
 MonoBehaviour:
@@ -1423,7 +1423,7 @@ Transform:
   - {fileID: 447998576}
   - {fileID: 649040215}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &502794046
 GameObject:
@@ -1504,7 +1504,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &509338920
 GameObject:
@@ -1935,10 +1935,10 @@ MonoBehaviour:
   VillagerFoodCost: 50
   VillagerSpawnFrequency: 2
   BuildingBackupCallMaxDistance: 20
-  VillagersHealBuildings: 0
+  VillagersCanHealBuildings: 0
   VillagerHealBuildingsCheckFrequency: 5
   VillagerHealBuildingsAmount: 5
-  VillagerHealBuildingsFoodCost: 5
+  BuildingHealFoodCostMultiplier: 5
 --- !u!114 &828217631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1999,7 +1999,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &848707369
 PrefabInstance:
@@ -2656,79 +2656,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1243872287}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1001 &1247163296
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 8102605781028951456, guid: ffe317686e09d9c4db950e33fb59e7fb,
-        type: 3}
-      propertyPath: m_Name
-      value: Mage Tower
-      objectReference: {fileID: 0}
-    - target: {fileID: 8879389462789984026, guid: ffe317686e09d9c4db950e33fb59e7fb,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8879389462789984026, guid: ffe317686e09d9c4db950e33fb59e7fb,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8879389462789984026, guid: ffe317686e09d9c4db950e33fb59e7fb,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8879389462789984026, guid: ffe317686e09d9c4db950e33fb59e7fb,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -6
-      objectReference: {fileID: 0}
-    - target: {fileID: 8879389462789984026, guid: ffe317686e09d9c4db950e33fb59e7fb,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8879389462789984026, guid: ffe317686e09d9c4db950e33fb59e7fb,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8879389462789984026, guid: ffe317686e09d9c4db950e33fb59e7fb,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8879389462789984026, guid: ffe317686e09d9c4db950e33fb59e7fb,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8879389462789984026, guid: ffe317686e09d9c4db950e33fb59e7fb,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8879389462789984026, guid: ffe317686e09d9c4db950e33fb59e7fb,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8879389462789984026, guid: ffe317686e09d9c4db950e33fb59e7fb,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: ffe317686e09d9c4db950e33fb59e7fb, type: 3}
 --- !u!1001 &1355683091
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2996,13 +2923,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EnablePlayerSpawn: 1
+  PlayerCanDamageVillagers: 1
   PlayerSpawnPoint: {fileID: 509338921}
   FallOutOfWorldDeathHeight: -32
-  PlayerStartingAttackPower: 20
-  PlayerStartingMaxHealth: 50
+  PlayerStartingAttackPower: 10
+  PlayerStartingMaxHealth: 25
+  PlayerMaxAttackCap: 100
+  PlayerMaxHealthCap: 200
   BuffAmountPerLevelUp: 5
   VillagersStartingAttackPower: 10
   VillagersStartingMaxHealth: 25
+  VillagersMaxAttackCap: 100
+  VillagersMaxHealthCap: 200
+  PlayerHealFoodCostMultiplier: 2
   StartingXP: 0
   XP_EarnedPerWave: 3
   PlayerGatheringScoreMultiplier: 2
@@ -3303,8 +3236,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1890681223}
-  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 12, z: 0}
+  m_LocalRotation: {x: 0.1257094, y: -0.7989834, z: 0.18221092, w: 0.559126}
+  m_LocalPosition: {x: 3.055725, y: 2.2525635, z: -0.2578659}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3772,7 +3705,7 @@ PrefabInstance:
     - target: {fileID: 246499199170009135, guid: ec8709eb12d89c141b4d00ee3d690ab0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 246499199170009135, guid: ec8709eb12d89c141b4d00ee3d690ab0,
         type: 3}

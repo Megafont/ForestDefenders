@@ -88,20 +88,42 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
         IBuilding building = _Target.GetComponent<IBuilding>();
         if (building != null)
         {
-            if (building.HealthComponent.CurrentHealth < building.HealthComponent.MaxHealth)
+            // The villager should heal the building if it needs it AND stockpiles are NOT low.
+            if (building.HealthComponent.CurrentHealth < building.HealthComponent.MaxHealth &&
+                _ResourceManager.Stockpiles[ResourceTypes.Food] > _ResourceManager.ResourceStockpilesLowThreshold)
             {
-                building.HealthComponent.Heal(_VillageManager_Villagers.VillagerHealBuildingsAmount, gameObject);
-                
-                if (_ResourceManager.Stockpiles[ResourceTypes.Food] >= _VillageManager_Villagers.VillagerHealBuildingsFoodCost)
-                    _ResourceManager.Stockpiles[ResourceTypes.Food] -= _VillageManager_Villagers.VillagerHealBuildingsFoodCost;
+                float villagerHealAmount = _VillageManager_Villagers.VillagerHealBuildingsAmount;
+
+                float curHealth = building.HealthComponent.CurrentHealth + villagerHealAmount;
+                float healAmount = building.HealthComponent.MaxHealth - curHealth;
+
+                if (healAmount < 0)
+                    healAmount += villagerHealAmount;
+
+                float foodAmount = Mathf.CeilToInt(healAmount * _VillageManager_Villagers.BuildingHealFoodCostMultiplier);
+
+
+                Debug.Log($"HealAmnt: {healAmount}    Food: {foodAmount}    BCurH: {curHealth}    BMaxH: {building.HealthComponent.MaxHealth}    vHAmnt: {villagerHealAmount}");
+
+                // Don't heal the building if there isn't enough food!
+                if (_ResourceManager.Stockpiles[ResourceTypes.Food] >= foodAmount)
+                {
+                    building.HealthComponent.Heal(healAmount, gameObject);
+
+                    // Use some food from the stockpile.
+                    _ResourceManager.Stockpiles[ResourceTypes.Food] -= Mathf.CeilToInt(foodAmount);
+                }
+
 
                 if (building.HealthComponent.CurrentHealth == building.HealthComponent.MaxHealth)
                     SetTarget(null, true);
-            }
+
+            } // end if building needs to be healed
             else
             {
-                // Implement code to make it so villagers have to construct new buildings before they become operational.
+                SetTarget(null, true);
             }
+
         }
 
     }

@@ -657,6 +657,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ResourcesParent: {fileID: 97276842}
+  BridgeConstructionZones: {fileID: 0}
   ResourceStockpilesStartAmount: 400
   ResourceStockpilesOkThreshold: 200
   ResourceStockpilesLowThreshold: 100
@@ -1847,6 +1848,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10c25618c627bb4488492681e1589bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ObstructedResourceNodeRegion: {fileID: 0}
+  _BridgesInThisZone: []
   LockRotation: 0
 --- !u!65 &440966121
 BoxCollider:
@@ -2269,7 +2272,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 1, g: 0.78431374, b: 0, a: 1}
     m_PressedColor: {r: 1, g: 0.39215687, b: 0, a: 1}
     m_SelectedColor: {r: 1, g: 0.627451, b: 0, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_DisabledColor: {r: 0.5882353, g: 0.5882353, b: 0.5882353, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -5248,7 +5251,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 1, g: 0.78431374, b: 0, a: 1}
     m_PressedColor: {r: 1, g: 0.39215687, b: 0, a: 1}
     m_SelectedColor: {r: 1, g: 0.627451, b: 0, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_DisabledColor: {r: 0.5882353, g: 0.5882353, b: 0.5882353, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -6059,15 +6062,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EnablePlayerSpawn: 0
+  PlayerCanDamageVillagers: 1
   PlayerSpawnPoint: {fileID: 509338921}
   FallOutOfWorldDeathHeight: -32
-  Player_StartingAttackPower: 20
-  Player_StartingMaxHealth: 100
+  PlayerStartingAttackPower: 20
+  PlayerStartingMaxHealth: 50
+  PlayerMaxAttackCap: 100
+  PlayerMaxHealthCap: 200
   BuffAmountPerLevelUp: 5
-  Villagers_StartingAttackPower: 5
-  Villagers_StartingMaxHealth: 25
+  VillagersStartingAttackPower: 5
+  VillagersStartingMaxHealth: 25
+  VillagersMaxAttackCap: 100
+  VillagersMaxHealthCap: 200
   StartingXP: 0
   XP_EarnedPerWave: 2
+  PlayerGatheringScoreMultiplier: 2
+  PlayerResearchScoreMultiplier: 100
   MusicParams: {fileID: 11400000, guid: 6d4482e0e753c7c48bf4e6bb30aca35a, type: 2}
   SoundParams: {fileID: 11400000, guid: 09a69c7b16d29b141a5619678e04ba78, type: 2}
   GamePhaseTextFadeOutTime: 2.5
@@ -6649,7 +6659,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 1, g: 0.78431374, b: 0, a: 1}
     m_PressedColor: {r: 1, g: 0.39215687, b: 0, a: 1}
     m_SelectedColor: {r: 1, g: 0.627451, b: 0, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_DisabledColor: {r: 0.5882353, g: 0.5882353, b: 0.5882353, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
