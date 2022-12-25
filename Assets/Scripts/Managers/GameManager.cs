@@ -18,22 +18,32 @@ public class GameManager : MonoBehaviour
     public float FallOutOfWorldDeathHeight = -32;
     public float PlayerStartingAttackPower = 20f;
     public float PlayerStartingMaxHealth = 50f;
-    public float PlayerMaxAttackCap = 100f;
-    public float PlayerMaxHealthCap = 200f;
+    public float PlayerStartingGatherRate = 3f;
 
     [Header("Village")]
-    public float BuffAmountPerLevelUp = 5f;
-    public float VillagersStartingAttackPower = 5f;
-    public float VillagersStartingMaxHealth = 25f;
-    public float VillagersMaxAttackCap = 100f;
-    public float VillagersMaxHealthCap = 200f;
     public float PlayerHealFoodCostMultiplier = 2f;
     public int StartingXP = 0;
     public int XP_EarnedPerWave = 2;
 
+    [Header("Village - Level Up Settings")]
+    public float PlayerAttackBuffAmountPerLevelUp = 2f;
+    public float PlayerGatheringBuffAmountPerLevelUp = 1f;
+    public float PlayerHealthBuffAmountPerLevelUp = 5f;
+    public float VillagersAttackBuffAmountPerLevelUp = 2f;
+    public float VillagersGatheringBuffAmountPerLevelUp = 1f;
+    public float VillagersHealthBuffAmountPerLevelUp = 5f;
+    public float VillagersStartingAttackPower = 5f;
+    public float VillagersStartingMaxHealth = 25f;
+    public float VillagersStartingGatherRate = 3f;
+    public float MaxAttackPowerCap = 100f;
+    public float MaxHealthCap = 200f;
+    [Tooltip("The maximum amount of resource that can be collected in a single punch.")]
+    public float MaxGatheringCap = 20f;
+
     [Header("Scoring")]
     public int PlayerGatheringScoreMultiplier = 2;
     public int PlayerResearchScoreMultiplier = 100;
+
 
     [Header("Sound & Music")]
     public MusicParams MusicParams;
@@ -258,7 +268,7 @@ public class GameManager : MonoBehaviour
         Player.GetComponent<Health>().OnDeath += OnPlayerDeath;
     }
 
-    private void UpdateResourceStockpileCounterUI(TMP_Text textUI, string labelText, int currentAmount)
+    private void UpdateResourceStockpileCounterUI(TMP_Text textUI, string labelText, float currentAmount)
     {
         textUI.text = $"{labelText}{currentAmount:n0}";
 

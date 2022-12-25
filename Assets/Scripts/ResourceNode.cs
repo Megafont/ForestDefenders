@@ -1,8 +1,10 @@
-using Cinemachine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
+
+using Random = UnityEngine.Random;
 
 
 [RequireComponent(typeof(SoundSetPlayer))]
@@ -14,23 +16,17 @@ public class ResourceNode : MonoBehaviour
     public ResourceTypes ResourceType;
 
     [Tooltip("The maximum amount of resources that can be gathered from this node.")]
-    public int TotalAmountInNode = 100;
+    public float TotalAmountInNode = 100;
 
-
-    [Header("Gathering Settings")]
-
-    [Tooltip("The base amount of this resource obtained per gather.")]
-    public int AmountGainedPerGather = 4;
-
-    [Tooltip("The amount of random variance that the amount obtained per gather can vary by (the amount received per gather is AmountPerGather + or - GatherVariance).")]
-    public int GatherAmountVariance = 2;
 
 
     private GameManager _GameManager;
     private ResourceManager _ResourceManager;
     private SoundSetPlayer _SoundSetPlayer;
 
-    private int _AmountAvailable;
+    private LevelUpDialog _LevelUpDialog;
+
+    private float _AmountAvailable;
 
     private List<IVillager> _VillagersMiningThisNode;
 
@@ -50,33 +46,29 @@ public class ResourceNode : MonoBehaviour
         _SoundSetPlayer = GetComponent<SoundSetPlayer>();
         GetSoundSet();
 
+        _LevelUpDialog = GameObject.Find("UI/Level Up Dialog").GetComponent<LevelUpDialog>();
+
         _VillagersMiningThisNode = new List<IVillager>();
 
         AmountAvailable = TotalAmountInNode;
+
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
-
-
-
-    public int Gather(GameObject gatherer)
+    public float Gather(GameObject gatherer)
     {
         if (IsDepleted)
             return 0;
 
-        int amountBeforeGather = AmountAvailable;
+        float amountBeforeGather = AmountAvailable;
 
-        int gatherAmount = CalculateGatherAmount();
+        float gatherAmount = CalculateGatherAmount(gatherer);
 
         AmountAvailable -= gatherAmount;
         _ResourceManager.Stockpiles[ResourceType] += gatherAmount;
 
 
         if (gatherer.CompareTag("Player"))
-            _GameManager.AddToScore(gatherAmount * _GameManager.PlayerGatheringScoreMultiplier);
+            _GameManager.AddToScore((int) gatherAmount * _GameManager.PlayerGatheringScoreMultiplier);
 
 
         _SoundSetPlayer.PlaySound();
@@ -85,7 +77,7 @@ public class ResourceNode : MonoBehaviour
         // This way, we only fire the event once.
         if (IsDepleted && amountBeforeGather > 0)
         {
-            _GameManager.AddToScore(TotalAmountInNode * _GameManager.PlayerGatheringScoreMultiplier);
+            _GameManager.AddToScore((int) TotalAmountInNode * _GameManager.PlayerGatheringScoreMultiplier);
             OnNodeDepleted?.Invoke(this);
         }
 
@@ -147,9 +139,18 @@ public class ResourceNode : MonoBehaviour
         }
     }
 
-    private int CalculateGatherAmount()
+    private float CalculateGatherAmount(GameObject gatherer)
     {
-        int gatherAmount = AmountGainedPerGather + Random.Range(-GatherAmountVariance, GatherAmountVariance);
+        float buffAmount = 0;
+        if (gatherer.GetComponent<PlayerController>())
+            buffAmount = _LevelUpDialog.CurrentPlayerGatherRate;
+        else if (gatherer.GetComponent<Villager_Base>())
+            buffAmount = _LevelUpDialog.CurrentVillagerGatherRate;
+        else
+            throw new Exception("Resource could not be gathered! Unknown gatherer type!");
+
+
+        float gatherAmount = buffAmount + Random.Range(-_ResourceManager.GatherAmountVariance, _ResourceManager.GatherAmountVariance);
 
         return gatherAmount <= AmountAvailable ? gatherAmount : AmountAvailable;
     }
@@ -159,7 +160,7 @@ public class ResourceNode : MonoBehaviour
     /// <summary>
     /// The amount of resource still available in this node.
     /// </summary>
-    public int AmountAvailable
+    public float AmountAvailable
     {
         get
         {

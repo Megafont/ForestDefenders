@@ -146,15 +146,7 @@ public abstract class AI_Base : MonoBehaviour
         }
         else
             _IsInteracting = false;
-        /*
-        else
-        {
-            if (_Target && _NavMeshAgent.isStopped)
-                StartMoving();
 
-            _IsInteracting = false;
-        }
-        */
     }
 
     protected virtual void AnimateAI()

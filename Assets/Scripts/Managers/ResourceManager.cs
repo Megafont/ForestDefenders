@@ -10,7 +10,6 @@ using Random = UnityEngine.Random;
 public class ResourceManager : MonoBehaviour
 {
     public GameObject ResourcesParent;
-    public GameObject BridgeConstructionZones;
 
     [Header("Stockpiles Settings")]
     public uint ResourceStockpilesStartAmount = 0;
@@ -19,9 +18,15 @@ public class ResourceManager : MonoBehaviour
     public uint ResourceStockpilesLowThreshold = 100;
 
 
+    [Header("Gathering Settings")]
+
+    [Tooltip("The amount of random variance that the amount obtained per gather can vary by (the amount received per gather is AmountPerGather + or - GatherVariance).")]
+    public int GatherAmountVariance = 2;
+ 
+
 
     private Dictionary<ResourceTypes, GameObject> _ResourceTypeParents;
-    private Dictionary<ResourceTypes, int> _ResourceStockpilesByType;
+    private Dictionary<ResourceTypes, float> _ResourceStockpilesByType;
     private Dictionary<ResourceTypes, List<ResourceNode>> _ResourceNodesByType;
 
     private List<ResourceNode> _AllResourceNodes;
@@ -31,7 +36,7 @@ public class ResourceManager : MonoBehaviour
 
     
 
-    public Dictionary<ResourceTypes, int> Stockpiles
+    public Dictionary<ResourceTypes, float> Stockpiles
     {
         get { return _ResourceStockpilesByType; }
     }
@@ -85,10 +90,10 @@ public class ResourceManager : MonoBehaviour
     public ResourceTypes GetLowestResourceStockpileType()
     {
         ResourceTypes lowestResourceType = ResourceTypes.Wood;
-        int minAmount = int.MaxValue;
+        float minAmount = float.MaxValue;
 
 
-        foreach (KeyValuePair<ResourceTypes, int> pair in _ResourceStockpilesByType)
+        foreach (KeyValuePair<ResourceTypes, float> pair in _ResourceStockpilesByType)
         {
             if (pair.Value < minAmount)
             {
@@ -199,11 +204,11 @@ public class ResourceManager : MonoBehaviour
 
     private void InitResourceStockpiles()
     {
-        _ResourceStockpilesByType = new Dictionary<ResourceTypes, int>();
+        _ResourceStockpilesByType = new Dictionary<ResourceTypes, float>();
 
 
         foreach (int i in Enum.GetValues(typeof(ResourceTypes)))
-            _ResourceStockpilesByType.Add((ResourceTypes) i, (int) ResourceStockpilesStartAmount);
+            _ResourceStockpilesByType.Add((ResourceTypes) i, ResourceStockpilesStartAmount);
 
     }
 

@@ -391,14 +391,9 @@ public class VillageManager_Villagers : MonoBehaviour
 
         while (damagedBuildings.Count > 0)
         {
-            // Don't send villagers to repair buildings if stockpiles are low.
-            if (_ResourceManager.Stockpiles[ResourceTypes.Food] < _ResourceManager.ResourceStockpilesLowThreshold)
-                continue;
-
-
-            for (int i = 0; i < _VillagersHealingBuildings.Keys.Count; i++)
+            for (int j = 0; j < _VillagersHealingBuildings.Keys.Count; j++)
             {
-                KeyValuePair<IBuilding, IVillager> pair = _VillagersHealingBuildings.ElementAt(i);
+                KeyValuePair<IBuilding, IVillager> pair = _VillagersHealingBuildings.ElementAt(j);
                 IBuilding building = pair.Key;
 
                 bool removeBuilding = false;
@@ -435,18 +430,24 @@ public class VillageManager_Villagers : MonoBehaviour
             } // end foreach villager healing a building
 
 
-            foreach (KeyValuePair<IBuilding, GameObject> pair in damagedBuildings)
+            // Don't send villagers to repair buildings if stockpiles are low.
+            if (_ResourceManager.Stockpiles[ResourceTypes.Food] >= _ResourceManager.ResourceStockpilesOkThreshold)
             {
-                // Check if the building does NOT have a villager healing it.
-                if (!_VillagersHealingBuildings.ContainsKey(pair.Key))
+                // Send villagers to heal the damaged buildings.
+                foreach (KeyValuePair<IBuilding, GameObject> pair in damagedBuildings)
                 {
-                    SendRandomVillagerToHealBuilding(pair.Key, pair.Value);
-                }
+                    // Check if the building does NOT have a villager healing it.
+                    if (!_VillagersHealingBuildings.ContainsKey(pair.Key))
+                    {
+                        SendRandomVillagerToHealBuilding(pair.Key, pair.Value);
+                    }
 
-            } // end foreach damaged building
+                } // end foreach damaged building
+            }
 
 
             yield return _BuildingHealCheckWaitTime;
+
 
         } // end while
 

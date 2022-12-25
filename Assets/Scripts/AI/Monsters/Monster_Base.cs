@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -25,6 +26,7 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
 
 
 
+
     protected override void InitAI()
     {
         _NearbyTargetDetector = transform.GetComponentInChildren<MonsterTargetDetector>();
@@ -42,12 +44,6 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
 
         base.InitAI();
     }
-
-    protected override void UpdateAI()
-    {
-        base.UpdateAI();
-    }
-
 
     protected override void DoTargetCheck()
     {
@@ -116,6 +112,23 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         string trigger = $"Attack {n}";
         _Animator.ResetTrigger(trigger);
         _Animator.SetTrigger(trigger);
+
+        _HashOfPlayingAttackAnim = _AttackAnimationNameHashes[n];
+    }
+
+    protected override bool TargetIsAttackable()
+    {
+        if (_Target.CompareTag("Building") || _Target.CompareTag("Player") || _Target.CompareTag("Villager"))
+            return true;
+        else
+            return false;
+    }
+
+    protected override void DoAttack()
+    {
+        // Do not start another attack if one is already in progress.
+        if (_HashOfPlayingAttackAnim < 0)
+            base.DoAttack();
     }
 
     public float GetDangerValue()

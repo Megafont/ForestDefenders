@@ -11,7 +11,7 @@ using UnityEngine.AI;
 public abstract class AI_WithAttackBehavior : AI_Base
 {
     public float AttackPower = 3;
-    public float AttackFrequency = 1.0f;
+    public float AttackCheckFrequency = 1.0f;
 
     public float MaxChaseDistance = 20.0f;
 
@@ -23,10 +23,15 @@ public abstract class AI_WithAttackBehavior : AI_Base
     protected float _LastAttackTime;
     protected float _LastTargetCheckTime;
 
+    protected int[] _AttackAnimationNameHashes;
+    protected int _HashOfPlayingAttackAnim = -1;
+
 
 
     protected override void InitAI()
     {
+        InitAttackAnimationsNameHashTable();
+
         _Health.OnTakeDamage += OnTakeDamage;
 
         DoTargetCheck();
@@ -35,6 +40,15 @@ public abstract class AI_WithAttackBehavior : AI_Base
     protected override void UpdateAI()
     {
         base.UpdateAI();
+
+
+        // Is an attack animation in progress?
+        if (_HashOfPlayingAttackAnim >= 0)
+        {
+            // Has the attack animation state ended? If so, reset _HashOfPlayingAttackAnim to -1 to indicate that the AI is no longer playing an attack animation.
+            if (_Animator.GetCurrentAnimatorStateInfo(0).shortNameHash != _HashOfPlayingAttackAnim)
+                _HashOfPlayingAttackAnim = -1;
+        }
 
 
         // Is it time for the next target check?
@@ -52,6 +66,17 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
         if (_Target)
             DoAttackCheck();
+    }
+
+    private void InitAttackAnimationsNameHashTable()
+    {
+        int length = 5;
+        _AttackAnimationNameHashes = new int[length];
+
+        for (int i = 0; i < length; i++)
+        {
+            _AttackAnimationNameHashes[i] = Animator.StringToHash($"Attack {i + 1}");
+        }
     }
 
     public override bool SetTarget(GameObject target, bool discardCurrentTarget = false)
@@ -75,8 +100,11 @@ public abstract class AI_WithAttackBehavior : AI_Base
             _IsAttacking = true;
 
             // If the AI is attacking, has the attack cooldown period fully elapsed yet?
-            if (Time.time - _LastAttackTime >= AttackFrequency)
+            if (Time.time - _LastAttackTime >= AttackCheckFrequency &&
+                TargetIsAttackable())
+            {
                 DoAttack();
+            }
         }
         else // _Target is null.
         {
@@ -109,6 +137,8 @@ public abstract class AI_WithAttackBehavior : AI_Base
         }
 
     }
+
+    protected abstract bool TargetIsAttackable();
 
     protected bool TargetIsWithinAttackRange()
     {

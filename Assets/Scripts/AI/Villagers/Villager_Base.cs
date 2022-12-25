@@ -70,7 +70,8 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
     protected virtual void DoTaskWork()
     {
         ResourceNode node = _Target.GetComponent<ResourceNode>();
-        if (node)
+
+        if (node && !node.IsDepleted)
         {
             node.Gather(gameObject);
 
@@ -79,50 +80,54 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
                 SetTarget(null, true);
 
                 DoTargetCheck();
+
+                return;
             }
 
-            return;
         }
 
 
         IBuilding building = _Target.GetComponent<IBuilding>();
+
         if (building != null)
         {
+            Health bHealth = building.HealthComponent;
+
             // The villager should heal the building if it needs it AND stockpiles are NOT low.
-            if (building.HealthComponent.CurrentHealth < building.HealthComponent.MaxHealth &&
-                _ResourceManager.Stockpiles[ResourceTypes.Food] > _ResourceManager.ResourceStockpilesLowThreshold)
+            if (bHealth.CurrentHealth < bHealth.MaxHealth &&
+                _ResourceManager.Stockpiles[ResourceTypes.Food] >= _ResourceManager.ResourceStockpilesLowThreshold)
             {
                 float villagerHealAmount = _VillageManager_Villagers.VillagerHealBuildingsAmount;
 
-                float curHealth = building.HealthComponent.CurrentHealth + villagerHealAmount;
-                float healAmount = building.HealthComponent.MaxHealth - curHealth;
+                float healthAfterHeal = bHealth.CurrentHealth + villagerHealAmount;
+                float healAmount = villagerHealAmount;
 
-                if (healAmount < 0)
-                    healAmount += villagerHealAmount;
+                if (healthAfterHeal > bHealth.MaxHealth)
+                    healAmount = healthAfterHeal - bHealth.MaxHealth;
 
-                float foodAmount = Mathf.CeilToInt(healAmount * _VillageManager_Villagers.BuildingHealFoodCostMultiplier);
+                int foodAmount = Mathf.CeilToInt(healAmount * _VillageManager_Villagers.BuildingHealFoodCostMultiplier);
 
 
-                Debug.Log($"HealAmnt: {healAmount}    Food: {foodAmount}    BCurH: {curHealth}    BMaxH: {building.HealthComponent.MaxHealth}    vHAmnt: {villagerHealAmount}");
+                //Debug.Log($"HealAmnt: {healAmount}    Food: {foodAmount}    BCurH: {bHealth.CurrentHealth}    BMaxH: {bHealth.MaxHealth}    vHAmnt: {villagerHealAmount}");
 
                 // Don't heal the building if there isn't enough food!
-                if (_ResourceManager.Stockpiles[ResourceTypes.Food] >= foodAmount)
+                if (_ResourceManager.Stockpiles[ResourceTypes.Food] >= _ResourceManager.ResourceStockpilesOkThreshold)
                 {
-                    building.HealthComponent.Heal(healAmount, gameObject);
+                    bHealth.Heal(healAmount, gameObject);
 
                     // Use some food from the stockpile.
-                    _ResourceManager.Stockpiles[ResourceTypes.Food] -= Mathf.CeilToInt(foodAmount);
+                    _ResourceManager.Stockpiles[ResourceTypes.Food] -= foodAmount;
+                }
+                else
+                {
+                    SetTarget(null, true);
                 }
 
 
-                if (building.HealthComponent.CurrentHealth == building.HealthComponent.MaxHealth)
+                if (bHealth.CurrentHealth == bHealth.MaxHealth)
                     SetTarget(null, true);
 
-            } // end if building needs to be healed
-            else
-            {
-                SetTarget(null, true);
-            }
+            } // end if building needs to be healed            
 
         }
 
@@ -240,21 +245,31 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
         // Check if the villager is doing a work task.
         if (_Target)
         {
+            /*
             if (_Target.CompareTag("Monster"))
             {
                 DoAttack();
             }
-            else
-            {
+            */
+            //else
+            //{
                 _LastAttackTime = Time.time;
 
                 AnimateAttack(); // We're just using the attack animation for when they're doing work, too.
                 DoTaskWork();
 
                 return;
-            }
+            //}
         }
 
+    }
+
+    protected override bool TargetIsAttackable()
+    {
+        if (_Target.CompareTag("Monster") || _Target.CompareTag("Player"))
+            return true;
+        else
+            return false;
     }
 
     protected override void AnimateAttack()
@@ -264,6 +279,8 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
         string trigger = $"Attack {n}";
         _Animator.ResetTrigger(trigger);
         _Animator.SetTrigger(trigger);
+
+        _HashOfPlayingAttackAnim = _AttackAnimationNameHashes[n];
     }
 
     protected override void UpdateNearbyTargetDetectorState()

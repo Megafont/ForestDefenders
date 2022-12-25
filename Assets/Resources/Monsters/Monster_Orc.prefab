@@ -679,7 +679,7 @@ MonoBehaviour:
   MaxMovementSpeed: 3.5
   InteractionFrequency: 2
   AttackPower: 7
-  AttackFrequency: 1
+  AttackCheckFrequency: 0.75
   MaxChaseDistance: 10
   TargetCheckFrequency: 3
   TargetCheckRadius: 5

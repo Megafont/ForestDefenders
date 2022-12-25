@@ -57,25 +57,42 @@ public class MainMenuDialog : Dialog_Base, IDialog
             //Debug.Log("Selected: " + EventSystem.current.currentSelectedGameObject.name);
 
             float y = _InputManager_UI.Navigate.y;
-            if (y < -0.5f) // User is pressing up
+            if (y < -0.5f) // User is pressing down
             {
-                _SelectedMenuItemIndex++;
+                // Skip the next item if it is disabled.
+                while (true)
+                {
+                    _SelectedMenuItemIndex++;
 
-                if (_SelectedMenuItemIndex >= _MenuItems.childCount)
-                    _SelectedMenuItemIndex = 0;
+                    if (_SelectedMenuItemIndex >= _MenuItems.childCount)
+                        _SelectedMenuItemIndex = 0;
 
-                SelectMenuItem();
+                    SelectMenuItem();
+
+                    Button selected = EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
+                    if (selected != null && selected.IsInteractable())
+                        break;
+                }
 
                 _LastGamepadSelectionChange = Time.time;
             }
-            else if (y > 0.5f) // User is pressing down
+            else if (y > 0.5f) // User is pressing up
             {
-                _SelectedMenuItemIndex--;
+                // Skip the next item if it is disabled.
+                while (true)
+                {
+                    _SelectedMenuItemIndex--;
 
-                if (_SelectedMenuItemIndex < 0)
-                    _SelectedMenuItemIndex = _MenuItems.childCount - 1;
+                    if (_SelectedMenuItemIndex < 0)
+                        _SelectedMenuItemIndex = _MenuItems.childCount - 1;
 
-                SelectMenuItem();
+                    SelectMenuItem();
+
+                    Button selected = EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
+                    if (selected != null && selected.IsInteractable())
+                        break;
+
+                }
 
                 _LastGamepadSelectionChange = Time.time;
             }
