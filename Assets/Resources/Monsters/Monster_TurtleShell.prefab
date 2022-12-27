@@ -1191,7 +1191,7 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6839221177063257845}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: e599599913457404aa360071350dd7c4, type: 3}
+  m_Avatar: {fileID: 9000000, guid: 7c4b22e2d97cfa94c915a365dba814fd, type: 3}
   m_Controller: {fileID: 9100000, guid: 7896619e1d2183746a9b4fc1e162a783, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
@@ -1288,7 +1288,7 @@ MonoBehaviour:
   MaxMovementSpeed: 3.5
   InteractionFrequency: 2
   AttackPower: 3
-  AttackFrequency: 1
+  AttackCheckFrequency: 1
   MaxChaseDistance: 10
   TargetCheckFrequency: 3
   TargetCheckRadius: 5

@@ -13,8 +13,10 @@ public class MonsterManager : MonoBehaviour
     public float ComboStreakResetTime = 5.0f;
 
     public int BaseMonsterSpawnAmount = 3;
+    public int MaxMonstersOfAnyGivenType = 5;
 
 
+    private List<MonsterDefinition> _MonsterDefinitions;
 
     private Transform _SpawnPointsParent;
 
@@ -30,7 +32,9 @@ public class MonsterManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        MonsterPrefabs.Sort(CompareMonsters);
+        //MonsterPrefabs.Sort(CompareMonsters);
+        MonsterStats.InitMonsterDefinitions(MonsterPrefabs);
+        _MonsterDefinitions = MonsterStats.MonsterDefinitions;
 
 
         // Get the spawn points child object.
@@ -80,7 +84,7 @@ public class MonsterManager : MonoBehaviour
             int spawnPointIndex = UnityEngine.Random.Range(0, spawnPointCount);
 
             // Spawn a monster.
-            int monsterIndex = _MonsterSpawnList[i];
+            MonsterDefinition monsterDef = _MonsterDefinitions[_MonsterSpawnList[i]];
 
             Vector3 spawnPos = _SpawnPointsParent.GetChild(spawnPointIndex).transform.position;
             NavMeshHit hit;
@@ -91,10 +95,13 @@ public class MonsterManager : MonoBehaviour
                 continue;
             }
 
-            GameObject monster = Instantiate(MonsterPrefabs[monsterIndex].gameObject, 
+            GameObject monster = Instantiate(monsterDef.Prefab, 
                                              hit.position,
                                              Quaternion.identity,
                                              _MonstersParent.transform);
+
+            // Initialize the monster's stats.
+            monsterDef.ApplyStatsToMonster(monster.GetComponent<Monster_Base>());
 
             // Subscribe to the monster's OnDeath event and add it to the list of alive monsters.
             monster.GetComponent<Health>().OnDeath += OnDeath;
@@ -119,15 +126,15 @@ public class MonsterManager : MonoBehaviour
         _MonsterSpawnList.Clear();
 
 
-        foreach (IMonster prefab in MonsterPrefabs)
+        for (int i = 0; i < _MonsterDefinitions.Count; i++)
         {
-            int monsterIndex = MonsterPrefabs.IndexOf((Monster_Base) prefab);
+            MonsterDefinition monsterDef = _MonsterDefinitions[i];
 
-            int monsterCount = GetMonsterCountForWave(prefab, monsterIndex);
-            for (int i = 0; i < monsterCount; i++)
+            int monsterCount = GetMonsterCountForWave(monsterDef.Prefab.GetComponent<IMonster>(), i);
+            for (int j = 0; j < monsterCount; j++)
             {
-                _MonsterSpawnList.Add(monsterIndex);
-                //Debug.Log($"Added monster index {monsterIndex} to spawn list!");
+                _MonsterSpawnList.Add(i);
+                //Debug.Log($"Added monster \"{monsterDef.prefab.name}\" (index {i}) to spawn list!");
             }
         }
 
@@ -143,7 +150,9 @@ public class MonsterManager : MonoBehaviour
             return 0;
 
 
-        return BaseMonsterSpawnAmount + (CurrentWaveNumber - (monsterIndex + 1));
+        int monsterCount = BaseMonsterSpawnAmount + (CurrentWaveNumber - (monsterIndex + 1));
+
+        return monsterCount <= MaxMonstersOfAnyGivenType ? monsterCount : MaxMonstersOfAnyGivenType;
     }
 
     private int GetMonstersInTierCount(int tier)

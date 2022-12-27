@@ -7,3 +7,13 @@ Also, each character has a collider component even though the NavMeshAgent
 has one of its own. This is because that one doesn't show up as a component
 in the Unity Editor. We have to add one so the player will collide properly
 with monsters.
+
+
+
+CUSTOM ALBEDO TEXTURES:
+Note that the original albedo texture is one texture used by all of the monsters
+in the given monster pack. Both RPG Monster Wave packs are set up this way.
+I created these custom textures to change the colors of a select few monsters
+specifically, because I didn't want to just use the included tint shader to
+shade the entire texture a given color. These custom textures can be found
+in the Assets/Custom Monster Textures folder.
