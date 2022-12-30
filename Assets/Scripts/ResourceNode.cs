@@ -15,8 +15,8 @@ public class ResourceNode : MonoBehaviour
     [Tooltip("The type of resource provided by this node.")]
     public ResourceTypes ResourceType;
 
-    [Tooltip("The maximum amount of resources that can be gathered from this node.")]
-    public float TotalAmountInNode = 100;
+    [Tooltip("The maximum amount of resources that this node may potentially contain.")]
+    public float MaxAmountInNode = 50;
 
 
 
@@ -38,7 +38,7 @@ public class ResourceNode : MonoBehaviour
 
 
 
-    private void Awake()
+    void Awake()
     {
         _GameManager = GameManager.Instance;
         _ResourceManager = _GameManager.ResourceManager;
@@ -46,12 +46,17 @@ public class ResourceNode : MonoBehaviour
         _SoundSetPlayer = GetComponent<SoundSetPlayer>();
         GetSoundSet();
 
-        _LevelUpDialog = GameObject.Find("UI/Level Up Dialog").GetComponent<LevelUpDialog>();
+        _LevelUpDialog = _GameManager.LevelUpDialog;
 
         _VillagersMiningThisNode = new List<IVillager>();
 
-        AmountAvailable = TotalAmountInNode;
+        AmountAvailable = MaxAmountInNode;
 
+    }
+
+    private void Start()
+    {
+        RestoreNode();
     }
 
     public float Gather(GameObject gatherer)
@@ -77,7 +82,7 @@ public class ResourceNode : MonoBehaviour
         // This way, we only fire the event once.
         if (IsDepleted && amountBeforeGather > 0)
         {
-            _GameManager.AddToScore((int) TotalAmountInNode * _GameManager.PlayerGatheringScoreMultiplier);
+            _GameManager.AddToScore((int) MaxAmountInNode * _GameManager.PlayerGatheringScoreMultiplier);
             OnNodeDepleted?.Invoke(this);
         }
 
@@ -98,7 +103,9 @@ public class ResourceNode : MonoBehaviour
     /// </summary>
     public void RestoreNode()
     {
-        _AmountAvailable = TotalAmountInNode;
+        float randomVariance = Random.Range(0.0f, _ResourceManager.ResourceNodeAmountVariance);
+
+        _AmountAvailable = Mathf.CeilToInt(MaxAmountInNode - (MaxAmountInNode * randomVariance));
     }
 
     public void AddVillagerToMiningList(IVillager villager)
@@ -141,16 +148,18 @@ public class ResourceNode : MonoBehaviour
 
     private float CalculateGatherAmount(GameObject gatherer)
     {
-        float buffAmount = 0;
+        float baseAmount = 0;
         if (gatherer.GetComponent<PlayerController>())
-            buffAmount = _LevelUpDialog.CurrentPlayerGatherRate;
+            baseAmount = _LevelUpDialog.CurrentPlayerGatherRate;
         else if (gatherer.GetComponent<Villager_Base>())
-            buffAmount = _LevelUpDialog.CurrentVillagerGatherRate;
+            baseAmount = _LevelUpDialog.CurrentVillagerGatherRate;
         else
             throw new Exception("Resource could not be gathered! Unknown gatherer type!");
 
 
-        float gatherAmount = buffAmount + Random.Range(-_ResourceManager.GatherAmountVariance, _ResourceManager.GatherAmountVariance);
+        float randomVariance = Random.Range(0.0f, _ResourceManager.GatherAmountVariance);
+
+        float gatherAmount = Mathf.CeilToInt(baseAmount - (baseAmount * randomVariance));
 
         return gatherAmount <= AmountAvailable ? gatherAmount : AmountAvailable;
     }

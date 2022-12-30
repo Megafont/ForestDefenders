@@ -30,7 +30,7 @@ public abstract class AI_Base : MonoBehaviour
 
     public Health HealthComponent { get { return _Health; } }
 
-
+    protected GameManager _GameManager;
     protected Animator _Animator;
     protected Health _Health;
     protected NavMeshAgent _NavMeshAgent;
@@ -42,14 +42,16 @@ public abstract class AI_Base : MonoBehaviour
 
     protected float _InteractionRange;
     protected float _LastInteractionTime;
-    protected bool _IsInteracting;
 
     protected WaitForSeconds _DeathFadeOutDelay;
 
 
     private void Awake()
     {
+        _GameManager = GameManager.Instance;
+
         _Animator = GetComponent<Animator>();
+
         _DeathFadeOutDelay = new WaitForSeconds(DeathFadeOutTime);
         _Health = GetComponent<Health>();
         _NavMeshAgent = GetComponent<NavMeshAgent>();
@@ -80,35 +82,39 @@ public abstract class AI_Base : MonoBehaviour
         AnimateAI();
     }
 
+    /*
     private void OnEnable()
     {
         if (_Target && _NavMeshAgent.enabled)
             _NavMeshAgent.destination = _Target.transform.position;
     }
-
+    */
 
     protected abstract void InitAI();
     protected virtual void UpdateAI()
     {
+        
         // If the path is invalid or partial, set target to null so the AI can find a new one.
-        if (_Target && _NavMeshAgent.pathStatus != NavMeshPathStatus.PathComplete)
+        if (_Target && 
+            NavMeshAgentIsActiveAndOnNavMesh() && 
+            !NavMeshAgentPathIsValid())
         {
             StopMoving();
-
-            // Check if the end of the path is within interaction distance of the target.
+            
+            // Check if the AI is within interaction distance of the target.
             // If not, set target to null so the AI can try to find a new reachable one.
             if (GetDistanceToTarget() > _InteractionRange)
             {
-                //SetTarget(null, true);
-                //Debug.Log("PATH INVALID OR PARTIAL!");
+                SetTarget(null, true);
+                //Debug.Log("AI path is invalid or partial! Repathing...");
             }
         }
         // This is here in case another NavMeshAgent bumps this one away from its target.
         // This allows it to move back to the target and continue working or attacking.
         else if (_Target &&
-            _NavMeshAgent.isStopped &&
-            _NavMeshAgent.enabled &&
-            _NavMeshAgent.pathStatus == NavMeshPathStatus.PathComplete)
+                 _NavMeshAgent.isStopped &&
+                 NavMeshAgentIsActiveAndOnNavMesh() &&
+                 NavMeshAgentPathIsValid())
         {
             StartMoving();
         }
@@ -126,6 +132,7 @@ public abstract class AI_Base : MonoBehaviour
         {
             if (!_NavMeshAgent.isStopped)
             {
+                // Prevent any additional movements.
                 StopMoving();
 
                 // Force the AI to face the target since they sometimes end up facing in a somewhat odd direction.
@@ -139,13 +146,16 @@ public abstract class AI_Base : MonoBehaviour
             {
                 _LastInteractionTime = Time.time;
 
-                _IsInteracting = true;
+                IsInteracting = true;
 
-                InteractWithTarget();
+                if (!_Target.CompareTag("Monster"))
+                    InteractWithTarget();
             }
         }
         else
-            _IsInteracting = false;
+        {
+            IsInteracting = false;
+        }
 
     }
 
@@ -169,18 +179,27 @@ public abstract class AI_Base : MonoBehaviour
         _PrevTarget = null;
     }
 
+    public GameObject GetTarget() { return _Target; }
+
     /// <summary>
     /// Sets the target.
     /// </summary>
-    /// <param name="target">The GameObject to set as the target.</param>
+    /// <param name="newTarget">The GameObject to set as the target.</param>
     /// <param name="discardCurrentTarget">Whether or not the current target should be discarded rather than copied into _PrevTarget.</param>
     /// <returns>True if the target was set and false otherwise.</returns>
-    public virtual bool SetTarget(GameObject target, bool discardCurrentTarget = false)
+    public virtual bool SetTarget(GameObject newTarget, bool discardCurrentTarget = false)
     {
         bool result;
 
 
-        if (ValidateTarget(target))
+        if (_NavMeshAgent == null || (!NavMeshAgentIsActiveAndOnNavMesh()))
+        {
+            _Target = null;
+            return false;
+        }
+
+
+        if (ValidateTarget(newTarget))
         {
             result = true;
 
@@ -188,7 +207,7 @@ public abstract class AI_Base : MonoBehaviour
             if (!discardCurrentTarget)
                 _PrevTarget = _Target;
 
-            _Target = target;
+            _Target = newTarget;
         }
         else
         {
@@ -212,26 +231,20 @@ public abstract class AI_Base : MonoBehaviour
         }
 
 
-        //if (_NavMeshAgent.enabled)
-        //    StopMoving();
-
-        if (_Target && _NavMeshAgent.enabled)
+        if (_Target && NavMeshAgentIsActiveAndOnNavMesh())
         {
-            // Is the target a moving target?                   
-            Vector3 randomPoint = Utils_Math.GetRandomPointAroundTarget(_Target.transform);
+            Vector3 randomPoint = Utils_AI.GetRandomPointAroundTarget(_Target.transform);
             _NavMeshAgent.SetDestination(randomPoint);
-
 
             //Debug.Log($"Target: {_Target.transform.position}    Point: {randomPoint}");
         }
-        else
+        else if (_Target == null)
         {
-            if (_NavMeshAgent.enabled)
-                StopMoving();
+            StopMoving();
         }
         
 
-        _IsInteracting = false;
+        IsInteracting = false;
 
         return result;
     }
@@ -249,9 +262,9 @@ public abstract class AI_Base : MonoBehaviour
         }
     }
 
-    public virtual bool ValidateTarget(GameObject target)
+    public virtual bool ValidateTarget(GameObject newTarget)
     {
-        if (_NavMeshAgent == null || _Target == target)
+        if (_Target == newTarget)
         {
             return false;
         }
@@ -268,8 +281,8 @@ public abstract class AI_Base : MonoBehaviour
         if (_NavMeshAgent == null)
             yield break;
 
-        if (!_NavMeshAgent.enabled)
-            throw new Exception("MoveToTargetAndIgnoreAllElseUntilArriving() cannot be called when the NavMeshAgent component is disabled!");
+        if (!NavMeshAgentIsActiveAndOnNavMesh())
+            throw new Exception("MoveToTargetAndIgnoreAllElseUntilArriving() cannot be called when the NavMeshAgent component is disabled or not on a nav mesh!");
 
 
         _MovingToTargetAndIgnoreAllUntilArrived = true;
@@ -340,6 +353,10 @@ public abstract class AI_Base : MonoBehaviour
 
     protected void StopMoving()
     {
+        if (!NavMeshAgentIsActiveAndOnNavMesh())
+            return;
+
+
         _NavMeshAgent.isStopped = true;
 
         // Set this NavMeshAgent to a high priority so other agents will not ignore it since it is not moving now.
@@ -348,11 +365,15 @@ public abstract class AI_Base : MonoBehaviour
 
     protected void StartMoving()
     {
+        if (!NavMeshAgentIsActiveAndOnNavMesh())
+            return;
+
+
         _NavMeshAgent.isStopped = false;
 
         // Set this NavMeshAgent back to default priority so other moving agents will ignore it.
         _NavMeshAgent.avoidancePriority = 50;
-    }
+    }    
 
     protected virtual void OnDeath(GameObject sender, GameObject attacker)
     {
@@ -375,18 +396,73 @@ public abstract class AI_Base : MonoBehaviour
 
         //Debug.Log(name + " finished death fade out!");
 
+
         Destroy(gameObject);
 
     }
 
 
+    protected bool NavMeshAgentIsActiveAndOnNavMesh()
+    {
+        if (!_NavMeshAgent)
+            return false;
 
-    public bool IsInteracting { get { return _IsInteracting; } }
+        return _NavMeshAgent.isActiveAndEnabled && _NavMeshAgent.isOnNavMesh;
+    }
+
+    protected bool NavMeshAgentPathIsValid()
+    {
+        if (!_NavMeshAgent)
+            return false;
+
+        return !_NavMeshAgent.pathPending && !_NavMeshAgent.isPathStale && _NavMeshAgent.pathStatus == NavMeshPathStatus.PathComplete;
+    }
+
+    public bool IsInteracting { get; protected set; }
 
 
-    public bool TargetIsBuilding { get { return _Target.GetComponent<IBuilding>() != null; } }
-    public bool TargetIsMonster { get { return _Target.GetComponent<IMonster>() != null; } }
-    public bool TargetIsResourceNode { get { return _Target.GetComponent<ResourceNode>() != null; } }
-    public bool TargetIsVillager { get { return _Target.GetComponent<IVillager>() != null; } }
+    public bool TargetIsBuilding 
+    { 
+        get 
+        {
+            if (_Target == null)
+                return false;
+
+            return _Target.GetComponent<IBuilding>() != null; 
+        } 
+    }
+
+    public bool TargetIsMonster 
+    { 
+        get 
+        {
+            if (_Target == null)
+                return false;
+
+            return _Target.GetComponent<IMonster>() != null; 
+        } 
+    }
+    
+    public bool TargetIsResourceNode
+    { 
+        get 
+        {
+            if (_Target == null)
+                return false;
+
+            return _Target.GetComponent<ResourceNode>() != null; 
+        } 
+    }
+
+    public bool TargetIsVillager 
+    { 
+        get 
+        {
+            if (_Target == null)
+                return false;
+
+            return _Target.GetComponent<IVillager>() != null; 
+        } 
+    }
 
 }

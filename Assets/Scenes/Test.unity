@@ -578,10 +578,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ResourcesParent: {fileID: 97276842}
-  ResourceStockpilesStartAmount: 0
+  ResourceStockpilesStartAmount: 500
   ResourceStockpilesOkThreshold: 200
   ResourceStockpilesLowThreshold: 100
-  GatherAmountVariance: 2
+  ResourceNodeAmountVariance: 0.3333
+  GatherAmountVariance: 0.3333
 --- !u!1 &224973805
 GameObject:
   m_ObjectHideFlags: 0
@@ -625,6 +626,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Tree (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2143805041811387770, guid: e7bad39d84cc02f41ac6ad457315c984,
+        type: 3}
+      propertyPath: MaxAmountInNode
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 2143805041811387770, guid: e7bad39d84cc02f41ac6ad457315c984,
         type: 3}
@@ -837,6 +843,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Tree (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2143805041811387770, guid: e7bad39d84cc02f41ac6ad457315c984,
+        type: 3}
+      propertyPath: MaxAmountInNode
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 2143805041811387770, guid: e7bad39d84cc02f41ac6ad457315c984,
         type: 3}
@@ -1223,7 +1234,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10c25618c627bb4488492681e1589bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObstructedResourceNodeRegion: {fileID: 0}
+  NextResourceNodeRegion: {fileID: 0}
+  PreviousResourceNodeRegion: {fileID: 0}
   _BridgesInThisZone: []
   LockRotation: 0
 --- !u!65 &440966121
@@ -1655,6 +1667,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4423988908606287571, guid: 576a32a0c136f294e9775232805eefd8,
         type: 3}
+      propertyPath: MaxAmountInNode
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 4423988908606287571, guid: 576a32a0c136f294e9775232805eefd8,
+        type: 3}
       propertyPath: TotalAmountInNode
       value: 50
       objectReference: {fileID: 0}
@@ -2011,6 +2028,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4423988908606287571, guid: 576a32a0c136f294e9775232805eefd8,
         type: 3}
+      propertyPath: MaxAmountInNode
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 4423988908606287571, guid: 576a32a0c136f294e9775232805eefd8,
+        type: 3}
       propertyPath: TotalAmountInNode
       value: 50
       objectReference: {fileID: 0}
@@ -2231,6 +2253,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1555194131}
     m_Modifications:
+    - target: {fileID: 4423988908606287571, guid: 576a32a0c136f294e9775232805eefd8,
+        type: 3}
+      propertyPath: MaxAmountInNode
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 4423988908606287571, guid: 576a32a0c136f294e9775232805eefd8,
         type: 3}
       propertyPath: TotalAmountInNode
@@ -2671,6 +2698,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2143805041811387770, guid: e7bad39d84cc02f41ac6ad457315c984,
         type: 3}
+      propertyPath: MaxAmountInNode
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 2143805041811387770, guid: e7bad39d84cc02f41ac6ad457315c984,
+        type: 3}
       propertyPath: TotalAmountInNode
       value: 50
       objectReference: {fileID: 0}
@@ -2788,6 +2820,7 @@ MonoBehaviour:
   - {fileID: 719936773627144340, guid: 70b2a70cf6950f14fb4618dc0a09aea3, type: 3}
   ComboStreakResetTime: 3
   BaseMonsterSpawnAmount: 3
+  MaxMonstersOfAnyGivenType: 5
 --- !u!4 &1480730956
 Transform:
   m_ObjectHideFlags: 0
@@ -3214,18 +3247,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1799271766}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &1799759663 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7970094270755011134, guid: 82c14c16d36522f43bed3ccd9d4f4226,
-    type: 3}
-  m_PrefabInstance: {fileID: 7970094272385172326}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d4e3c4d9b527b9943a839e8d025e3c99, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1890681223
 GameObject:
   m_ObjectHideFlags: 0
@@ -3861,6 +3882,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2143805041811387770, guid: e7bad39d84cc02f41ac6ad457315c984,
         type: 3}
+      propertyPath: MaxAmountInNode
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 2143805041811387770, guid: e7bad39d84cc02f41ac6ad457315c984,
+        type: 3}
       propertyPath: TotalAmountInNode
       value: 50
       objectReference: {fileID: 0}
@@ -4055,6 +4081,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 216455810}
     m_Modifications:
+    - target: {fileID: 4423988908606287571, guid: 576a32a0c136f294e9775232805eefd8,
+        type: 3}
+      propertyPath: MaxAmountInNode
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 4423988908606287571, guid: 576a32a0c136f294e9775232805eefd8,
         type: 3}
       propertyPath: TotalAmountInNode
@@ -4731,6 +4762,11 @@ PrefabInstance:
       propertyPath: MaxHealth
       value: 200
       objectReference: {fileID: 0}
+    - target: {fileID: 3017308577823786629, guid: 9d79d92c21b8d3347897f6061c7007ba,
+        type: 3}
+      propertyPath: MaxAmountInNode
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 3498206886117766571, guid: 9d79d92c21b8d3347897f6061c7007ba,
         type: 3}
       propertyPath: m_Name
@@ -4868,56 +4904,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7970094270755011132, guid: 82c14c16d36522f43bed3ccd9d4f4226,
-        type: 3}
-      propertyPath: m_ActionEvents.Array.size
-      value: 21
-      objectReference: {fileID: 0}
-    - target: {fileID: 7970094270755011132, guid: 82c14c16d36522f43bed3ccd9d4f4226,
-        type: 3}
-      propertyPath: m_ActionEvents.Array.data[20].m_ActionId
-      value: c927cc37-3753-43f9-b639-4894b478d972
-      objectReference: {fileID: 0}
-    - target: {fileID: 7970094270755011132, guid: 82c14c16d36522f43bed3ccd9d4f4226,
-        type: 3}
-      propertyPath: m_ActionEvents.Array.data[20].m_ActionName
-      value: Player/Pause[/XInputControllerWindows/start,/Keyboard/pause]
-      objectReference: {fileID: 0}
-    - target: {fileID: 7970094270755011132, guid: 82c14c16d36522f43bed3ccd9d4f4226,
-        type: 3}
-      propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7970094270755011132, guid: 82c14c16d36522f43bed3ccd9d4f4226,
-        type: 3}
-      propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7970094270755011132, guid: 82c14c16d36522f43bed3ccd9d4f4226,
-        type: 3}
-      propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1799759663}
-    - target: {fileID: 7970094270755011132, guid: 82c14c16d36522f43bed3ccd9d4f4226,
-        type: 3}
-      propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7970094270755011132, guid: 82c14c16d36522f43bed3ccd9d4f4226,
-        type: 3}
-      propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnPause
-      objectReference: {fileID: 0}
-    - target: {fileID: 7970094270755011132, guid: 82c14c16d36522f43bed3ccd9d4f4226,
-        type: 3}
-      propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: InputManager_Player, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 7970094270755011132, guid: 82c14c16d36522f43bed3ccd9d4f4226,
-        type: 3}
-      propertyPath: m_ActionEvents.Array.data[20].m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

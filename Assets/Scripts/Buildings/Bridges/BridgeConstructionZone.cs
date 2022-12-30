@@ -14,8 +14,11 @@ public class BridgeConstructionZone : MonoBehaviour
     [Header("Zone Settings")]
 
     [Tooltip("The group of resource nodes that is accessed by building a bridge across this bridge construction zone.")]
-    public GameObject ObstructedResourceNodeRegion;
+    public GameObject NextResourceNodeRegion;
+    [Tooltip("The group of resource nodes that is just before this bridge construction zone.")]
+    public GameObject PreviousResourceNodeRegion;
 
+    [Tooltip("The list of bridges that have been constructed in this bridge construction zone. You don't need to manually add anything to this list except for bridges you build in the Unity Editor.")]
     public List<GameObject> _BridgesInThisZone;
 
 

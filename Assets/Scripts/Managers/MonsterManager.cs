@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -170,7 +171,11 @@ public class MonsterManager : MonoBehaviour
     private void OnDeath(GameObject sender, GameObject attacker)
     {
         _LastMonsterDeathTime = Time.time;        
-        CurrentComboStreak++;
+        
+
+        // Only increase the combo streak if the monster was killed by the player.
+        if (attacker.CompareTag("Player"))
+            CurrentComboStreak++;
 
 
         MonstersKilled++;
@@ -178,7 +183,8 @@ public class MonsterManager : MonoBehaviour
 
 
         int enemyScoreValue = sender.GetComponent<IMonster>().GetScoreValue();
-        GameManager.Instance.AddToScore(enemyScoreValue * CurrentComboStreak);
+        int scoreMultiplier = (CurrentComboStreak > 0 ? CurrentComboStreak : 1); // We want a multiplier of one if the combo streak is 0 so the player doesn't get screwed out of some points.
+        GameManager.Instance.AddToScore(enemyScoreValue * scoreMultiplier);
 
 
         //Debug.Log($"Kill Streak: {CurrentComboStreak}  Monster Base Score: {enemyScoreValue}");

@@ -61,7 +61,7 @@ public class VillageManager_Villagers : MonoBehaviour
 
     private int _PopulationCap;
 
-    Coroutine _VillagerHealBuildingsCoroutine;
+    Coroutine _VillagersHealBuildingsCoroutine;
 
 
 
@@ -79,7 +79,7 @@ public class VillageManager_Villagers : MonoBehaviour
         _BuildingHealCheckWaitTime = new WaitForSeconds(VillagerHealBuildingsCheckFrequency);
         _VillagerSpawnWaitTime = new WaitForSeconds(VillagerSpawnFrequency);
 
-        _GameManager.OnGameStateChanged+= OnGameStateChanged;
+        _GameManager.OnGameStateChanged += OnGameStateChanged;
     }
 
     // Start is called before the first frame update
@@ -315,11 +315,17 @@ public class VillageManager_Villagers : MonoBehaviour
         return _VillagerPrefabs.Values.ToArray()[index];
     }
 
+    public bool VillagerIsOnBuildingHealCall(IVillager villager)
+    {
+        return _VillagersHealingBuildings.ContainsValue(villager);
+    }
+
     private void SendRandomVillagerToHealBuilding(IBuilding building, GameObject attacker)
     {
         int maxTries = 128;
         IVillager villager = null;
 
+        
         IMonster monster = attacker != null ? attacker.GetComponent<Monster_Base>() : 
                                               null;
 
@@ -328,6 +334,8 @@ public class VillageManager_Villagers : MonoBehaviour
         // Is the attacker a monster
         if (monster != null)
             target = monster.gameObject;
+        else
+            target = building.gameObject;
 
 
         while (maxTries > 0)
@@ -346,14 +354,14 @@ public class VillageManager_Villagers : MonoBehaviour
         // Add the building and villager into our heal tracking dictionary and tell the villager to head to the building.
         if (villager != null)
         {
-            //Debug.Log("Sending villager to heal building!");
+            Debug.Log("Sending villager to heal building!");
 
             _VillagersHealingBuildings.Add(building, villager);
             villager.SetTarget(target);
         }
         else
         {
-            //Debug.Log("Failed to find an available villager to heal the building!");
+            Debug.Log("Failed to find an available villager to heal the building!");
         }
     }
 
@@ -361,15 +369,14 @@ public class VillageManager_Villagers : MonoBehaviour
     {
         VillagersCanHealBuildings = true;
 
-        if (_VillagerHealBuildingsCoroutine == null && GameManager.Instance.GameState == GameStates.PlayerBuildPhase)
-            _VillagerHealBuildingsCoroutine = StartCoroutine(OrderVillagersToHealBuildings());
+        if (_VillagersHealBuildingsCoroutine == null && GameManager.Instance.GameState == GameStates.PlayerBuildPhase)
+            _VillagersHealBuildingsCoroutine = StartCoroutine(OrderVillagersToHealBuildings());
     }
 
     private IEnumerator OrderVillagersToHealBuildings()
     {
         Dictionary<IBuilding, GameObject> damagedBuildings = _VillageManager_Buildings.DamagedBuildingsDictionary;
-
-
+        
 
         while (damagedBuildings == null ||
                damagedBuildings.Count == 0 || _AllVillagers.Count == 0)
@@ -387,14 +394,16 @@ public class VillageManager_Villagers : MonoBehaviour
         }
 
 
-        //Debug.Log($"Villagers have begun healing {damagedBuildings.Count} buildings...");
-
         while (damagedBuildings.Count > 0)
         {
+            Debug.Log($"Villagers are healing {damagedBuildings.Count} buildings...");
+
+
             for (int j = 0; j < _VillagersHealingBuildings.Keys.Count; j++)
             {
                 KeyValuePair<IBuilding, IVillager> pair = _VillagersHealingBuildings.ElementAt(j);
                 IBuilding building = pair.Key;
+                IVillager villager = pair.Value;
 
                 bool removeBuilding = false;
 
@@ -407,7 +416,7 @@ public class VillageManager_Villagers : MonoBehaviour
                 // Check if the building is fully healed.
                 else if (building.HealthComponent.CurrentHealth == building.HealthComponent.MaxHealth)
                 {
-                    //Debug.Log($"Villagers finished healing building \"{building.Category}/{building.Name}\"!");
+                    Debug.Log($"Villagers finished healing building \"{building.Category}/{building.Name}\"!");
 
                     if (_VillagersHealingBuildings.ContainsKey(building))
                     {
@@ -420,7 +429,12 @@ public class VillageManager_Villagers : MonoBehaviour
                     } // end if
 
                 } // end if
-
+                else
+                {
+                    // If the villager is not in combat, and is not targetting the building they are supposed to be healing, then tell them to target the building again.
+                    if ((!villager.TargetIsMonster) && villager.GetTarget() != building.gameObject)
+                        villager.SetTarget(building.gameObject);
+                }
 
                 // Remove this building from the list tracking villagers healing buildings.
                 if (removeBuilding)
@@ -428,17 +442,25 @@ public class VillageManager_Villagers : MonoBehaviour
 
 
             } // end foreach villager healing a building
+            
+
+            Debug.Log($"Food: {_ResourceManager.Stockpiles[ResourceTypes.Food]}    Ok Level: {_ResourceManager.ResourceStockpilesOkThreshold}");
 
 
             // Don't send villagers to repair buildings if stockpiles are low.
             if (_ResourceManager.Stockpiles[ResourceTypes.Food] >= _ResourceManager.ResourceStockpilesOkThreshold)
             {
+                Debug.Log($"Requesting help for {damagedBuildings.Count} buildings!");
+
+
                 // Send villagers to heal the damaged buildings.
                 foreach (KeyValuePair<IBuilding, GameObject> pair in damagedBuildings)
                 {
+                    Debug.Log($"{pair.Key}    {pair.Value}");
                     // Check if the building does NOT have a villager healing it.
                     if (!_VillagersHealingBuildings.ContainsKey(pair.Key))
-                    {
+                    {                        
+                        Debug.Log($"Sending villager to heal building \"{pair.Key.Category}/{pair.Key.Name}\"!");
                         SendRandomVillagerToHealBuilding(pair.Key, pair.Value);
                     }
 
@@ -478,26 +500,24 @@ public class VillageManager_Villagers : MonoBehaviour
 
     private void OnGameStateChanged(GameStates newGameState)
     {
-        //Debug.Log("GameState Changed to: " + newGameState);
+        _VillagersHealingBuildings.Clear();
+
 
         if (newGameState == GameStates.PlayerBuildPhase)
         {
-            _VillagersHealingBuildings.Clear();
-
-            if (VillagersCanHealBuildings)
-            {
-                if (_VillagerHealBuildingsCoroutine != null)
-                    StopCoroutine(_VillagerHealBuildingsCoroutine);
-
-                _VillagerHealBuildingsCoroutine = StartCoroutine(OrderVillagersToHealBuildings());
-            }
+            if (VillagersCanHealBuildings && _VillagersHealBuildingsCoroutine == null)
+                    _VillagersHealBuildingsCoroutine = StartCoroutine(OrderVillagersToHealBuildings());
         }
         else
         {
             // Stop the coroutine if it is still running due to not enough villagers or something.
-            if (_VillagerHealBuildingsCoroutine != null)
-                StopCoroutine(_VillagerHealBuildingsCoroutine);
+            if (_VillagersHealBuildingsCoroutine != null)
+            {
+                StopCoroutine(_VillagersHealBuildingsCoroutine);
+                _VillagersHealBuildingsCoroutine = null;
+            }
         }
+
     }
 
     private void OnVillagerDeath(GameObject sender, GameObject attacker)

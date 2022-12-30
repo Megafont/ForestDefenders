@@ -7,6 +7,7 @@ using UnityEngine;
 public interface IMonster
 {
     void ClearTargets();
+    GameObject GetTarget();
     bool SetTarget(GameObject target, bool discardTarget = false);
 
 

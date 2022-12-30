@@ -91,7 +91,9 @@ public static class HighScores
         int lastHighScore = ConvertStringToHighScoreData(lastScoreData).Score;
         float lastHighSurvivalTime = ConvertStringToHighScoreData(lastSurvivalTimeData).SurvivalTime;
 
-        Debug.Log($"Score: {score}    Last High Score: {lastHighScore}    Survival Time: {survivalTime}    Last Survival Time: {lastHighSurvivalTime}");
+
+        //Debug.Log($"Score: {score}    Last High Score: {lastHighScore}    Survival Time: {survivalTime}    Last Survival Time: {lastHighSurvivalTime}");
+
         if (score > lastHighScore ||
             survivalTime > lastHighSurvivalTime)
         {

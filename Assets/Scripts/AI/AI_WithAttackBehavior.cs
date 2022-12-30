@@ -56,16 +56,14 @@ public abstract class AI_WithAttackBehavior : AI_Base
         {
             _LastTargetCheckTime = Time.time;
 
-            if (_Target != null && _NavMeshAgent.pathPending == false && _NavMeshAgent.pathStatus != NavMeshPathStatus.PathComplete)
-                SetTarget(null, true);
-            
-
-            DoTargetCheck();             
+            if (!_IsAttacking && _Target == null)
+                DoTargetCheck();             
         }
 
 
-        if (_Target)
-            DoAttackCheck();
+        // This function checks if target is not null, so we don't do so before calling it.
+        DoAttackCheck();
+
     }
 
     private void InitAttackAnimationsNameHashTable()
@@ -79,34 +77,48 @@ public abstract class AI_WithAttackBehavior : AI_Base
         }
     }
 
-    public override bool SetTarget(GameObject target, bool discardCurrentTarget = false)
+    public override bool SetTarget(GameObject newTarget, bool discardCurrentTarget = false)
     {
         _IsAttacking = false;
         _LastAttackTime = Time.time;
 
-        return base.SetTarget(target, discardCurrentTarget);
+
+        bool result = base.SetTarget(newTarget, discardCurrentTarget);
+
+        if (result && _Target != null)
+        {
+            Health tHealth = _Target.GetComponent<Health>();
+            if (tHealth)
+                tHealth.OnDeath += OnTargetDeath;
+        }
+
+
+        return result;
     }
 
+    // This is needed to satisfy the interface.
     protected override void InteractWithTarget()
     {
-        
+        if (_IsAttacking)
+            return;
     }
 
     protected virtual void DoAttackCheck()
     {
+        // Debug.Log($"AI: {name}    Target: {_Target}    Attackable: {TargetIsAttackable()}    InRange: {TargetIsWithinAttackRange()}    Path: {_NavMeshAgent.pathStatus}");
+
         // Check if the target is still alive.
-        if (_Target && TargetIsWithinAttackRange())
+        if (_Target && TargetIsAttackable() && TargetIsWithinAttackRange())
         {
             _IsAttacking = true;
 
             // If the AI is attacking, has the attack cooldown period fully elapsed yet?
-            if (Time.time - _LastAttackTime >= AttackCheckFrequency &&
-                TargetIsAttackable())
+            if (Time.time - _LastAttackTime >= AttackCheckFrequency)
             {
                 DoAttack();
             }
         }
-        else // _Target is null.
+        else
         {
             // We set this here to prevent monsters from attacking instantaneously when they first get near the player.
             // We subtract one second so the game will think the last attack was one second ago from now, thus there will only be a one second delay before the monster's first attack, rather than the normal value of AttackFrequency.
@@ -142,7 +154,7 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
     protected bool TargetIsWithinAttackRange()
     {
-        return GetDistanceToTarget() <= _InteractionRange;
+        return GetDistanceToTarget() <= _InteractionRange * 2.0f;
     }
 
     protected bool TargetIsWithinChaseRange()
@@ -159,19 +171,33 @@ public abstract class AI_WithAttackBehavior : AI_Base
         if (sender == null)
             return;
 
-        if (attacker.CompareTag("Monster") || attacker.CompareTag("Player") || attacker.CompareTag("Villager"))
+
+        // Don't allow the target to be changed unless the current target is null or NOT a monster.
+        if (attacker && 
+            (_Target == null || !_Target.CompareTag("Monster")))
         {
-            if (attacker)
+            if (attacker.CompareTag("Monster") || attacker.CompareTag("Player") || attacker.CompareTag("Villager"))
+            {
                 SetTarget(attacker);
+            }
         }
+
     }
 
     protected abstract void AnimateAttack();
 
 
-    protected virtual void OnTargetDeath()
+    protected virtual void OnTargetDeath(GameObject sender, GameObject attacker)
     {
+        _IsAttacking = false;
+
+        //string name = _Target != null ? _Target.name : "<null>";
+        //Debug.Log($"Target \"{name}\" has died!");
+
+
         UpdateNearbyTargetDetectorState();
+
+        SetTarget(null, false);
     }
 
 

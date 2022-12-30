@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.Rendering;
 
 public static class Utils_Math
 {
@@ -96,21 +94,6 @@ public static class Utils_Math
         // Change it to be in the range -180 to +180 degrees relative to the from vector.
         float sign = Mathf.Sign(Vector3.Dot(referenceAxis, Vector3.Cross(from, to)));
         return angle * sign;
-    }
-
-    public static Vector3 GetRandomPointAroundTarget(Transform target)
-    {
-        Vector3 start = Vector3.right * 1.0f;
-
-        Quaternion q = Quaternion.Euler(new Vector3(0, Random.Range(0, 359), 0));
-
-        Vector3 randomPoint = (q * start) + target.position;
-        //UnityEngine.Debug.Log($"Random Point: {randomPoint}");
-
-        NavMeshHit hit;
-        NavMesh.SamplePosition(randomPoint, out hit, 10.0f, NavMesh.AllAreas);
-
-        return hit.position;
     }
 
     /// <summary>

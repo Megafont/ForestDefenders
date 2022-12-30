@@ -291,9 +291,10 @@ GameObject:
   - component: {fileID: 710961117046481014}
   - component: {fileID: 8984101091595651445}
   - component: {fileID: 186345174372973254}
-  - component: {fileID: 186345174372973255}
   - component: {fileID: 7959664472650420284}
+  - component: {fileID: 3278410852329176038}
   - component: {fileID: 6862917981531699727}
+  - component: {fileID: 5909176728129252967}
   m_Layer: 8
   m_Name: Player Armature
   m_TagString: Player
@@ -364,52 +365,6 @@ CharacterController:
   m_SkinWidth: 0.02
   m_MinMoveDistance: 0
   m_Center: {x: 0, y: 0.78, z: 0}
---- !u!114 &186345174372973255
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 186345174372973260}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26e54e5a728a9234ab24fcf1460ed8a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MoveSpeed: 5
-  SprintSpeed: 10
-  RotationSmoothTime: 0.12
-  SpeedChangeRate: 10
-  LandingAudioClip: {fileID: 8300000, guid: ff697d3070687ce4583faa0561a145a2, type: 3}
-  FootstepAudioClips:
-  - {fileID: 8300000, guid: 5787f9b870bfb5947a21e6b1f41d17a5, type: 3}
-  - {fileID: 8300000, guid: 76e13808bb28e5a45b6945b7d8fd6e42, type: 3}
-  - {fileID: 8300000, guid: 50d101bc76e922e468e6a2bc55ddeb91, type: 3}
-  - {fileID: 8300000, guid: c066128fd4d15184f8ef988fe0aaae1c, type: 3}
-  - {fileID: 8300000, guid: f02f9dab50df3de42a73d005f15b2f30, type: 3}
-  - {fileID: 8300000, guid: c2139e2104bbea2469e3e37957d66631, type: 3}
-  - {fileID: 8300000, guid: 09c8872e4e9094f418c04e098b67575c, type: 3}
-  - {fileID: 8300000, guid: baa7bdf925f040d44b201b3ccabed34b, type: 3}
-  - {fileID: 8300000, guid: 001562a670938664f87e5ddf199e6876, type: 3}
-  - {fileID: 8300000, guid: faa2d87bcae73914f8e84a0b79ca78e1, type: 3}
-  FootstepAudioVolume: 1
-  JumpHeight: 1.2
-  Gravity: -15
-  JumpTimeout: 0.3
-  FallTimeout: 0.15
-  AttackPower: 20
-  AttackCooldownTime: 0.5
-  Grounded: 1
-  GroundedOffset: -0.14
-  GroundedRadius: 0.28
-  GroundLayers:
-    serializedVersion: 2
-    m_Bits: 1736
-  CinemachineCameraTarget: {fileID: 7621002976271837746}
-  TopClamp: 70
-  BottomClamp: -15
-  CameraAngleOverride: 0
-  LockCameraPosition: 0
 --- !u!114 &7959664472650420284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -427,6 +382,40 @@ MonoBehaviour:
     m_Bits: 0
   canPush: 0
   strength: 1.1
+--- !u!114 &3278410852329176038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 186345174372973260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b18196dc625c76c4d9ed1bb977945adb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MoveSpeed: 5
+  SprintSpeed: 10
+  RotationSmoothTime: 0.12
+  SpeedChangeRate: 10
+  LandingAudioClip: {fileID: 8300000, guid: ff697d3070687ce4583faa0561a145a2, type: 3}
+  JumpHeight: 1.2
+  Gravity: -15
+  JumpTimeout: 0.3
+  FallTimeout: 0.15
+  AttackPower: 20
+  AttackCooldownTime: 0.5
+  Grounded: 1
+  GroundedOffset: -0.14
+  GroundedRadius: 0.28
+  GroundLayers:
+    serializedVersion: 2
+    m_Bits: 1736
+  CinemachineCameraTarget: {fileID: 7621002976271837746}
+  TopClamp: 70
+  BottomClamp: -15
+  CameraAngleOverride: 0
+  LockCameraPosition: 0
 --- !u!114 &6862917981531699727
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -443,6 +432,19 @@ MonoBehaviour:
   EnableDamageFlash: 1
   DamageFlashColor: {r: 1, g: 0, b: 0, a: 1}
   DamageFlashTime: 0.1
+--- !u!114 &5909176728129252967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 186345174372973260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 438b47afa9012ae409cbfe5c00a9bef8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SoundSet: {fileID: 0}
 --- !u!1 &303646539035693345
 GameObject:
   m_ObjectHideFlags: 0

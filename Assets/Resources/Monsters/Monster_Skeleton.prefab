@@ -1862,7 +1862,7 @@ Transform:
   - {fileID: 7748271926884163174}
   - {fileID: 7748043919431416920}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &7693655789226799764
 Animator:
@@ -1933,7 +1933,7 @@ CapsuleCollider:
   m_Radius: 0.6
   m_Height: 2
   m_Direction: 1
-  m_Center: {x: 0, y: 0.75, z: 0.1}
+  m_Center: {x: 0, y: 0.7, z: 0.1}
 --- !u!195 &3208847001286274064
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1943,7 +1943,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 7752117974798735430}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 0.6
   m_Speed: 2
   m_Acceleration: 8
   avoidancePriority: 50
@@ -1952,7 +1952,7 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 2
+  m_Height: 1.5
   m_BaseOffset: -0.1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
@@ -1974,10 +1974,10 @@ MonoBehaviour:
   AttackPower: 5
   AttackCheckFrequency: 0.75
   MaxChaseDistance: 10
-  TargetCheckFrequency: 3
+  TargetCheckFrequency: 2
   TargetCheckRadius: 5
   ScoreValue: 100
-  Tier: 2
+  Tier: 1
 --- !u!114 &5400122951304100884
 MonoBehaviour:
   m_ObjectHideFlags: 0

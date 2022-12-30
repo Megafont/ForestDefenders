@@ -633,10 +633,10 @@ MonoBehaviour:
   AttackPower: 9
   AttackCheckFrequency: 0.75
   MaxChaseDistance: 10
-  TargetCheckFrequency: 3
+  TargetCheckFrequency: 2
   TargetCheckRadius: 5
   ScoreValue: 150
-  Tier: 2
+  Tier: 1
 --- !u!114 &8086488236590013698
 MonoBehaviour:
   m_ObjectHideFlags: 0

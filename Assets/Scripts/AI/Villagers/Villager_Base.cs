@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.AI;
+
 using Random = UnityEngine.Random;
 
 
@@ -28,7 +29,6 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 {
     protected VillagerTargetDetector _NearbyTargetDetector;
 
-    protected GameManager _GameManager;
     protected ResourceManager _ResourceManager;
     protected VillageManager_Buildings _VillageManager_Buildings;
     protected VillageManager_Villagers _VillageManager_Villagers;
@@ -48,7 +48,6 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
         }
         
 
-        _GameManager = GameManager.Instance;
         _ResourceManager = _GameManager.ResourceManager;
         _VillageManager_Buildings = _GameManager.VillageManager_Buildings;
         _VillageManager_Villagers = _GameManager.VillageManager_Villagers;
@@ -71,19 +70,19 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
     {
         ResourceNode node = _Target.GetComponent<ResourceNode>();
 
-        if (node && !node.IsDepleted)
+        if (node)
         {
-            node.Gather(gameObject);
-
-            if (node.IsDepleted)
+            if (!node.IsDepleted)
+            {
+                node.Gather(gameObject);
+            }
+            else
             {
                 SetTarget(null, true);
-
                 DoTargetCheck();
 
                 return;
             }
-
         }
 
 
@@ -121,11 +120,15 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
                 else
                 {
                     SetTarget(null, true);
+                    DoTargetCheck();
                 }
 
-
+                // Is the building fully healed?
                 if (bHealth.CurrentHealth == bHealth.MaxHealth)
+                {
                     SetTarget(null, true);
+                    DoTargetCheck();
+                }
 
             } // end if building needs to be healed            
 
@@ -172,7 +175,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
         // If this villager is chasing a target and the target gets far enough away, revert to the previous target.
         else if (_Target.CompareTag("Monster") || _Target.CompareTag("Player"))
         {
-            if (!TargetIsWithinChaseRange())
+            if (!TargetIsWithinChaseRange() && !_VillageManager_Villagers.VillagerIsOnBuildingHealCall(this))
             {
                 SetTarget(_PrevTarget);
             }
@@ -198,9 +201,9 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
         }
     }
 
-    public override bool SetTarget(GameObject target, bool discardCurrentTarget = false)
+    public override bool SetTarget(GameObject newTarget, bool discardCurrentTarget = false)
     {
-        if (ValidateTarget(target))
+        if (ValidateTarget(newTarget))
         {
             // If the current target is a resource node, then remove this villager from it's list of villagers currently mining it.
             if (_Target)
@@ -211,28 +214,33 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
             }
 
             // If the new target is a resource node, then add this villager to it's list of villagers mining it.
-            if (target)
+            if (newTarget)
             {
-                ResourceNode newNode = target.GetComponent<ResourceNode>();
+                ResourceNode newNode = newTarget.GetComponent<ResourceNode>();
                 if (newNode != null)
                     newNode.AddVillagerToMiningList(this);
             }
         }
 
 
-        return base.SetTarget(target, discardCurrentTarget);
+        return base.SetTarget(newTarget, discardCurrentTarget);
     }
 
-    public override bool ValidateTarget(GameObject target)
-    {               
-        if (!base.ValidateTarget(target))
+    public override bool ValidateTarget(GameObject newTarget)
+    {
+        if (!base.ValidateTarget(newTarget))
         {
             return false;
         }
-        else if (target != null && target.CompareTag("Monster") &&
-                 _Target != null && _Target.CompareTag("Monster"))
+        else if (TargetIsMonster && newTarget != null)
         {
-            return false;
+            //return false;
+
+            float currentTargetDistance = Vector3.Distance(_Target.transform.position, transform.position);
+            float newTargetDistance = Vector3.Distance(newTarget.transform.position, transform.position);
+
+            // If the new target and the current target are both monsters, then only allow changing targets if the new one is closer.
+            return newTargetDistance < currentTargetDistance ? true : false;
         }
         else
         {
@@ -242,26 +250,14 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
     protected override void InteractWithTarget()
     {
-        // Check if the villager is doing a work task.
-        if (_Target)
-        {
-            /*
-            if (_Target.CompareTag("Monster"))
-            {
-                DoAttack();
-            }
-            */
-            //else
-            //{
-                _LastAttackTime = Time.time;
+        if (_IsAttacking)
+            return;
 
-                AnimateAttack(); // We're just using the attack animation for when they're doing work, too.
-                DoTaskWork();
 
-                return;
-            //}
-        }
+        AnimateAttack(); // We're just using the attack animation for when they're doing work, too.
+        DoTaskWork();
 
+        return;
     }
 
     protected override bool TargetIsAttackable()

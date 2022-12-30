@@ -37,7 +37,7 @@ Transform:
   - {fileID: 1912411121819695484}
   - {fileID: 1912411121819695456}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &562595067553089077
 Animator:
@@ -106,9 +106,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 1
-  m_Height: 2.4
+  m_Height: 2.7
   m_Direction: 1
-  m_Center: {x: 0, y: 0.75, z: 0.1}
+  m_Center: {x: 0, y: 0.75, z: 0}
 --- !u!195 &7025770778787559928
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -117,7 +117,7 @@ NavMeshAgent:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 476393483165040187}
   m_Enabled: 1
-  m_AgentTypeID: 0
+  m_AgentTypeID: -334000983
   m_Radius: 1
   m_Speed: 3.5
   m_Acceleration: 8
@@ -149,10 +149,10 @@ MonoBehaviour:
   AttackPower: 3
   AttackCheckFrequency: 1
   MaxChaseDistance: 20
-  TargetCheckFrequency: 3
+  TargetCheckFrequency: 2
   TargetCheckRadius: 5
   ScoreValue: 10
-  Tier: 0
+  Tier: 1
 --- !u!114 &2625432230769115019
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -691,7 +691,7 @@ Transform:
   - {fileID: 4094663968725067990}
   - {fileID: 4094483372164679030}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &4147913663556457358
 Animator:
@@ -759,10 +759,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.8
+  m_Radius: 0.7
   m_Height: 2.5
   m_Direction: 1
-  m_Center: {x: 0, y: 0.75, z: 0}
+  m_Center: {x: 0, y: 0.75, z: 0.2}
 --- !u!195 &116921377294133654
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -772,7 +772,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 4090874820019227630}
   m_Enabled: 1
   m_AgentTypeID: -334000983
-  m_Radius: 0.6
+  m_Radius: 0.7
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -781,7 +781,7 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 1
+  m_Height: 1.8
   m_BaseOffset: -0.1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
@@ -801,9 +801,9 @@ MonoBehaviour:
   MaxMovementSpeed: 3.5
   InteractionFrequency: 2
   AttackPower: 5
-  AttackFrequency: 1
+  AttackCheckFrequency: 1
   MaxChaseDistance: 10
-  TargetCheckFrequency: 3
+  TargetCheckFrequency: 2
   TargetCheckRadius: 5
   ScoreValue: 30
   Tier: 1

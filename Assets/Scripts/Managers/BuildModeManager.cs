@@ -170,80 +170,92 @@ public class BuildModeManager : MonoBehaviour
 
         IsSelectingBuilding = true;
 
-
-        // BUILDING CATEGORIES MENU
-        // ----------------------------------------------------------------------------------------------------
-
-        _RadialMenu.BottomBarText = "";
-        _RadialMenu.SetMenuParams("Select Building Type", BuildModeDefinitions.GetList_BuildingCategoriesContainingResearchedBuildings());
-        _RadialMenu.OpenDialog();
+        string building = null;
 
 
-
-        if (!_RadialMenu.IsOpen())
+        while (true)
         {
-            IsSelectingBuilding = false;
-            yield break;
-        }
+            // BUILDING CATEGORIES MENU
+            // ----------------------------------------------------------------------------------------------------
 
-
-        while (!_RadialMenu.MenuConfirmed && !_RadialMenu.MenuCancelled)
-            yield return null;
-
-
-        _TempCategory = _RadialMenu.SelectedItemName;
-
-
-        if (_RadialMenu.MenuCancelled)
-        {
-            IsSelectingBuilding = false;
-            yield break; // The player cancelled out of the menu, so break out of this coroutine.
-        }
+            _RadialMenu.BottomBarText = "";
+            _RadialMenu.SetMenuParams("Select Building Type", BuildModeDefinitions.GetList_BuildingCategoriesContainingResearchedBuildings());
+            _RadialMenu.OpenDialog();
 
 
 
-        // Wait until the menu has closed before trying to open a new one.
-        while (_RadialMenu.IsOpen())
-            yield return null;
+            if (!_RadialMenu.IsOpen())
+            {
+                IsSelectingBuilding = false;
+                yield break;
+            }
+
+
+            while (!_RadialMenu.MenuConfirmed && !_RadialMenu.MenuCancelled)
+                yield return null;
+
+
+            _TempCategory = _RadialMenu.SelectedItemName;
+
+
+            if (_RadialMenu.MenuCancelled)
+            {
+                IsSelectingBuilding = false;
+                yield break; // The player cancelled out of the menu, so break out of this coroutine.
+            }
 
 
 
-        // BUILDINGS IN CHOSEN CATEGORY MENU
-        // ----------------------------------------------------------------------------------------------------
-
-        _RadialMenu.OnSelectionChanged += OnRadialMenuSelectionChangedHandler;
-        _RadialMenu.SetMenuParams($"Select {_TempCategory} Building", BuildModeDefinitions.GetList_NamesOfResearchedbuildingsInCategory(_TempCategory));
-        _RadialMenu.OpenDialog();
-
-
-        if (!_RadialMenu.IsOpen())
-        {
-            IsSelectingBuilding = false;
-            yield break;
-        }
-
-
-        OnRadialMenuSelectionChangedHandler(null);
-
-        while (!_RadialMenu.MenuConfirmed && !_RadialMenu.MenuCancelled)
-            yield return null;
-
-
-        string building = _RadialMenu.SelectedItemName;
-
-        _RadialMenu.OnSelectionChanged -= OnRadialMenuSelectionChangedHandler;
-
-
-        if (_RadialMenu.MenuCancelled)
-        {
-            IsSelectingBuilding = false;
-
-            yield break; // The player cancelled out of the menu, so break out of this coroutine.
-        }
+            // Wait until the menu has closed before trying to open a new one.
+            while (_RadialMenu.IsOpen())
+                yield return null;
 
 
 
-        // CLEANUP
+            // BUILDINGS IN CHOSEN CATEGORY MENU
+            // ----------------------------------------------------------------------------------------------------
+
+            _RadialMenu.OnSelectionChanged += OnRadialMenuSelectionChangedHandler;
+            _RadialMenu.SetMenuParams($"Select {_TempCategory} Building", BuildModeDefinitions.GetList_NamesOfResearchedbuildingsInCategory(_TempCategory));
+            _RadialMenu.OpenDialog();
+
+
+            if (!_RadialMenu.IsOpen())
+            {
+                IsSelectingBuilding = false;
+                yield break;
+            }
+
+
+            OnRadialMenuSelectionChangedHandler(null);
+
+            while (!_RadialMenu.MenuConfirmed && !_RadialMenu.MenuCancelled)
+                yield return null;
+
+
+            building = _RadialMenu.SelectedItemName;
+
+            _RadialMenu.OnSelectionChanged -= OnRadialMenuSelectionChangedHandler;
+
+
+            if (_RadialMenu.MenuConfirmed)
+            {
+                break;
+            }
+            else // The menu was cancelled.
+            {
+                // Wait until the menu has closed before trying to open the first one again.
+                while (_RadialMenu.IsOpen())
+                    yield return null;
+
+                continue;
+            }
+
+        } // end while
+
+
+
+        // FINISH UP
         // ----------------------------------------------------------------------------------------------------
 
         SelectBuilding(_TempCategory, building);

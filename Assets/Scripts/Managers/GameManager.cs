@@ -100,10 +100,11 @@ public class GameManager : MonoBehaviour
 
 
 
-    public delegate void GameManager_GameStateChangedHandler(GameStates newGameState);
+    public delegate void GameManager_GameStateChangedEventHandler(GameStates newGameState);
+    public delegate void GameManager_GameOverEventHandler();
 
-    public event GameManager_GameStateChangedHandler OnGameStateChanged;
-
+    public event GameManager_GameStateChangedEventHandler OnGameStateChanged;
+    public event GameManager_GameOverEventHandler OnGameOver;
 
 
     void Awake()
@@ -536,6 +537,8 @@ public class GameManager : MonoBehaviour
 
                 ShowGamePhaseText("Game Over!", Color.red);
 
+                // Fire the game over event.
+                OnGameOver?.Invoke();
 
                 if (HighScores.IsNewHighScore(Score, SurvivalTime))
                 {

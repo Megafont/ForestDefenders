@@ -657,10 +657,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ResourcesParent: {fileID: 97276842}
-  BridgeConstructionZones: {fileID: 0}
   ResourceStockpilesStartAmount: 400
   ResourceStockpilesOkThreshold: 200
   ResourceStockpilesLowThreshold: 100
+  GatherAmountVariance: 2
 --- !u!1 &224973805
 GameObject:
   m_ObjectHideFlags: 0
@@ -967,8 +967,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 380441286}
   m_HandleRect: {fileID: 380441285}
   m_Direction: 0
-  m_Value: 0
-  m_Size: 0.99999994
+  m_Value: 1
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1848,7 +1848,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10c25618c627bb4488492681e1589bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObstructedResourceNodeRegion: {fileID: 0}
+  NextResourceNodeRegion: {fileID: 0}
+  PreviousResourceNodeRegion: {fileID: 0}
   _BridgesInThisZone: []
   LockRotation: 0
 --- !u!65 &440966121
@@ -2269,7 +2270,7 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 1, g: 0.78431374, b: 0, a: 1}
+    m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
     m_PressedColor: {r: 1, g: 0.39215687, b: 0, a: 1}
     m_SelectedColor: {r: 1, g: 0.627451, b: 0, a: 1}
     m_DisabledColor: {r: 0.5882353, g: 0.5882353, b: 0.5882353, a: 1}
@@ -3730,10 +3731,10 @@ MonoBehaviour:
   VillagerFoodCost: 50
   VillagerSpawnFrequency: 2
   BuildingBackupCallMaxDistance: 20
-  VillagersHealBuildings: 1
+  VillagersCanHealBuildings: 0
   VillagerHealBuildingsCheckFrequency: 5
   VillagerHealBuildingsAmount: 5
-  VillagerHealBuildingsFoodCost: 5
+  BuildingHealFoodCostMultiplier: 5
 --- !u!114 &828217631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5248,7 +5249,7 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 1, g: 0.78431374, b: 0, a: 1}
+    m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
     m_PressedColor: {r: 1, g: 0.39215687, b: 0, a: 1}
     m_SelectedColor: {r: 1, g: 0.627451, b: 0, a: 1}
     m_DisabledColor: {r: 0.5882353, g: 0.5882353, b: 0.5882353, a: 1}
@@ -5601,8 +5602,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 565840457}
   m_HandleRect: {fileID: 565840456}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.5285714
+  m_Value: 1.0000002
+  m_Size: 0.5285715
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5775,6 +5776,7 @@ MonoBehaviour:
   - {fileID: 6328135014314387927, guid: a18b69470a7cd3146bea16bf590b6a18, type: 3}
   ComboStreakResetTime: 5
   BaseMonsterSpawnAmount: 3
+  MaxMonstersOfAnyGivenType: 5
 --- !u!4 &1480730956
 Transform:
   m_ObjectHideFlags: 0
@@ -6067,15 +6069,22 @@ MonoBehaviour:
   FallOutOfWorldDeathHeight: -32
   PlayerStartingAttackPower: 20
   PlayerStartingMaxHealth: 50
-  PlayerMaxAttackCap: 100
-  PlayerMaxHealthCap: 200
-  BuffAmountPerLevelUp: 5
-  VillagersStartingAttackPower: 5
-  VillagersStartingMaxHealth: 25
-  VillagersMaxAttackCap: 100
-  VillagersMaxHealthCap: 200
+  PlayerStartingGatherRate: 3
+  PlayerHealFoodCostMultiplier: 2
   StartingXP: 0
   XP_EarnedPerWave: 2
+  PlayerAttackBuffAmountPerLevelUp: 2
+  PlayerGatheringBuffAmountPerLevelUp: 1
+  PlayerHealthBuffAmountPerLevelUp: 5
+  VillagersAttackBuffAmountPerLevelUp: 2
+  VillagersGatheringBuffAmountPerLevelUp: 1
+  VillagersHealthBuffAmountPerLevelUp: 5
+  VillagersStartingAttackPower: 5
+  VillagersStartingMaxHealth: 25
+  VillagersStartingGatherRate: 3
+  MaxAttackPowerCap: 100
+  MaxHealthCap: 200
+  MaxGatheringCap: 20
   PlayerGatheringScoreMultiplier: 2
   PlayerResearchScoreMultiplier: 100
   MusicParams: {fileID: 11400000, guid: 6d4482e0e753c7c48bf4e6bb30aca35a, type: 2}
@@ -6656,7 +6665,7 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 1, g: 0.78431374, b: 0, a: 1}
+    m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
     m_PressedColor: {r: 1, g: 0.39215687, b: 0, a: 1}
     m_SelectedColor: {r: 1, g: 0.627451, b: 0, a: 1}
     m_DisabledColor: {r: 0.5882353, g: 0.5882353, b: 0.5882353, a: 1}

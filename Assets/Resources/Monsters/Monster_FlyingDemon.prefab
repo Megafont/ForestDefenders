@@ -2530,7 +2530,7 @@ Transform:
   - {fileID: 4528536847038115754}
   - {fileID: 4528536847038115752}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &8424598544045502210
 Animator:
@@ -2599,9 +2599,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 1
-  m_Height: 2.4
+  m_Height: 3.5
   m_Direction: 1
-  m_Center: {x: 0, y: 0.75, z: 0.1}
+  m_Center: {x: 0, y: 1, z: 0.4}
 --- !u!195 &1343233544227049679
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -2620,7 +2620,7 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 2
+  m_Height: 4
   m_BaseOffset: -0.1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
@@ -2642,10 +2642,10 @@ MonoBehaviour:
   AttackPower: 3
   AttackCheckFrequency: 1
   MaxChaseDistance: 20
-  TargetCheckFrequency: 3
+  TargetCheckFrequency: 2
   TargetCheckRadius: 5
   ScoreValue: 10
-  Tier: 0
+  Tier: 1
 --- !u!114 &6290396397479122620
 MonoBehaviour:
   m_ObjectHideFlags: 0

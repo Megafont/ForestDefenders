@@ -1,8 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
-using UnityEditor.Experimental.GraphView;
+
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -17,7 +16,7 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
     [Tooltip("The number of points earned when this monster is killed.")]
     public int ScoreValue = 10;
     [Tooltip("The tier this monster is in. Determines which tiers of buildings it can target and destroy.")]
-    public int Tier = 0;
+    public int Tier = 1;
 
 
     protected MonsterTargetDetector _NearbyTargetDetector;
@@ -30,6 +29,8 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
     protected override void InitAI()
     {
         _NearbyTargetDetector = transform.GetComponentInChildren<MonsterTargetDetector>();
+
+        _GameManager.OnGameOver += OnGameOver;
 
 
         // If we are running in the Unity Editor, display the villager's path.
@@ -45,8 +46,16 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         base.InitAI();
     }
 
+    protected override void UpdateAI()
+    {
+        if (_GameManager.GameState != GameStates.GameOver)
+            base.UpdateAI();
+    }
+
     protected override void DoTargetCheck()
     {
+        //Debug.Log($"AI: {name}    Target: {_Target}    Attackable: {TargetIsAttackable()}    InRange: {TargetIsWithinAttackRange()}    Path: {_NavMeshAgent.pathStatus}   Destination: {_NavMeshAgent.destination}");
+
         if (_Target == null)
         {
             // This monster is not chasing a target. So try to find a building to target.
@@ -88,13 +97,13 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         UpdateNearbyTargetDetectorState();
     }
 
-    public override bool ValidateTarget(GameObject target)
+    public override bool ValidateTarget(GameObject newTarget)
     {
-        if (!base.ValidateTarget(target))
+        if (!base.ValidateTarget(newTarget))
         {
             return false;
         }
-        else if (target != null && target.CompareTag("Villager") && // If we are targeting a villager and the new target is another villager, then return false so we don't switch the target.
+        else if (newTarget != null && newTarget.CompareTag("Villager") && // If we are targeting a villager and the new target is another villager, then return false so we don't switch the target.
                  _Target != null && _Target.CompareTag("Villager")) 
         {
             return false;
@@ -118,6 +127,10 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
 
     protected override bool TargetIsAttackable()
     {
+        if (_Target == null)
+            return false;
+
+
         if (_Target.CompareTag("Building") || _Target.CompareTag("Player") || _Target.CompareTag("Villager"))
             return true;
         else
@@ -160,6 +173,10 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
             _NearbyTargetDetector.Enable(state);
     }
 
+    protected void OnGameOver()
+    {
+        _Animator.SetTrigger("Victory");
+    }
 
 
     // These are a couple extra methods needed to satisfy the IMonster interface since you can't have fields in an interface.

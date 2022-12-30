@@ -2417,8 +2417,8 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 1
-  m_Height: 2.4
+  m_Radius: 0.8
+  m_Height: 3.3
   m_Direction: 1
   m_Center: {x: 0, y: 0.75, z: 0.1}
 --- !u!195 &1752368118191378277
@@ -2430,7 +2430,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 9173086495985830054}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 1
+  m_Radius: 0.8
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -2439,7 +2439,7 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 2
+  m_Height: 3
   m_BaseOffset: -0.1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
@@ -2461,10 +2461,10 @@ MonoBehaviour:
   AttackPower: 3
   AttackCheckFrequency: 1
   MaxChaseDistance: 20
-  TargetCheckFrequency: 3
+  TargetCheckFrequency: 2
   TargetCheckRadius: 5
   ScoreValue: 10
-  Tier: 0
+  Tier: 1
 --- !u!114 &6754920588150393110
 MonoBehaviour:
   m_ObjectHideFlags: 0

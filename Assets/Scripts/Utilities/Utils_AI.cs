@@ -4,8 +4,10 @@ using System.Collections.Generic;
 
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI;
 
 using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 
 public static class Utils_AI
@@ -70,6 +72,21 @@ public static class Utils_AI
         // Debug.Log($"Closest at or below tier: \"{closestObject.name}\"");
 
         return result;
+    }
+
+    public static Vector3 GetRandomPointAroundTarget(Transform target)
+    {
+        Vector3 start = Vector3.right * 1.0f;
+
+        Quaternion q = Quaternion.Euler(new Vector3(0, Random.Range(0, 359), 0));
+
+        Vector3 randomPoint = (q * start) + target.position;
+        //UnityEngine.Debug.Log($"Random Point: {randomPoint}");
+
+        NavMeshHit hit;
+        NavMesh.SamplePosition(randomPoint, out hit, 5.0f, NavMesh.AllAreas);
+
+        return hit.position;
     }
 
 }

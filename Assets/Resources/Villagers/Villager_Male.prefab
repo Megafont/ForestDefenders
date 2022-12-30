@@ -1271,9 +1271,9 @@ MonoBehaviour:
   MaxMovementSpeed: 8
   InteractionFrequency: 2
   AttackPower: 5
-  AttackFrequency: 2
+  AttackCheckFrequency: 1
   MaxChaseDistance: 10
-  TargetCheckFrequency: 3
+  TargetCheckFrequency: 1
   TargetCheckRadius: 5
 --- !u!114 &3011654070411364966
 MonoBehaviour:
@@ -1287,7 +1287,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3950e6e9fcef36478009ff55fcb081e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHealth: 25
+  MaxHealth: 1000
   EnableDamageFlash: 1
   DamageFlashColor: {r: 1, g: 0, b: 0, a: 1}
   DamageFlashTime: 0.1

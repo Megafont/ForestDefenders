@@ -569,7 +569,7 @@ Transform:
   - {fileID: 2118975379868032257}
   - {fileID: 2119469682032636297}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &2032157210535003853
 Animator:
@@ -659,7 +659,7 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 2
+  m_Height: 1.8
   m_BaseOffset: -0.1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
@@ -681,10 +681,10 @@ MonoBehaviour:
   AttackPower: 7
   AttackCheckFrequency: 0.75
   MaxChaseDistance: 10
-  TargetCheckFrequency: 3
+  TargetCheckFrequency: 2
   TargetCheckRadius: 5
   ScoreValue: 125
-  Tier: 2
+  Tier: 1
 --- !u!114 &4580857605601705843
 MonoBehaviour:
   m_ObjectHideFlags: 0
