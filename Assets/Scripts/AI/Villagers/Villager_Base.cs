@@ -294,5 +294,5 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
 
 
-    public string VillagerType { get { return this.GetType().Name; /* return MethodBase.GetCurrentMethod().DeclaringType.Name; */ } }
+    public string VillagerTypeName { get { return this.GetType().Name; } }
 }

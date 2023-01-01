@@ -66,6 +66,9 @@ public class MonsterManager : MonoBehaviour
 
     public void ResetComboStreak()
     {
+        if (CurrentComboStreak > MaxComboStreak)
+            MaxComboStreak = CurrentComboStreak;
+
         CurrentComboStreak = 0;
     }
 
@@ -226,7 +229,7 @@ public class MonsterManager : MonoBehaviour
 
 
     public int CurrentComboStreak { get; private set; }
-
+    public int MaxComboStreak { get; private set; }
     public int MonstersKilled { get; private set; }
     public int TotalMonstersKilled { get; private set; } // Total monsters killed across all waves so far.
     public int MonstersLeft { get { return CurrentWaveSize - MonstersKilled; } }

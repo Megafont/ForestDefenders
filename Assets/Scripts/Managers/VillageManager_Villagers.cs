@@ -302,7 +302,7 @@ public class VillageManager_Villagers : MonoBehaviour
 
     private void AddVillager(IVillager villager)
     {
-        villager.gameObject.transform.parent = _VillagerTypeParents[villager.VillagerType].transform;
+        villager.gameObject.transform.parent = _VillagerTypeParents[villager.VillagerTypeName].transform;
 
         _AllVillagers.Add(villager);
         villager.HealthComponent.OnDeath += OnVillagerDeath;

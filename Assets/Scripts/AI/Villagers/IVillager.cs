@@ -17,7 +17,7 @@ public interface IVillager
 
     bool IsAttacking { get; }
 
-    string VillagerType { get; }
+    string VillagerTypeName { get; }
 
 
 

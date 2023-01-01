@@ -29,15 +29,8 @@ public class MonsterTargetDetector : MonoBehaviour
             _Collider.enabled = enabledState;
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
-        //Debug.Log("Trigger: " + other.name);
-
-
-        if (other.CompareTag("Monster"))
-            return;
-
-
         if (other.CompareTag("Player") || other.CompareTag("Villager"))
         {
             _Parent.SetTarget(other.gameObject);

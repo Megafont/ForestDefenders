@@ -11,6 +11,7 @@ public class HighScoreNameEntryDialog : Dialog_Base, IDialog
 {
     [SerializeField] TMP_InputField _InputField;
 
+    [SerializeField] TMP_Text _MaxComboStreakText;
     [SerializeField] TMP_Text _ScoreText;
     [SerializeField] TMP_Text _SurvivalTimeText;
 
@@ -22,6 +23,7 @@ public class HighScoreNameEntryDialog : Dialog_Base, IDialog
 
     public override void OpenDialog(bool closeOtherOpenDialogs = true)
     {
+        _MaxComboStreakText.text = _GameManager.MonsterManager.MaxComboStreak.ToString("n0");
         _ScoreText.text = GameManager.Instance.Score.ToString("n0");
         _SurvivalTimeText.text = HighScores.TimeValueToString(GameManager.Instance.SurvivalTime);
 

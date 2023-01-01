@@ -56,7 +56,7 @@ public abstract class AI_WithAttackBehavior : AI_Base
         {
             _LastTargetCheckTime = Time.time;
 
-            if (!_IsAttacking && _Target == null)
+            if (!_IsAttacking || _Target == null)
                 DoTargetCheck();             
         }
 
@@ -79,17 +79,21 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
     public override bool SetTarget(GameObject newTarget, bool discardCurrentTarget = false)
     {
-        _IsAttacking = false;
-        _LastAttackTime = Time.time;
-
-
         bool result = base.SetTarget(newTarget, discardCurrentTarget);
 
-        if (result && _Target != null)
+
+        if (result)
         {
-            Health tHealth = _Target.GetComponent<Health>();
-            if (tHealth)
-                tHealth.OnDeath += OnTargetDeath;
+            _LastAttackTime = Time.time;
+            _IsAttacking = false;
+
+
+            if (_Target)
+            {
+                Health tHealth = _Target.GetComponent<Health>();
+                if (tHealth)
+                    tHealth.OnDeath += OnTargetDeath;
+            }
         }
 
 

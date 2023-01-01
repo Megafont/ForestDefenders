@@ -34,16 +34,13 @@ public class VillagerTargetDetector : MonoBehaviour
         //Debug.Log("Trigger: " + other.name);
 
 
-        if (other.CompareTag("Villager"))
-            return;
-
-
         if (other.CompareTag("Monster"))
         {
             bool result = _Parent.SetTarget(other.gameObject);
 
             Enable(!result);
         }
+
     }
 
 }

@@ -49,14 +49,14 @@ public class ResourceNode : MonoBehaviour
         _LevelUpDialog = _GameManager.LevelUpDialog;
 
         _VillagersMiningThisNode = new List<IVillager>();
-
-        AmountAvailable = MaxAmountInNode;
-
     }
 
     private void Start()
     {
-        RestoreNode();
+        // Start the resource node full unless it is on a farm. This is so that farms newly built by the player
+        // will not have any food to harvest until the following round.
+        if (GetComponent<IBuilding>() == null)
+            RestoreNode();
     }
 
     public float Gather(GameObject gatherer)

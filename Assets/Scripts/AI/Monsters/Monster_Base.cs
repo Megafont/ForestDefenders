@@ -77,7 +77,7 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         }
         
         // If this monster is chasing a target and the target gets far enough away, revert to the previous target.
-        else if (_Target == _Player || _Target.CompareTag("Villager")) // Is the target the player or a villager?
+        else if (_Target.CompareTag("Player") || _Target.CompareTag("Villager")) // Is the target the player or a villager?
         {
             float distanceToTarget = GetDistanceToTarget();
             if (distanceToTarget > MaxChaseDistance)
@@ -175,12 +175,15 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
 
     protected void OnGameOver()
     {
-        _Animator.SetTrigger("Victory");
+        if (_Animator)
+            _Animator.SetTrigger("Victory");
     }
 
 
     // These are a couple extra methods needed to satisfy the IMonster interface since you can't have fields in an interface.
     public float GetAttackPower() { return AttackPower; }
     public int GetTier() { return Tier; }
+
+    public string MonsterTypeName { get { return this.GetType().Name; } }
 
 }
