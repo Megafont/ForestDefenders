@@ -511,7 +511,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnDeath(GameObject sender, GameObject attacker)
     {
-        Debug.Log("Player died!");
+        //Debug.Log("Player died!");
 
 
         _IsDead = true;

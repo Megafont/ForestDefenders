@@ -34,23 +34,22 @@ public class VillageManager_Buildings : MonoBehaviour
 
     private void Awake()
     {
+        _BuildingCategoryParents = new Dictionary<string, GameObject>();
+        DamagedBuildingsDictionary = new Dictionary<IBuilding, GameObject>();
+
+        _BuildModeManager = GameManager.Instance.BuildModeManager;
+        _NavMeshManager = GameManager.Instance.NavMeshManager;
+        _ResourceManager = GameManager.Instance.ResourceManager;
+
         FindTownCenter();
+
+        InitBuildingCategoryParentObjects();
+        FindPreExistingBuildings();
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        _BuildModeManager = GameManager.Instance.BuildModeManager;
-        _NavMeshManager = GameManager.Instance.NavMeshManager;
-        _ResourceManager = GameManager.Instance.ResourceManager;
-
-        
-        _BuildingCategoryParents = new Dictionary<string, GameObject>();
-        DamagedBuildingsDictionary = new Dictionary<IBuilding, GameObject>();
-
-
-        InitBuildingCategoryParentObjects();
-        FindPreExistingBuildings();
 
 
         //Debug.Log("C1: " + GetBuildingCount("Defense", "Barricade"));

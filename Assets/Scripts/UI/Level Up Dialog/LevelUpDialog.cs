@@ -212,7 +212,7 @@ public class LevelUpDialog : Dialog_Base
         if (healthCurrentValue < healthMaxValue &&
             _GameManager.ResourceManager.Stockpiles[ResourceTypes.Food] >= amountToHeal)
         {
-            menuItem.GetComponent<TMP_Text>().text = $"Heal Player\t\t\t(-{amountToHeal} Food)"; // "Up To {_GameManager.PlayerHealAmount} HP";
+            menuItem.GetComponent<TMP_Text>().text = $"Heal Player\t\t\t(-{amountToHeal * _GameManager.PlayerHealFoodCostMultiplier} Food)"; // "Up To {_GameManager.PlayerHealAmount} HP";
             menuItem.GetComponent<Button>().interactable = true;
         }
         else

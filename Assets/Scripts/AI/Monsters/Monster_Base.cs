@@ -30,8 +30,6 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
     {
         _NearbyTargetDetector = transform.GetComponentInChildren<MonsterTargetDetector>();
 
-        _GameManager.OnGameOver += OnGameOver;
-
 
         // If we are running in the Unity Editor, display the villager's path.
         if (DISPLAY_AI_PATHS && Application.isPlaying)
@@ -50,6 +48,8 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
     {
         if (_GameManager.GameState != GameStates.GameOver)
             base.UpdateAI();
+        else
+            OnGameOver();
     }
 
     protected override void DoTargetCheck()

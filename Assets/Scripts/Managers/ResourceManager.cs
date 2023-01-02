@@ -49,14 +49,23 @@ public class ResourceManager : MonoBehaviour
 
     void Awake()
     {
-        _ResourceTypeParents = new Dictionary<ResourceTypes, GameObject>();        
+        _ResourceTypeParents = new Dictionary<ResourceTypes, GameObject>();
+
+        _ResourceNodesByType = new Dictionary<ResourceTypes, List<ResourceNode>>();
+
+        _AllResourceNodes = new List<ResourceNode>();
+        _ActiveResourceNodes = new List<ResourceNode>();
+        _DepletedResourceNodes = new List<ResourceNode>();
+
+        InitResourceTypeParentObjects();
+        InitResourceStockpiles();
+        InitResourceNodeLists();
+
     }
 
     private void Start()
     {
-        InitResourceTypeParentObjects();
-        InitResourceStockpiles();
-        InitResourceNodeLists();
+        RestoreResourceNodes();
     }
 
     // Update is called once per frame
@@ -217,14 +226,7 @@ public class ResourceManager : MonoBehaviour
     }
 
     private void InitResourceNodeLists()
-    {
-        _ResourceNodesByType = new Dictionary<ResourceTypes, List<ResourceNode>>();
-        
-        _AllResourceNodes = new List<ResourceNode>();
-        _ActiveResourceNodes = new List<ResourceNode>();
-        _DepletedResourceNodes = new List<ResourceNode>();
-      
-
+    {     
         foreach (int i in Enum.GetValues(typeof(ResourceTypes)))
             _ResourceNodesByType.Add((ResourceTypes) i, new List<ResourceNode>());
 

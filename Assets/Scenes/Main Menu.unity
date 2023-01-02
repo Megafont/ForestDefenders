@@ -660,6 +660,7 @@ MonoBehaviour:
   ResourceStockpilesStartAmount: 400
   ResourceStockpilesOkThreshold: 200
   ResourceStockpilesLowThreshold: 100
+  ResourceNodeAmountVariance: 0.2
   GatherAmountVariance: 2
 --- !u!1 &224973805
 GameObject:
@@ -967,7 +968,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 380441286}
   m_HandleRect: {fileID: 380441285}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -6335,7 +6336,7 @@ PrefabInstance:
     - target: {fileID: 3363655753489532561, guid: eb3d5d363c2d1ba4d91581cb6933ab7e,
         type: 3}
       propertyPath: m_Name
-      value: High Score Name Entry Dialog
+      value: Game Over Dialog
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

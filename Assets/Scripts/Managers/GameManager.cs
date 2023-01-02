@@ -60,7 +60,7 @@ public class GameManager : MonoBehaviour
 
 
     private TMP_Text _UI_GamePhaseText;
-    private HighScoreNameEntryDialog _UI_HighScoreNameEntryDialog;
+    private GameOverDialog _UI_GameOverDialog;
     private LevelUpDialog _UI_LevelUpDialog;
     private RadialMenuDialog _UI_RadialMenuDialog;
     private TechTreeDialog _UI_TechTreeDialog;
@@ -385,7 +385,7 @@ public class GameManager : MonoBehaviour
     private void GetUIReferences()
     {
         _UI_GamePhaseText = GameObject.Find("UI/HUD/Game Phase Text Canvas/Game Phase Text (TMP)").GetComponent<TMP_Text>();
-        _UI_HighScoreNameEntryDialog = GameObject.Find("UI/High Score Name Entry Dialog").GetComponent<HighScoreNameEntryDialog>();
+        _UI_GameOverDialog = GameObject.Find("UI/Game Over Dialog").GetComponent<GameOverDialog>();
         _UI_LevelUpDialog = GameObject.Find("UI/Level Up Dialog").GetComponent<LevelUpDialog>();
         _UI_RadialMenuDialog = GameObject.Find("UI/Radial Menu Dialog").GetComponent<RadialMenuDialog>();
         _UI_TechTreeDialog = GameObject.Find("UI/Tech Tree Dialog").GetComponent<TechTreeDialog>();
@@ -414,8 +414,12 @@ public class GameManager : MonoBehaviour
     public void AddToScore(int amount)
     {
         // If the player is dead, simply return. This ignores any additional points being earned by villagers killing monsters.
-        if (Player == null || (Player != null && Player.GetComponent<Health>().CurrentHealth == 0))
+        if (GameState == GameStates.GameOver ||
+            Player == null ||
+            (Player != null && Player.GetComponent<Health>().CurrentHealth == 0))
+        {
             return;
+        }
 
 
         if (amount <= 0)
@@ -540,11 +544,11 @@ public class GameManager : MonoBehaviour
                 // Fire the game over event.
                 OnGameOver?.Invoke();
 
-                if (HighScores.IsNewHighScore(Score, SurvivalTime))
-                {
+                //if (HighScores.IsNewHighScore(Score, SurvivalTime))
+                //{
                     // Activate the parent canvas of the name entry dialog to show the dialog.
-                    _UI_HighScoreNameEntryDialog.OpenDialog();
-                }
+                    _UI_GameOverDialog.OpenDialog();
+                //}
 
 
                 break;

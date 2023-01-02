@@ -542,7 +542,7 @@ GameObject:
   - component: {fileID: 3363655753489532574}
   - component: {fileID: 3363655753489532571}
   m_Layer: 5
-  m_Name: High Score Name Entry Dialog
+  m_Name: Game Over Dialog
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -562,7 +562,7 @@ RectTransform:
   m_Children:
   - {fileID: 3363655753336988239}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -620,7 +620,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e146bc74b0a8d149ba26a902d47d11f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _InputFieldLabel: {fileID: 3363655753851244178}
   _InputField: {fileID: 3363655753228993799}
+  _TitleText: {fileID: 3363655754298894854}
   _MaxComboStreakText: {fileID: 4212394011585029269}
   _ScoreText: {fileID: 3363655753380463701}
   _SurvivalTimeText: {fileID: 3363655754088216295}
@@ -983,7 +985,7 @@ GameObject:
   - component: {fileID: 3363655753851244177}
   - component: {fileID: 3363655753851244178}
   m_Layer: 5
-  m_Name: Textbox Label Text (TMP)
+  m_Name: InputField Label Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1007,7 +1009,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 25, y: -75}
-  m_SizeDelta: {x: -50, y: 50}
+  m_SizeDelta: {x: -50, y: 100}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &3363655753851244177
 CanvasRenderer:

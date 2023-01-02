@@ -4144,7 +4144,7 @@ PrefabInstance:
     - target: {fileID: 3363655753489532561, guid: eb3d5d363c2d1ba4d91581cb6933ab7e,
         type: 3}
       propertyPath: m_Name
-      value: High Score Name Entry Dialog
+      value: Game Over Dialog
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
