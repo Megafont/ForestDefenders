@@ -12,6 +12,7 @@ public abstract class AI_WithAttackBehavior : AI_Base
 {
     public float AttackPower = 3;
     public float AttackCheckFrequency = 1.0f;
+    public DamageTypes DamageType = DamageTypes.Physical;
 
     public float MaxChaseDistance = 20.0f;
 
@@ -148,7 +149,7 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
         if (health != null && health.CurrentHealth > 0)
         {
-            health.DealDamage(AttackPower, gameObject);
+            health.DealDamage(AttackPower, DamageType, gameObject);
             AnimateAttack();
         }
 
@@ -170,7 +171,7 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
 
 
-    protected void OnTakeDamage(GameObject sender, GameObject attacker, float amount)
+    protected void OnTakeDamage(GameObject sender, GameObject attacker, float amount, DamageTypes damageType)
     {
         if (sender == null)
             return;

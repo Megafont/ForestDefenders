@@ -14,6 +14,17 @@ public class Health : MonoBehaviour
     public Color DamageFlashColor = Color.red;
     public float DamageFlashTime = 0.1f;
 
+    [Tooltip("The damage types this entity is resistant to.")]
+    public DamageTypes IsResistantTo;
+    [Tooltip("The damage types this entity is vulnerable to.")]
+    public DamageTypes IsVulnerableTo;
+
+    public bool IsInvincible = false;
+
+
+    private GameManager _GameManager;
+    private MonsterManager _MonsterManager;
+
     private float _LastDamageTime;
 
 
@@ -28,7 +39,7 @@ public class Health : MonoBehaviour
 
 
     public delegate void Health_OnDeathEventHandler(GameObject sender, GameObject attacker);
-    public delegate void Health_OnDamagedEventHandler(GameObject sender, GameObject attacker, float amount);
+    public delegate void Health_OnDamagedEventHandler(GameObject sender, GameObject attacker, float amount, DamageTypes damageType);
     public delegate void Health_OnHealedEventHandler(GameObject sender, GameObject healer, float amount);
     public delegate void Health_OnHealthChangedEventHandler(GameObject sender, GameObject changeSource, float changeAmount);
 
@@ -41,6 +52,9 @@ public class Health : MonoBehaviour
 
     private void Awake()
     {
+        _GameManager = GameManager.Instance;
+        _MonsterManager = _GameManager.MonsterManager;
+
         _MeshRenderers = new List<MeshRenderer>();
         _SkinnedMeshRenderers = new List<SkinnedMeshRenderer>();
 
@@ -62,14 +76,14 @@ public class Health : MonoBehaviour
 
     }
 
-    public void DealDamage(float amount, GameObject attacker)
+    public void DealDamage(float amount, DamageTypes damageType, GameObject attacker)
     {
         if (amount <= 0)
             throw new Exception("The damage amount must be positive!");
 
 
         // If this entity is already dead, then do nothing. This way the code below won't spam the OnDeath event when an entity is dead.
-        if (CurrentHealth <= 0)
+        if (CurrentHealth <= 0 || IsInvincible)
             return;
 
 
@@ -85,13 +99,26 @@ public class Health : MonoBehaviour
         }
 
 
-        float changeAmount = amount;        
-        CurrentHealth -= amount;
+        float changeAmount = amount;
+
+        float buffAmount = 0;
+        if (GetComponent<Monster_Base>() != null)
+        {
+            if ((IsResistantTo & damageType) > 0)
+                buffAmount = (amount * _MonsterManager.DamageResistanceBuffAmount) * -1;
+            else if ((IsVulnerableTo & damageType) > 0)
+                buffAmount = amount * _MonsterManager.DamageVulnerabilityBuffAmount;
+        }
+
+        changeAmount += buffAmount;
+        //Debug.Log($"Amount: {amount}    Buff: {buffAmount}");
+
+        CurrentHealth -= changeAmount;
         if (CurrentHealth < 0)
-            changeAmount = amount + CurrentHealth;
+            changeAmount = changeAmount + CurrentHealth;
 
         OnHealthChanged?.Invoke(gameObject, attacker, -changeAmount);
-        OnTakeDamage?.Invoke(gameObject, attacker, changeAmount);
+        OnTakeDamage?.Invoke(gameObject, attacker, changeAmount, damageType);
 
         if (CurrentHealth <= 0)
         {
@@ -100,7 +127,7 @@ public class Health : MonoBehaviour
         }
 
 
-        SpawnHealthPopup(-changeAmount);
+        SpawnHealthPopup(-changeAmount, buffAmount);
     }
 
     public void Heal(float amount, GameObject healer)
@@ -152,7 +179,7 @@ public class Health : MonoBehaviour
             renderer.material.color = Color.white;
     }
 
-    private void SpawnHealthPopup(float healthChangedAmount)
+    private void SpawnHealthPopup(float healthChangedAmount, float buffAmount = 0)
     {
         Vector3 startPos = transform.position;
         
@@ -167,7 +194,7 @@ public class Health : MonoBehaviour
             startPos.y += 1;
         
 
-        HealthPopup popup = HealthPopup.ShowHealthPopup(startPos, healthChangedAmount);
+        HealthPopup popup = HealthPopup.ShowHealthPopup(startPos, healthChangedAmount, buffAmount);
     }
 
     private void FindRenderers()

@@ -178,11 +178,11 @@ public class Building_MageTower : Building_Base
         EnableMageInstance(false);
     }
 
-    private void OnOccupantTakeDamage(GameObject sender, GameObject attacker, float amount)
+    private void OnOccupantTakeDamage(GameObject sender, GameObject attacker, float amount, DamageTypes damageType)
     {
         if (_VillagerOccupant != null)
         {
-            _VillagerOccupant.HealthComponent.DealDamage(amount, attacker);
+            _VillagerOccupant.HealthComponent.DealDamage(amount, damageType, attacker);
         }
     }
 

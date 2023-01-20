@@ -31,12 +31,18 @@ public class HealthPopup : MonoBehaviour
     private float _ElapsedTime;
     private float _MoveSpeed;
 
+    private static Color32 _DamageNormalColor = Color.red;
+    private static Color32 _DamageResistanceColor = new Color32(50, 0, 0, 255);
+    private static Color32 _DamageVulnerableColor = new Color32(255, 100, 0, 255);
+    private static Color32 _HealColor = Color.green;
+
 
     private static ObjectPool<HealthPopup> _HealthPopupPool;
     private static GameObject _HealthPopupPrefab;
     private static GameObject _HealthPopupsParent; // The parent object that will contain all health popups in the hierarchy.
 
     private static GameObject _PlayerCamera;
+
 
 
     // Start is called before the first frame update
@@ -76,17 +82,23 @@ public class HealthPopup : MonoBehaviour
         transform.parent.LookAt(_PlayerCamera.transform); // Make the text always face the player's camera.
     }
 
-    public void ResetHealthPopup(float healthChangedAmount)
+    public void ResetHealthPopup(float healthChangedAmount, float buffAmount = 0)
     {
-        if (healthChangedAmount < 0)
+        if (healthChangedAmount >= 0)
         {
-            _TMP_Text.text = $"{healthChangedAmount}";
-            _TMP_Text.color = Color.red;
+            _TMP_Text.text = $"+{healthChangedAmount}";
+            _TMP_Text.color = _HealColor;
         }
         else
         {
-            _TMP_Text.text = $"+{healthChangedAmount}";
-            _TMP_Text.color = Color.green;
+            _TMP_Text.text = $"{healthChangedAmount}";
+
+            if (buffAmount < 0)
+                _TMP_Text.color = _DamageResistanceColor;
+            else if (buffAmount > 0)
+                _TMP_Text.color = _DamageVulnerableColor;
+            else
+                _TMP_Text.color = _DamageNormalColor;
         }
 
 
@@ -96,7 +108,7 @@ public class HealthPopup : MonoBehaviour
 
 
     
-    public static HealthPopup ShowHealthPopup(Vector3 startPosition, float healthChangedAmount)
+    public static HealthPopup ShowHealthPopup(Vector3 startPosition, float healthChangedAmount, float buffAmount)
     {
         if (_HealthPopupPool == null)
             _HealthPopupPool = new ObjectPool<HealthPopup>(CreateHealthPopup, OnTakenFromPool, OnReturnedToPool, OnDestroyPoolObject, true, 128, 1024);
@@ -107,7 +119,7 @@ public class HealthPopup : MonoBehaviour
 
         HealthPopup healthPopup = _HealthPopupPool.Get();
         healthPopup.transform.parent.position = startPosition; // See comments in Update() for why we're accessing the parent here.
-        healthPopup.ResetHealthPopup(healthChangedAmount);
+        healthPopup.ResetHealthPopup(healthChangedAmount, buffAmount);
         
         return healthPopup;        
     }

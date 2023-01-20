@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using UnityEngine;
+using UnityEngine.AI;
+
+
 
 public static class Utils_Math
 {
@@ -123,6 +126,17 @@ public static class Utils_Math
 
         // No ground was detected.
         return false;
+    }
+
+    public static Vector3 CalculateAdjustedTargetPosition(GameObject target)
+    {
+        // Shift the target position up appropriately so the projectile doesn't go for the character's feet if the target is a monster, the player, or a villager.
+        if (target.CompareTag("Player"))
+            return target.transform.position + Vector3.up * 0.75f;
+        else if (target.CompareTag("Monster") || target.CompareTag("Villager"))
+            return target.transform.position + Vector3.up * (target.GetComponent<NavMeshAgent>().height / 2);
+        else
+            return target.transform.position;
     }
 
     /// <summary>

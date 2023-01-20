@@ -173,6 +173,7 @@ public class PlayerController : MonoBehaviour
 
 
         _GameManager = GameManager.Instance;
+        AttackPower = _GameManager.PlayerStartingAttackPower;
 
         _ResourceManager = _GameManager.ResourceManager;
 
@@ -479,7 +480,7 @@ public class PlayerController : MonoBehaviour
                 if (hit.collider.CompareTag("Monster") || 
                     (_GameManager.PlayerCanDamageVillagers && hit.collider.CompareTag("Villager")))
                 {
-                    health.DealDamage(AttackPower, gameObject);
+                    health.DealDamage(AttackPower, DamageTypes.Physical, gameObject);
                 }
             }
             
@@ -494,13 +495,22 @@ public class PlayerController : MonoBehaviour
 
     private void DoDestroyAction(GameObject objToDestroy)
     {
+        if (objToDestroy == null)
+        { 
+            //Debug.LogWarning($"GameObject cannot be destroyed since it is null!");
+            return;
+        }
+
+
         // We need to get the object with the IBuilding component on it in case
         // the passed in object is a child of that object. This way we can destroy
         // the entire building.
         IBuilding building = objToDestroy.GetComponentInParent<IBuilding>();
 
-        if (building != null)
+        if (building != null)        
         {
+            if (_VillageManager_Buildings == null)
+                throw new Exception("FUCK!");
             _VillageManager_Buildings.DeconstructBuilding(building);
         }
         else

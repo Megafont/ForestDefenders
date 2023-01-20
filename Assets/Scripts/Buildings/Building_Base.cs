@@ -99,7 +99,7 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
         StartCoroutine(FadeOutAfterDeath());
     }
 
-    protected virtual void OnTakeDamage(GameObject sender, GameObject attacker, float amount)
+    protected virtual void OnTakeDamage(GameObject sender, GameObject attacker, float amount, DamageTypes damageType)
     {
         _VillageManager_Villagers.RequestBackup(gameObject, attacker);
     }

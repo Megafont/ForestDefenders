@@ -107,6 +107,7 @@ public class GameManager : MonoBehaviour
     public event GameManager_GameOverEventHandler OnGameOver;
 
 
+
     void Awake()
     {
         if (Instance == null)
@@ -119,10 +120,11 @@ public class GameManager : MonoBehaviour
             throw new Exception("The player spawn point has not been set in the inspector!");
 
 
+        GetManagerReferences();
+
         if (EnablePlayerSpawn)
             SpawnPlayer();
 
-        GetManagerReferences();
 
         InitUI();
 
@@ -431,28 +433,12 @@ public class GameManager : MonoBehaviour
     public bool CheckIfGameIsOver()
     {
         // NOTE: We don't check if the player is dead here, as we receive an event when that happens via the OnPlayerDeath() method below, which instantly switches us to the GameOver game state;
-        if (VillageManager_Buildings.GetTotalBuildingCount() == 0 &&
-            VillageManager_Villagers.Population == 0 &&
+        if ((VillageManager_Buildings.GetTotalBuildingCount() == 0 &&
+            VillageManager_Villagers.Population == 0) ||
             Player == null ||
             Player.transform.position.y <= FallOutOfWorldDeathHeight)
         {
-
-            ICinemachineCamera gameOvercam = CameraManager.GetCameraWithID((int) CameraIDs.GameOver);
-            if (Player.transform.position.y <= FallOutOfWorldDeathHeight)
-            {
-                Transform townCenterTransform = VillageManager_Buildings.TownCenter.transform;
-                gameOvercam.LookAt = townCenterTransform;
-                gameOvercam.Follow = townCenterTransform;
-            }
-            else
-            {
-                gameOvercam.LookAt = Player.transform;
-                gameOvercam.Follow = Player.transform;
-            }
-
-
             ChangeGameState(GameStates.GameOver);
-
 
             return true;
         }
@@ -531,10 +517,11 @@ public class GameManager : MonoBehaviour
                 //EnableHUD(false);
 
                 // Disable player input.
-                InputManager.EnableInputActionMap((int)InputActionMapIDs.Player, false);
+                InputManager.EnableInputActionMap((int) InputActionMapIDs.Player, false);
 
                 // Switch to game over camera.
-                CameraManager.SwitchToCamera((int)CameraIDs.GameOver);
+                SetupGameOverCamera();
+                CameraManager.SwitchToCamera((int) CameraIDs.GameOver);
 
                 // Fade the screen to somewhat red.
                 SceneSwitcher.FadeOut(new Color32(128, 0, 0, 180), 2.5f);
@@ -624,6 +611,22 @@ public class GameManager : MonoBehaviour
     private void GameState_GameOver()
     {        
         //Debug.LogError("Game Over!");
+    }
+
+    private void SetupGameOverCamera()
+    {
+        ICinemachineCamera gameOvercam = CameraManager.GetCameraWithID((int)CameraIDs.GameOver);
+        if (Player.transform.position.y <= FallOutOfWorldDeathHeight)
+        {
+            Transform townCenterTransform = VillageManager_Buildings.TownCenter.transform;
+            gameOvercam.LookAt = townCenterTransform;
+            gameOvercam.Follow = townCenterTransform;
+        }
+        else
+        {
+            gameOvercam.LookAt = Player.transform;
+            gameOvercam.Follow = Player.transform;
+        }
     }
 
     private void UpdateWaveTimer(float timeToNextWave)

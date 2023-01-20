@@ -83,7 +83,7 @@ public class MageTowerOccupant : MonoBehaviour
             {
                 _Target = monster.GetComponent<IMonster>();
 
-                //Debug.Log($"Targeting monster {_Target.gameObject.name} at ({_Target.transform.position}).");
+                //Debug.Log($"Mage Tower is targeting monster {_Target.gameObject.name} at ({_Target.transform.position}).");
             }
         }
         else
@@ -137,7 +137,7 @@ public class MageTowerOccupant : MonoBehaviour
 
         _ProjectilePool.Release(sender);
 
-        //Debug.Log($"D - Pool Counts:    Total: {_ProjectilePool.CountAll}    Active: {_ProjectilePool.CountActive}    Inactive: {_ProjectilePool.CountInactive}");
+        //Debug.Log($"D - Mage Tower Projectile Pool Counts:    Total: {_ProjectilePool.CountAll}    Active: {_ProjectilePool.CountActive}    Inactive: {_ProjectilePool.CountInactive}");
     }
 
 
@@ -160,19 +160,19 @@ public class MageTowerOccupant : MonoBehaviour
 
     private static void OnReturnedToPool(IProjectile projectile)
     {
-        //Debug.Log($"R - Pool Counts:    Total: {_ProjectilePool.CountAll}    Active: {_ProjectilePool.CountActive}    Inactive: {_ProjectilePool.CountInactive}");
+        //Debug.Log($"R - Mage Tower Projectile Counts:    Total: {_ProjectilePool.CountAll}    Active: {_ProjectilePool.CountActive}    Inactive: {_ProjectilePool.CountInactive}");
     }
 
     private static void OnTakenFromPool(IProjectile projectile)
     {
-        //Debug.Log($"T - Pool Counts:    Total: {_ProjectilePool.CountAll}    Active: {_ProjectilePool.CountActive}    Inactive: {_ProjectilePool.CountInactive}");
+        //Debug.Log($"T - Mage Tower Projectile Counts:    Total: {_ProjectilePool.CountAll}    Active: {_ProjectilePool.CountActive}    Inactive: {_ProjectilePool.CountInactive}");
     }
 
     private static void OnDestroyPoolObject(IProjectile projectile)
     {
         Destroy(projectile.gameObject);
 
-        //Debug.Log("Destroyed pool projectile!");
+        //Debug.Log("Destroyed mage tower pool projectile!");
     }
 
     // ====================================================================================================

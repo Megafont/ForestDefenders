@@ -50,8 +50,6 @@ public class VillageManager_Buildings : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
-
         //Debug.Log("C1: " + GetBuildingCount("Defense", "Barricade"));
         //Debug.Log("C2: " + GetBuildingCountForCategory("Defense"));
         //Debug.Log("C3: " + GetTotalBuildingCount());
@@ -310,8 +308,6 @@ public class VillageManager_Buildings : MonoBehaviour
     {
         TotalBuildingCount--;
 
-        OnBuildingDestroyed?.Invoke(building, false);
-
 
         // Debug.Log("Building destroyed: " + building.Name);
 
@@ -361,7 +357,7 @@ public class VillageManager_Buildings : MonoBehaviour
         OnBuildingDestroyed?.Invoke(building, false);
     }
 
-    private void OnBuildingDamagedHandler(GameObject sender, GameObject attacker, float amount)    
+    private void OnBuildingDamagedHandler(GameObject sender, GameObject attacker, float amount, DamageTypes damageType)    
     {
         IBuilding building = sender.GetComponent<IBuilding>();
 

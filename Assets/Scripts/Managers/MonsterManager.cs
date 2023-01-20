@@ -1,10 +1,11 @@
-using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.AI;
+
+using Random = UnityEngine.Random;
 
 
 public class MonsterManager : MonoBehaviour
@@ -13,8 +14,15 @@ public class MonsterManager : MonoBehaviour
 
     public float ComboStreakResetTime = 5.0f;
 
-    public int BaseMonsterSpawnAmount = 3;
+    public int BaseMonsterSpawnAmount = 5;
     public int MaxMonstersOfAnyGivenType = 5;
+
+    [Tooltip("The percentage damage is decreased by when a monster is hit by a damage type it is resistant to.")]
+    [Range(0f, 1f)]
+    public float DamageResistanceBuffAmount = 0.2f;
+    [Tooltip("The percentage damage is increased by when a monster is hit by a damage type it is vulnerable to.")]
+    [Range(0f, 1f)]
+    public float DamageVulnerabilityBuffAmount = 0.2f;
 
 
     private List<MonsterDefinition> _MonsterDefinitions;
@@ -60,8 +68,6 @@ public class MonsterManager : MonoBehaviour
     public void BeginNextWave()
     {       
         StartCoroutine(SpawnWave());
-
-        CurrentWaveNumber++;
     }
 
     public void ResetComboStreak()
@@ -81,15 +87,44 @@ public class MonsterManager : MonoBehaviour
         if (spawnPointCount < 1)
             throw new Exception("Cannot spawn monsters because no spawn points have been added under the \"Monster Spawn Points\" parent GameObject!");
 
-        GenerateWaveSpawnList();
-        for (int i = 0; i < _MonsterSpawnList.Count; i++)
+
+
+        CurrentWaveNumber++;
+        CurrentWaveSize = BaseMonsterSpawnAmount + ((CurrentWaveNumber - 1) * 3);
+
+        int totalMonsterTypeCount = CurrentWaveNumber;
+        if (CurrentWaveNumber > _MonsterDefinitions.Count)
+            totalMonsterTypeCount = _MonsterDefinitions.Count;
+
+        int lowLevelMonsterTypeCount = (int)(totalMonsterTypeCount * 0.33f);
+
+        //Debug.Log($"Wave #: {CurrentWaveNumber}    Base Spawn Count: {BaseMonsterSpawnAmount}    Wave Spawn Count: {CurrentWaveSize}");
+        for (int i = 0; i < CurrentWaveSize; i++)
         {
             // Randomly select a spawn point from the list.
-            int spawnPointIndex = UnityEngine.Random.Range(0, spawnPointCount);
+            int spawnPointIndex = Random.Range(0, spawnPointCount);
 
-            // Spawn a monster.
-            MonsterDefinition monsterDef = _MonsterDefinitions[_MonsterSpawnList[i]];
+            // Select a monster.
+            float rand = Random.Range(0f, 1f);
+            int monsterIndex = 0;
 
+            float rand2 = 0f;
+            if (totalMonsterTypeCount == 1)
+                rand2 = 0;
+            else if (rand <= 0.25f) // We give a 25% chance of a low level monster spawning.
+                rand2 = Random.Range(0f, 0.25f);
+            else if (rand > 0.25f && rand <= 0.65f) // We give a 40% chance of a mid level monster spawning.
+                rand2 = Random.Range(0.26f, 0.65f);
+            else // We give a 35% chance of a high level monster spawning.
+                rand2 = Random.Range(0.66f, 1f);
+
+
+            monsterIndex = (int) (totalMonsterTypeCount * rand2);
+
+            MonsterDefinition monsterDef = _MonsterDefinitions[monsterIndex];
+
+
+            // Spawn the monster.
             Vector3 spawnPos = _SpawnPointsParent.GetChild(spawnPointIndex).transform.position;
             NavMeshHit hit;
             bool result = NavMesh.SamplePosition(spawnPos, out hit, 5.0f, NavMesh.AllAreas);
@@ -234,7 +269,7 @@ public class MonsterManager : MonoBehaviour
     public int TotalMonstersKilled { get; private set; } // Total monsters killed across all waves so far.
     public int MonstersLeft { get { return CurrentWaveSize - MonstersKilled; } }
     public bool WaveComplete { get { return _WaveIsDoneSpawning && _AliveMonsters.Count == 0; } }
-    public int CurrentWaveNumber { get; private set; } = 1;
+    public int CurrentWaveNumber { get; private set; }
     public int CurrentWaveSize { get; private set; }
 
 

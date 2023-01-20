@@ -25,7 +25,7 @@ public class Projectile_Homing : Projectile_Base
         }
         else
         {
-            CalculateAdjustedTargetPosition();
+            Utils_Math.CalculateAdjustedTargetPosition(_Target);
 
             Vector3 prevDirection = _CurDirection;
             Vector3 targetDirection = GetTargetDirection();

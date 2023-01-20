@@ -250,6 +250,8 @@ public class TechTreeDialog : Dialog_Base, IDialog
 
 
             // Add this research tile to the lookup table.
+            if (_TechTreeTilesLookup.ContainsKey(tileData.TechID))
+                throw new Exception($"A tech tile has already been created for the tech ID \"{tileData.TechID}\"");
             _TechTreeTilesLookup.Add(tileData.TechID, newTile);
 
             // Also add research tile into the current group data block.

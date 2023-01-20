@@ -159,9 +159,9 @@ GameObject:
   - component: {fileID: 6399654233988644721}
   - component: {fileID: 4903253601010667936}
   - component: {fileID: 3670525582736076425}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Mage Tower
-  m_TagString: Untagged
+  m_TagString: Building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -242,9 +242,17 @@ MeshCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8102605781028951456}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 4
+  serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -291894430517523215, guid: 639f855441c7a7848add73827bf9f2bc, type: 3}
@@ -261,10 +269,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MageSpawnPoint: {fileID: 2962723562212173198}
-  Mage_Female_Prefab: {fileID: 9201468569712811870, guid: a229a247bee743b46a02325cbcf1ece1,
-    type: 3}
-  Mage_Male_Prefab: {fileID: 3717744944258116868, guid: 5a177cdb27ee1cb4ba42cf4f45194412,
-    type: 3}
 --- !u!114 &3670525582736076425
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -281,3 +285,6 @@ MonoBehaviour:
   EnableDamageFlash: 1
   DamageFlashColor: {r: 1, g: 0, b: 0, a: 1}
   DamageFlashTime: 0.1
+  IsResistantTo: 0
+  IsVulnerableTo: 0
+  IsInvincible: 0

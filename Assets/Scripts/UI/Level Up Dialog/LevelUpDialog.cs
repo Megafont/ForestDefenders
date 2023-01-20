@@ -176,7 +176,6 @@ public class LevelUpDialog : Dialog_Base
         float amountToHeal = pHealth.MaxHealth - pHealth.CurrentHealth;
         RefreshHealMenuItem(menuItem, "Heal Player", pHealth.CurrentHealth, pHealth.MaxHealth, amountToHeal);
 
-
         // Setup the buff villager attack option
         menuItem = _MenuItems.GetChild(4).gameObject;
         RefreshStatMenuItem(menuItem, "Villager's Attack Power", 1, CurrentVillagerAttackPower, _GameManager.MaxAttackPowerCap, _GameManager.VillagersAttackBuffAmountPerLevelUp);
@@ -209,10 +208,12 @@ public class LevelUpDialog : Dialog_Base
 
     private void RefreshHealMenuItem(GameObject menuItem, string descriptionText, float healthCurrentValue, float healthMaxValue, float amountToHeal)
     {
+        float foodCost = amountToHeal * _GameManager.PlayerHealFoodCostMultiplier;
+
         if (healthCurrentValue < healthMaxValue &&
-            _GameManager.ResourceManager.Stockpiles[ResourceTypes.Food] >= amountToHeal)
+            _GameManager.ResourceManager.Stockpiles[ResourceTypes.Food] >= foodCost)
         {
-            menuItem.GetComponent<TMP_Text>().text = $"Heal Player\t\t\t(-{amountToHeal * _GameManager.PlayerHealFoodCostMultiplier} Food)"; // "Up To {_GameManager.PlayerHealAmount} HP";
+            menuItem.GetComponent<TMP_Text>().text = $"Heal Player\t\t\t(-{foodCost} Food)"; // "Up To {_GameManager.PlayerHealAmount} HP";
             menuItem.GetComponent<Button>().interactable = true;
         }
         else

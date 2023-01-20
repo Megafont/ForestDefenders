@@ -18,6 +18,7 @@ public class Projectile_MageTower : Projectile_Homing
     private WaitForSeconds _ExplosionDamageDelay;
 
 
+
     void Start()
     {
         _ExplosionParticleSystem = transform.GetChild(0).GetComponent<ParticleSystem>();      
@@ -63,7 +64,7 @@ public class Projectile_MageTower : Projectile_Homing
         for (int i = 0; i < enemies.Length; i++)
         {
             GameObject obj = enemies[i].collider.gameObject;
-            enemies[i].collider.gameObject.GetComponent<Health>().DealDamage(DefaultAttackPower, this.gameObject);
+            enemies[i].collider.gameObject.GetComponent<Health>().DealDamage(DefaultAttackPower, DamageType, this.gameObject);
         }
     }
 
