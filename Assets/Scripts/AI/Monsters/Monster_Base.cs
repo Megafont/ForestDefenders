@@ -14,9 +14,15 @@ using Random = UnityEngine.Random;
 public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
 {
     [Tooltip("The number of points earned when this monster is killed.")]
-    public int ScoreValue = 10;
+    [SerializeField]
+    protected int _ScoreValue = 10;
     [Tooltip("The tier this monster is in. Determines which tiers of buildings it can target and destroy.")]
-    public int Tier = 1;
+    [SerializeField]
+    protected int _Tier = 1;
+
+    [Tooltip("The icy material applied to this monster when it has the ice status effect.")]
+    [SerializeField]
+    protected Material _IcyMaterial;
 
 
     protected MonsterTargetDetector _NearbyTargetDetector;
@@ -59,7 +65,7 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         if (_Target == null)
         {
             // This monster is not chasing a target. So try to find a building to target.
-            GameObject newTarget = Utils_AI.FindNearestBuildingAtOrBelowTier(gameObject, Tier);
+            GameObject newTarget = Utils_AI.FindNearestBuildingAtOrBelowTier(gameObject, _Tier);
 
 
             // If no building was found, then try to find a villager.           
@@ -155,7 +161,7 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
 
     public int GetScoreValue()
     {
-        return ScoreValue;
+        return _ScoreValue;
     }
 
     protected override void UpdateNearbyTargetDetectorState()
@@ -182,8 +188,17 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
 
     // These are a couple extra methods needed to satisfy the IMonster interface since you can't have fields in an interface.
     public float GetAttackPower() { return AttackPower; }
-    public int GetTier() { return Tier; }
+    public int GetTier() { return _Tier; }
 
+    public Material IcyMaterial { get { return _IcyMaterial; } }
     public string MonsterTypeName { get { return this.GetType().Name; } }
 
+    public int ScoreValue
+    {
+        get { return _ScoreValue; }
+        set { _ScoreValue = value; }
+    }
+
+    public bool HasStatusEffect { get { return StatusEffectsFlags != 0; } }
+    public StatusEffectsFlags StatusEffectsFlags { get; set; }
 }

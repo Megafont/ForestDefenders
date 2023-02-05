@@ -13,6 +13,7 @@ public enum TechDefinitionIDs
     // Towers
     Buildings_SpikeTower,
     Buildings_Turret,
+    Buildings_IceTurret,
     Buildings_MageTower,
 
     // Walls

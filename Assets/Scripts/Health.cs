@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+using Random = UnityEngine.Random;
+
 
 public class Health : MonoBehaviour
 {
@@ -99,7 +101,10 @@ public class Health : MonoBehaviour
         }
 
 
-        float changeAmount = amount;
+
+        float randomVariance = Random.Range(0.0f, _GameManager.AttackDamageVariance);
+        float changeAmount = Mathf.CeilToInt(amount - (amount * randomVariance));
+        changeAmount = Mathf.Max(changeAmount, 1.0f); // Enforce that the attack will always at least 1 point of damage.
 
         float buffAmount = 0;
         if (GetComponent<Monster_Base>() != null)
@@ -115,7 +120,7 @@ public class Health : MonoBehaviour
 
         CurrentHealth -= changeAmount;
         if (CurrentHealth < 0)
-            changeAmount = changeAmount + CurrentHealth;
+            changeAmount = changeAmount + CurrentHealth; // Calculate how many damage points it took to kill this entity. So if it had 10 health and took 12 damage, this will return 10.
 
         OnHealthChanged?.Invoke(gameObject, attacker, -changeAmount);
         OnTakeDamage?.Invoke(gameObject, attacker, changeAmount, damageType);

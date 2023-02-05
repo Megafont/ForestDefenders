@@ -11,11 +11,16 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Combat")]
+    [Tooltip("The max percentage that the amount of damage an attack does can vary by. If this percentage is 0, then the amount of damage dealt is always equal to the original attack damage.")]
+    [Range(0f, 1f)]
+    public float AttackDamageVariance = 0.2f;
+
     [Header("Player")]
     public bool EnablePlayerSpawn = true;
-    public bool PlayerCanDamageVillagers = true;
     public Transform PlayerSpawnPoint;
-    public float FallOutOfWorldDeathHeight = -32;
+    public bool PlayerCanDamageVillagers = true;
+    public float PlayerFallOutOfWorldDeathHeight = -32;
     public float PlayerStartingAttackPower = 20f;
     public float PlayerStartingMaxHealth = 50f;
     public float PlayerStartingGatherRate = 3f;
@@ -436,7 +441,7 @@ public class GameManager : MonoBehaviour
         if ((VillageManager_Buildings.GetTotalBuildingCount() == 0 &&
             VillageManager_Villagers.Population == 0) ||
             Player == null ||
-            Player.transform.position.y <= FallOutOfWorldDeathHeight)
+            Player.transform.position.y <= PlayerFallOutOfWorldDeathHeight)
         {
             ChangeGameState(GameStates.GameOver);
 
@@ -616,7 +621,7 @@ public class GameManager : MonoBehaviour
     private void SetupGameOverCamera()
     {
         ICinemachineCamera gameOvercam = CameraManager.GetCameraWithID((int)CameraIDs.GameOver);
-        if (Player.transform.position.y <= FallOutOfWorldDeathHeight)
+        if (Player.transform.position.y <= PlayerFallOutOfWorldDeathHeight)
         {
             Transform townCenterTransform = VillageManager_Buildings.TownCenter.transform;
             gameOvercam.LookAt = townCenterTransform;

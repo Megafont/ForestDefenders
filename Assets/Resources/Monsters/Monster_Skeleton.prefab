@@ -1862,7 +1862,7 @@ Transform:
   - {fileID: 7748271926884163174}
   - {fileID: 7748043919431416920}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &7693655789226799764
 Animator:
@@ -1969,15 +1969,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DeathFadeOutTime: 2
-  MaxMovementSpeed: 3
+  MaxMovementSpeed: 2
   InteractionFrequency: 2
   AttackPower: 5
   AttackCheckFrequency: 0.75
+  DamageType: 1
   MaxChaseDistance: 10
   TargetCheckFrequency: 2
   TargetCheckRadius: 5
-  ScoreValue: 100
-  Tier: 1
+  _ScoreValue: 10
+  _Tier: 1
+  _MonsterBodyRenderer: {fileID: 7673746983241877842}
+  _IcyMaterial: {fileID: 2100000, guid: 085ac9965a2056f4294e0c8ae0c013de, type: 2}
 --- !u!114 &5400122951304100884
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1994,6 +1997,9 @@ MonoBehaviour:
   EnableDamageFlash: 1
   DamageFlashColor: {r: 1, g: 0, b: 0, a: 1}
   DamageFlashTime: 0.1
+  IsResistantTo: 0
+  IsVulnerableTo: 0
+  IsInvincible: 0
 --- !u!1 &7752133229865188102
 GameObject:
   m_ObjectHideFlags: 0

@@ -28,7 +28,11 @@ public interface IMonster
     int GetTier();
 
 
+    Material IcyMaterial { get; }
+    bool HasStatusEffect { get; }
+    StatusEffectsFlags StatusEffectsFlags { get; set; }
 
+    
     bool TargetIsBuilding { get; }
     bool TargetIsMonster { get; }
     bool TargetIsResourceNode { get; }

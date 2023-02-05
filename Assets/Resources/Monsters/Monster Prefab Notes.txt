@@ -17,3 +17,15 @@ I created these custom textures to change the colors of a select few monsters
 specifically, because I didn't want to just use the included tint shader to
 shade the entire texture a given color. These custom textures can be found
 in the Assets/Custom Monster Textures folder.
+
+ICY ALBEDO TEXTURES:
+These custom textures were created by me using Gimp. I took the original albedo
+texture for each monster pack, and added a new layer on top with its opacity at 40%.
+I pasted onto that layer a custom image I made that is just filled with Gimp's built-in
+frost pattern using the paint bucket tool. Then I tinted it blue using the menu command
+Colors->Hue-Chroma with these settings:
+	* Hue: 		-70.12
+	* Chroma: 	 13.95
+	* Lightness: 	  0.00
+
+The icy versions of the custom albedo textures were created in the same way.

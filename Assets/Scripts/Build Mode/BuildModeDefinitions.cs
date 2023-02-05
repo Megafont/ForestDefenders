@@ -75,12 +75,15 @@ public static class BuildModeDefinitions
         CreateBuildingDefinition(category, "Spike Tower", 200, 2, TechDefinitionIDs.Buildings_SpikeTower, _MaterialRecoveryRate, 0, 5f, true, 4f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 100),
               CreateMaterialCost(ResourceTypes.Stone, 250) });
-        CreateBuildingDefinition(category, "Turret", 200, 2, TechDefinitionIDs.Buildings_Turret, _MaterialRecoveryRate, 0, 3f, true, 0.5f, new MaterialCost[]
-            { CreateMaterialCost(ResourceTypes.Wood, 350),
-              CreateMaterialCost(ResourceTypes.Stone, 400) });
-        CreateBuildingDefinition(category, "Mage Tower", 500, 2, TechDefinitionIDs.Buildings_MageTower, _MaterialRecoveryRate, 0, 6f, true, 4f, new MaterialCost[]
+        CreateBuildingDefinition(category, "Turret", 200, 2, TechDefinitionIDs.Buildings_Turret, _MaterialRecoveryRate, 0, 3f, true, 0.6f, new MaterialCost[]
+            { CreateMaterialCost(ResourceTypes.Wood, 300),
+              CreateMaterialCost(ResourceTypes.Stone, 300) });
+        CreateBuildingDefinition(category, "Ice Turret", 200, 2, TechDefinitionIDs.Buildings_IceTurret, _MaterialRecoveryRate, 0, 2.5f, true, 0.6f, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 500),
-              CreateMaterialCost(ResourceTypes.Stone, 500) });        
+              CreateMaterialCost(ResourceTypes.Stone, 500) });
+        CreateBuildingDefinition(category, "Mage Tower", 500, 2, TechDefinitionIDs.Buildings_MageTower, _MaterialRecoveryRate, 0, 6f, true, 4f, new MaterialCost[]
+            { CreateMaterialCost(ResourceTypes.Wood, 800),
+              CreateMaterialCost(ResourceTypes.Stone, 800) });        
     }
 
     private static void InitBuildDefinitions_Farming()

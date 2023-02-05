@@ -20,10 +20,10 @@ public class ResourceManager : MonoBehaviour
 
     [Header("Gathering Settings")]
 
-    [Tooltip("The max percentage that the amount of resources in a node can vary by. If this percentage is 0, then the amount of resources in a node will always be node.MaxAmountInNode.")]
+    [Tooltip("The max percentage that the amount of resources in a node can vary by. If this percentage is 0, then the amount of resources in a node will always be equal to node.MaxAmountInNode.")]
     [Range(0f, 1f)]
     public float ResourceNodeAmountVariance = 0.20f;
-    [Tooltip("The max percentage that the amount of resources obtained per gather can vary by. If this percentage is 0, then the amount obtained per gather is equal to the character's gathering rate stat.")]
+    [Tooltip("The max percentage that the amount of resources obtained per gather can vary by. If this percentage is 0, then the amount obtained per gather is always equal to the character's gathering rate stat.")]
     [Range(0f, 1f)]
     public float GatherAmountVariance = 0.15f;
  

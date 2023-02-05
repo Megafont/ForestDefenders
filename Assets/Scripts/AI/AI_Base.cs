@@ -21,6 +21,7 @@ public abstract class AI_Base : MonoBehaviour
 
     public float DeathFadeOutTime = 2.0f;
 
+    [Range(0.01f, 10f)]
     [Tooltip("This is the maximum movement speed. Make sure the walk/run thresholds are set correctly in the Animator's blend tree node, too.")]
     public float MaxMovementSpeed = 3.5f; // 3.5 is the default movement speed of NavMeshAgents.
 
@@ -68,9 +69,6 @@ public abstract class AI_Base : MonoBehaviour
     {
         if (Application.isPlaying)
             InitAI();
-
-        if (MaxMovementSpeed <= 0)
-            MaxMovementSpeed = _NavMeshAgent.speed;
     }
 
     // Update is called once per frame
@@ -165,7 +163,8 @@ public abstract class AI_Base : MonoBehaviour
         {
             float speed = _NavMeshAgent.velocity.magnitude;
             float motionSpeed = (speed == 0) ? 1 : speed / MaxMovementSpeed; // If speed is 0 (the AI is not moving), then set motionSpeed to 1 so the idle animation will play at normal speed.
-
+            motionSpeed = Mathf.Min(motionSpeed, 0.75f); // Limit how slow the animation can get, as it looks to slow sometimes otherwise.
+            
             //Debug.Log($"AI Name: {gameObject.name}    Speed: {speed}    MotionSpeed: {motionSpeed}    MaxSpeed: {MaxMovementSpeed}");
 
             _Animator.SetFloat("Speed", speed);

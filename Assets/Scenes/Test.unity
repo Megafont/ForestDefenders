@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000000, guid: 86647ca537255714ea77bd2f46e1f5c5,
+  m_LightingDataAsset: {fileID: 112000000, guid: d7ce9d2f0949e344ab324215cde3c8d5,
     type: 2}
   m_LightingSettings: {fileID: 4890085278179872738, guid: 43e41014f54945a49baa261d0bc5d64d,
     type: 2}
@@ -3014,10 +3014,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c8c75b2878e15b4abfa650e57838db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AttackDamageVariance: 0.2
   EnablePlayerSpawn: 1
-  PlayerCanDamageVillagers: 1
   PlayerSpawnPoint: {fileID: 509338921}
-  FallOutOfWorldDeathHeight: -32
+  PlayerCanDamageVillagers: 1
+  PlayerFallOutOfWorldDeathHeight: -32
   PlayerStartingAttackPower: 10
   PlayerStartingMaxHealth: 25
   PlayerStartingGatherRate: 4
@@ -3523,6 +3524,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 715453822699964861, guid: 990b3a45c00b57a4d8cba7bdef371693,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 715453822699964861, guid: 990b3a45c00b57a4d8cba7bdef371693,
         type: 3}

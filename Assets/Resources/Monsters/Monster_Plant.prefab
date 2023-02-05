@@ -802,11 +802,13 @@ MonoBehaviour:
   InteractionFrequency: 2
   AttackPower: 5
   AttackCheckFrequency: 1
+  DamageType: 1
   MaxChaseDistance: 10
   TargetCheckFrequency: 2
   TargetCheckRadius: 5
-  ScoreValue: 30
-  Tier: 1
+  _ScoreValue: 10
+  _Tier: 1
+  _IcyMaterial: {fileID: 2100000, guid: 085ac9965a2056f4294e0c8ae0c013de, type: 2}
 --- !u!114 &146046855880543876
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -823,6 +825,9 @@ MonoBehaviour:
   EnableDamageFlash: 1
   DamageFlashColor: {r: 1, g: 0, b: 0, a: 1}
   DamageFlashTime: 0.1
+  IsResistantTo: 0
+  IsVulnerableTo: 0
+  IsInvincible: 0
 --- !u!1 &4090911907334437734
 GameObject:
   m_ObjectHideFlags: 0
