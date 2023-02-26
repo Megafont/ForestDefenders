@@ -45,3 +45,4 @@ NOTE: The lit version of the waterfall base ripples material has one other sligh
       the sun's reflection doesn't line up quite right with the one on the river's surface. Even if you set
       smoothness to 0 on both the river and waterfall base ripples materials, you can still see the edge
       of the circular geometry slightly. The unlit version of the shader does not have this issue at all.
+
