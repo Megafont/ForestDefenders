@@ -10,7 +10,7 @@ using UnityEngine.UI;
 public class MainMenuDialog : Dialog_Base, IDialog
 {
     [Tooltip("This much time in seconds must elapse before the menu will respond to another input event to keep it from moving too fast.")]
-    public float GamepadMenuSelectionDelay = 0.1f;
+    [SerializeField] private float _GamepadMenuSelectionDelay = 0.1f;
 
     [SerializeField] GameObject _TitleDisplayCanvas;
     [SerializeField] HighScoresDialog _HighScoresDialog;
@@ -48,7 +48,7 @@ public class MainMenuDialog : Dialog_Base, IDialog
 
     protected override void Dialog_OnUpdate()
     {        
-        if (Time.time - _LastGamepadSelectionChange >= GamepadMenuSelectionDelay)
+        if (Time.time - _LastGamepadSelectionChange >= _GamepadMenuSelectionDelay)
         {
             // If the mouse has caused the selection to be lost by clicking not on a button, then reselect the currently selected button according to this class's stored index.
             if (EventSystem.current.currentSelectedGameObject == null)

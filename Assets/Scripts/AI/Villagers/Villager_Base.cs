@@ -57,7 +57,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
         // I may add in the ability for villagers to run, so set the max speed higher so their animation
         // speed is slower so they look like they're walking. See AI_Base.AnimateAI().
-        MaxMovementSpeed = 8.0f;
+        _MaxMovementSpeed = 8.0f;
     }
 
     protected override void UpdateAI()

@@ -6,10 +6,10 @@ using UnityEngine;
 
 public class Spike : MonoBehaviour
 {
-    public int AttackPower = 10;
+    [SerializeField] private int _AttackPower = 10;
 
-    public float KnockbackDistance = 2.0f;
-    public float KnockbackDuration = 0.15f;
+    [SerializeField] private float _KnockbackDistance = 2.0f;
+    [SerializeField] private float _KnockbackDuration = 0.15f;
 
     
     private void OnTriggerEnter(Collider other)
@@ -24,7 +24,7 @@ public class Spike : MonoBehaviour
         //Debug.Log($"IMPALED {other.name}!");
 
 
-        health.DealDamage(AttackPower, DamageTypes.Physical, gameObject);
+        health.DealDamage(_AttackPower, DamageTypes.Physical, gameObject);
 
         // Get the knockback direction.
         Quaternion rotation = transform.parent.rotation;
@@ -34,7 +34,7 @@ public class Spike : MonoBehaviour
 
         Vector3 knockbackDirection = rotation * new Vector3(-1, 0, 0);
 
-        StartCoroutine(Utils_Knockback.ApplyKnockbackMotion(other.gameObject, knockbackDirection, KnockbackDistance, KnockbackDuration));
+        StartCoroutine(Utils_Knockback.ApplyKnockbackMotion(other.gameObject, knockbackDirection, _KnockbackDistance, _KnockbackDuration));
 
     }
 

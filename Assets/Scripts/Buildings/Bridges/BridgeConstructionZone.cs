@@ -14,19 +14,19 @@ public class BridgeConstructionZone : MonoBehaviour
     [Header("Zone Settings")]
 
     [Tooltip("The group of resource nodes that is accessed by building a bridge across this bridge construction zone.")]
-    public GameObject NextResourceNodeRegion;
+    [SerializeField] private GameObject _NextResourceNodeRegion;
     [Tooltip("The group of resource nodes that is just before this bridge construction zone.")]
-    public GameObject PreviousResourceNodeRegion;
+    [SerializeField] private GameObject _PreviousResourceNodeRegion;
 
     [Tooltip("The list of bridges that have been constructed in this bridge construction zone. You don't need to manually add anything to this list except for bridges you build in the Unity Editor.")]
-    public List<GameObject> _BridgesInThisZone;
+    [SerializeField] private List<GameObject> _BridgesInThisZone;
 
 
     [Header("Bridge Construction Settings")]
 
     [Tooltip("The Y-axis rotation (in degrees) that bridges will always be locked to when built in this construction zone.")]
     [Range(0f, 359f)]
-    public float LockRotation = 0f;
+    [SerializeField] private float _LockRotation = 0f;
 
 
 
@@ -46,15 +46,15 @@ public class BridgeConstructionZone : MonoBehaviour
         Vector3 rotation = Vector3.zero;
 
 
-        if (LockRotation == 0f || LockRotation == 180f)
+        if (_LockRotation == 0f || _LockRotation == 180f)
         {
             position.x = transform.position.x;
-            rotation.y = LockRotation;
+            rotation.y = _LockRotation;
         }
-        else if (LockRotation == 90f || LockRotation == 270f)
+        else if (_LockRotation == 90f || _LockRotation == 270f)
         {
             position.z = transform.position.z;
-            rotation.y = LockRotation;
+            rotation.y = _LockRotation;
         }
 
 

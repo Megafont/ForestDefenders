@@ -10,10 +10,10 @@ using TMPro;
 
 public class RadialMenuDialog : Dialog_Base, IDialog
 {
-    public GameObject RadialMenuItemPrefab;
+    [SerializeField] private GameObject _RadialMenuItemPrefab;
 
     [Min(1)]
-    public float Radius = 150;
+    [SerializeField] private float _Radius = 150;
 
 
 
@@ -24,8 +24,6 @@ public class RadialMenuDialog : Dialog_Base, IDialog
 
     private List<RadialMenuItem> _MenuItems;
     private int _ActiveMenuItemsCount;
-
-    private BuildModeManager _BuildModeManager;
 
     private bool _IsInitializing;
     private float _MenuItemSizeInDegrees;
@@ -54,12 +52,10 @@ public class RadialMenuDialog : Dialog_Base, IDialog
 
     protected override void Dialog_OnStart()
     {
-        _BuildModeManager = _GameManager.BuildModeManager;
-
         _MenuItems = new List<RadialMenuItem>();
 
         // Create one menu item so the list isn't empty (to prevent errors).
-        GameObject newItem = Instantiate(RadialMenuItemPrefab, Vector3.zero, Quaternion.identity, _RadialMenuItemsParent.transform);
+        GameObject newItem = Instantiate(_RadialMenuItemPrefab, Vector3.zero, Quaternion.identity, _RadialMenuItemsParent.transform);
         _MenuItems.Add(newItem.GetComponent<RadialMenuItem>());
 
     }
@@ -130,7 +126,7 @@ public class RadialMenuDialog : Dialog_Base, IDialog
         {
             DoUIChecks();
 
-            //Debug.Log($"Confirm: {MenuConfirmed}    Cancel: {MenuCancelled}");
+            Debug.Log($"Confirm: {MenuConfirmed}    Cancel: {MenuCancelled}");
             if (MenuConfirmed || MenuCancelled)
                 break;
 
@@ -263,7 +259,7 @@ public class RadialMenuDialog : Dialog_Base, IDialog
             {
                 angle = _MenuItemSizeInDegrees * i;
                 q.eulerAngles = new Vector3(0, 0, -angle); // We negate the angle so the menu items are placed around the center going clockwise rather than the inverse.
-                Vector3 offset = q * (Vector3.up * Radius);
+                Vector3 offset = q * (Vector3.up * _Radius);
 
                 // Position the menu item.
                 // The last part of this line in ()s shifts the menu items down by half the height of the title bar so they appear centered in the area beneath it.
@@ -323,7 +319,7 @@ public class RadialMenuDialog : Dialog_Base, IDialog
 
     private void CreateMenuItem()
     {
-        GameObject newMenuItem = Instantiate(RadialMenuItemPrefab,
+        GameObject newMenuItem = Instantiate(_RadialMenuItemPrefab,
                                              Vector3.zero,
                                              Quaternion.identity,
                                              _RadialMenuItemsParent.transform);

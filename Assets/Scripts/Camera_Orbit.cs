@@ -7,21 +7,23 @@ using Cinemachine;
 
 public class Camera_Orbit : MonoBehaviour
 {
-    public float speed = 10f;
+    [SerializeField] private float _Speed = 10f;
 
-    private CinemachineOrbitalTransposer m_orbital;
+
+    private CinemachineOrbitalTransposer _OrbitalTransposer;
+
 
     void Start()
     {
         var vcam = GetComponent<CinemachineVirtualCamera>();
         if (vcam != null)
-            m_orbital = vcam.GetCinemachineComponent<CinemachineOrbitalTransposer>();
+            _OrbitalTransposer = vcam.GetCinemachineComponent<CinemachineOrbitalTransposer>();
     }
 
     void Update()
     {
-        if (m_orbital != null)
-            m_orbital.m_XAxis.Value += Time.deltaTime * speed;
+        if (_OrbitalTransposer != null)
+            _OrbitalTransposer.m_XAxis.Value += Time.deltaTime * _Speed;
     }
 
 }

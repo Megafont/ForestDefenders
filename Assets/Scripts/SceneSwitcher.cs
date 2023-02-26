@@ -19,8 +19,8 @@ public class SceneSwitcher : MonoBehaviour
     public static SceneSwitcher Instance;
 
 
-    public Color32 DefaultScreenFadeColor = Color.black;
-    public float DefaultScreenFadeDuration = 2.5f;
+    [SerializeField] private Color32 _DefaultScreenFadeColor = Color.black;
+    [SerializeField] private float _DefaultScreenFadeDuration = 2.5f;
 
 
     private Image _ScreenFader;
@@ -52,7 +52,7 @@ public class SceneSwitcher : MonoBehaviour
 
 
         // Start the screen faded out.
-        _ScreenFader.color = DefaultScreenFadeColor;
+        _ScreenFader.color = _DefaultScreenFadeColor;
         _ScreenFader.gameObject.SetActive(true);
     }
 
@@ -77,12 +77,12 @@ public class SceneSwitcher : MonoBehaviour
 
     public void FadeToScene(string sceneName)
     {
-        StartCoroutine(DoFadeToScene(sceneName, DefaultScreenFadeColor, DefaultScreenFadeDuration));
+        StartCoroutine(DoFadeToScene(sceneName, _DefaultScreenFadeColor, _DefaultScreenFadeDuration));
     }
 
     public void FadeToScene(int sceneBuildIndex)
     {
-        StartCoroutine(DoFadeToScene(sceneBuildIndex, DefaultScreenFadeColor, DefaultScreenFadeDuration));
+        StartCoroutine(DoFadeToScene(sceneBuildIndex, _DefaultScreenFadeColor, _DefaultScreenFadeDuration));
     }
 
     public void FadeToScene(string sceneName, Color32 fadeColor, float fadeDuration)
@@ -102,7 +102,7 @@ public class SceneSwitcher : MonoBehaviour
 
     public void FadeIn()
     {
-        StartCoroutine(DoScreenFade(DefaultScreenFadeColor, Color.clear, DefaultScreenFadeDuration));
+        StartCoroutine(DoScreenFade(_DefaultScreenFadeColor, Color.clear, _DefaultScreenFadeDuration));
     }
 
     public void FadeOut(Color32 fadeColor, float fadeDuration)
@@ -112,7 +112,7 @@ public class SceneSwitcher : MonoBehaviour
 
     public void FadeOut()
     {
-        StartCoroutine(DoScreenFade(Color.clear, DefaultScreenFadeColor, DefaultScreenFadeDuration));
+        StartCoroutine(DoScreenFade(Color.clear, _DefaultScreenFadeColor, _DefaultScreenFadeDuration));
     }
 
 

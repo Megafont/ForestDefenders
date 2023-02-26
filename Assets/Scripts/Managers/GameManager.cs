@@ -226,7 +226,7 @@ public class GameManager : MonoBehaviour
         // Update the top bar stats.
         _UI_VillagersLostCountText.text = $"Villagers Lost: {VillageManager_Villagers.TotalVillagersLost:n0}";
         _UI_MonstersKilledCountText.text = $"Monsters Killed: {MonsterManager.TotalMonstersKilled:n0}";
-        _UI_SurvivalTimeText.text = $"Survival Time: {HighScores.TimeValueToString(SurvivalTime):n0}";
+        _UI_SurvivalTimeText.text = $"Survival Time: {Utils_HighScores.TimeValueToString(SurvivalTime):n0}";
         _UI_ScoreText.text = $"Score: {Score:n0}";
 
 
@@ -348,35 +348,35 @@ public class GameManager : MonoBehaviour
         ICinemachineCamera gameOverCam = GameObject.Find("CM Game Over Cam").GetComponent<ICinemachineCamera>();
         gameOverCam.Follow = VillageManager_Buildings.TownCenter.transform;
         gameOverCam.LookAt = VillageManager_Buildings.TownCenter.transform;
-        CameraManager.RegisterCamera((int)CameraIDs.GameOver, gameOverCam);
+        CameraManager.RegisterCamera((int) CameraIDs.GameOver, gameOverCam);
 
 
         // Switch to the main camera for this scene.
-        CameraManager.SwitchToCamera((int)CameraIDs.GameOver);
+        CameraManager.SwitchToCamera((int) CameraIDs.GameOver);
     }
 
     private void InitCameras_TestScene()
     {
         // Register player follow camera.
         ICinemachineCamera mainCam = GameObject.Find("CM Player Follow Camera").GetComponent<ICinemachineCamera>();
-        CameraManager.RegisterCamera((int)CameraIDs.PlayerFollow, mainCam);
+        CameraManager.RegisterCamera((int) CameraIDs.PlayerFollow, mainCam);
 
         // Register game over camera.
         ICinemachineCamera gameOverCam = GameObject.Find("CM Game Over Cam").GetComponent<ICinemachineCamera>();
         gameOverCam.Follow = Player.transform;
         gameOverCam.LookAt = Player.transform;
-        CameraManager.RegisterCamera((int)CameraIDs.GameOver, gameOverCam);
+        CameraManager.RegisterCamera((int) CameraIDs.GameOver, gameOverCam);
 
 
         // Switch to the main camera for this scene.
-        CameraManager.SwitchToCamera((int)CameraIDs.PlayerFollow);
+        CameraManager.SwitchToCamera((int) CameraIDs.PlayerFollow);
     }
 
     private void InitInput()
     {
-        InputManager.RegisterInputActionMap((int)InputActionMapIDs.Player, "Player", true);
-        InputManager.RegisterInputActionMap((int)InputActionMapIDs.BuildMode, "Build Mode", true);
-        InputManager.RegisterInputActionMap((int)InputActionMapIDs.UI, "UI", true);
+        InputManager.RegisterInputActionMap((int) InputActionMapIDs.Player, "Player", true);
+        InputManager.RegisterInputActionMap((int) InputActionMapIDs.BuildMode, "Build Mode", true);
+        InputManager.RegisterInputActionMap((int) InputActionMapIDs.UI, "UI", true);
     }
 
     private void InitUI()
@@ -636,7 +636,7 @@ public class GameManager : MonoBehaviour
 
     private void UpdateWaveTimer(float timeToNextWave)
     {
-        _UI_TimeToNextWaveText.text = $"Next Wave In: {HighScores.TimeValueToString(timeToNextWave, false)}";
+        _UI_TimeToNextWaveText.text = $"Next Wave In: {Utils_HighScores.TimeValueToString(timeToNextWave, false)}";
     }
 
     private void OnPlayerDeath(GameObject sender, GameObject attacker)

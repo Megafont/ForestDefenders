@@ -10,30 +10,28 @@ public class Building_IceTurret : Building_Base
 {
     [Tooltip("How far away the ice turret can attack enemies.")]
     [Range(2f, 10f)]
-    [SerializeField]
-    private float _AttackRange = 10f;
+    [SerializeField] private float _AttackRange = 10f;
+
     [Tooltip("How long the ice turret takes to charge up (in seconds).")]
     [Range(1f, 60f)]
-    [SerializeField]
-    private float _ChargeUpTime = 10f;
+    [SerializeField] private float _ChargeUpTime = 10f;
+
     [Tooltip("How long (in seconds) it takes the ice wave to expand from the tower to its maximum size.")]
     [Range(0.05f, 5f)]
-    [SerializeField]
-    private float _IceWaveTravelTime = 0.25f;
+    [SerializeField] private float _IceWaveTravelTime = 0.25f;
+
     [Tooltip("The percentage of the ice wave's expansion that the wave will start fading away at. A value of 0.75 means it will start fading out at 75% of the way to its max distance from the ice turret.")]
     [Range(0.05f, 0.95f)]
-    [SerializeField]
-    private float _IceWaveFadeOutThreshold = 0.75f;
+    [SerializeField] private float _IceWaveFadeOutThreshold = 0.75f;
 
 
     [Min(0.01f)]
-    [SerializeField]
-    private float _TopRotationsPerChargeUp = 5.0f;
+    [SerializeField] private float _TopRotationsPerChargeUp = 5.0f;
+
     [Min(0.01f)]
-    [SerializeField]
-    private float _TopRotationsPerIceWave = 1.0f;
-    [SerializeField]
-    private AnimationCurve _TopAnimCurve;
+    [SerializeField] private float _TopRotationsPerIceWave = 1.0f;
+
+    [SerializeField] private AnimationCurve _TopAnimCurve;
 
 
     private GameManager _GameManager;
@@ -65,7 +63,7 @@ public class Building_IceTurret : Building_Base
 
         _TurretTopChargeUpTotalRotation = 360 * _TopRotationsPerChargeUp;
         _TurretTopIceWaveTotalRotation = 360 * _TopRotationsPerIceWave;
-        Debug.Log($"Total Charge Rotation: {_TurretTopChargeUpTotalRotation}");
+
         _IceWaveMaxScale = _AttackRange / 1; // The ice wave has a radius of 1 (origin to the center of the ring's width), so dividing attack range by that value tells us how much the ring will be scaled up when it reaches its max distance from the tower.
 
         _IceWave = transform.Find("Ice Wave").gameObject;

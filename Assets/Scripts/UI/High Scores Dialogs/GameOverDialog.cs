@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 
@@ -28,7 +27,7 @@ public class GameOverDialog : Dialog_Base, IDialog
 
     public override void OpenDialog(bool closeOtherOpenDialogs = true)
     {
-        IsRecordScore = HighScores.IsNewHighScore(_GameManager.Score, _GameManager.SurvivalTime);
+        IsRecordScore = Utils_HighScores.IsNewHighScore(_GameManager.Score, _GameManager.SurvivalTime);
 
         _TitleText.text = IsRecordScore ? "New Record Score!" : "Your Village Has Fallen!";
         _InputFieldLabel.text = IsRecordScore ? "Enter your name:" : "Regroup and try to hold out longer next time!";
@@ -38,7 +37,7 @@ public class GameOverDialog : Dialog_Base, IDialog
 
         _MaxComboStreakText.text = _GameManager.MonsterManager.MaxComboStreak.ToString("n0");
         _ScoreText.text = GameManager.Instance.Score.ToString("n0");
-        _SurvivalTimeText.text = HighScores.TimeValueToString(GameManager.Instance.SurvivalTime);
+        _SurvivalTimeText.text = Utils_HighScores.TimeValueToString(GameManager.Instance.SurvivalTime);
 
 
         base.OpenDialog(closeOtherOpenDialogs);
@@ -55,7 +54,7 @@ public class GameOverDialog : Dialog_Base, IDialog
             if (string.IsNullOrWhiteSpace(_InputField.text))
                 return;
 
-            HighScores.RegisterHighScore(_InputField.text,
+            Utils_HighScores.RegisterHighScore(_InputField.text,
                                          GameManager.Instance.Score,
                                          GameManager.Instance.SurvivalTime);
         }

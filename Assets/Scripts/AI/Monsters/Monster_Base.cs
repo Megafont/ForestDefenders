@@ -16,6 +16,7 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
     [Tooltip("The number of points earned when this monster is killed.")]
     [SerializeField]
     protected int _ScoreValue = 10;
+
     [Tooltip("The tier this monster is in. Determines which tiers of buildings it can target and destroy.")]
     [SerializeField]
     protected int _Tier = 1;
@@ -86,7 +87,7 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         else if (_Target.CompareTag("Player") || _Target.CompareTag("Villager")) // Is the target the player or a villager?
         {
             float distanceToTarget = GetDistanceToTarget();
-            if (distanceToTarget > MaxChaseDistance)
+            if (distanceToTarget > _MaxChaseDistance)
             {
                 SetTarget(_PrevTarget);
             }
@@ -156,7 +157,7 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         // also work when called on a prefab. On a prefab, that property returns null
         // since it is not an instance. That means Start() was never called on it so
         // the property is uninitialized.
-        return AttackPower + GetComponent<Health>().MaxHealth;
+        return _AttackPower + GetComponent<Health>().MaxHealth;
     }
 
     public int GetScoreValue()
@@ -187,7 +188,7 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
 
 
     // These are a couple extra methods needed to satisfy the IMonster interface since you can't have fields in an interface.
-    public float GetAttackPower() { return AttackPower; }
+    public float GetAttackPower() { return _AttackPower; }
     public int GetTier() { return _Tier; }
 
     public Material IcyMaterial { get { return _IcyMaterial; } }

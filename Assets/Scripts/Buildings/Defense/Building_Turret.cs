@@ -11,21 +11,20 @@ public class Building_Turret : Building_Base
 {
     [Tooltip("How close the turrent must be facing to it's target (in degrees) before it will fire.")]
     [Range(0f, 180f)]
-    [SerializeField]
-    private float _AimThreshold = 5f;
+    [SerializeField] private float _AimThreshold = 5f;
+
     [Tooltip("How far away the turret can see and attack enemies.")]
     [Range(0f, 50f)]
-    [SerializeField]
-    private float _AttackRange = 10f;
+    [SerializeField] private float _AttackRange = 10f;
+
     [Tooltip("How often the turret fires (in seconds) when it is facing it's target.")]
-    [SerializeField]
-    private float _ProjectileFrequency = 1.5f;
+    [SerializeField] private float _ProjectileFrequency = 1.5f;
+
     [Tooltip("A marker that specifies the position where projectiles will spawn.")]
-    [SerializeField]
-    private GameObject _ProjectileSpawnPoint;
+    [SerializeField] private GameObject _ProjectileSpawnPoint;
+
     [Tooltip("The rotation speed of the turret in degrees per second.")]
-    [SerializeField]
-    private float _RotationSpeed = 20f;
+    [SerializeField] private float _RotationSpeed = 20f;
 
 
 

@@ -9,23 +9,18 @@ using TMPro;
 
 public class HealthPopup : MonoBehaviour
 {
-    [SerializeField]
-    private AnimationCurve _AccelerationCurve;
+    [SerializeField] private AnimationCurve _AccelerationCurve;
 
-    [SerializeField]
     [Range(0f, 5f)]
-    private float _FadeStartDelay = 2.0f;
-
-    [SerializeField]
+    [SerializeField] private float _FadeStartDelay = 2.0f;
+    
     [Range(0f, 5f)]
-    private float _FadeOutTime = 1.0f;
+    [SerializeField] private float _FadeOutTime = 1.0f;
 
-    [SerializeField]
     [Range(0f, 5f)]
-    private float _MaxMoveSpeed = 2.5f;
+    [SerializeField] private float _MaxMoveSpeed = 2.5f;
 
-    [SerializeField]
-    private TMP_Text _TMP_Text;
+    [SerializeField] private TMP_Text _TMP_Text;
 
 
     private float _ElapsedTime;

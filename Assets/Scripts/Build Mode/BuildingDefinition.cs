@@ -3,13 +3,6 @@
 using UnityEngine;
 
 
-public struct MaterialCost
-{
-    public ResourceTypes Resource;
-    public int Amount;
-}
-
-
 public class BuildingDefinition
 {
     public string Name;

@@ -10,18 +10,18 @@ using Random = UnityEngine.Random;
 
 public class Health : MonoBehaviour
 {
-    public float MaxHealth = 100;
-
-    public bool EnableDamageFlash = true;
-    public Color DamageFlashColor = Color.red;
-    public float DamageFlashTime = 0.1f;
+    [SerializeField] private float _MaxHealth = 100;
+    [SerializeField] private bool _EnableDamageFlash = true;
+    [SerializeField] private Color _DamageFlashColor = Color.red;
+    [SerializeField] private float _DamageFlashTime = 0.1f;
 
     [Tooltip("The damage types this entity is resistant to.")]
-    public DamageTypes IsResistantTo;
+    [SerializeField] private DamageTypes _IsResistantTo;
     [Tooltip("The damage types this entity is vulnerable to.")]
-    public DamageTypes IsVulnerableTo;
+    [SerializeField] private DamageTypes _IsVulnerableTo;
 
-    public bool IsInvincible = false;
+    [SerializeField] private bool _IsInvincible = false;
+
 
 
     private GameManager _GameManager;
@@ -38,6 +38,9 @@ public class Health : MonoBehaviour
 
 
     public float CurrentHealth { get; private set; }
+    public float MaxHealth { get { return _MaxHealth; } set { _MaxHealth = value; } }
+    public bool IsInvincible { get { return _IsInvincible; } }
+
 
 
     public delegate void Health_OnDeathEventHandler(GameObject sender, GameObject attacker);
@@ -85,12 +88,12 @@ public class Health : MonoBehaviour
 
 
         // If this entity is already dead, then do nothing. This way the code below won't spam the OnDeath event when an entity is dead.
-        if (CurrentHealth <= 0 || IsInvincible)
+        if (CurrentHealth <= 0 || _IsInvincible)
             return;
 
 
-        if (EnableDamageFlash &&
-            Time.time - _LastDamageTime > DamageFlashTime)
+        if (_EnableDamageFlash &&
+            Time.time - _LastDamageTime > _DamageFlashTime)
         {
             _LastDamageTime = Time.time;
             
@@ -109,9 +112,9 @@ public class Health : MonoBehaviour
         float buffAmount = 0;
         if (GetComponent<Monster_Base>() != null)
         {
-            if ((IsResistantTo & damageType) > 0)
+            if ((_IsResistantTo & damageType) > 0)
                 buffAmount = (amount * _MonsterManager.DamageResistanceBuffAmount) * -1;
-            else if ((IsVulnerableTo & damageType) > 0)
+            else if ((_IsVulnerableTo & damageType) > 0)
                 buffAmount = amount * _MonsterManager.DamageVulnerabilityBuffAmount;
         }
 
@@ -172,11 +175,11 @@ public class Health : MonoBehaviour
     private IEnumerator DoDamageFlash()
     {
         foreach (MeshRenderer renderer in _MeshRenderers)
-            renderer.material.color = DamageFlashColor;
+            renderer.material.color = _DamageFlashColor;
         foreach (SkinnedMeshRenderer renderer in _SkinnedMeshRenderers)
-            renderer.material.color = DamageFlashColor;
+            renderer.material.color = _DamageFlashColor;
 
-        yield return new WaitForSeconds(DamageFlashTime);
+        yield return new WaitForSeconds(_DamageFlashTime);
 
         foreach (MeshRenderer renderer in _MeshRenderers)
             renderer.material.color = Color.white;

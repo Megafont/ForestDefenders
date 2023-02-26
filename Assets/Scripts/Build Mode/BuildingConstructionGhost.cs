@@ -9,36 +9,41 @@ public class BuildingConstructionGhost : MonoBehaviour
     [Header("General Settings")]
     
     [Tooltip("The minimum distance in front of the player that the construction ghost must be.")]
-    public Vector2 MaxMovementDistances = new Vector2(8f, 5f);
+    [SerializeField] private Vector2 _MaxMovementDistances = new Vector2(8f, 5f);
 
 
     [Header("Grid Snap Settings")]
 
     [Tooltip("The size of the grid used when grid snap is on.")]
     [Range(0.1f, 2.0f)]
-    public float GridSnapIncrement = 1.0f;
+    [SerializeField] private float _GridSnapIncrement = 1.0f;
+
     [Tooltip("The rotation increment used when grid snap is on (in degrees).")]
     [Range(1f, 90f)]
-    public float GridSnapRotationIncrement = 15f;
+    [SerializeField] private float _GridSnapRotationIncrement = 15f;
 
     [Tooltip("How much to move the construction ghost forward/back by per frame when grid snap is off.")]
-    [Range(0.01f, 1.0f)]
-    public float GridSnapOffIncrement = 0.03f;
+    [Range(0.01f, 5.0f)]
+    [SerializeField] private float _GridSnapOffIncrement = 0.1f;
+
     [Tooltip("How much to rotate the construction ghost by per frame when grid snap is off (in degrees).")]
-    [Range(0.1f, 1.0f)]
-    public float GridSnapOffRotationIncrement = 0.5f;
+    [Range(0.1f, 5.0f)]
+    [SerializeField] private float _GridSnapOffRotationIncrement = 1f;
 
 
     [Header("Color Settings")]
     
     [Tooltip("The color the building ghost will appear when it is in an unobstructed area.")]
-    public Color CanBuildColor = new Color32(0, 255, 0, 128);
+    [SerializeField] private Color _CanBuildColor = new Color32(0, 255, 0, 128);
+
     [Tooltip("The color the building ghost will appear when it is in an unobstructed area and grid snap is enabled.")]
-    public Color CanBuildWithGridSnapColor = new Color32(0, 128, 255, 128);
+    [SerializeField] private Color _CanBuildWithGridSnapColor = new Color32(0, 128, 255, 128);
+
     [Tooltip("The color the building ghost will appear when it is in an obstructed area.")]
-    public Color ObstructedColor = new Color32(255, 0, 0, 128);
+    [SerializeField] private Color _ObstructedColor = new Color32(255, 0, 0, 128);
+
     [Tooltip("The color the building ghost will appear when the player can't afford to construct the selected building.")]
-    public Color CantAffordColor = new Color32(100, 0, 0, 128);
+    [SerializeField] private Color _CantAffordColor = new Color32(100, 0, 0, 128);
 
 
 
@@ -158,7 +163,7 @@ public class BuildingConstructionGhost : MonoBehaviour
         _CapsuleCollider = GetComponent<CapsuleCollider>();
 
         GameManager.Instance.BuildModeManager.SelectBuilding("Defense", "Barricade");
-        _Renderer.material.color = CanBuildColor;
+        _Renderer.material.color = _CanBuildColor;
     }
 
     private void CheckGhostMovementInputs()
@@ -177,20 +182,20 @@ public class BuildingConstructionGhost : MonoBehaviour
 
 
         // First check for movement inputs.
-        _GhostOffsetRelativeToPlayer.x += _CurMovePositionState.x * GridSnapOffIncrement;
-        _GhostOffsetRelativeToPlayer.y += _CurMovePositionState.y * GridSnapOffIncrement;
+        _GhostOffsetRelativeToPlayer.x += _CurMovePositionState.x * _GridSnapOffIncrement;
+        _GhostOffsetRelativeToPlayer.y += _CurMovePositionState.y * _GridSnapOffIncrement;
 
         // Next, check for rotation inputs.
         if (_CurRotateLeftState)
-            _GhostRotationInDegrees -= GridSnapOffRotationIncrement;
+            _GhostRotationInDegrees -= _GridSnapOffRotationIncrement;
 
         if (_CurRotateRightState)
-            _GhostRotationInDegrees += GridSnapOffRotationIncrement;
+            _GhostRotationInDegrees += _GridSnapOffRotationIncrement;
 
 
         // Clamp the construction position within range.
-        _GhostOffsetRelativeToPlayer.x = Mathf.Clamp(_GhostOffsetRelativeToPlayer.x, -MaxMovementDistances.x, MaxMovementDistances.x);
-        _GhostOffsetRelativeToPlayer.y = Mathf.Clamp(_GhostOffsetRelativeToPlayer.y, -MaxMovementDistances.y, MaxMovementDistances.y);
+        _GhostOffsetRelativeToPlayer.x = Mathf.Clamp(_GhostOffsetRelativeToPlayer.x, -_MaxMovementDistances.x, _MaxMovementDistances.x);
+        _GhostOffsetRelativeToPlayer.y = Mathf.Clamp(_GhostOffsetRelativeToPlayer.y, -_MaxMovementDistances.y, _MaxMovementDistances.y);
 
 
         _GhostRotationInDegrees = _GhostRotationInDegrees % 360;
@@ -207,7 +212,7 @@ public class BuildingConstructionGhost : MonoBehaviour
         newPos.y = GetGhostYPos(newPos);
 
         if (_CurGridSnapState)
-            newPos = Utils_Math.SnapPositionToGrid(newPos, GridSnapIncrement);
+            newPos = Utils_Math.SnapPositionToGrid(newPos, _GridSnapIncrement);
 
         transform.position = newPos;
 
@@ -219,7 +224,7 @@ public class BuildingConstructionGhost : MonoBehaviour
         eulerAngles.y = _GhostRotationInDegrees;
 
         if (_CurGridSnapState)
-            eulerAngles.y = Utils_Math.RoundToNearestMultiple(eulerAngles.y, GridSnapRotationIncrement);
+            eulerAngles.y = Utils_Math.RoundToNearestMultiple(eulerAngles.y, _GridSnapRotationIncrement);
 
         q.eulerAngles = eulerAngles;
         transform.rotation = q;
@@ -432,15 +437,15 @@ public class BuildingConstructionGhost : MonoBehaviour
     {
         if (IsObstructed())
         {
-            _Renderer.material.color = ObstructedColor;
+            _Renderer.material.color = _ObstructedColor;
         }
         else if (!_BuildModeManager.CanAffordBuilding(_BuildingDefinition.ConstructionCosts))
         {
-            _Renderer.material.color = CantAffordColor;
+            _Renderer.material.color = _CantAffordColor;
         }
         else
         {
-            _Renderer.material.color = _InputManager.BuildMode.GridSnap ? CanBuildWithGridSnapColor : CanBuildColor;
+            _Renderer.material.color = _InputManager.BuildMode.GridSnap ? _CanBuildWithGridSnapColor : _CanBuildColor;
         }
     }
 

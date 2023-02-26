@@ -1,21 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 using TMPro;
-using UnityEditor.SceneManagement;
+
 
 public class LevelUpDialog : Dialog_Base
 {
-    [Range(2, 5)]
-    public float NumberOfBuffOptions = 4;
-
     [Tooltip("This much time in seconds must elapse before the menu will respond to another input event to keep it from moving too fast.")]
-    public float GamepadMenuSelectionDelay = 0.1f;
+    [SerializeField] private float _GamepadMenuSelectionDelay = 0.1f;
+
+
 
     public float CurrentPlayerAttackPower { get; private set; }
     public float CurrentPlayerMaxHealth { get; private set; }
@@ -76,7 +74,7 @@ public class LevelUpDialog : Dialog_Base
 
     protected override void Dialog_OnUpdate()
     {
-        if (Time.time - _LastGamepadSelectionChange >= GamepadMenuSelectionDelay)
+        if (Time.time - _LastGamepadSelectionChange >= _GamepadMenuSelectionDelay)
         {
             // If the mouse has caused the selection to be lost by clicking not on a button, then reselect the currently selected button according to this class's stored index.
             if (EventSystem.current.currentSelectedGameObject == null)

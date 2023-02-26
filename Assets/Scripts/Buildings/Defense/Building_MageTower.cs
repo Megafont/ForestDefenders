@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class Building_MageTower : Building_Base
 {
-    public GameObject MageSpawnPoint;
+    [SerializeField] private GameObject _MageSpawnPoint;
     
 
     private MageTowerOccupant _ActiveMageInstance;
@@ -29,7 +29,7 @@ public class Building_MageTower : Building_Base
         ConfigureBasicBuildingSetup("Defense", "Mage Tower");
 
 
-        if (MageSpawnPoint == null)
+        if (_MageSpawnPoint == null)
             throw new System.Exception($"The mage spawn point GameObject for the mage tower at {transform.position} is missing!");
 
 
@@ -149,7 +149,7 @@ public class Building_MageTower : Building_Base
     {
         if (_FemaleMageInstance == null)
         {
-            GameObject female = Instantiate(_FemaleMagePrefab, MageSpawnPoint.transform.position, Quaternion.identity, gameObject.transform);
+            GameObject female = Instantiate(_FemaleMagePrefab, _MageSpawnPoint.transform.position, Quaternion.identity, gameObject.transform);
             _FemaleMageInstance = female.GetComponent<MageTowerOccupant>();
             _FemaleMageInstance.gameObject.SetActive(false);
 
@@ -162,7 +162,7 @@ public class Building_MageTower : Building_Base
 
         if (_MaleMageInstance == null)
         {
-            GameObject male = Instantiate(_MaleMagePrefab, MageSpawnPoint.transform.position, Quaternion.identity, gameObject.transform);
+            GameObject male = Instantiate(_MaleMagePrefab, _MageSpawnPoint.transform.position, Quaternion.identity, gameObject.transform);
             _MaleMageInstance = male.GetComponent<MageTowerOccupant>();
             _MaleMageInstance.gameObject.SetActive(false);
 
