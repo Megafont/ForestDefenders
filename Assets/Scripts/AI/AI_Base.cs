@@ -19,17 +19,16 @@ public abstract class AI_Base : MonoBehaviour
 
 
 
-    public float DeathFadeOutTime = 2.0f;
+    [SerializeField] protected float _DeathFadeOutTime = 2.0f;
 
     [Range(0.01f, 10f)]
     [Tooltip("This is the maximum movement speed. Make sure the walk/run thresholds are set correctly in the Animator's blend tree node, too.")]
-    public float MaxMovementSpeed = 3.5f; // 3.5 is the default movement speed of NavMeshAgents.
+    [SerializeField] protected float _MaxMovementSpeed = 3.5f; // 3.5 is the default movement speed of NavMeshAgents.
 
     [Tooltip("How often (in seconds) the AI will interact with a non-combat target such as a resource node.")]
-    public float InteractionFrequency = 2.0f;
+    [SerializeField] protected float _InteractionFrequency = 2.0f;
 
 
-    public Health HealthComponent { get { return _Health; } }
 
     protected GameManager _GameManager;
     protected Animator _Animator;
@@ -47,13 +46,17 @@ public abstract class AI_Base : MonoBehaviour
     protected WaitForSeconds _DeathFadeOutDelay;
 
 
+    public Health HealthComponent { get { return _Health; } }
+    public float MaxMovementSpeed { get { return _MaxMovementSpeed; } }
+
+
     private void Awake()
     {
         _GameManager = GameManager.Instance;
 
         _Animator = GetComponent<Animator>();
 
-        _DeathFadeOutDelay = new WaitForSeconds(DeathFadeOutTime);
+        _DeathFadeOutDelay = new WaitForSeconds(_DeathFadeOutTime);
         _Health = GetComponent<Health>();
         _NavMeshAgent = GetComponent<NavMeshAgent>();
 
@@ -140,7 +143,7 @@ public abstract class AI_Base : MonoBehaviour
                                              _Target.transform.position.z));
             }
 
-            if (Time.time - _LastInteractionTime >= InteractionFrequency)
+            if (Time.time - _LastInteractionTime >= _InteractionFrequency)
             {
                 _LastInteractionTime = Time.time;
 
@@ -162,7 +165,7 @@ public abstract class AI_Base : MonoBehaviour
         if (_Animator)
         {
             float speed = _NavMeshAgent.velocity.magnitude;
-            float motionSpeed = (speed == 0) ? 1 : speed / MaxMovementSpeed; // If speed is 0 (the AI is not moving), then set motionSpeed to 1 so the idle animation will play at normal speed.
+            float motionSpeed = (speed == 0) ? 1 : speed / _MaxMovementSpeed; // If speed is 0 (the AI is not moving), then set motionSpeed to 1 so the idle animation will play at normal speed.
             motionSpeed = Mathf.Min(motionSpeed, 0.75f); // Limit how slow the animation can get, as it looks to slow sometimes otherwise.
             
             //Debug.Log($"AI Name: {gameObject.name}    Speed: {speed}    MotionSpeed: {motionSpeed}    MaxSpeed: {MaxMovementSpeed}");

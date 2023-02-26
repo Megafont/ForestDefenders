@@ -6,7 +6,9 @@ using UnityEngine;
 
 public class MonsterTargetDetector : MonoBehaviour
 {
-    public float DetectionRadius = 5.0f;
+    [SerializeField] private float _DetectionRadius = 5.0f;
+
+
 
     private IMonster _Parent;
     private SphereCollider _Collider;
@@ -17,7 +19,7 @@ public class MonsterTargetDetector : MonoBehaviour
     void Start()
     {
         _Collider = GetComponent<SphereCollider>();
-        _Collider.radius = DetectionRadius;
+        _Collider.radius = _DetectionRadius;
 
         _Parent = transform.parent.gameObject.GetComponent<Monster_Base>();
     }

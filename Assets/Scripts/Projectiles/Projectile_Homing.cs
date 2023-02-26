@@ -7,7 +7,7 @@ using UnityEngine;
 public class Projectile_Homing : Projectile_Base
 {
     [Range(0f, 1f)]
-    public float DefaultHomingStrength = 0.5f;
+    [SerializeField] protected float _DefaultHomingStrength = 0.5f;
 
 
     protected float _CurHomingStrength;
@@ -66,7 +66,7 @@ public class Projectile_Homing : Projectile_Base
 
     public override void ResetProjectile(Transform parent, Vector3 spawnPosition, GameObject target)
     {
-        _CurHomingStrength = DefaultHomingStrength * 5;
+        _CurHomingStrength = _DefaultHomingStrength * 5;
 
         base.ResetProjectile(parent, spawnPosition, target);
     }

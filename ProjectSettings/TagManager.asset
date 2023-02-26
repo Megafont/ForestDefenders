@@ -14,6 +14,7 @@ TagManager:
   - MonsterTargetDetector
   - BridgeConstructionZone
   - Building Prefab
+  - Player Follow Camera
   layers:
   - Default
   - TransparentFX
@@ -31,7 +32,7 @@ TagManager:
   - Construction Ghost
   - Projectiles
   - Ice Wave
-  - 
+  - Camera
   - 
   - 
   - 

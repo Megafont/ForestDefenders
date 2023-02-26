@@ -13,10 +13,10 @@ public class ResourceNode : MonoBehaviour
     [Header("Node Settings")]
 
     [Tooltip("The type of resource provided by this node.")]
-    public ResourceTypes ResourceType;
+    [SerializeField] private ResourceTypes _ResourceType;
 
     [Tooltip("The maximum amount of resources that this node may potentially contain.")]
-    public float MaxAmountInNode = 50;
+    [SerializeField] private float _MaxAmountInNode = 50;
 
 
 
@@ -29,6 +29,11 @@ public class ResourceNode : MonoBehaviour
     private float _AmountAvailable;
 
     private List<IVillager> _VillagersMiningThisNode;
+
+
+
+    public ResourceTypes ResourceType { get { return _ResourceType; } }
+
 
 
     public delegate void ResourceNodeEventHandler(ResourceNode sender);
@@ -66,7 +71,7 @@ public class ResourceNode : MonoBehaviour
         float gatherAmount = CalculateGatherAmount(gatherer);
 
         AmountAvailable -= gatherAmount;
-        _ResourceManager.Stockpiles[ResourceType] += gatherAmount;
+        _ResourceManager.Stockpiles[_ResourceType] += gatherAmount;
 
 
         if (gatherer.CompareTag("Player"))
@@ -79,7 +84,7 @@ public class ResourceNode : MonoBehaviour
         // This way, we only fire the event once.
         if (IsDepleted && amountBeforeGather > 0)
         {
-            _GameManager.AddToScore((int) MaxAmountInNode * _GameManager.PlayerGatheringScoreMultiplier);
+            _GameManager.AddToScore((int) _MaxAmountInNode * _GameManager.PlayerGatheringScoreMultiplier);
             OnNodeDepleted?.Invoke(this);
         }
 
@@ -102,7 +107,7 @@ public class ResourceNode : MonoBehaviour
     {
         float randomVariance = Random.Range(0.0f, _ResourceManager.ResourceNodeAmountVariance);
 
-        _AmountAvailable = Mathf.CeilToInt(MaxAmountInNode - (MaxAmountInNode * randomVariance));
+        _AmountAvailable = Mathf.CeilToInt(_MaxAmountInNode - (_MaxAmountInNode * randomVariance));
     }
 
     public void AddVillagerToMiningList(IVillager villager)
@@ -122,18 +127,18 @@ public class ResourceNode : MonoBehaviour
 
     private void GetSoundSet()
     {
-        switch (ResourceType)
+        switch (_ResourceType)
         {
             case ResourceTypes.Food:
-                _SoundSetPlayer.SoundSet = GameManager.Instance.SoundParams.GetSoundSet("Sound Set - Gathering Food");
+                _SoundSetPlayer._SoundSet = GameManager.Instance.SoundParams.GetSoundSet("Sound Set - Gathering Food");
                 break;
 
             case ResourceTypes.Stone:
-                _SoundSetPlayer.SoundSet = GameManager.Instance.SoundParams.GetSoundSet("Sound Set - Mining Stone");
+                _SoundSetPlayer._SoundSet = GameManager.Instance.SoundParams.GetSoundSet("Sound Set - Mining Stone");
                 break;
 
             case ResourceTypes.Wood:
-                _SoundSetPlayer.SoundSet = GameManager.Instance.SoundParams.GetSoundSet("Sound Set - Chopping Wood");
+                _SoundSetPlayer._SoundSet = GameManager.Instance.SoundParams.GetSoundSet("Sound Set - Chopping Wood");
                 break;
 
 

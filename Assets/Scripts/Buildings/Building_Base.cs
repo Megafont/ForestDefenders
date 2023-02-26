@@ -14,16 +14,16 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
     protected Health _Health;
     protected NavMeshObstacle _NavMeshObstacle;
 
+    protected BuildingDefinition _BuildingDefinition;
+    protected VillageManager_Buildings _VillageManager_Buildings;
+    protected VillageManager_Villagers _VillageManager_Villagers;
+    
+    
 
     public string Category { get; protected set; }
     public string Name { get; protected set; }
     
     public Health HealthComponent { get { return _Health; } }
-
-
-    protected BuildingDefinition _BuildingDefinition;
-    protected VillageManager_Buildings _VillageManager_Buildings;
-    protected VillageManager_Villagers _VillageManager_Villagers;
 
 
 

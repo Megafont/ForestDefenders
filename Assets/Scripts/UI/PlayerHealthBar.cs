@@ -10,16 +10,16 @@ public class PlayerHealthBar : MonoBehaviour
 {
     [Tooltip("The length of the healthbar is the current value of the bar times this multiplier.")]
     [Range(0.25f, 10f)]
-    public float LengthMultiplier = 2.5f;
+    [SerializeField] private float _LengthMultiplier = 5f;
 
     [Range(1f, 10f)]
-    public float BorderThickness = 5f;
+    [SerializeField] private float _BorderThickness = 5f;
 
-    public bool FadeBarColorAsHealthDrops = true;
-    public Color32 BackgroundColor = Color.gray;
-    public Color32 FullColor = new Color32(0, 150, 0, 255);
-    public Color32 MediumColor = new Color32(255, 170, 0, 255);
-    public Color32 LowColor = Color.red;
+    [SerializeField] private bool _FadeBarColorAsHealthDrops = true;
+    [SerializeField] private Color32 _BackgroundColor = Color.gray;
+    [SerializeField] private Color32 _FullColor = new Color32(0, 150, 0, 255);
+    [SerializeField] private Color32 _MediumColor = new Color32(255, 170, 0, 255);
+    [SerializeField] private Color32 _LowColor = Color.red;
 
 
 
@@ -79,7 +79,7 @@ public class PlayerHealthBar : MonoBehaviour
 
 
         // Set the length of the parent object in case the player's max health has changed.
-        _RectTransform.sizeDelta = new Vector2(maxValue * LengthMultiplier, _RectTransform.sizeDelta.y);
+        _RectTransform.sizeDelta = new Vector2(maxValue * _LengthMultiplier, _RectTransform.sizeDelta.y);
 
 
         // How far should we fill the health bar?
@@ -89,23 +89,23 @@ public class PlayerHealthBar : MonoBehaviour
         _UI_HealthBarBackgroundImage.rectTransform.sizeDelta = new Vector2(_RectTransform.rect.width,
                                                                            50f);
 
-        _UI_HealthBarImage.rectTransform.sizeDelta = new Vector2(shadedBarSectionLength - (BorderThickness * 2f), 
-                                                                 50f - (BorderThickness * 2));
+        _UI_HealthBarImage.rectTransform.sizeDelta = new Vector2(shadedBarSectionLength - (_BorderThickness * 2f), 
+                                                                 50f - (_BorderThickness * 2));
 
 
-        _UI_HealthBarBackgroundImage.color = BackgroundColor;
+        _UI_HealthBarBackgroundImage.color = _BackgroundColor;
 
 
         // Fade the bar between colors as health drops if enabled.
-        if (FadeBarColorAsHealthDrops)
+        if (_FadeBarColorAsHealthDrops)
         {
             if (_PlayerHealthComponent.CurrentHealth >= _PlayerHealthComponent.MaxHealth / 2)
-                _UI_HealthBarImage.color = Color.Lerp(MediumColor, FullColor, (fillPercentage - 0.5f) * 2f);
+                _UI_HealthBarImage.color = Color.Lerp(_MediumColor, _FullColor, (fillPercentage - 0.5f) * 2f);
             else
-                _UI_HealthBarImage.color = Color.Lerp(LowColor, MediumColor, fillPercentage * 2f);
+                _UI_HealthBarImage.color = Color.Lerp(_LowColor, _MediumColor, fillPercentage * 2f);
         }
         else
-            _UI_HealthBarImage.color = FullColor;
+            _UI_HealthBarImage.color = _FullColor;
 
 
         // Update the health bar text.

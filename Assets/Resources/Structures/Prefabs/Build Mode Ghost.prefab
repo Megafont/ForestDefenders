@@ -94,10 +94,21 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3016518859856247255}
-  serializedVersion: 2
+  serializedVersion: 4
   m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 1
   m_Interpolate: 0
@@ -115,15 +126,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efecd496e51398646a1de518e7d40e3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxMovementDistances: {x: 12, y: 8}
-  GridSnapIncrement: 1
-  GridSnapRotationIncrement: 15
-  GridSnapOffIncrement: 0.1
-  GridSnapOffRotationIncrement: 0.5
-  CanBuildColor: {r: 0, g: 1, b: 0, a: 0.5019608}
-  CanBuildWithGridSnapColor: {r: 0, g: 0.5019608, b: 1, a: 0.5019608}
-  ObstructedColor: {r: 1, g: 0, b: 0, a: 0.5019608}
-  CantAffordColor: {r: 0.39215687, g: 0, b: 0, a: 0.5019608}
+  _MaxMovementDistances: {x: 8, y: 5}
+  _GridSnapIncrement: 1
+  _GridSnapRotationIncrement: 15
+  _GridSnapOffIncrement: 0.1
+  _GridSnapOffRotationIncrement: 2
+  _CanBuildColor: {r: 0, g: 1, b: 0, a: 0.5019608}
+  _CanBuildWithGridSnapColor: {r: 0, g: 0.5019608, b: 1, a: 0.5019608}
+  _ObstructedColor: {r: 1, g: 0, b: 0, a: 0.5019608}
+  _CantAffordColor: {r: 0.39215687, g: 0, b: 0, a: 0.5019608}
 --- !u!65 &4341365631053159840
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -132,9 +143,17 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3016518859856247255}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 1
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!136 &8275343356523308250
@@ -145,8 +164,17 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3016518859856247255}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 1
+  m_ProvidesContacts: 0
   m_Enabled: 0
+  serializedVersion: 2
   m_Radius: 0.5
   m_Height: 1
   m_Direction: 1

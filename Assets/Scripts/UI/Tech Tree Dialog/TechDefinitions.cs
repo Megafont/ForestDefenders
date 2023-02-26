@@ -79,6 +79,7 @@ public static class TechDefinitions
         {
             new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_SpikeTower, Title = "Spike Tower", DescriptionText = "Gain the technology to build spike towers.", XPCost = 10 },
             new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_Turret, Title = "Turret", DescriptionText = "Gain the technology to build simple turrets.", XPCost = 15 },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_IceTurret, Title = "Ice Turret", DescriptionText = "Gain the technology to build ice turrets that can slow enemies.", XPCost = 25 },
             new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_MageTower, Title = "Mage Tower", DescriptionText = "Gain the technology to build mage towers.", XPCost = 30 },
         };
 

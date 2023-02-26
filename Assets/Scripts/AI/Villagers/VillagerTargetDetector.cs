@@ -6,7 +6,8 @@ using UnityEngine;
 
 public class VillagerTargetDetector : MonoBehaviour
 {
-    public float DetectionRadius = 5.0f;
+    [SerializeField] private float _DetectionRadius = 5.0f;
+
 
     private Villager_Base _Parent;
     private SphereCollider _Collider;
@@ -17,7 +18,7 @@ public class VillagerTargetDetector : MonoBehaviour
     void Start()
     {
         _Collider = GetComponent<SphereCollider>();
-        _Collider.radius = DetectionRadius;
+        _Collider.radius = _DetectionRadius;
 
         _Parent = transform.parent.gameObject.GetComponent<Villager_Base>();
     }

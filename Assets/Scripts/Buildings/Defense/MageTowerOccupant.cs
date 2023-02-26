@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+
 using UnityEngine;
 using UnityEngine.Pool;
-using UnityEngine.ProBuilder;
 
 
 public class MageTowerOccupant : MonoBehaviour
@@ -17,6 +16,7 @@ public class MageTowerOccupant : MonoBehaviour
 
     [SerializeField]
     private float _AttackRange = 20.0f;
+
 
 
     private Health _Health;

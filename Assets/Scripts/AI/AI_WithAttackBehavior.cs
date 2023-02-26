@@ -10,14 +10,14 @@ using UnityEngine.AI;
 /// </summary>
 public abstract class AI_WithAttackBehavior : AI_Base
 {
-    public float AttackPower = 3;
-    public float AttackCheckFrequency = 1.0f;
-    public DamageTypes DamageType = DamageTypes.Physical;
+    [SerializeField] protected float _AttackPower = 3;
+    [SerializeField] protected float _AttackCheckFrequency = 1.0f;
+    [SerializeField] protected DamageTypes _DamageType = DamageTypes.Physical;
 
-    public float MaxChaseDistance = 20.0f;
+    [SerializeField] protected float _MaxChaseDistance = 20.0f;
 
-    public float TargetCheckFrequency = 3.0f;
-    public float TargetCheckRadius = 5.0f;
+    [SerializeField] protected float _TargetCheckFrequency = 3.0f;
+    [SerializeField] protected float _TargetCheckRadius = 5.0f;
 
 
     protected bool _IsAttacking;
@@ -26,6 +26,34 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
     protected int[] _AttackAnimationNameHashes;
     protected int _HashOfPlayingAttackAnim = -1;
+
+
+
+    public float AttackPower 
+    { 
+        get { return _AttackPower; } 
+        set { _AttackPower = value; } 
+    }
+    public float AttackCheckFrequency
+    {
+        get { return _AttackCheckFrequency; }
+        set { _AttackCheckFrequency = value; }
+    }
+    public float MaxChaseDistance
+    {
+        get { return _MaxChaseDistance; }
+        set { _MaxChaseDistance = value; }
+    }
+    public float TargetCheckFrequency
+    {
+        get { return _TargetCheckFrequency; }
+        set { _TargetCheckFrequency = value; }
+    }
+    public float TargetCheckRadius
+    {
+        get { return _TargetCheckRadius; }
+        set { _TargetCheckRadius = value; }
+    }
 
 
 
@@ -53,7 +81,7 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
 
         // Is it time for the next target check?
-        if (Time.time - _LastTargetCheckTime >= TargetCheckFrequency)
+        if (Time.time - _LastTargetCheckTime >= _TargetCheckFrequency)
         {
             _LastTargetCheckTime = Time.time;
 
@@ -118,7 +146,7 @@ public abstract class AI_WithAttackBehavior : AI_Base
             _IsAttacking = true;
 
             // If the AI is attacking, has the attack cooldown period fully elapsed yet?
-            if (Time.time - _LastAttackTime >= AttackCheckFrequency)
+            if (Time.time - _LastAttackTime >= _AttackCheckFrequency)
             {
                 DoAttack();
             }
@@ -149,7 +177,7 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
         if (health != null && health.CurrentHealth > 0)
         {
-            health.DealDamage(AttackPower, DamageType, gameObject);
+            health.DealDamage(_AttackPower, _DamageType, gameObject);
             AnimateAttack();
         }
 
@@ -164,7 +192,7 @@ public abstract class AI_WithAttackBehavior : AI_Base
 
     protected bool TargetIsWithinChaseRange()
     {
-        return GetDistanceToTarget() <= MaxChaseDistance;
+        return GetDistanceToTarget() <= _MaxChaseDistance;
     }
 
     protected abstract void UpdateNearbyTargetDetectorState();

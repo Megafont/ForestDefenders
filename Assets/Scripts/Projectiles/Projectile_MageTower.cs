@@ -8,7 +8,7 @@ public class Projectile_MageTower : Projectile_Homing
 {
     [Range(1f, 10f)]
     [Tooltip("The mage tower projectile will detonate when it gets within this distance of the target.")]
-    public float DetonationRange = 5.0f;
+    [SerializeField] private float _DetonationRange = 5.0f;
 
 
     private ParticleSystem _ExplosionParticleSystem;
@@ -32,7 +32,7 @@ public class Projectile_MageTower : Projectile_Homing
         base.UpdateProjectile();
 
         //Debug.Log($"Pos: {_TargetPosition}    Target: {_TargetPosition}    Dist: {Vector3.Distance(transform.position, _TargetPosition)}");
-        if (_Target && !_HasDetonated && Vector3.Distance(transform.position, _TargetPosition) <= DetonationRange )
+        if (_Target && !_HasDetonated && Vector3.Distance(transform.position, _TargetPosition) <= _DetonationRange )
         {
             _HasDetonated = true;
 
@@ -60,11 +60,11 @@ public class Projectile_MageTower : Projectile_Homing
         yield return _ExplosionDamageDelay;
 
 
-        RaycastHit[] enemies = Physics.SphereCastAll(transform.position, _ExplosionParticleSystem.shape.radius + 2.0f, transform.forward, 2.0f, TargetLayers.value);
+        RaycastHit[] enemies = Physics.SphereCastAll(transform.position, _ExplosionParticleSystem.shape.radius + 2.0f, transform.forward, 2.0f, _TargetLayers.value);
         for (int i = 0; i < enemies.Length; i++)
         {
             GameObject obj = enemies[i].collider.gameObject;
-            enemies[i].collider.gameObject.GetComponent<Health>().DealDamage(DefaultAttackPower, DamageType, this.gameObject);
+            enemies[i].collider.gameObject.GetComponent<Health>().DealDamage(_DefaultAttackPower, _DamageType, this.gameObject);
         }
     }
 
@@ -76,7 +76,7 @@ public class Projectile_MageTower : Projectile_Homing
         GetComponent<MeshRenderer>().enabled = true;
         GetComponent<SphereCollider>().enabled = true;
 
-        _CurHomingStrength = DefaultHomingStrength;
+        _CurHomingStrength = _DefaultHomingStrength;
 
         base.ResetProjectile(parent, spawnPosition, target);
     }

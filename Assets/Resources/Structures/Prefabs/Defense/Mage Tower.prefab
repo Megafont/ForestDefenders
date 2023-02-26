@@ -268,7 +268,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9229c8f60f2c1e64489493525ffe87fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MageSpawnPoint: {fileID: 2962723562212173198}
+  _MageSpawnPoint: {fileID: 2962723562212173198}
 --- !u!114 &3670525582736076425
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -281,10 +281,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3950e6e9fcef36478009ff55fcb081e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHealth: 100
-  EnableDamageFlash: 1
-  DamageFlashColor: {r: 1, g: 0, b: 0, a: 1}
-  DamageFlashTime: 0.1
-  IsResistantTo: 0
-  IsVulnerableTo: 0
-  IsInvincible: 0
+  _MaxHealth: 100
+  _EnableDamageFlash: 1
+  _DamageFlashColor: {r: 1, g: 0, b: 0, a: 1}
+  _DamageFlashTime: 0.1
+  _IsResistantTo: 0
+  _IsVulnerableTo: 0
+  _IsInvincible: 0

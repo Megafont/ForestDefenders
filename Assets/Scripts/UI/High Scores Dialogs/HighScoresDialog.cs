@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
-using UnityEngine.UI;
 
 using TMPro;
 
@@ -60,7 +59,7 @@ public class HighScoresDialog : Dialog_Base, IDialog
         _HighScoresTableUIs = new List<HighScoresTableRow>();
 
 
-        for (int i = 0; i < HighScores.MAX_HIGHSCORES_TABLE_SIZE; i++)
+        for (int i = 0; i < Utils_HighScores.MAX_HIGHSCORES_TABLE_SIZE; i++)
         {
             GameObject tableRow = Instantiate(_ScoreTableRowPrefab, 
                                               new Vector3(0, -50 + (-50 * i), 0), 
@@ -79,8 +78,8 @@ public class HighScoresDialog : Dialog_Base, IDialog
 
     private void LoadHighScoresTables()
     {        
-        _HighScoresTable = HighScores.GetHighScoresTable(HighScoreTypes.Score);
-        _HighTimesTable = HighScores.GetHighScoresTable(HighScoreTypes.SurvivalTime);
+        _HighScoresTable = Utils_HighScores.GetHighScoresTable(HighScoreTypes.Score);
+        _HighTimesTable = Utils_HighScores.GetHighScoresTable(HighScoreTypes.SurvivalTime);
     }
 
     public override void OpenDialog(bool closeOtherOpenDialogs = true)
@@ -118,7 +117,7 @@ public class HighScoresDialog : Dialog_Base, IDialog
 
 
         // Display the high scores table.
-        for (int i = 0; i < HighScores.MAX_HIGHSCORES_TABLE_SIZE; i++)
+        for (int i = 0; i < Utils_HighScores.MAX_HIGHSCORES_TABLE_SIZE; i++)
         {
             _HighScoresTableUIs[i].SetRowData(highScoresTable[i], _SelectedTableType);
         } // end for i

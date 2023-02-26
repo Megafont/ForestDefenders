@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class SoundSetPlayer : MonoBehaviour
 {
-    public SoundSet SoundSet;
+    public SoundSet _SoundSet;
 
 
     private int _NextSoundIndex;
@@ -14,21 +14,21 @@ public class SoundSetPlayer : MonoBehaviour
 
     public void PlaySound()
     {
-        if (SoundSet.SoundsList == null)
+        if (_SoundSet.SoundsList == null)
         {
             Debug.LogError($"Could not play a sound, because the sound set is null!");
             return;
         }
 
-        if (SoundSet.SoundsList.Count == 0)
+        if (_SoundSet.SoundsList.Count == 0)
         {
             Debug.LogError($"Could not play a sound, because the sound set \"SoundSet.Name\" is empty!");
             return;
         }
 
 
-        var index = Random.Range(0, SoundSet.SoundsList.Count);
-        AudioSource.PlayClipAtPoint(SoundSet.SoundsList[index], transform.position, SoundSet.Volume);
+        var index = Random.Range(0, _SoundSet.SoundsList.Count);
+        AudioSource.PlayClipAtPoint(_SoundSet.SoundsList[index], transform.position, _SoundSet.Volume);
     }
 
 }

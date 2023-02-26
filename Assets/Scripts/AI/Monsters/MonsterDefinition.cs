@@ -16,7 +16,8 @@ public class MonsterDefinition
     public float AttackCheckFrequency;
     public int ScoreValue;
     public float MaxChaseDistance;
-
+    public float TargetCheckFrequency;
+    public float TargetCheckRadius;
 
 
     public void ApplyStatsToMonster(Monster_Base monster)
@@ -30,5 +31,8 @@ public class MonsterDefinition
         monster.HealthComponent.MaxHealth = MaxHealth;
         monster.HealthComponent.ResetHealthToMax();
 
+        monster.TargetCheckFrequency = TargetCheckFrequency;
+        monster.TargetCheckRadius = TargetCheckRadius;
     }
+
 }

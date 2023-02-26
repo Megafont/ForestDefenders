@@ -2,23 +2,21 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
-using UnityEngine.AI;
 
 
 [RequireComponent(typeof(Light))]
 public abstract class Projectile_Base : MonoBehaviour, IProjectile
 {
-    public float DefaultAttackPower = 10.0f;
-    public float DefaultMaxLifespan = 60.0f;
-    public float DefaultSpeed = 5.0f;
+    [SerializeField] protected float _DefaultAttackPower = 10.0f;
+    [SerializeField] protected float _DefaultMaxLifespan = 60.0f;
+    [SerializeField] protected float _DefaultSpeed = 5.0f;
 
-    public DamageTypes DamageType = DamageTypes.Physical;
+    [SerializeField] protected DamageTypes _DamageType = DamageTypes.Physical;
 
-    public bool DieOnImpact = true;
+    [SerializeField] protected bool _DieOnImpact = true;
 
-    public LayerMask TargetLayers = ~0; // Set the layer mask to have all layers enabled.
+    [SerializeField] protected LayerMask _TargetLayers = ~0; // Set the layer mask to have all layers enabled.
 
 
     protected Vector3 _CurDirection;
@@ -74,7 +72,7 @@ public abstract class Projectile_Base : MonoBehaviour, IProjectile
         _PrevPosition = transform.position;
 
         // Check if the projectile has lived out its maximum life span.
-        if (Time.time - _ProjectileStartTime >= DefaultMaxLifespan)
+        if (Time.time - _ProjectileStartTime >= _DefaultMaxLifespan)
             OnDeath();
     }
 
@@ -97,9 +95,9 @@ public abstract class Projectile_Base : MonoBehaviour, IProjectile
         // layers for this projectile, then deal damage to it.
         Health targetHealth = objectHit.GetComponent<Health>();
         if (targetHealth &&
-            Utils.LayerMaskContains(TargetLayers.value, objectHit.gameObject.layer))
+            Utils.LayerMaskContains(_TargetLayers.value, objectHit.gameObject.layer))
         {
-            targetHealth.DealDamage(_CurAttackPower, DamageType, gameObject);
+            targetHealth.DealDamage(_CurAttackPower, _DamageType, gameObject);
         }
 
 
@@ -107,7 +105,7 @@ public abstract class Projectile_Base : MonoBehaviour, IProjectile
         OnCollided?.Invoke(this, objectHit.gameObject);
 
 
-        if (DieOnImpact)
+        if (_DieOnImpact)
             OnDeath();
     }
 
@@ -128,7 +126,7 @@ public abstract class Projectile_Base : MonoBehaviour, IProjectile
         if (parent == null)
             throw new Exception("The projectile's parent cannot be null!");
 
-        if (DefaultSpeed <= 0)
+        if (_DefaultSpeed <= 0)
             throw new Exception("The projectile's speed cannot be set to 0 or a negative number!");
 
         if (target == null)
@@ -143,9 +141,9 @@ public abstract class Projectile_Base : MonoBehaviour, IProjectile
         SetTarget(target);
 
 
-        _CurAttackPower = DefaultAttackPower;
-        _CurSpeed = DefaultSpeed;
-        _CurMaxLifeSpan = DefaultMaxLifespan;
+        _CurAttackPower = _DefaultAttackPower;
+        _CurSpeed = _DefaultSpeed;
+        _CurMaxLifeSpan = _DefaultMaxLifespan;
 
         _ProjectileStartTime = Time.time;
 

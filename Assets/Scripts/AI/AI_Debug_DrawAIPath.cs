@@ -13,12 +13,14 @@ using UnityEngine.AI;
 public class AI_Debug_DrawAIPath : MonoBehaviour
 {
     [Range(0f, 1f)]
-    public float LineEndWidth = 0.05f;
-    [Range(0f, 1f)]
-    public float LineStartWidth = 0.05f;
+    [SerializeField] private float _LineEndWidth = 0.05f;
 
-    public Color32 LineEndColor = Color.cyan;
-    public Color32 LineStartColor = Color.cyan;
+    [Range(0f, 1f)]
+    [SerializeField] private float _LineStartWidth = 0.05f;
+
+    [SerializeField] private Color32 _LineEndColor = Color.cyan;
+    [SerializeField] private Color32 _LineStartColor = Color.cyan;
+
 
 
     private LineRenderer _Line; // The line Renderer
@@ -26,15 +28,16 @@ public class AI_Debug_DrawAIPath : MonoBehaviour
     private NavMeshAgent _Agent; // The agent of this gameObject
 
 
+
     void Start()
     {
         _Agent = GetComponent<NavMeshAgent>(); //get the agent
 
         _Line = gameObject.AddComponent<LineRenderer>();
-        _Line.endWidth = LineEndWidth;
-        _Line.startWidth = LineStartWidth;
-        _Line.endColor = LineEndColor;
-        _Line.startColor = LineStartColor;
+        _Line.endWidth = _LineEndWidth;
+        _Line.startWidth = _LineStartWidth;
+        _Line.endColor = _LineEndColor;
+        _Line.startColor = _LineStartColor;
         _Line.material = new Material(Shader.Find("Legacy Shaders/Particles/Alpha Blended Premultiply"));        
     }
 
@@ -56,10 +59,10 @@ public class AI_Debug_DrawAIPath : MonoBehaviour
             return;
 
 
-        _Line.endWidth = LineEndWidth;
-        _Line.startWidth = LineStartWidth;
-        _Line.endColor = LineEndColor;
-        _Line.startColor = LineStartColor;
+        _Line.endWidth = _LineEndWidth;
+        _Line.startWidth = _LineStartWidth;
+        _Line.endColor = _LineEndColor;
+        _Line.startColor = _LineStartColor;
 
         _Line.positionCount = path.corners.Length; // Set the array of positions to the amount of corners
 
@@ -72,8 +75,8 @@ public class AI_Debug_DrawAIPath : MonoBehaviour
 
     public void SetWidth(float startWidth, float endWidth)
     {
-        LineStartWidth = startWidth;
-        LineEndWidth = endWidth;
+        _LineStartWidth = startWidth;
+        _LineEndWidth = endWidth;
     }
 
     public void SetWidth(float lineWidth)
@@ -83,8 +86,8 @@ public class AI_Debug_DrawAIPath : MonoBehaviour
 
     public void SetColor(Color32 lineStartColor, Color32 lineEndColor)
     {
-        LineStartColor = lineStartColor;
-        LineEndColor = lineEndColor;
+        _LineStartColor = lineStartColor;
+        _LineEndColor = lineEndColor;
     }
 
     public void SetColor(Color32 lineColor)
