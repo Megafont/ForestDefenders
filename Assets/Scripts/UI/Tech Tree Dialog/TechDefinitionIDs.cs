@@ -6,6 +6,7 @@ public enum TechDefinitionIDs
     
     // Housing
     Buildings_MediumHouse,
+    Buildings_LargeHouse,
 
     // Farming
     Buildings_Farm,

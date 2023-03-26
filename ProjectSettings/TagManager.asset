@@ -15,6 +15,7 @@ TagManager:
   - BridgeConstructionZone
   - Building Prefab
   - Player Follow Camera
+  - CameraIgnoreObstacle
   layers:
   - Default
   - TransparentFX

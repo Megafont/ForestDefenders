@@ -52,7 +52,7 @@ public class Building_MageTower : Building_Base
             {
                 // Check if the villager has arrived.
                 if (!_VillagerArrived &&
-                    Vector3.Distance(transform.position, _VillagerOccupant.transform.position) <= _BuildingDefinition.Radius)
+                    Vector3.Distance(transform.position, _VillagerOccupant.transform.position) <= _BuildingDefinition.Size.x / 2)
                 {
                     _VillagerArrived = true;
 

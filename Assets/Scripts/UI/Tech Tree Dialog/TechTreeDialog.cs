@@ -129,7 +129,7 @@ public class TechTreeDialog : Dialog_Base, IDialog
 
     public bool IsTechnologyLocked(TechDefinitionIDs techID)
     {
-        return _TechTreeTilesLookup[techID].TileData.IsLocked;
+        return _TechTreeTilesLookup[techID].TileData.IsAvailableToResearch;
     }
 
     public bool IsTechnologyResearched(TechDefinitionIDs techID)
@@ -149,7 +149,7 @@ public class TechTreeDialog : Dialog_Base, IDialog
             return;
 
 
-        if (!sender.TileData.IsLocked &&
+        if (sender.TileData.IsAvailableToResearch &&
             AvailableXP >= sender.TileData.XPCost)
         {
             AvailableXP -= sender.TileData.XPCost;
@@ -164,7 +164,7 @@ public class TechTreeDialog : Dialog_Base, IDialog
             if (tileIndices.x < tileGroup.TechTiles.Count - 1)
             {
                 TechTreeTile nextTile = tileGroup.TechTiles[tileIndices.x + 1];
-                nextTile.SetLockedFlag(false);
+                nextTile.SetIsAvailableToResearchFlag(true);
             }
 
 
@@ -199,10 +199,14 @@ public class TechTreeDialog : Dialog_Base, IDialog
 
     private void UpdateDescriptionText(TechTreeTile techTile)
     {
-        if (techTile == null || techTile.TileData.IsLocked)
-            _BottomBarText.text = _LockedTileDescriptionText;
+        if (_BottomBarText == null || techTile == null)
+            return;
+
+
+        if (techTile == null || techTile.TileData.IsAvailableToResearch)
+            _BottomBarText.text = techTile.TileData.DescriptionText; 
         else
-            _BottomBarText.text = techTile.TileData.DescriptionText;
+            _BottomBarText.text = _LockedTileDescriptionText;
     }
 
     private void RefreshTileUIColors(TechTreeTile curTile)
@@ -230,15 +234,16 @@ public class TechTreeDialog : Dialog_Base, IDialog
         int rowIndex = _TechTreeTileGroups.Count;
 
         //Debug.Log($"Tile Count: {techTilesData.Count}");
+        bool startAllUnlocked = GameManager.Instance.StartWithAllTechUnlocked;
         for (int i = 0; i < techTilesData.Count; i++)
         {
             TechTreeTile newTile = Instantiate(_TilePrefab).GetComponent<TechTreeTile>();
 
             newTile.transform.SetParent(groupObj.transform);
 
-            TechTreeTileData tileData = techTilesData[i];            
-            tileData.IsLocked = i > 0; // Set all tiles after the first one in the group to be locked.            
-            tileData.IsResearched = false;
+            TechTreeTileData tileData = techTilesData[i];
+            tileData.IsAvailableToResearch = !startAllUnlocked ? i == 0 : true; // Set all tiles after the first one in the group to be locked, unless the StartWithAllTechUnlocked option is enabled.
+            tileData.IsResearched = startAllUnlocked; // Default to false unless the StartWithAllTechUnlocked option is enabled.
 
             newTile.SetTileData(this, tileData);
             newTile.OnClick += OnTileClicked;

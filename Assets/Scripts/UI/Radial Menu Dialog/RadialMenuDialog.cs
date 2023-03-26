@@ -126,7 +126,7 @@ public class RadialMenuDialog : Dialog_Base, IDialog
         {
             DoUIChecks();
 
-            Debug.Log($"Confirm: {MenuConfirmed}    Cancel: {MenuCancelled}");
+            //Debug.Log($"Confirm: {MenuConfirmed}    Cancel: {MenuCancelled}");
             if (MenuConfirmed || MenuCancelled)
                 break;
 

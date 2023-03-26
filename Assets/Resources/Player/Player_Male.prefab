@@ -4798,7 +4798,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1599770319067680177}
-  m_LocalRotation: {x: -0.025034064, y: -0.06244233, z: 0.0012542871, w: 0.9977338}
+  m_LocalRotation: {x: -0.025034068, y: -0.06244233, z: 0.0012542873, w: 0.9977338}
   m_LocalPosition: {x: -0.12562485, y: -0.012257216, z: -0.0020234145}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -5565,7 +5565,6 @@ MonoBehaviour:
   _SprintSpeed: 10
   _RotationSmoothTime: 0.12
   _SpeedChangeRate: 10
-  _LandingAudioClip: {fileID: 0}
   _JumpHeight: 1.2
   _Gravity: -15
   _JumpTimeout: 0.5
@@ -7768,7 +7767,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2688111867728167337}
-  m_LocalRotation: {x: 0.5924439, y: -0.3929715, z: -0.22398683, w: 0.6666436}
+  m_LocalRotation: {x: 0.5924439, y: -0.39297143, z: -0.22398683, w: 0.66664356}
   m_LocalPosition: {x: -0.062028673, y: 0.025731737, z: -0.046623435}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

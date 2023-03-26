@@ -162,7 +162,7 @@ public class BuildingConstructionGhost : MonoBehaviour
         _BoxCollider = GetComponent<BoxCollider>();
         _CapsuleCollider = GetComponent<CapsuleCollider>();
 
-        GameManager.Instance.BuildModeManager.SelectBuilding("Defense", "Barricade");
+        GameManager.Instance.BuildModeManager.SelectBuilding("Walls", "Simple Fence");
         _Renderer.material.color = _CanBuildColor;
     }
 
@@ -276,13 +276,6 @@ public class BuildingConstructionGhost : MonoBehaviour
         for (int i = 0; i < _GroundSamplePoints.Count; i++)
         {
             // Detect the ground height at the current ground sample point.
-            /*
-            if (Physics.Raycast(new Vector3(_GroundSamplePoints[i].x, _GROUND_CHECK_RAYCAST_START_HEIGHT, _GroundSamplePoints[i].z),
-                                Vector3.down,
-                                out RaycastHit hitInfo,
-                                _GROUND_CHECK_RAYCAST_MAX_DISTANCE,
-                                LayerMask.GetMask(new string[] { "Ground" })))
-            */
             if (Utils_Math.DetectGroundHeightAtPos(_GroundSamplePoints[i].x,
                                                    _GroundSamplePoints[i].z,
                                                    LayerMask.GetMask(new string[] { "Ground" }),
@@ -494,19 +487,19 @@ public class BuildingConstructionGhost : MonoBehaviour
 
     private void ChangeColliderMesh()
     {
-        Bounds newMeshBounds = _MeshFilter.mesh.bounds;
+        Bounds newMeshBounds = new Bounds(Vector3.zero, _BuildingDefinition.Size);
 
 
         // These two lines are here intentionally rather than in the if statement below, since the BoxCollider is used in both cases.        
         _BoxCollider.size = newMeshBounds.size;
-        float halfHeight = _BoxCollider.size.y / 2;
+        float halfHeight = newMeshBounds.size.y / 2;
 
         // Shift the collider up by half the height of the model so it sits on the ground like the model.
         _BoxCollider.center = new Vector3(0,//transform.position.x, 
                                           halfHeight,
                                           0);//transform.position.z);
 
-
+        
         if (!_BuildingDefinition.IsRound)
         {
             // This is not a round building, so use the box collider.
@@ -519,7 +512,7 @@ public class BuildingConstructionGhost : MonoBehaviour
             _BoxCollider.enabled = true; // We enable the box collider too, because we want the top and bottom to be flat (this more or less creates a cylinder collider).
             _CapsuleCollider.center = new Vector3(0, halfHeight, 0); // Shift the collider up by half the height of the model so it sits on the ground like the model.
             _CapsuleCollider.height = newMeshBounds.size.y;
-            _CapsuleCollider.radius = _BuildingDefinition.Radius;
+            _CapsuleCollider.radius = newMeshBounds.size.x / 2;
         }
 
     }
@@ -562,20 +555,25 @@ public class BuildingConstructionGhost : MonoBehaviour
         bool result = false;
 
 
-        if (ParentBridgeConstructionZone)
+        // Is the construction ghost free of collisions with any other object?
+        if (_OverlappingObjects.Count < 1)
         {
-            // The building is overlapping a bridge zone.
-            // If IsBridgeCompletelyInsideBridgeZone is true, it means the building is a bridge AND it is completely within this bridge construction zone.
-            result = !_IsBridgeCompletelyInsideBridgeZone;
-        }
-        else if (_OverlappingObjects.Count < 1) 
-        {
-            // The building is not overlapping anything else.
-            // It is not considered obstructed unless it is a bridge that is outside a bridge construction zone.
+            // The building is not overlapping anything else, and is not a bridge within a bridge construction zone.
+            // In this case, it is not considered obstructed unless it is a bridge that is outside a bridge construction zone.
             if (BuildModeDefinitions.BuildingIsBridge(_BuildingDefinition))
                 result = true;
             else
                 result = false;
+        }
+        else if (_IsBridgeCompletelyInsideBridgeZone) // Is the construction ghost completely within a bridge construction zone?
+        {
+            if (_OverlappingObjects.Count == 1) // Is the construction ghost free of collisions with anything other than the bridge construction zone?
+            {
+                // The building is overlapping a bridge zone.
+                // If IsBridgeCompletelyInsideBridgeZone is true, it means the building IS a bridge AND it is completely within this bridge construction zone.
+                result = !_IsBridgeCompletelyInsideBridgeZone;
+            }
+
         }
         else
         {

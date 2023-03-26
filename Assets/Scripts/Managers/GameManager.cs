@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
     public float PlayerStartingAttackPower = 20f;
     public float PlayerStartingMaxHealth = 50f;
     public float PlayerStartingGatherRate = 3f;
+    public bool StartWithAllTechUnlocked = false;
 
     [Header("Village")]
     public float PlayerHealFoodCostMultiplier = 2f;

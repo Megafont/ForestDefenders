@@ -402,7 +402,7 @@ public class BuildModeManager : MonoBehaviour
 
         foreach (MaterialCost cost in def.ConstructionCosts)
         {
-            _ResourceManager.Stockpiles[cost.Resource] += (int) (cost.Amount * def.PercentageOfResourcesRecoveredOnDestruction);
+            _ResourceManager.Stockpiles[cost.Resource] += (int) (cost.Amount * PercentageOfMaterialsRecoveredOnBuildingDestruction);
         }
 
     }

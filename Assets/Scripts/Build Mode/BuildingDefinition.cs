@@ -16,11 +16,9 @@ public class BuildingDefinition
 
     public uint PopulationCapBoost; // The number of villagers that will spawn after the building is constructed.
 
-    public float Height; // Height of the building.
+    public Vector3 Size; // Dimensions of the building.
     // Collider data (used ESPECIALLY for the build mode construction ghost)
     public bool IsRound;
-    public float Radius; // This value controls the size of the construction ghost's collider. It can't use a MeshCollider like the building prefabs
-                         // do (see the comments for the _BoxCollider and _CapsuleCollider member variables in the BuildingConstructionGhost.cs file).
 
     public GameObject Prefab;
     public Mesh ConstructionGhostMesh;

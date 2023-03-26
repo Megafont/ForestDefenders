@@ -81,10 +81,10 @@ public class TechTreeTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         {
             _XPCostText.color = _TileData.XPCost <= _ParentDialog.AvailableXP ? _ParentDialog.TileXPTextColor : _ParentDialog.TileNotEnoughXPTextColor;
 
-            if (_TileData.IsLocked)
-                color = _ParentDialog.LockedColor;
+            if (_TileData.IsAvailableToResearch)
+                color = _ParentDialog.UnlockedColor;
             else
-                color = _ParentDialog.UnlockedColor;                
+                color = _ParentDialog.LockedColor;                
         }
 
 
@@ -97,9 +97,9 @@ public class TechTreeTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         _Button.colors = block;
     }
 
-    public void SetLockedFlag(bool value)
+    public void SetIsAvailableToResearchFlag(bool value)
     {
-        _TileData.IsLocked = value;
+        _TileData.IsAvailableToResearch = value;
 
         UpdateUIColors();
         UpdateGUI();
@@ -121,7 +121,7 @@ public class TechTreeTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     private void UpdateGUI()
     {
-        _TitleText.text = !_TileData.IsLocked ? _TileData.Title : _ParentDialog.LockedTileDescriptionText;
+        _TitleText.text = _TileData.IsAvailableToResearch ? _TileData.Title : _ParentDialog.LockedTileDescriptionText;
 
         _XPCostText.text = !_TileData.IsResearched ? $"Cost: {_TileData.XPCost} XP" : null; // Display the XP only if the tech item has NOT been researched yet.
     }

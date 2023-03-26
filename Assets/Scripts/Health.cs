@@ -197,7 +197,7 @@ public class Health : MonoBehaviour
         if (agent != null)
             startPos.y += agent.height / 2;
         else if (building != null)
-            startPos.y += building.GetBuildingDefinition().Height - 1.0f;
+            startPos.y += building.GetBuildingDefinition().Size.y - 1.0f;
         else if (gameObject.CompareTag("Player"))
             startPos.y += 1;
         

@@ -50,7 +50,7 @@ public class VillageManager_Buildings : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //Debug.Log("C1: " + GetBuildingCount("Defense", "Barricade"));
+        //Debug.Log("C1: " + GetBuildingCount("Walls", "Simple Fence"));
         //Debug.Log("C2: " + GetBuildingCountForCategory("Defense"));
         //Debug.Log("C3: " + GetTotalBuildingCount());
     }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using UnityEngine;
 
@@ -15,13 +16,27 @@ public static class Utils_Meshes
             throw new Exception("The passed in material is null!");
 
 
-        CombineInstance[] combine = new CombineInstance[meshFilters.Length];
+        List<CombineInstance> meshesToCombine = new List<CombineInstance>();
 
         int i = 0;
         while (i < meshFilters.Length)
         {
-            combine[i].mesh = meshFilters[i].sharedMesh;
-            combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
+            
+            // Create a CombineInstance object for every submesh in the current mesh since we want to combine all submeshes.
+            // We need to do this so we can use the subMeshIndex property on each instance to tell it which submesh to
+            // combine into the final mesh.
+            for (int j = 0; j < meshFilters[i].mesh.subMeshCount; j++)
+            {
+                CombineInstance cInstance = new CombineInstance();
+
+                cInstance.mesh = meshFilters[i].sharedMesh;
+                cInstance.subMeshIndex = j;
+                cInstance.transform = meshFilters[i].transform.localToWorldMatrix;
+
+                meshesToCombine.Add(cInstance);
+            }
+
+
             meshFilters[i].gameObject.SetActive(false);
 
             i++;
@@ -29,7 +44,7 @@ public static class Utils_Meshes
 
 
         Mesh newMesh = new Mesh();
-        newMesh.CombineMeshes(combine, true);
+        newMesh.CombineMeshes(meshesToCombine.ToArray(), true);
 
         return newMesh;
     }
