@@ -65,7 +65,8 @@ public static class TechDefinitions
 
         List<TechTreeTileData> tilesData = new List<TechTreeTileData>()
         {
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_Farm, Title = "Farm", DescriptionText = "Gain the technology to build Farms.", XPCost = 10 },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_LargeGarden, Title = "Large Garden", DescriptionText = "Gain the technology to build large guardens.", XPCost = 10 },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_Farm, Title = "Farm", DescriptionText = "Gain the technology to build farms.", XPCost = 10 },
         };
 
 

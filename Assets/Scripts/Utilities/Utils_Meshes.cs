@@ -44,6 +44,7 @@ public static class Utils_Meshes
 
 
         Mesh newMesh = new Mesh();
+        newMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32; // The large farm has more vertices than fit in a 16-bit index buffer, so I had to change this to the larger vertex index format.
         newMesh.CombineMeshes(meshesToCombine.ToArray(), true);
 
         return newMesh;

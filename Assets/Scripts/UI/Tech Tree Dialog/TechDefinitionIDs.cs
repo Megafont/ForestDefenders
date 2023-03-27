@@ -9,6 +9,7 @@ public enum TechDefinitionIDs
     Buildings_LargeHouse,
 
     // Farming
+    Buildings_LargeGarden,
     Buildings_Farm,
 
     // Towers
