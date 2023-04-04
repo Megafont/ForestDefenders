@@ -398,7 +398,6 @@ MonoBehaviour:
   _SprintSpeed: 10
   _RotationSmoothTime: 0.12
   _SpeedChangeRate: 10
-  _LandingAudioClip: {fileID: 0}
   _JumpHeight: 1.2
   _Gravity: -15
   _JumpTimeout: 0.3
@@ -14176,6 +14175,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9132770507916763927}
+  - component: {fileID: -5651912232063297948}
   m_Layer: 8
   m_Name: Player_Female
   m_TagString: Player
@@ -14201,6 +14201,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-5651912232063297948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6077910852948375790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &6091334376232207853
 GameObject:
   m_ObjectHideFlags: 0

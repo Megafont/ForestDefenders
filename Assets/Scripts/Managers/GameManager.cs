@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
     public float PlayerStartingMaxHealth = 50f;
     public float PlayerStartingGatherRate = 3f;
     public bool StartWithAllTechUnlocked = false;
+    public bool ConstructionIsFree = false;
 
     [Header("Village")]
     public float PlayerHealFoodCostMultiplier = 2f;
@@ -62,6 +63,9 @@ public class GameManager : MonoBehaviour
     public Color ResourceStockPilesVeryLowColor = Color.red;
     public Color ResourceStockPilesLowColor = new Color32(255, 128, 0, 255);
     public Color ResourceStockPilesColor = Color.white;
+
+
+    public bool PlayerHasSpawned { get; private set; } = false;
 
 
 
@@ -205,8 +209,10 @@ public class GameManager : MonoBehaviour
 
         if (PlayerIsInGame()) // Are we in a level?
         {
-            if (GameState != GameStates.GameOver)
+            if (PlayerHasSpawned && GameState != GameStates.GameOver)
+            {
                 CheckIfGameIsOver();
+            }
         }
         else
         {
@@ -275,6 +281,8 @@ public class GameManager : MonoBehaviour
 
         Player = playerObj.transform.Find("Player Armature").gameObject;
         Player.GetComponent<Health>().OnDeath += OnPlayerDeath;
+
+        PlayerHasSpawned = true;
     }
 
     private void UpdateResourceStockpileCounterUI(TMP_Text textUI, string labelText, float currentAmount)
@@ -332,6 +340,10 @@ public class GameManager : MonoBehaviour
                 InitCameras_MenuScene();
                 break;
 
+            case "Level":
+                InitCameras_Level();
+                break;
+
             case "Test":
                 InitCameras_TestScene();
                 break;
@@ -354,6 +366,23 @@ public class GameManager : MonoBehaviour
 
         // Switch to the main camera for this scene.
         CameraManager.SwitchToCamera((int) CameraIDs.GameOver);
+    }
+
+    private void InitCameras_Level()
+    {
+        // Register player follow camera.
+        ICinemachineCamera mainCam = GameObject.Find("CM Player Follow Camera").GetComponent<ICinemachineCamera>();
+        CameraManager.RegisterCamera((int)CameraIDs.PlayerFollow, mainCam);
+
+        // Register game over camera.
+        ICinemachineCamera gameOverCam = GameObject.Find("CM Game Over Cam").GetComponent<ICinemachineCamera>();
+        gameOverCam.Follow = Player.transform;
+        gameOverCam.LookAt = Player.transform;
+        CameraManager.RegisterCamera((int)CameraIDs.GameOver, gameOverCam);
+
+
+        // Switch to the main camera for this scene.
+        CameraManager.SwitchToCamera((int)CameraIDs.PlayerFollow);
     }
 
     private void InitCameras_TestScene()
@@ -439,9 +468,7 @@ public class GameManager : MonoBehaviour
     public bool CheckIfGameIsOver()
     {
         // NOTE: We don't check if the player is dead here, as we receive an event when that happens via the OnPlayerDeath() method below, which instantly switches us to the GameOver game state;
-        if ((VillageManager_Buildings.GetTotalBuildingCount() == 0 &&
-            VillageManager_Villagers.Population == 0) ||
-            Player == null ||
+        if (Player == null ||
             Player.transform.position.y <= PlayerFallOutOfWorldDeathHeight)
         {
             ChangeGameState(GameStates.GameOver);
@@ -456,7 +483,7 @@ public class GameManager : MonoBehaviour
 
     public bool PlayerIsInGame()
     {
-        return SceneSwitcher.ActiveSceneName == "Test";
+        return GameManager.Instance.EnablePlayerSpawn;
     }
 
     public void TogglePauseGameState()

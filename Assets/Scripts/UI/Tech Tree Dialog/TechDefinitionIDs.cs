@@ -13,7 +13,6 @@ public enum TechDefinitionIDs
     Buildings_Farm,
 
     // Towers
-    Buildings_SpikeTower,
     Buildings_Turret,
     Buildings_IceTurret,
     Buildings_MageTower,
@@ -23,7 +22,7 @@ public enum TechDefinitionIDs
     Buildings_StoneWall,
 
     // Other
-    Buildings_WoodBridge,
+    Buildings_WoodBridge_10m,
 
     // Villagers
     Villagers_RepairBuildings,

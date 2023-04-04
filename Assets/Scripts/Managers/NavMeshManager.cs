@@ -48,8 +48,16 @@ public class NavMeshManager : MonoBehaviour
     {
         for (int i = 0; i < _NavMeshSurfaces.Count; i++)
         {
+            // NOTE: When using the following debug code, you may notice duplicate output.
+            //       This is because the "Level01" gameobject (a child of the "Terrain" gameobject)
+            //       has two NavMeshSurface components on it (one for both types of AI monster agents).
+            //Debug.Log($"#{i}: Regenerating Nav Mesh for GameObject \"{_NavMeshSurfaces[i].name}\"    |  HasCollider: {hasCollider}");
+
+            // Ignore objects that don't have colliders, since obviously they shouldn't be navigable anyway then.
             _NavMeshSurfaces[i].BuildNavMesh();
-        }
+
+        } // end for i
+
     }   
 
     public void AddNavMeshSurfaces(GameObject obj)
@@ -92,7 +100,7 @@ public class NavMeshManager : MonoBehaviour
     /// for no reason.
     /// </remarks>
     /// <param name="obj">The GameObject to scan.</param>
-    /// <param name="addSurfaces">Whether or not to add NavMeshSurfaces from obj into _NavMeshSurfaces. If this parameter is false, the NavMeshSurfaces of obj will be removed from _NavMeshSurfaces instead.</param>
+    /// <param name="addSurfaces">Whether or not to add NavMeshSurfaces from obj into _NavMeshSurfaces. If this parameter is false, the NavMeshSurfaces of obj will be removed from _NavMeshSurfaces instead if any are already in the list.</param>
     /// <param name="regenerateNavMeshes">Whether or not surfaces added will also have their nav meshes regenerated at the same time.</param>
     private void ProcessGameObject(GameObject obj, bool addSurfaces, bool regenerateNavMeshes = false)
     {

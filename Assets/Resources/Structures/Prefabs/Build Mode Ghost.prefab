@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: -4847106322255392004}
   - component: {fileID: 4341365631053159840}
   - component: {fileID: 8275343356523308250}
+  - component: {fileID: -8814349549183225790}
   m_Layer: 13
   m_Name: Build Mode Ghost
   m_TagString: Building Ghost
@@ -126,7 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efecd496e51398646a1de518e7d40e3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _MaxMovementDistances: {x: 8, y: 5}
+  _MaxMovementDistances: {x: 10, y: 8}
   _GridSnapIncrement: 1
   _GridSnapRotationIncrement: 15
   _GridSnapOffIncrement: 0.1
@@ -179,3 +180,22 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-8814349549183225790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3016518859856247255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff

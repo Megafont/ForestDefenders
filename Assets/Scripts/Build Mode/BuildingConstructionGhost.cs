@@ -47,6 +47,7 @@ public class BuildingConstructionGhost : MonoBehaviour
 
 
 
+    private GameManager _GameManager;
     private InputManager _InputManager;
 
     private GameObject _Player;
@@ -150,11 +151,12 @@ public class BuildingConstructionGhost : MonoBehaviour
 
     public void Init()
     {
-        _InputManager = GameManager.Instance.InputManager;
+        _GameManager = GameManager.Instance;
+        _InputManager = _GameManager.InputManager;
 
-        _Player = GameManager.Instance.Player;
+        _Player = _GameManager.Player;
 
-        _BuildModeManager = GameManager.Instance.BuildModeManager;
+        _BuildModeManager = _GameManager.BuildModeManager;
 
         _MeshFilter = GetComponent<MeshFilter>();
         _Renderer = GetComponent<MeshRenderer>();
@@ -162,7 +164,8 @@ public class BuildingConstructionGhost : MonoBehaviour
         _BoxCollider = GetComponent<BoxCollider>();
         _CapsuleCollider = GetComponent<CapsuleCollider>();
 
-        GameManager.Instance.BuildModeManager.SelectBuilding("Walls", "Simple Fence");
+        _BuildModeManager.SelectBuilding("Walls", "Simple Fence");
+
         _Renderer.material.color = _CanBuildColor;
     }
 
@@ -432,7 +435,8 @@ public class BuildingConstructionGhost : MonoBehaviour
         {
             _Renderer.material.color = _ObstructedColor;
         }
-        else if (!_BuildModeManager.CanAffordBuilding(_BuildingDefinition.ConstructionCosts))
+        else if (!_BuildModeManager.CanAffordBuilding(_BuildingDefinition.ConstructionCosts) && 
+                 !_GameManager.ConstructionIsFree)
         {
             _Renderer.material.color = _CantAffordColor;
         }
@@ -601,7 +605,7 @@ public class BuildingConstructionGhost : MonoBehaviour
         {
             // To be able to build, the construction ghost must not be overlapping any obstacles, and the player must have the required resources for construction.
             return !IsObstructed() &&
-                   _BuildModeManager.CanAffordBuilding(_BuildingDefinition.ConstructionCosts);
+                   (_BuildModeManager.CanAffordBuilding(_BuildingDefinition.ConstructionCosts) || _GameManager.ConstructionIsFree);
         }
     }
     

@@ -1502,6 +1502,7 @@ GameObject:
   - component: {fileID: 8273156870801222436}
   - component: {fileID: 2492963247996500620}
   - component: {fileID: 424017842529653000}
+  - component: {fileID: 6970195608642359939}
   m_Layer: 10
   m_Name: Villager_Female
   m_TagString: Villager
@@ -1630,14 +1631,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36892cc41a004a94eb97ec82fb028e23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DeathFadeOutTime: 2
-  MaxMovementSpeed: 8
-  InteractionFrequency: 2
-  AttackPower: 5
-  AttackCheckFrequency: 1
-  MaxChaseDistance: 10
-  TargetCheckFrequency: 1
-  TargetCheckRadius: 5
+  _DeathFadeOutTime: 2
+  _MaxMovementSpeed: 3.5
+  _InteractionFrequency: 2
+  _AttackPower: 3
+  _AttackCheckFrequency: 1
+  _DamageType: 1
+  _MaxChaseDistance: 20
+  _TargetCheckFrequency: 3
+  _TargetCheckRadius: 5
 --- !u!114 &424017842529653000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1650,10 +1652,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3950e6e9fcef36478009ff55fcb081e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHealth: 1000
-  EnableDamageFlash: 1
-  DamageFlashColor: {r: 1, g: 0, b: 0, a: 1}
-  DamageFlashTime: 0.1
+  _MaxHealth: 100
+  _EnableDamageFlash: 1
+  _DamageFlashColor: {r: 1, g: 0, b: 0, a: 1}
+  _DamageFlashTime: 0.1
+  _IsResistantTo: 0
+  _IsVulnerableTo: 0
+  _IsInvincible: 0
+--- !u!114 &6970195608642359939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3356793070828478022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &3512306724377070966
 GameObject:
   m_ObjectHideFlags: 0
@@ -19088,7 +19112,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fee52972576bb5147899369b13bb8df5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DetectionRadius: 5
+  _DetectionRadius: 5
 --- !u!1 &4410625627356007524
 GameObject:
   m_ObjectHideFlags: 0

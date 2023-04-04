@@ -349,7 +349,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48f7d407b3280c54da8670ee01d7e76f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
+  _Speed: 10
 --- !u!1 &126654226
 GameObject:
   m_ObjectHideFlags: 3
@@ -968,7 +968,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 380441286}
   m_HandleRect: {fileID: 380441285}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -1849,10 +1849,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10c25618c627bb4488492681e1589bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NextResourceNodeRegion: {fileID: 0}
-  PreviousResourceNodeRegion: {fileID: 0}
+  _NextResourceNodeRegion: {fileID: 0}
+  _PreviousResourceNodeRegion: {fileID: 0}
   _BridgesInThisZone: []
-  LockRotation: 0
+  _LockRotation: 0
 --- !u!65 &440966121
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4498,7 +4498,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48f7d407b3280c54da8670ee01d7e76f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
+  _Speed: 10
 --- !u!1 &1132822149
 GameObject:
   m_ObjectHideFlags: 0
@@ -4790,7 +4790,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92cf705f3b614d8408a9fe03f244561d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GamepadMenuSelectionDelay: 0.15
+  _GamepadMenuSelectionDelay: 0.1
   _TitleDisplayCanvas: {fileID: 1004063534}
   _HighScoresDialog: {fileID: 270604912}
 --- !u!223 &1207861695
@@ -5603,8 +5603,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 565840457}
   m_HandleRect: {fileID: 565840456}
   m_Direction: 2
-  m_Value: 1.0000002
-  m_Size: 0.5285715
+  m_Value: 1
+  m_Size: 0.5285714
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5778,6 +5778,8 @@ MonoBehaviour:
   ComboStreakResetTime: 5
   BaseMonsterSpawnAmount: 3
   MaxMonstersOfAnyGivenType: 5
+  DamageResistanceBuffAmount: 0.2
+  DamageVulnerabilityBuffAmount: 0.2
 --- !u!4 &1480730956
 Transform:
   m_ObjectHideFlags: 0
@@ -6064,16 +6066,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c8c75b2878e15b4abfa650e57838db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AttackDamageVariance: 0.2
   EnablePlayerSpawn: 0
-  PlayerCanDamageVillagers: 1
   PlayerSpawnPoint: {fileID: 509338921}
-  FallOutOfWorldDeathHeight: -32
+  PlayerCanDamageVillagers: 1
+  PlayerFallOutOfWorldDeathHeight: -32
   PlayerStartingAttackPower: 20
   PlayerStartingMaxHealth: 50
   PlayerStartingGatherRate: 3
+  StartWithAllTechUnlocked: 0
+  ConstructionIsFree: 0
   PlayerHealFoodCostMultiplier: 2
   StartingXP: 0
-  XP_EarnedPerWave: 2
+  XP_EarnedPerWave: 5
   PlayerAttackBuffAmountPerLevelUp: 2
   PlayerGatheringBuffAmountPerLevelUp: 1
   PlayerHealthBuffAmountPerLevelUp: 5

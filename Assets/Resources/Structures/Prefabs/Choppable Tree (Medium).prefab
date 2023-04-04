@@ -243,12 +243,13 @@ GameObject:
   - component: {fileID: 5092296939740681923}
   - component: {fileID: 5092296939740681924}
   - component: {fileID: 5321711648914629659}
+  - component: {fileID: -7013867860102098834}
   m_Layer: 9
   m_Name: Choppable Tree (Medium)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 1
-  m_StaticEditorFlags: 8
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &5092296939740681922
 Transform:
@@ -259,8 +260,8 @@ Transform:
   m_GameObject: {fileID: 5092296939740681950}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 2.5, y: 2.5, z: 2.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5423084328788210673}
   m_Father: {fileID: 0}
@@ -332,6 +333,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SoundSet: {fileID: 0}
+--- !u!114 &-7013867860102098834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5092296939740681950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &5857991649301174080
 GameObject:
   m_ObjectHideFlags: 0

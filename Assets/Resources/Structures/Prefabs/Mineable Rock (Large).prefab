@@ -9,16 +9,16 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5535613570928782446}
-  - component: {fileID: 450481278}
   - component: {fileID: 5535613570928782447}
   - component: {fileID: 5535613570928782443}
   - component: {fileID: 2515419381060614618}
+  - component: {fileID: 3366575941153466884}
   m_Layer: 9
   m_Name: Mineable Rock (Large)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 1
-  m_StaticEditorFlags: 8
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &5535613570928782446
 Transform:
@@ -30,38 +30,15 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 4953285240079234298}
   - {fileID: 8075241109703543361}
   - {fileID: 4100120747433865769}
   - {fileID: 8963520778406050836}
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &450481278
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5535613570928782433}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 1.8
-  m_Height: 6
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!208 &5535613570928782447
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -72,7 +49,7 @@ NavMeshObstacle:
   m_Enabled: 1
   serializedVersion: 3
   m_Shape: 0
-  m_Extents: {x: 1.8, y: 3, z: 1.8}
+  m_Extents: {x: 2, y: 3.5, z: 2}
   m_MoveThreshold: 0.1
   m_Carve: 1
   m_CarveOnlyStationary: 1
@@ -105,6 +82,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _SoundSet: {fileID: 0}
+--- !u!114 &3366575941153466884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5535613570928782433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
 --- !u!1001 &4570088632324216258
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -146,7 +142,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 10c9fd7025151ff489fd65d49582ab9e,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1.41
+      value: -1.553
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 10c9fd7025151ff489fd65d49582ab9e,
         type: 3}
@@ -187,6 +183,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Rock 03
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 10c9fd7025151ff489fd65d49582ab9e,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -257,7 +258,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: d64d81be3fcb80f44b4feec734287aca,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.774
+      value: 1.978
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d64d81be3fcb80f44b4feec734287aca,
         type: 3}
@@ -298,6 +299,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Rock 01
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: d64d81be3fcb80f44b4feec734287aca,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -358,17 +364,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 822f8707d69f51748b9dffc3144db482,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.75
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 822f8707d69f51748b9dffc3144db482,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.75
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 822f8707d69f51748b9dffc3144db482,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.75
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 822f8707d69f51748b9dffc3144db482,
         type: 3}
@@ -424,6 +430,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Rock 02
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 822f8707d69f51748b9dffc3144db482,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -484,7 +495,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: b430eabe9199fd0418957ebb958dc6f2,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.151748
+      value: -1.359
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b430eabe9199fd0418957ebb958dc6f2,
         type: 3}
@@ -535,6 +546,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Rock 06
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: b430eabe9199fd0418957ebb958dc6f2,
+        type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

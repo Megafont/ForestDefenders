@@ -1139,6 +1139,7 @@ GameObject:
   - component: {fileID: 6843724068443828298}
   - component: {fileID: 5880279079998874183}
   - component: {fileID: 3011654070411364966}
+  - component: {fileID: -8728917279835626724}
   m_Layer: 10
   m_Name: Villager_Male
   m_TagString: Villager
@@ -1267,14 +1268,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 873c58d3acab65240baf7ad8da816705, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DeathFadeOutTime: 2
-  MaxMovementSpeed: 8
-  InteractionFrequency: 2
-  AttackPower: 5
-  AttackCheckFrequency: 1
-  MaxChaseDistance: 10
-  TargetCheckFrequency: 1
-  TargetCheckRadius: 5
+  _DeathFadeOutTime: 2
+  _MaxMovementSpeed: 3.5
+  _InteractionFrequency: 2
+  _AttackPower: 3
+  _AttackCheckFrequency: 1
+  _DamageType: 1
+  _MaxChaseDistance: 20
+  _TargetCheckFrequency: 3
+  _TargetCheckRadius: 5
 --- !u!114 &3011654070411364966
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1287,10 +1289,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3950e6e9fcef36478009ff55fcb081e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHealth: 1000
-  EnableDamageFlash: 1
-  DamageFlashColor: {r: 1, g: 0, b: 0, a: 1}
-  DamageFlashTime: 0.1
+  _MaxHealth: 100
+  _EnableDamageFlash: 1
+  _DamageFlashColor: {r: 1, g: 0, b: 0, a: 1}
+  _DamageFlashTime: 0.1
+  _IsResistantTo: 0
+  _IsVulnerableTo: 0
+  _IsInvincible: 0
+--- !u!114 &-8728917279835626724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 197132624423781672}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &256843696324047054
 GameObject:
   m_ObjectHideFlags: 0
@@ -4005,7 +4029,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fee52972576bb5147899369b13bb8df5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DetectionRadius: 5
+  _DetectionRadius: 5
 --- !u!1 &1286681601219799950
 GameObject:
   m_ObjectHideFlags: 0

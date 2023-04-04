@@ -2508,6 +2508,7 @@ GameObject:
   - component: {fileID: 1343233544227049679}
   - component: {fileID: 8716344725668139527}
   - component: {fileID: 6290396397479122620}
+  - component: {fileID: 6653021037330184053}
   m_Layer: 7
   m_Name: Monster_FlyingDemon
   m_TagString: Monster
@@ -2636,15 +2637,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9b894f29544b4b4892d29146c2c6f38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DeathFadeOutTime: 2
-  MaxMovementSpeed: 2
-  InteractionFrequency: 2
-  AttackPower: 3
-  AttackCheckFrequency: 1
-  DamageType: 1
-  MaxChaseDistance: 20
-  TargetCheckFrequency: 2
-  TargetCheckRadius: 5
+  _DeathFadeOutTime: 2
+  _MaxMovementSpeed: 3.5
+  _InteractionFrequency: 2
+  _AttackPower: 3
+  _AttackCheckFrequency: 1
+  _DamageType: 1
+  _MaxChaseDistance: 20
+  _TargetCheckFrequency: 3
+  _TargetCheckRadius: 5
   _ScoreValue: 10
   _Tier: 1
   _IcyMaterial: {fileID: 2100000, guid: 6116c7e90b6277445bc88eeb07328f13, type: 2}
@@ -2660,10 +2661,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3950e6e9fcef36478009ff55fcb081e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHealth: 60
-  EnableDamageFlash: 1
-  DamageFlashColor: {r: 1, g: 0, b: 0, a: 1}
-  DamageFlashTime: 0.1
-  IsResistantTo: 0
-  IsVulnerableTo: 0
-  IsInvincible: 0
+  _MaxHealth: 100
+  _EnableDamageFlash: 1
+  _DamageFlashColor: {r: 1, g: 0, b: 0, a: 1}
+  _DamageFlashTime: 0.1
+  _IsResistantTo: 0
+  _IsVulnerableTo: 0
+  _IsInvincible: 0
+--- !u!114 &6653021037330184053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8482793640981534476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff

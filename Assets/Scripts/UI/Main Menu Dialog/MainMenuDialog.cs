@@ -133,7 +133,7 @@ public class MainMenuDialog : Dialog_Base, IDialog
     public void OnStartGame()
     {
         Debug.LogWarning("Main menu button \"Start\" goes to Test scene. Don't forget to change it to the actual in-game scene!");
-        _SceneSwitcher.FadeToScene("Test");
+        _SceneSwitcher.FadeToScene("Level");
     }
 
     public void OnHighScores()

@@ -75,7 +75,7 @@ public class BridgeConstructionZone : MonoBehaviour
         if (bridge == null)
             throw new Exception("The passed in bridge is null!");
 
-        if (bridge is not Building_WoodBridge)
+        if (bridge is not Building_WoodBridge_10m)
             throw new Exception($"The passed in building \"{bridge.gameObject.name}\" is not a bridge!");
 
 

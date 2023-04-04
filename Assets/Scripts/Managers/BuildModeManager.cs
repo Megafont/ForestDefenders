@@ -135,6 +135,11 @@ public class BuildModeManager : MonoBehaviour
             yield break;
 
 
+        // NOTE: We do not set the camera height in this function. This is controlled by the follow
+        //       offset, which is an inspector property on the "CM Build Mode Camera" game object:
+        //       CinemachineVirtualCamera->Body->Follow Offset
+
+
         // Wait until the button press that entered/exited build mode has ended.
         // Otherwise, we'll have problems since the two inputs use the same button where
         // as soon as we exit build mode, the Update() method will think we should enter
@@ -338,7 +343,9 @@ public class BuildModeManager : MonoBehaviour
         if (_BuildingConstructionGhost.CanBuild &&
             Time.time - _LastBuildTime >= 0.1f)
         {
-            ApplyBuildCosts();
+            if (!_GameManager.ConstructionIsFree)
+                ApplyBuildCosts();
+
 
             GameObject buildingObj = _VillageManager_Buildings.SpawnBuilding(_SelectedBuildingPrefab,
                                                                              _SelectedBuildingCategory,

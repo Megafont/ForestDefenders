@@ -66,8 +66,9 @@ public static class BuildModeDefinitions
         string category = "Bridges";
         _BuildingCategories.Add(category, _Buildings_Other);
 
-        CreateBuildingDefinition(category, "Wood Bridge", 250, 3, TechDefinitionIDs.Buildings_WoodBridge, _MaterialRecoveryRate, 0, new Vector3(10, 2.5f, 6), false, new MaterialCost[]
-            { CreateMaterialCost(ResourceTypes.Wood, 300), });
+        CreateBuildingDefinition(category, "Wood Bridge (10m)", 250, 3, TechDefinitionIDs.Buildings_WoodBridge_10m, _MaterialRecoveryRate, 0, new Vector3(10, 2.5f, 6), false, new MaterialCost[]
+            { CreateMaterialCost(ResourceTypes.Wood, 400), 
+              CreateMaterialCost(ResourceTypes.Stone, 400) });
     }
 
     private static void InitBuildDefinitions_Defense()
@@ -75,16 +76,16 @@ public static class BuildModeDefinitions
         string category = "Defense";
         _BuildingCategories.Add(category, _Buildings_Defense);
 
-        CreateBuildingDefinition(category, "Spike Tower", 200, 2, TechDefinitionIDs.Buildings_SpikeTower, _MaterialRecoveryRate, 0, new Vector3(4, 5, 4), true, new MaterialCost[]
+        CreateBuildingDefinition(category, "Spike Tower", 100, 1, TechDefinitionIDs.NOT_APPLICABLE, _MaterialRecoveryRate, 0, new Vector3(4, 5, 4), true, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 100),
-              CreateMaterialCost(ResourceTypes.Stone, 250) });
+              CreateMaterialCost(ResourceTypes.Stone, 100) });
         CreateBuildingDefinition(category, "Turret", 200, 2, TechDefinitionIDs.Buildings_Turret, _MaterialRecoveryRate, 0, new Vector3(1.6f, 0.6f, 1.6f), true, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 300),
               CreateMaterialCost(ResourceTypes.Stone, 300) });
         CreateBuildingDefinition(category, "Ice Turret", 200, 2, TechDefinitionIDs.Buildings_IceTurret, _MaterialRecoveryRate, 0, new Vector3(1.2f, 2.5f, 1.2f), true, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 500),
               CreateMaterialCost(ResourceTypes.Stone, 500) });
-        CreateBuildingDefinition(category, "Mage Tower", 500, 2, TechDefinitionIDs.Buildings_MageTower, _MaterialRecoveryRate, 0, new Vector3(4.6f, 6f, 4.6f), true, new MaterialCost[]
+        CreateBuildingDefinition(category, "Mage Tower", 500, 3, TechDefinitionIDs.Buildings_MageTower, _MaterialRecoveryRate, 0, new Vector3(4.6f, 6f, 4.6f), true, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 800),
               CreateMaterialCost(ResourceTypes.Stone, 800) });        
     }
@@ -95,13 +96,13 @@ public static class BuildModeDefinitions
         _BuildingCategories.Add(category, _Buildings_Farming);
 
         CreateBuildingDefinition(category, "Small Garden", 50, 1, TechDefinitionIDs.NOT_APPLICABLE, _MaterialRecoveryRate, 0, new Vector3(2.1f, 0.5f, 2.1f), false, new MaterialCost[]
-            { CreateMaterialCost(ResourceTypes.Wood, 50),
-              CreateMaterialCost(ResourceTypes.Stone, 50) });
+            { CreateMaterialCost(ResourceTypes.Wood, 100),
+              CreateMaterialCost(ResourceTypes.Stone, 100) });
         CreateBuildingDefinition(category, "Large Garden", 100, 2, TechDefinitionIDs.Buildings_LargeGarden, _MaterialRecoveryRate, 0, new Vector3(2.1f, 0.5f, 4.1f), false, new MaterialCost[]
-            { CreateMaterialCost(ResourceTypes.Wood, 250) });
-        CreateBuildingDefinition(category, "Farm", 250, 3, TechDefinitionIDs.Buildings_Farm, _MaterialRecoveryRate, 0, new Vector3(4, 1.0f, 4), false, new MaterialCost[]
-            { CreateMaterialCost(ResourceTypes.Wood, 500),
-              CreateMaterialCost(ResourceTypes.Stone, 500) });
+            { CreateMaterialCost(ResourceTypes.Wood, 300) });
+        CreateBuildingDefinition(category, "Farm", 300, 3, TechDefinitionIDs.Buildings_Farm, _MaterialRecoveryRate, 0, new Vector3(4, 1.0f, 4), false, new MaterialCost[]
+            { CreateMaterialCost(ResourceTypes.Wood, 600),
+              CreateMaterialCost(ResourceTypes.Stone, 600) });
     }
 
     private static void InitBuildDefinitions_Housing()
@@ -110,14 +111,14 @@ public static class BuildModeDefinitions
         _BuildingCategories.Add(category, _Buildings_Housing);
 
         CreateBuildingDefinition(category, "Small House", 100, 1, TechDefinitionIDs.NOT_APPLICABLE, _MaterialRecoveryRate, 1, new Vector3(5.2f, 4.3f , 5.2f), false, new MaterialCost[]
-            { CreateMaterialCost(ResourceTypes.Wood, 50),
-              CreateMaterialCost(ResourceTypes.Stone, 50), });
-        CreateBuildingDefinition(category, "Medium House", 200, 2, TechDefinitionIDs.Buildings_MediumHouse, _MaterialRecoveryRate, 2, new Vector3(10.8f, 6.6f, 4.5f), false, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 250),
               CreateMaterialCost(ResourceTypes.Stone, 250), });
-        CreateBuildingDefinition(category, "Large House", 400, 3, TechDefinitionIDs.Buildings_LargeHouse, _MaterialRecoveryRate, 4, new Vector3(10.0f, 8.6f, 9.2f), false, new MaterialCost[]
+        CreateBuildingDefinition(category, "Medium House", 200, 2, TechDefinitionIDs.Buildings_MediumHouse, _MaterialRecoveryRate, 2, new Vector3(10.8f, 6.6f, 4.5f), false, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 500),
               CreateMaterialCost(ResourceTypes.Stone, 500), });
+        CreateBuildingDefinition(category, "Large House", 400, 3, TechDefinitionIDs.Buildings_LargeHouse, _MaterialRecoveryRate, 4, new Vector3(10.0f, 8.6f, 9.2f), false, new MaterialCost[]
+            { CreateMaterialCost(ResourceTypes.Wood, 1000),
+              CreateMaterialCost(ResourceTypes.Stone, 1000), });
     }
 
     private static void InitBuildDefinitions_Walls()
