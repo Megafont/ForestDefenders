@@ -61,10 +61,10 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -6729315943547521129, guid: 18c70949460f6e14fbad85180ffa980a, type: 3}
-  - {fileID: 6721716681333689151, guid: 18c70949460f6e14fbad85180ffa980a, type: 3}
-  - {fileID: 1452836240156273003, guid: 18c70949460f6e14fbad85180ffa980a, type: 3}
-  - {fileID: 1035672697421508273, guid: 18c70949460f6e14fbad85180ffa980a, type: 3}
+  - {fileID: 2100000, guid: ca5f9003d85586d4d96ea25bf9f6bb44, type: 2}
+  - {fileID: 2100000, guid: a96b3accd3c783e4e892be4281a3d74b, type: 2}
+  - {fileID: 2100000, guid: d1308064540b76a488431b360cee6b89, type: 2}
+  - {fileID: 2100000, guid: 0dc6bc5495344b94884a5021850c8057, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -290,7 +290,7 @@ Transform:
   - {fileID: 718625046867741057}
   - {fileID: 8183504933117386671}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!208 &3443090120120624071
 NavMeshObstacle:

@@ -111,8 +111,8 @@ public static class BuildModeDefinitions
         _BuildingCategories.Add(category, _Buildings_Housing);
 
         CreateBuildingDefinition(category, "Small House", 100, 1, TechDefinitionIDs.NOT_APPLICABLE, _MaterialRecoveryRate, 1, new Vector3(5.2f, 4.3f , 5.2f), false, new MaterialCost[]
-            { CreateMaterialCost(ResourceTypes.Wood, 250),
-              CreateMaterialCost(ResourceTypes.Stone, 250), });
+            { CreateMaterialCost(ResourceTypes.Wood, 200),
+              CreateMaterialCost(ResourceTypes.Stone, 200), });
         CreateBuildingDefinition(category, "Medium House", 200, 2, TechDefinitionIDs.Buildings_MediumHouse, _MaterialRecoveryRate, 2, new Vector3(10.8f, 6.6f, 4.5f), false, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 500),
               CreateMaterialCost(ResourceTypes.Stone, 500), });

@@ -404,14 +404,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6444894907778460138}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.1349573, y: 0.00000023841858, z: 3.2256815}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4229374667030782110}
   - {fileID: 4713805316335105754}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &7319711674156760309
 MeshFilter:
@@ -495,11 +495,11 @@ NavMeshObstacle:
   m_Enabled: 1
   serializedVersion: 3
   m_Shape: 0
-  m_Extents: {x: 0.6, y: 1.5, z: 0.6}
+  m_Extents: {x: 0.6, y: 2, z: 0.6}
   m_MoveThreshold: 0.1
   m_Carve: 0
   m_CarveOnlyStationary: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
 --- !u!114 &8544394079421014045
 MonoBehaviour:
@@ -530,13 +530,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3950e6e9fcef36478009ff55fcb081e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHealth: 100
-  EnableDamageFlash: 1
-  DamageFlashColor: {r: 1, g: 0, b: 0, a: 1}
-  DamageFlashTime: 0.1
-  IsResistantTo: 0
-  IsVulnerableTo: 0
-  IsInvincible: 0
+  _MaxHealth: 100
+  _EnableDamageFlash: 1
+  _DamageFlashColor: {r: 1, g: 0, b: 0, a: 1}
+  _DamageFlashTime: 0.1
+  _IsResistantTo: 0
+  _IsVulnerableTo: 0
+  _IsInvincible: 0
 --- !u!1 &7306618096179144025
 GameObject:
   m_ObjectHideFlags: 0

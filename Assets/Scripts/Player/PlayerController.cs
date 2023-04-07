@@ -489,14 +489,14 @@ public class PlayerController : MonoBehaviour
             // If node is null, then check if the ResourceNode component is on the parent.
             if (node == null)
             {
-                //Debug.Log("node is null! Checking parent!");
+                Debug.Log("node is null! Checking parent!");
                 node = hit.collider.GetComponentInParent<ResourceNode>();
             }
 
             // If we found a ResourceNode component and it is not depleted, then mine it.
             if (node != null && !node.IsDepleted)
             {
-                //Debug.Log("node is not depleted. Mining it!");
+                Debug.Log("node is not depleted. Mining it!");
                 node.Gather(gameObject);
             }
 

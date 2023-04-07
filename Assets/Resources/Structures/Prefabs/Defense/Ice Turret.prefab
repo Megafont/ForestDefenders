@@ -37,7 +37,7 @@ Transform:
   - {fileID: 9202467012398756336}
   - {fileID: 7120304898209053131}
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2165998396544791353
 MeshFilter:
@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 7906031764122606477, guid: d33d75f76611f6642a2d4e6d425fe340, type: 3}
+  - {fileID: 2100000, guid: e429c8ff9e485574b8aa09ee44b4da19, type: 2}
   - {fileID: 2100000, guid: 5dba737852a6fe141be08086cce40e9e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -122,11 +122,11 @@ NavMeshObstacle:
   m_Enabled: 1
   serializedVersion: 3
   m_Shape: 0
-  m_Extents: {x: 0.6, y: 1.25, z: 0.6}
+  m_Extents: {x: 0.6, y: 2, z: 0.6}
   m_MoveThreshold: 0.1
   m_Carve: 0
   m_CarveOnlyStationary: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
 --- !u!114 &3116096139951560530
 MonoBehaviour:
@@ -191,13 +191,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3950e6e9fcef36478009ff55fcb081e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHealth: 100
-  EnableDamageFlash: 1
-  DamageFlashColor: {r: 1, g: 0, b: 0, a: 1}
-  DamageFlashTime: 0.1
-  IsResistantTo: 0
-  IsVulnerableTo: 0
-  IsInvincible: 0
+  _MaxHealth: 100
+  _EnableDamageFlash: 1
+  _DamageFlashColor: {r: 1, g: 0, b: 0, a: 1}
+  _DamageFlashTime: 0.1
+  _IsResistantTo: 0
+  _IsVulnerableTo: 0
+  _IsInvincible: 0
 --- !u!1 &4707444851356434189
 GameObject:
   m_ObjectHideFlags: 0
@@ -377,7 +377,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 7906031764122606477, guid: d33d75f76611f6642a2d4e6d425fe340, type: 3}
+  - {fileID: 2100000, guid: e429c8ff9e485574b8aa09ee44b4da19, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

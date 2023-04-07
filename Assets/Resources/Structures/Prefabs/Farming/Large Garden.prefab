@@ -235,10 +235,19 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 5310736207848272, guid: f77e8d571ebfcc248b9c54b16755f1e0, type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 562195754414657124, guid: f77e8d571ebfcc248b9c54b16755f1e0,
         type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 562195754414657124, guid: f77e8d571ebfcc248b9c54b16755f1e0,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
       objectReference: {fileID: 0}
     - target: {fileID: 817701002518624746, guid: f77e8d571ebfcc248b9c54b16755f1e0,
         type: 3}
@@ -299,6 +308,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2587633808589245158, guid: f77e8d571ebfcc248b9c54b16755f1e0,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -389,10 +403,20 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 755615972717144934, guid: 47c73b8bd0578304f90c5f407842db1b,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 7251917917043821013, guid: 47c73b8bd0578304f90c5f407842db1b,
         type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7251917917043821013, guid: 47c73b8bd0578304f90c5f407842db1b,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -417,6 +441,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 887909585267844712, guid: 35ec262464df2c54085007b4d082c02f,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
       objectReference: {fileID: 0}
     - target: {fileID: 3984229793413551716, guid: 35ec262464df2c54085007b4d082c02f,
         type: 3}
@@ -483,10 +512,20 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 4323740758734605534, guid: 35ec262464df2c54085007b4d082c02f,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 6635763773864382039, guid: 35ec262464df2c54085007b4d082c02f,
         type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6635763773864382039, guid: 35ec262464df2c54085007b4d082c02f,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -567,6 +606,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 2987251278431464504, guid: defdb5b41a320b048b6457e4cf8de78a,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 3014791819965450381, guid: defdb5b41a320b048b6457e4cf8de78a,
         type: 3}
       propertyPath: m_Name
@@ -577,10 +621,20 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 3014791819965450381, guid: defdb5b41a320b048b6457e4cf8de78a,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 6003763118811008619, guid: defdb5b41a320b048b6457e4cf8de78a,
         type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6003763118811008619, guid: defdb5b41a320b048b6457e4cf8de78a,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -661,6 +715,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 2987251278431464504, guid: defdb5b41a320b048b6457e4cf8de78a,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 3014791819965450381, guid: defdb5b41a320b048b6457e4cf8de78a,
         type: 3}
       propertyPath: m_Name
@@ -671,10 +730,20 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 3014791819965450381, guid: defdb5b41a320b048b6457e4cf8de78a,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 6003763118811008619, guid: defdb5b41a320b048b6457e4cf8de78a,
         type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6003763118811008619, guid: defdb5b41a320b048b6457e4cf8de78a,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -755,6 +824,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 2987251278431464504, guid: defdb5b41a320b048b6457e4cf8de78a,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 3014791819965450381, guid: defdb5b41a320b048b6457e4cf8de78a,
         type: 3}
       propertyPath: m_Name
@@ -765,10 +839,20 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 3014791819965450381, guid: defdb5b41a320b048b6457e4cf8de78a,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 6003763118811008619, guid: defdb5b41a320b048b6457e4cf8de78a,
         type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6003763118811008619, guid: defdb5b41a320b048b6457e4cf8de78a,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -793,6 +877,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 887909585267844712, guid: 35ec262464df2c54085007b4d082c02f,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
       objectReference: {fileID: 0}
     - target: {fileID: 3984229793413551716, guid: 35ec262464df2c54085007b4d082c02f,
         type: 3}
@@ -859,10 +948,20 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 4323740758734605534, guid: 35ec262464df2c54085007b4d082c02f,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 6635763773864382039, guid: 35ec262464df2c54085007b4d082c02f,
         type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6635763773864382039, guid: 35ec262464df2c54085007b4d082c02f,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -943,6 +1042,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 2987251278431464504, guid: defdb5b41a320b048b6457e4cf8de78a,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 3014791819965450381, guid: defdb5b41a320b048b6457e4cf8de78a,
         type: 3}
       propertyPath: m_Name
@@ -953,10 +1057,20 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 3014791819965450381, guid: defdb5b41a320b048b6457e4cf8de78a,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 6003763118811008619, guid: defdb5b41a320b048b6457e4cf8de78a,
         type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6003763118811008619, guid: defdb5b41a320b048b6457e4cf8de78a,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -981,6 +1095,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 887909585267844712, guid: 35ec262464df2c54085007b4d082c02f,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
       objectReference: {fileID: 0}
     - target: {fileID: 3984229793413551716, guid: 35ec262464df2c54085007b4d082c02f,
         type: 3}
@@ -1047,10 +1166,20 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 4323740758734605534, guid: 35ec262464df2c54085007b4d082c02f,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 6635763773864382039, guid: 35ec262464df2c54085007b4d082c02f,
         type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6635763773864382039, guid: 35ec262464df2c54085007b4d082c02f,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1131,6 +1260,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 2987251278431464504, guid: defdb5b41a320b048b6457e4cf8de78a,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 3014791819965450381, guid: defdb5b41a320b048b6457e4cf8de78a,
         type: 3}
       propertyPath: m_Name
@@ -1141,10 +1275,20 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 3014791819965450381, guid: defdb5b41a320b048b6457e4cf8de78a,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 6003763118811008619, guid: defdb5b41a320b048b6457e4cf8de78a,
         type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6003763118811008619, guid: defdb5b41a320b048b6457e4cf8de78a,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1225,6 +1369,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 2987251278431464504, guid: defdb5b41a320b048b6457e4cf8de78a,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 3014791819965450381, guid: defdb5b41a320b048b6457e4cf8de78a,
         type: 3}
       propertyPath: m_Name
@@ -1235,10 +1384,20 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 3014791819965450381, guid: defdb5b41a320b048b6457e4cf8de78a,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 6003763118811008619, guid: defdb5b41a320b048b6457e4cf8de78a,
         type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6003763118811008619, guid: defdb5b41a320b048b6457e4cf8de78a,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1267,10 +1426,19 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 5310736207848272, guid: f77e8d571ebfcc248b9c54b16755f1e0, type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 562195754414657124, guid: f77e8d571ebfcc248b9c54b16755f1e0,
         type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 562195754414657124, guid: f77e8d571ebfcc248b9c54b16755f1e0,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
       objectReference: {fileID: 0}
     - target: {fileID: 817701002518624746, guid: f77e8d571ebfcc248b9c54b16755f1e0,
         type: 3}
@@ -1331,6 +1499,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2587633808589245158, guid: f77e8d571ebfcc248b9c54b16755f1e0,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1416,15 +1589,30 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 4262577749830413373, guid: 73da6597a1f4f5e488a535d5a42f89ab,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 8251338602953461965, guid: 73da6597a1f4f5e488a535d5a42f89ab,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8251338602953461965, guid: 73da6597a1f4f5e488a535d5a42f89ab,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
+    - target: {fileID: 8956198055339157139, guid: 73da6597a1f4f5e488a535d5a42f89ab,
         type: 3}
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8956198055339157139, guid: 73da6597a1f4f5e488a535d5a42f89ab,
         type: 3}
-      propertyPath: m_Layer
-      value: 6
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1510,15 +1698,30 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 4262577749830413373, guid: 73da6597a1f4f5e488a535d5a42f89ab,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 8251338602953461965, guid: 73da6597a1f4f5e488a535d5a42f89ab,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8251338602953461965, guid: 73da6597a1f4f5e488a535d5a42f89ab,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
+    - target: {fileID: 8956198055339157139, guid: 73da6597a1f4f5e488a535d5a42f89ab,
         type: 3}
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8956198055339157139, guid: 73da6597a1f4f5e488a535d5a42f89ab,
         type: 3}
-      propertyPath: m_Layer
-      value: 6
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1604,15 +1807,30 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 4262577749830413373, guid: 73da6597a1f4f5e488a535d5a42f89ab,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 8251338602953461965, guid: 73da6597a1f4f5e488a535d5a42f89ab,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8251338602953461965, guid: 73da6597a1f4f5e488a535d5a42f89ab,
+        type: 3}
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
+      objectReference: {fileID: 0}
+    - target: {fileID: 8956198055339157139, guid: 73da6597a1f4f5e488a535d5a42f89ab,
         type: 3}
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8956198055339157139, guid: 73da6597a1f4f5e488a535d5a42f89ab,
         type: 3}
-      propertyPath: m_Layer
-      value: 6
+      propertyPath: m_TagString
+      value: CameraIgnoreObstacle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

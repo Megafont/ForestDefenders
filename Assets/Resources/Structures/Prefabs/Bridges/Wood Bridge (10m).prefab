@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8023214852889558965}
   - component: {fileID: 7129976523206564073}
   m_Layer: 6
-  m_Name: Wooden Bridge [Joined]
+  m_Name: Wood Bridge 10m [Joined]
   m_TagString: CameraIgnoreObstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -42,7 +42,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2251400167486506812}
-  m_Mesh: {fileID: 2285224234267598364, guid: 183084865f23ff741a3b7dcb4f92a179, type: 3}
+  m_Mesh: {fileID: 8952057414837123382, guid: 861e13c14def55b4390a5b5e0b31d54c, type: 3}
 --- !u!23 &5536660039240163600
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -65,7 +65,7 @@ MeshRenderer:
   m_Materials:
   - {fileID: 2100000, guid: 0744bcab18e19e444b1498ebfd1b47b1, type: 2}
   - {fileID: 2100000, guid: d1308064540b76a488431b360cee6b89, type: 2}
-  - {fileID: 2100000, guid: b747383878001c94dbaf7aa522f19c05, type: 2}
+  - {fileID: 2100000, guid: 7566f004765b64046b3b33e2c3513c6e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -108,7 +108,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 3505738999752369143, guid: 183084865f23ff741a3b7dcb4f92a179, type: 3}
+  m_Mesh: {fileID: 7047477620292480309, guid: 861e13c14def55b4390a5b5e0b31d54c, type: 3}
 --- !u!65 &7129976523206564073
 BoxCollider:
   m_ObjectHideFlags: 0

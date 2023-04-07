@@ -83,8 +83,9 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
                 SetTarget(newTarget);
         }
         
-        // If this monster is chasing a target and the target gets far enough away, revert to the previous target.
-        else if (_Target.CompareTag("Player") || _Target.CompareTag("Villager")) // Is the target the player or a villager?
+        // If this monster is chasing a target and the target gets far enough away, revert to the previous target if it isn't null.
+        else if (_PrevTarget != null &&
+                 (_Target.CompareTag("Player") || _Target.CompareTag("Villager"))) // Is the current target the player or a villager?
         {
             float distanceToTarget = GetDistanceToTarget();
             if (distanceToTarget > _MaxChaseDistance)
@@ -110,7 +111,7 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         {
             return false;
         }
-        else if (newTarget != null && newTarget.CompareTag("Villager") && // If we are targeting a villager and the new target is another villager, then return false so we don't switch the target.
+        else if (newTarget != null && newTarget.CompareTag("Villager") && // If the monster is currently targeting a villager and the new target is another villager, then return false so we don't switch the target.
                  _Target != null && _Target.CompareTag("Villager")) 
         {
             return false;

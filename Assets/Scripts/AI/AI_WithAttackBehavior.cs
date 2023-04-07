@@ -154,7 +154,6 @@ public abstract class AI_WithAttackBehavior : AI_Base
         else
         {
             // We set this here to prevent monsters from attacking instantaneously when they first get near the player.
-            // We subtract one second so the game will think the last attack was one second ago from now, thus there will only be a one second delay before the monster's first attack, rather than the normal value of AttackFrequency.
             _LastAttackTime = Time.time;
 
             _IsAttacking = false;
