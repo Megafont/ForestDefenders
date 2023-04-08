@@ -92,7 +92,8 @@ public class MonsterManager : MonoBehaviour
         CurrentWaveNumber++;
         CurrentWaveSize = BaseMonsterSpawnAmount + ((CurrentWaveNumber - 1) * 3);
 
-        int totalMonsterTypeCount = CurrentWaveNumber;
+        // Determine how many monster types will spawn in the current wave.
+        int totalMonsterTypeCount = Mathf.Max(1, (CurrentWaveNumber + 1) / 2); // Make a new monster appear in every other wave
         if (CurrentWaveNumber > _MonsterDefinitions.Count)
             totalMonsterTypeCount = _MonsterDefinitions.Count;
 
@@ -155,6 +156,48 @@ public class MonsterManager : MonoBehaviour
         _WaveIsDoneSpawning = true;
     }
 
+    private void OnDeath(GameObject sender, GameObject attacker)
+    {
+        _LastMonsterDeathTime = Time.time;        
+        
+
+        // Only increase the combo streak if the monster was killed by the player.
+        if (attacker.CompareTag("Player"))
+            CurrentComboStreak++;
+
+
+        MonstersKilled++;
+        TotalMonstersKilled++;
+
+
+        int enemyScoreValue = sender.GetComponent<IMonster>().GetScoreValue();
+        int scoreMultiplier = (CurrentComboStreak > 0 ? CurrentComboStreak : 1); // We want a multiplier of one if the combo streak is 0 so the player doesn't get screwed out of some points.
+        GameManager.Instance.AddToScore(enemyScoreValue * scoreMultiplier);
+
+
+        //Debug.Log($"Kill Streak: {CurrentComboStreak}  Monster Base Score: {enemyScoreValue}");
+
+
+        _AliveMonsters.Remove(sender);        
+    }
+
+
+
+
+
+    // ******************************************************************************************
+    // !!!!!WARNING!!!!!
+    // ******************************************************************************************
+    //
+    // The following several methods are currently deprecated, but still here until I
+    // finalize how monsters spawn in the game.
+    //
+    // DO NOT DELETE THEM YET!
+    //
+    // ******************************************************************************************
+
+
+
     /// <summary>
     /// Generates a shuffled list of prefab indices for all monsters that should spawn in the current wave.
     /// If there are 10 slimes to spawn, the Slime's monster index will be in this list 10 times.
@@ -205,33 +248,6 @@ public class MonsterManager : MonoBehaviour
 
         return count;
     }
-
-    private void OnDeath(GameObject sender, GameObject attacker)
-    {
-        _LastMonsterDeathTime = Time.time;        
-        
-
-        // Only increase the combo streak if the monster was killed by the player.
-        if (attacker.CompareTag("Player"))
-            CurrentComboStreak++;
-
-
-        MonstersKilled++;
-        TotalMonstersKilled++;
-
-
-        int enemyScoreValue = sender.GetComponent<IMonster>().GetScoreValue();
-        int scoreMultiplier = (CurrentComboStreak > 0 ? CurrentComboStreak : 1); // We want a multiplier of one if the combo streak is 0 so the player doesn't get screwed out of some points.
-        GameManager.Instance.AddToScore(enemyScoreValue * scoreMultiplier);
-
-
-        //Debug.Log($"Kill Streak: {CurrentComboStreak}  Monster Base Score: {enemyScoreValue}");
-
-
-        _AliveMonsters.Remove(sender);        
-    }
-
-
 
     /// <summary>
     /// Used to compare two monsters for sorting the list from weakest to strongest.

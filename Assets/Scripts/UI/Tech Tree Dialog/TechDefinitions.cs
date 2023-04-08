@@ -34,7 +34,8 @@ public static class TechDefinitions
 
         List<TechTreeTileData> tilesData = new List<TechTreeTileData>()
         {
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_WoodBridge_10m, Title = "Wood Bridge (10m)", DescriptionText = "Gain the technology to build 10-meter long wooden bridges and reach new areas.", XPCost = 10 },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_WoodBridge_10m, Title = "Wood Bridge (10m)", DescriptionText = "Gain the technology to build 10-meter long wooden bridges and reach new areas.", XPCost = 20 },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_WoodBridge_20m, Title = "Wood Bridge (20m)", DescriptionText = "Gain the technology to build 20-meter long wooden bridges and reach new areas.", XPCost = 40 },
         };
 
 

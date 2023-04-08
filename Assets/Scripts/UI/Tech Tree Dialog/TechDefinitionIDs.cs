@@ -23,6 +23,7 @@ public enum TechDefinitionIDs
 
     // Other
     Buildings_WoodBridge_10m,
+    Buildings_WoodBridge_20m,
 
     // Villagers
     Villagers_RepairBuildings,

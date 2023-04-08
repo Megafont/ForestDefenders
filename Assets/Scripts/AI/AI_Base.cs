@@ -340,7 +340,7 @@ public abstract class AI_Base : MonoBehaviour
             GameObject obj = hitInfo.collider.gameObject;
 
             if (obj == _Target || 
-                (obj.CompareTag("Building") && obj.transform.IsChildOf(_Target.transform))) // Some buildings don't have their main mesh on the top-level GameObject, so we need this secondary condition.
+                obj.transform.IsChildOf(_Target.transform)) // Some buildings don't have their main mesh on the top-level GameObject, so we need this secondary condition.
             {
                 distance = hitInfo.distance;
             }

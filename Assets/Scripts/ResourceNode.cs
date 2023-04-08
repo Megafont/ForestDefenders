@@ -27,7 +27,7 @@ public class ResourceNode : MonoBehaviour
     private LevelUpDialog _LevelUpDialog;
 
     private float _AmountAvailable;
-
+    
     private List<IVillager> _VillagersMiningThisNode;
 
 

@@ -10,6 +10,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 using StarterAssets;
+using Unity.VisualScripting;
 
 
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
@@ -489,15 +490,20 @@ public class PlayerController : MonoBehaviour
             // If node is null, then check if the ResourceNode component is on the parent.
             if (node == null)
             {
-                Debug.Log("node is null! Checking parent!");
+                //Debug.Log("node is null! Checking parent!");
                 node = hit.collider.GetComponentInParent<ResourceNode>();
             }
 
             // If we found a ResourceNode component and it is not depleted, then mine it.
             if (node != null && !node.IsDepleted)
             {
-                Debug.Log("node is not depleted. Mining it!");
+                //Debug.Log("node is not depleted. Mining it!");
                 node.Gather(gameObject);
+
+                // Since we found a resource node and gathered from it, break out of this loop.
+                // This prevents the player mining the same garden/farm multiple times in one hit
+                // if their sword is colliding with multiple plants.
+                break;
             }
 
         } // end foreach hit

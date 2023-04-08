@@ -26,6 +26,7 @@ public static class MonsterStats
         _MonsterPrefabsList = monsterPrefabsList;
 
 
+        MonsterDefinitions.Clear();
 
         CreateMonsterDefinition("Slime",        1, 10,   1,  2.00f,  100, 10, 2, 5);
         CreateMonsterDefinition("TurtleShell",  1, 20,   2,  1.95f,  200, 10, 2, 5);

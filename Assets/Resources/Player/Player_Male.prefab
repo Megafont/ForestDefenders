@@ -5576,7 +5576,7 @@ MonoBehaviour:
   _GroundedRadius: 0.28
   _GroundLayers:
     serializedVersion: 2
-    m_Bits: 200
+    m_Bits: 1736
   _CinemachineCameraTarget: {fileID: 8606051518446507860}
   _TopClamp: 70
   _BottomClamp: -30

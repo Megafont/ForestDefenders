@@ -69,6 +69,8 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
     protected virtual void DoTaskWork()
     {
         ResourceNode node = _Target.GetComponent<ResourceNode>();
+        
+        Debug.Log($"Node: \"{(node != null ? node.name : "null")}\"");
 
         if (node)
         {
