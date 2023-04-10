@@ -13,10 +13,12 @@ public class BridgeConstructionZone : MonoBehaviour
 
     [Header("Zone Settings")]
 
-    [Tooltip("The group of resource nodes that is accessed by building a bridge across this bridge construction zone.")]
-    [SerializeField] private GameObject _NextResourceNodeRegion;
-    [Tooltip("The group of resource nodes that is just before this bridge construction zone.")]
-    [SerializeField] private GameObject _PreviousResourceNodeRegion;
+    [Tooltip("The type of bridge that can be built in this bridge zone.")]
+    [SerializeField] private BridgeTypes _AllowedBridgeType;
+    [Tooltip("The area that is accessed by building a bridge across this bridge construction zone.")]
+    [SerializeField] private LevelAreas _NextArea;
+    [Tooltip("The area that is just before this bridge construction zone.")]
+    [SerializeField] private LevelAreas _PreviousArea;
 
     [Tooltip("The list of bridges that have been constructed in this bridge construction zone. You don't need to manually add anything to this list except for bridges you build in the Unity Editor.")]
     [SerializeField] private List<GameObject> _BridgesInThisZone;
@@ -30,13 +32,10 @@ public class BridgeConstructionZone : MonoBehaviour
 
 
 
-    private ResourceManager _ResourceManager;
-
-
 
     private void Awake()
     {
-        _ResourceManager = GameManager.Instance.ResourceManager;
+        GameManager.Instance.VillageManager_Buildings.OnBuildingDestroyed += OnBridgeDestroyed;
     }
 
 
@@ -75,21 +74,24 @@ public class BridgeConstructionZone : MonoBehaviour
         if (bridge == null)
             throw new Exception("The passed in bridge is null!");
 
-        if (bridge is not Building_WoodBridge_10m)
+        if (bridge.Category != "Bridges")
             throw new Exception($"The passed in building \"{bridge.gameObject.name}\" is not a bridge!");
 
 
         _BridgesInThisZone.Add(bridge.gameObject);
-        bridge.gameObject.GetComponent<Health>().OnDeath += OnBridgeDestroyed;
     }
 
-    private void OnBridgeDestroyed(GameObject sender, GameObject attacker)
+    private void OnBridgeDestroyed(IBuilding building, bool wasDeconstructedByPlayer)
     {
-        _BridgesInThisZone.Remove(sender.gameObject);
-        sender.GetComponent<Health>().OnDeath -= OnBridgeDestroyed;
+        _BridgesInThisZone.Remove(building.gameObject);
     }
     
 
+
+    /// <summary>
+    /// Returns the type of bridge that is allowed in this bridge construction zone.
+    /// </summary>
+    public BridgeTypes AllowedBridgeType { get { return _AllowedBridgeType; } }
 
     /// <summary>
     /// Returns true if there is at least one bridge crossing this zone, or false otherwise.
@@ -100,7 +102,13 @@ public class BridgeConstructionZone : MonoBehaviour
         {
             return _BridgesInThisZone.Count > 0;
         }
+        
     }
 
+
+    public int BridgeCount {  get { return _BridgesInThisZone.Count; } }
+
+    public LevelAreas PrevArea { get { return _PreviousArea; } }
+    public LevelAreas NextArea { get { return _NextArea; } }
 
 }

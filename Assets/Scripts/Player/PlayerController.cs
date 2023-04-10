@@ -512,6 +512,10 @@ public class PlayerController : MonoBehaviour
 
     private void DoDestroyAction(GameObject objToDestroy)
     {
+        bool result = Utils_Math.DetectAreaNumberFromGroundPosition(transform.position.x, transform.position.z, LayerMask.GetMask(new string[] { "Ground" }), out LevelAreas area);
+        Utils_AI.FindAllResourceNodesAccessableFromArea(area);
+
+
         if (objToDestroy == null)
         { 
             //Debug.LogWarning($"GameObject cannot be destroyed since it is null!");
@@ -527,7 +531,8 @@ public class PlayerController : MonoBehaviour
         if (building != null)        
         {
             if (_VillageManager_Buildings == null)
-                throw new Exception("FUCK!");
+                throw new Exception("_VillageManager_Buildings is null!");
+
             _VillageManager_Buildings.DeconstructBuilding(building);
         }
         else

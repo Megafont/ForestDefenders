@@ -142,3 +142,4 @@ PackageBackups/
 
 # UWP builds
 /UWP/*
+/Assets/Scripts/Buildings/Building_Base.cs

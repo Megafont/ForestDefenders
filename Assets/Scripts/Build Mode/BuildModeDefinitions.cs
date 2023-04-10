@@ -8,6 +8,9 @@ using UnityEngine;
 
 public static class BuildModeDefinitions
 {
+    public const string BUILDING_PREFAB_TAG = "Building Prefab";
+
+
     private static BuildModeManager _BuildModeManager;
 
     private static Dictionary<string, BuildingDefinition> _BuildingDefinitions;
@@ -189,11 +192,13 @@ public static class BuildModeDefinitions
         {
             
             GameObject prefab = LoadBuildingPrefab(pair.Value.Category, pair.Value.Name);
+            prefab.GetComponent<IBuilding>().InitAsPrefab();
 
 
             // Create a temperary instance of the prefab.
             GameObject instance = GameObject.Instantiate(prefab, new Vector3(0, 0, 0), Quaternion.identity);
-            instance.tag = "Building Prefab";
+            instance.tag = BUILDING_PREFAB_TAG;
+
 
             // Get a list of all MeshFilter component's in the prefab.
             List<MeshFilter> meshFilters = new List<MeshFilter>(instance.GetComponentsInChildren<MeshFilter>());
@@ -314,7 +319,7 @@ public static class BuildModeDefinitions
 
     public static bool BuildingIsBridge(BuildingDefinition buildingDef)
     {
-        if (buildingDef.Name == "Wood Bridge")
+        if (buildingDef.Category == "Bridges")
             return true;
 
 

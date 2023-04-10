@@ -27,6 +27,11 @@ public class Building_MageTower : Building_Base
     protected override void InitBuilding()
     {
         ConfigureBasicBuildingSetup("Defense", "Mage Tower");
+    }
+
+    protected override void ConfigureBuildingComponents()
+    {
+        base.ConfigureBuildingComponents();
 
 
         if (_MageSpawnPoint == null)
@@ -35,8 +40,8 @@ public class Building_MageTower : Building_Base
 
         LoadMagePrefabs();
         CreateMageInstances();
-
     }
+
 
     protected override void UpdateBuilding()
     {

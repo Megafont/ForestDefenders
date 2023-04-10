@@ -27,6 +27,10 @@ public enum VillagerTasks
 /// </summary>
 public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 {
+    private const int MAX_RESOURCE_NODE_ATTEMPTS = 5;
+
+
+
     protected VillagerTargetDetector _NearbyTargetDetector;
 
     protected ResourceManager _ResourceManager;
@@ -70,7 +74,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
     {
         ResourceNode node = _Target.GetComponent<ResourceNode>();
         
-        Debug.Log($"Node: \"{(node != null ? node.name : "null")}\"");
+        //Debug.Log($"Node: \"{(node != null ? node.name : "null")}\"");
 
         if (node)
         {
@@ -158,6 +162,61 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
         {
             // This villager is not chasing a target. So if the target check time has elapsed, then do a new target check.                        
 
+            // Find all accessable resource nodes that are not depleted.
+            bool result = Utils_Math.DetectAreaNumberFromGroundPosition(transform.position.x, transform.position.z, LayerMask.GetMask(new string[] { "Ground" }), out LevelAreas villagerCurrentArea);
+            if (result)
+            {
+                List<ResourceNode> accessableResourceNodes = Utils_AI.FindAllResourceNodesAccessableFromArea(villagerCurrentArea);
+                ResourceNode possibleTargetResourceNode = null;
+
+                if (accessableResourceNodes.Count > 0)
+                {
+                    int resourceNodeAttempts = 0;
+                    while (true)
+                    {
+                        
+                        int index = Random.Range(0, accessableResourceNodes.Count);
+
+                        possibleTargetResourceNode = accessableResourceNodes[index];
+                        if (possibleTargetResourceNode.VillagersMiningThisNode < 1)
+                        {
+                            break;
+                        }
+                        else
+                            resourceNodeAttempts++;
+                    }
+
+
+                    // Did we find a non-empty resource node?
+                    if (possibleTargetResourceNode && !possibleTargetResourceNode.IsDepleted)
+                    {
+                        SetTarget(possibleTargetResourceNode.gameObject);
+                    }
+                }
+            }
+
+
+        }
+
+        
+        // If this villager is chasing a target and the target gets far enough away, revert to the previous target.
+        else if (_Target.CompareTag("Monster") || _Target.CompareTag("Player"))
+        {
+            if (!TargetIsWithinChaseRange() && !_VillageManager_Villagers.VillagerIsOnBuildingHealCall(this))
+            {
+                SetTarget(_PrevTarget);
+            }
+        }
+
+    }
+
+    /*
+    protected void DoTargetCheck_BuildPhase_OLD()
+    {
+        if (_Target == null)
+        {
+            // This villager is not chasing a target. So if the target check time has elapsed, then do a new target check.                        
+
             // Find a non-empty resource node of the same type as the lowest resource stockpile.
             ResourceTypes lowest = _ResourceManager.GetLowestResourceStockpileType();
             ResourceNode possibleTargetResourceNode = _ResourceManager.FindNearestResourceNode(transform.position, lowest);
@@ -172,8 +231,8 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
             {
                 SetTarget(possibleTargetResourceNode.gameObject);
             }
-
         }
+
         // If this villager is chasing a target and the target gets far enough away, revert to the previous target.
         else if (_Target.CompareTag("Monster") || _Target.CompareTag("Player"))
         {
@@ -184,6 +243,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
         }
 
     }
+    */
 
     protected void DoTargetCheck_MonsterAttackPhase()
     {

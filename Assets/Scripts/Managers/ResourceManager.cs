@@ -275,4 +275,26 @@ public class ResourceManager : MonoBehaviour
         _DepletedResourceNodes.Add(sender);
     }
 
+
+
+    public ResourceNode GetResourceNode(int index)
+    {
+        return _AllResourceNodes[index];
+    }
+
+    public ResourceNode GetActiveResourceNode(int index)
+    {
+        return _ActiveResourceNodes[index];
+    }
+
+    public ResourceNode GetDepletedResourceNode(int index)
+    {
+        return _DepletedResourceNodes[index];
+    }
+
+
+    public int AllResourceNodesCount { get { return _AllResourceNodes.Count; } }
+    public int ActiveResourceNodesCount { get { return _ActiveResourceNodes.Count; } }
+    public int DepletedResourceNodesCount { get { return _DepletedResourceNodes.Count; } }
+
 }

@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -43,6 +44,7 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
 
 
         InitBuilding();
+        ConfigureBuildingComponents();
     }
 
     void Start()
@@ -68,23 +70,23 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
     }
 
 
-
     protected void ConfigureBasicBuildingSetup(string buildingCategory, string buildingName)
     {
         Category = buildingCategory;
         Name = buildingName;
 
         _BuildingDefinition = BuildModeDefinitions.GetBuildingDefinition(Category, Name);
+    }
+
+    protected virtual void ConfigureBuildingComponents()
+    {
         _Health.MaxHealth = _BuildingDefinition.MaxHealth;
         _Health.ResetHealthToMax();
     }
 
     protected virtual void InitBuilding()
     {
-        // This class is the only one that sets these fields directly. It does not call the InitBuilding() method like all subclasses, since
-        // there is no building with category and name both equal to "None". So calling that method would crash the game.
-        Category = "None";
-        Name = "None";
+        ConfigureBasicBuildingSetup("None", "None");
     }
 
 
@@ -114,5 +116,19 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
 
         yield break;
     }
+
+
+
+    /// <summary>
+    /// This method is called on instances of this class that are on prefabs that have been loaded but NOT
+    /// instantiated. It performs a partial initialization, so this class will still know certain things
+    /// about the building it represents (like type and category). This is necessary, because the Awake()
+    /// method is not called on a prefab that has been loaded but NOT instantiated.
+    /// </summary>
+    public void InitAsPrefab()
+    {
+        InitBuilding();
+    }
+
 
 }

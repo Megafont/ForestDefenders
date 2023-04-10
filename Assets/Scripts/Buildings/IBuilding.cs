@@ -8,6 +8,7 @@ public interface IBuilding
 {
     BuildingDefinition GetBuildingDefinition();
     Mesh GetMesh();
+    public void InitAsPrefab();
 
     string Category { get; }
     string Name { get; }

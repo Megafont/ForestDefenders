@@ -50,6 +50,13 @@ public class Building_Turret : Building_Base
         _GameManager = GameManager.Instance;
 
         _TurretDirection = transform.forward;
+    }
+
+    protected override void ConfigureBuildingComponents()
+    {
+        base.ConfigureBuildingComponents();
+
+
         _TurretTop = transform.Find("Turret Top").gameObject;
 
 
@@ -71,6 +78,7 @@ public class Building_Turret : Building_Base
 
         StartCoroutine(AimTurret());
     }
+
 
     protected override void UpdateBuilding()
     {

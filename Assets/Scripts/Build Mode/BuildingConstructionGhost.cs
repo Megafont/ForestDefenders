@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -562,26 +562,33 @@ public class BuildingConstructionGhost : MonoBehaviour
         // Is the construction ghost free of collisions with any other object?
         if (_OverlappingObjects.Count < 1)
         {
-            // The building is not overlapping anything else, and is not a bridge within a bridge construction zone.
-            // In this case, it is not considered obstructed unless it is a bridge that is outside a bridge construction zone.
+            // The building is not overlapping anything else, and is thus not in a bridge construction zone either.
             if (BuildModeDefinitions.BuildingIsBridge(_BuildingDefinition))
-                result = true;
+                result = true; // The building is a bridge that's not in a bridge construction zone, so it counts as obstructed.
             else
-                result = false;
+                result = false; // The building is not a bridge and not in a bridge construction zone, so it is not considered obstructed.
         }
-        else if (_IsBridgeCompletelyInsideBridgeZone) // Is the construction ghost completely within a bridge construction zone?
-        {
-            if (_OverlappingObjects.Count == 1) // Is the construction ghost free of collisions with anything other than the bridge construction zone?
-            {
-                // The building is overlapping a bridge zone.
-                // If IsBridgeCompletelyInsideBridgeZone is true, it means the building IS a bridge AND it is completely within this bridge construction zone.
-                result = !_IsBridgeCompletelyInsideBridgeZone;
-            }
 
+        // Is the construction ghost a bridge that is completely within a bridge construction zone?
+        else if (_IsBridgeCompletelyInsideBridgeZone) 
+        {
+            // Is the construction ghost free of collisions with anything other than the bridge construction zone?
+            if (_OverlappingObjects.Count == 1) 
+            {
+                //Debug.Log($"BridgeType: \"{(_BuildingDefinition.Prefab.GetComponent<IBuilding>() as Bridge_Base).BridgeType}\"    Construction Zone Allowed Type: \"{ParentBridgeConstructionZone.AllowedBridgeType}\"");
+
+                // Is the player trying to build the type of bridge that is allowed in this bridge construction zone?
+                if ((_BuildingDefinition.Prefab.GetComponent<IBuilding>() as Bridge_Base).BridgeType == ParentBridgeConstructionZone.AllowedBridgeType)
+                    result = false;
+                else
+                    result = true;
+            }
+        
         }
+
+        // The building is obstructed since it is overlapping one or more other things.
         else
         {
-            // The building is obstructed since it is overlapping one or more other things.
             result = true;
         }
 

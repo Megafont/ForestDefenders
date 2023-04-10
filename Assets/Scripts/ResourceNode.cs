@@ -27,11 +27,12 @@ public class ResourceNode : MonoBehaviour
     private LevelUpDialog _LevelUpDialog;
 
     private float _AmountAvailable;
-    
+
     private List<IVillager> _VillagersMiningThisNode;
 
 
 
+    public LevelAreas ParentArea { get; private set; } = LevelAreas.Unknown;
     public ResourceTypes ResourceType { get { return _ResourceType; } }
 
 
@@ -45,6 +46,10 @@ public class ResourceNode : MonoBehaviour
 
     void Awake()
     {
+        if (Utils_Math.DetectAreaNumberFromGroundPosition(transform.position.x, transform.position.z, LayerMask.GetMask(new string[] { "Ground" }), out LevelAreas area))
+            ParentArea = area;
+        
+
         _GameManager = GameManager.Instance;
         _ResourceManager = _GameManager.ResourceManager;
 

@@ -16,8 +16,8 @@ public class BuildingDefinition
 
     public uint PopulationCapBoost; // The number of villagers that will spawn after the building is constructed.
 
-    public Vector3 Size; // Dimensions of the building.
     // Collider data (used ESPECIALLY for the build mode construction ghost)
+    public Vector3 Size; // Dimensions of the building.
     public bool IsRound;
 
     public GameObject Prefab;

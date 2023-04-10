@@ -13898,7 +13898,7 @@ MonoBehaviour:
   m_CollideAgainst:
     serializedVersion: 2
     m_Bits: 73
-  m_IgnoreTag: 
+  m_IgnoreTag: CameraIgnoreObstacle
   m_TransparentLayers:
     serializedVersion: 2
     m_Bits: 0

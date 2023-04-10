@@ -59,12 +59,18 @@ public class Building_IceTurret : Building_Base
 
         _GameManager = GameManager.Instance;
 
-        _TurretTop = transform.Find("Ice Turret Top").gameObject;
-
         _TurretTopChargeUpTotalRotation = 360 * _TopRotationsPerChargeUp;
         _TurretTopIceWaveTotalRotation = 360 * _TopRotationsPerIceWave;
 
         _IceWaveMaxScale = _AttackRange / 1; // The ice wave has a radius of 1 (origin to the center of the ring's width), so dividing attack range by that value tells us how much the ring will be scaled up when it reaches its max distance from the tower.
+    }
+
+    protected override void ConfigureBuildingComponents()
+    {
+        base.ConfigureBuildingComponents();
+
+
+        _TurretTop = transform.Find("Ice Turret Top").gameObject;
 
         _IceWave = transform.Find("Ice Wave").gameObject;
         _IceWaveRenderer = _IceWave.GetComponent<MeshRenderer>();

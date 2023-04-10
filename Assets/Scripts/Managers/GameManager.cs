@@ -4,10 +4,11 @@ using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.UI;
+using UnityObject = UnityEngine.Object;
 
 using Cinemachine;
 using TMPro;
-
+using Unity.VisualScripting;
 
 public class GameManager : MonoBehaviour
 {
@@ -108,6 +109,7 @@ public class GameManager : MonoBehaviour
     
     private WaitForSeconds _GamePhaseDisplayDelay = new WaitForSeconds(2.5f);
 
+    private List<BridgeConstructionZone> _BridgeConstructionZones;
 
 
     public delegate void GameManager_GameStateChangedEventHandler(GameStates newGameState);
@@ -137,6 +139,7 @@ public class GameManager : MonoBehaviour
 
 
         InitUI();
+        GetBridgeConstructionZoneReferences();
 
 
         if (StartingXP > 0)
@@ -448,6 +451,28 @@ public class GameManager : MonoBehaviour
         _UI_StoneCountText = GameObject.Find("UI/HUD/Bottom Bar/Stone Count Text (TMP)").GetComponent<TMP_Text>();
     }
 
+    private void GetBridgeConstructionZoneReferences()
+    {
+        UnityObject[] objs = GameObject.FindObjectsOfType(typeof(BridgeConstructionZone), false);
+
+        _BridgeConstructionZones = new List<BridgeConstructionZone>();
+        foreach (UnityObject uObj in objs)
+        {
+            BridgeConstructionZone bZone = uObj.GameObject().GetComponent<BridgeConstructionZone>();
+            if (bZone != null)
+                _BridgeConstructionZones.Add(bZone);
+        }
+
+        _BridgeConstructionZones.Sort(CompareBridgeConstructionZoneTo);
+    }
+
+    private int CompareBridgeConstructionZoneTo(BridgeConstructionZone a, BridgeConstructionZone b)
+    {
+        //Debug.Log($"A: \"{a.name}\"    B: \"{b.name}\"    Result: {a.name.CompareTo(b.name)}");
+
+        return a.name.CompareTo(b.name);
+    }
+
     public void AddToScore(int amount)
     {
         // If the player is dead, simply return. This ignores any additional points being earned by villagers killing monsters.
@@ -750,21 +775,28 @@ public class GameManager : MonoBehaviour
         _UI_GamePhaseText.enabled = true;
     }
 
-
-
-    public LevelUpDialog LevelUpDialog
+    public BridgeConstructionZone GetBridgeZoneBeforeArea(LevelAreas area)
     {
-        get { return _UI_LevelUpDialog; }
+        foreach (BridgeConstructionZone zone in _BridgeConstructionZones)
+        {
+            if (zone.PrevArea == area)
+                return zone;
+        }
+
+
+        return null;
     }
 
-    public RadialMenuDialog RadialMenuDialog
+    public BridgeConstructionZone GetBridgeZoneAfterArea(LevelAreas area)
     {
-        get { return _UI_RadialMenuDialog; }
-    }
+        foreach (BridgeConstructionZone zone in _BridgeConstructionZones)
+        {
+            if (zone.NextArea == area)
+                return zone;
+        }
 
-    public TechTreeDialog TechTreeDialog
-    {
-        get { return _UI_TechTreeDialog; }
+
+        return null;
     }
 
 
@@ -786,7 +818,9 @@ public class GameManager : MonoBehaviour
     public NavMeshManager NavMeshManager { get; private set; }
     public ResourceManager ResourceManager { get; private set; }
 
+
     public int TotalMonstersKilled { get; private set; }
+
 
     public VillageManager_Buildings VillageManager_Buildings { get; private set; }
     public VillageManager_Villagers VillageManager_Villagers { get; private set; }
@@ -794,6 +828,27 @@ public class GameManager : MonoBehaviour
 
     public int Score { get; private set; }
     public float SurvivalTime { get; private set; } // The total amount of time the player has survived so far.
+
+
+    public int BridgeConstructionZoneCount { get { return _BridgeConstructionZones.Count; } }
+    public List<BridgeConstructionZone> BridgeConstructionZonesList {  get { return _BridgeConstructionZones; } }
+    public BridgeConstructionZone GetBridgeConstructionZone(int index) {  return _BridgeConstructionZones[index]; }
+
+    public LevelUpDialog LevelUpDialog
+    {
+        get { return _UI_LevelUpDialog; }
+    }
+
+    public RadialMenuDialog RadialMenuDialog
+    {
+        get { return _UI_RadialMenuDialog; }
+    }
+
+    public TechTreeDialog TechTreeDialog
+    {
+        get { return _UI_TechTreeDialog; }
+    }
+
 
 
 }
