@@ -235,7 +235,7 @@ public abstract class AI_Base : MonoBehaviour
 
         if (_Target && NavMeshAgentIsActiveAndOnNavMesh())
         {
-            Vector3 randomPoint = Utils_AI.GetRandomPointAroundTarget(_Target.transform);
+            Vector3 randomPoint = Utils_World.GetRandomPointAroundTarget(_Target.transform);
             _NavMeshAgent.SetDestination(randomPoint);
 
             //Debug.Log($"Target: {_Target.transform.position}    Point: {randomPoint}");

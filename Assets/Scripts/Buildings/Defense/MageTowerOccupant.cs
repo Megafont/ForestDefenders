@@ -76,7 +76,7 @@ public class MageTowerOccupant : MonoBehaviour
     {
         if (_Target == null)
         {
-            GameObject monster = Utils_AI.FindNearestObjectOfType(gameObject, typeof(Monster_Base));
+            GameObject monster = Utils_World.FindNearestObjectOfType(gameObject, typeof(Monster_Base));
             if (monster != null &&
                 Vector3.Distance(transform.parent.transform.position, monster.transform.position) <= _AttackRange &&
                 monster.GetComponent<Health>().CurrentHealth > 0)

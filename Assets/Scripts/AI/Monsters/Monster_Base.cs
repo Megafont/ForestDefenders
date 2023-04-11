@@ -66,12 +66,12 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         if (_Target == null)
         {
             // This monster is not chasing a target. So try to find a building to target.
-            GameObject newTarget = Utils_AI.FindNearestBuildingAtOrBelowTier(gameObject, _Tier);
+            GameObject newTarget = Utils_World.FindNearestBuildingAtOrBelowTier(gameObject, _Tier);
 
 
             // If no building was found, then try to find a villager.           
             if (newTarget == null)
-                newTarget = Utils_AI.FindNearestObjectOfType(gameObject, typeof(Villager_Base));
+                newTarget = Utils_World.FindNearestObjectOfType(gameObject, typeof(Villager_Base));
 
 
             // If no villager was found, then target the player.

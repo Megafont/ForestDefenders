@@ -76,7 +76,10 @@ public class InputManager_Player : InputSubManager
 
     public void OnAttack(InputAction.CallbackContext context)
     {
-        AttackInput(context.control.IsPressed());
+        // NOTE: This used to be "context.control.IsPressed()". However, this apparently caused a bug where sometimes this callback would not set the
+        //       input value to false when the button is released. Changing it to "context.performed" fixes this problem.
+        //       This issue does not seem to affect the player button controls like attack and jump for some reason, though.
+        AttackInput(context.performed);
     }
 
     public void OnBuildMode(InputAction.CallbackContext context)

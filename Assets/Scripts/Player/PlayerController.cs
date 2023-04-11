@@ -512,8 +512,8 @@ public class PlayerController : MonoBehaviour
 
     private void DoDestroyAction(GameObject objToDestroy)
     {
-        bool result = Utils_Math.DetectAreaNumberFromGroundPosition(transform.position.x, transform.position.z, LayerMask.GetMask(new string[] { "Ground" }), out LevelAreas area);
-        Utils_AI.FindAllResourceNodesAccessableFromArea(area);
+        bool result = Utils_World.DetectAreaNumberFromGroundPosition(transform.position.x, transform.position.z, LayerMask.GetMask(new string[] { "Ground" }), out LevelAreas area);
+        Utils_World.FindAllResourceNodesAccessableFromArea(area);
 
 
         if (objToDestroy == null)

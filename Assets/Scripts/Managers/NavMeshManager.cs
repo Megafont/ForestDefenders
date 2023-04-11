@@ -51,9 +51,10 @@ public class NavMeshManager : MonoBehaviour
             // NOTE: When using the following debug code, you may notice duplicate output.
             //       This is because the "Level01" gameobject (a child of the "Terrain" gameobject)
             //       has two NavMeshSurface components on it (one for both types of AI monster agents).
-            //Debug.Log($"#{i}: Regenerating Nav Mesh for GameObject \"{_NavMeshSurfaces[i].name}\"    |  HasCollider: {hasCollider}");
+            Debug.Log($"#{i}: Regenerating Nav Mesh for GameObject \"{_NavMeshSurfaces[i].name}\"    |  HasCollider: { (_NavMeshSurfaces[i].GetComponent<Collider>() != null) }");
 
-            // Ignore objects that don't have colliders, since obviously they shouldn't be navigable anyway then.
+            // NOTE: You DO NOT need a NavMeshSurface component on every object. The ones on the "Terrain"
+            //       GameObject are set to generate a navmesh from all gameobjects in the scene.
             _NavMeshSurfaces[i].BuildNavMesh();
 
         } // end for i

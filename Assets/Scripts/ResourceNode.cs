@@ -46,7 +46,7 @@ public class ResourceNode : MonoBehaviour
 
     void Awake()
     {
-        if (Utils_Math.DetectAreaNumberFromGroundPosition(transform.position.x, transform.position.z, LayerMask.GetMask(new string[] { "Ground" }), out LevelAreas area))
+        if (Utils_World.DetectAreaNumberFromGroundPosition(transform.position.x, transform.position.z, LayerMask.GetMask(new string[] { "Ground" }), out LevelAreas area))
             ParentArea = area;
         
 

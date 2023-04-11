@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.ProBuilder;
+
 
 public static class Utils_Math
 {
@@ -120,40 +120,6 @@ public static class Utils_Math
         {
             groundHeight = GROUND_CHECK_RAYCAST_START_HEIGHT - hitInfo.distance;
             return true;
-        }
-
-
-        // No ground was detected.
-        return false;
-    }
-
-    /// <summary>
-    /// Fires a raycast to query the ground at the given position to determine what area it is in.
-    /// </summary>
-    /// <param name="xPos">The X-coordinate of the point to find the area at.</param>
-    /// <param name="zPos">The Z-coordinate of the point to find the area at.</param>
-    /// <param name="groundLayersMask">The ground layer(s).</param>
-    /// <param name="parentArea">Outputs the area the specified position is in.</param>
-    /// <returns>True if the area was determined, or false if no ground was detected at the specified point or the area could not be determined.
-    ///          In the last case, the parentArea out parameter will be set to Unknown.</returns>
-    public static bool DetectAreaNumberFromGroundPosition(float xPos, float zPos, LayerMask groundLayersMask, out LevelAreas parentArea)
-    {
-        parentArea = LevelAreas.Unknown;
-
-
-        // Detect the ground height at the current ground sample point.
-        if (Physics.Raycast(new Vector3(xPos, GROUND_CHECK_RAYCAST_START_HEIGHT, zPos),
-                            Vector3.down,
-                            out RaycastHit hitInfo,
-                            GROUND_CHECK_RAYCAST_MAX_DISTANCE,
-                            groundLayersMask))
-        {
-            string objName = hitInfo.collider.gameObject.name;
-            if (objName.Length >= 7)
-            {
-                parentArea = (LevelAreas) int.Parse(objName.Substring(5, 2));
-                return true;
-            }
         }
 
 

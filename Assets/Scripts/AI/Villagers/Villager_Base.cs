@@ -163,10 +163,10 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
             // This villager is not chasing a target. So if the target check time has elapsed, then do a new target check.                        
 
             // Find all accessable resource nodes that are not depleted.
-            bool result = Utils_Math.DetectAreaNumberFromGroundPosition(transform.position.x, transform.position.z, LayerMask.GetMask(new string[] { "Ground" }), out LevelAreas villagerCurrentArea);
+            bool result = Utils_World.DetectAreaNumberFromGroundPosition(transform.position.x, transform.position.z, LayerMask.GetMask(new string[] { "Ground" }), out LevelAreas villagerCurrentArea);
             if (result)
             {
-                List<ResourceNode> accessableResourceNodes = Utils_AI.FindAllResourceNodesAccessableFromArea(villagerCurrentArea);
+                List<ResourceNode> accessableResourceNodes = Utils_World.FindAllResourceNodesAccessableFromArea(villagerCurrentArea);
                 ResourceNode possibleTargetResourceNode = null;
 
                 if (accessableResourceNodes.Count > 0)

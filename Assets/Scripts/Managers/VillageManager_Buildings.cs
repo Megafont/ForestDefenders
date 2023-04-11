@@ -289,7 +289,7 @@ public class VillageManager_Buildings : MonoBehaviour
 
 
         // If the building is a bridge, remove it from the NavMeshManager and regenerate the navmesh.
-        if (building.Name == "Wood Bridge")
+        if (building.Category == "Bridges")
         {
             _NavMeshManager.RegenerateAllNavMeshes();
         }
