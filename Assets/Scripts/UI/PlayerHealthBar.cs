@@ -13,7 +13,7 @@ public class PlayerHealthBar : MonoBehaviour
     [SerializeField] private float _LengthMultiplier = 5f;
 
     [Range(1f, 10f)]
-    [SerializeField] private float _BorderThickness = 5f;
+    [SerializeField] private float _BorderThickness = 3f;
 
     [SerializeField] private bool _FadeBarColorAsHealthDrops = true;
     [SerializeField] private Color32 _BackgroundColor = Color.gray;

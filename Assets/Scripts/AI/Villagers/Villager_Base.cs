@@ -80,7 +80,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
         {
             if (!node.IsDepleted)
             {
-                node.Gather(gameObject);
+                int amount = Mathf.RoundToInt(node.Gather(gameObject));
             }
             else
             {
@@ -92,8 +92,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
         }
 
 
-        IBuilding building = _Target.GetComponent<IBuilding>();
-
+        IBuilding building = _Target != null ? _Target.GetComponent<IBuilding>() : null;
         if (building != null)
         {
             Health bHealth = building.HealthComponent;
@@ -110,7 +109,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
                 if (healthAfterHeal > bHealth.MaxHealth)
                     healAmount = healthAfterHeal - bHealth.MaxHealth;
 
-                int foodAmount = Mathf.CeilToInt(healAmount * _VillageManager_Villagers.BuildingHealFoodCostMultiplier);
+                int foodAmount = Mathf.RoundToInt(healAmount * _VillageManager_Villagers.BuildingHealFoodCostMultiplier);
 
 
                 //Debug.Log($"HealAmnt: {healAmount}    Food: {foodAmount}    BCurH: {bHealth.CurrentHealth}    BMaxH: {bHealth.MaxHealth}    vHAmnt: {villagerHealAmount}");

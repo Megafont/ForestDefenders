@@ -42,8 +42,11 @@ public class VillageManager_Villagers : MonoBehaviour
     [Tooltip("The amount a villager heals a building each time they \"hit\" it.")]
     public float VillagerHealBuildingsAmount = 5.0f;
 
-    [Tooltip("The amount of food expended each time a villager heals a building is the number of HP healed times this multiplier.")]
+    [Tooltip("Each time a villager heals a building, he/she expends food equal to this multipler times the number of HP healed.")]
     public float BuildingHealFoodCostMultiplier = 5f;
+
+    [Tooltip("Each time a villager gathers from a resource node, he/she expends food equal to this multipler times the number of resources gathered.")]
+    public float GatheringCostMultiplier = 5f;
 
 
     private GameManager _GameManager;

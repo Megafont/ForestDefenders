@@ -110,7 +110,7 @@ public static class TechDefinitions
 
         List<TechTreeTileData> tilesData = new List<TechTreeTileData>()
         {
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Villagers_RepairBuildings, Title = "Repair Damaged Buildings", DescriptionText = "Villagers gain the tools to repair damaged buildings. The hard work makes them hungry, though!", XPCost = 10 },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Villagers_RepairBuildings, Title = "Repair Damaged Buildings", DescriptionText = "Villagers gain the tools to repair damaged buildings. The hard work makes them hungry, though!", XPCost = 40 },
         };
 
 

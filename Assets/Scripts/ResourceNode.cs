@@ -23,6 +23,7 @@ public class ResourceNode : MonoBehaviour
     private GameManager _GameManager;
     private ResourceManager _ResourceManager;
     private SoundSetPlayer _SoundSetPlayer;
+    private VillageManager_Villagers _VillageManager_Villagers;
 
     private LevelUpDialog _LevelUpDialog;
 
@@ -30,6 +31,7 @@ public class ResourceNode : MonoBehaviour
 
     private List<IVillager> _VillagersMiningThisNode;
 
+    private FloatingStatusBar _FloatingStatBar;
 
 
     public LevelAreas ParentArea { get; private set; } = LevelAreas.Unknown;
@@ -53,8 +55,12 @@ public class ResourceNode : MonoBehaviour
         _GameManager = GameManager.Instance;
         _ResourceManager = _GameManager.ResourceManager;
 
+        InitFloatingStatusBar();
+
         _SoundSetPlayer = GetComponent<SoundSetPlayer>();
         GetSoundSet();
+
+        _VillageManager_Villagers = _GameManager.VillageManager_Villagers;
 
         _LevelUpDialog = _GameManager.LevelUpDialog;
 
@@ -66,32 +72,72 @@ public class ResourceNode : MonoBehaviour
 
     }
 
+    private void InitFloatingStatusBar()
+    {
+        GameObject bar = Instantiate(_GameManager.GetFloatingStatusBarPrefab(),
+                                     transform.position,
+                                     Quaternion.identity,
+                                     this.transform);
+
+        _FloatingStatBar = bar.GetComponent<FloatingStatusBar>();
+        _FloatingStatBar.MaxValue = AmountAvailable;
+        _FloatingStatBar.Label = $"{_ResourceType.ToString()}:";
+        _FloatingStatBar.SetValue(AmountAvailable);
+    }
+
     public float Gather(GameObject gatherer)
     {
-        if (IsDepleted)
-            return 0;
-
         float amountBeforeGather = AmountAvailable;
 
         float gatherAmount = CalculateGatherAmount(gatherer);
 
+
+        // Check if this gatherer is a villager.
+        IVillager villager = gatherer.GetComponent<IVillager>();
+
+
+        // Simply return 0 if this node is now depleted.
+        if (IsDepleted) 
+            return 0;
+
+
+        // If the gatherer is a villager, expend food used to do the work.
+        // NOTE: We don't do this if it is the player to ensure that they can still gather even if food is in short supply.
+        if (gatherer.CompareTag("Villager"))
+        {
+            int foodAmount = Mathf.RoundToInt(_VillageManager_Villagers.GatheringCostMultiplier * gatherAmount);
+
+            // If there is not enough food available, then tell the villager to stop targeting this resource node.
+            if (foodAmount > _ResourceManager.Stockpiles[ResourceTypes.Food])
+            {
+                if (gatherer.CompareTag("Villager"))
+                    villager.SetTarget(null, true);
+
+                return 0;
+            }
+
+
+            _ResourceManager.Stockpiles[ResourceTypes.Food] -= foodAmount;
+        }
+
+
+        // Gather the resource and add it to the appropriate stockpile.
         AmountAvailable -= gatherAmount;
         _ResourceManager.Stockpiles[_ResourceType] += gatherAmount;
 
 
+        // If the gatherer is the player, add some points to their score.
         if (gatherer.CompareTag("Player"))
             _GameManager.AddToScore((int) gatherAmount * _GameManager.PlayerGatheringScoreMultiplier);
 
 
         _SoundSetPlayer.PlaySound();
 
-        // Only fire the NodeDepleted event if the node is depleted, and it wasn't at the start of this function. Then we know this particular gather is the one that depleted it.
-        // This way, we only fire the event once.
+
+        // Only fire the NodeDepleted event if the node is depleted, and it wasn't already empty at the start of this function. Then we know this particular gather is the one that depleted it.
+        // This ensures we only fire the event once.
         if (IsDepleted && amountBeforeGather > 0)
-        {
-            _GameManager.AddToScore((int) _MaxAmountInNode * _GameManager.PlayerGatheringScoreMultiplier);
             OnNodeDepleted?.Invoke(this);
-        }
 
 
         return gatherAmount;
@@ -102,7 +148,7 @@ public class ResourceNode : MonoBehaviour
     /// </summary>
     public void ClearNode()
     {
-        _AmountAvailable = 0;
+        AmountAvailable = 0;
     }
 
     /// <summary>
@@ -113,6 +159,9 @@ public class ResourceNode : MonoBehaviour
         float randomVariance = Random.Range(0.0f, _ResourceManager.ResourceNodeAmountVariance);
 
         _AmountAvailable = Mathf.CeilToInt(_MaxAmountInNode - (_MaxAmountInNode * randomVariance));
+
+        _FloatingStatBar.MaxValue = _AmountAvailable;
+        _FloatingStatBar.SetValue(_AmountAvailable);
     }
 
     public void AddVillagerToMiningList(IVillager villager)
@@ -123,11 +172,6 @@ public class ResourceNode : MonoBehaviour
     public void RemoveVillagerFromMiningList(IVillager villager)
     {
         _VillagersMiningThisNode.Remove(villager);
-    }
-
-    public bool IsAccessible()
-    {
-        return false;
     }
 
     private void GetSoundSet()
@@ -185,6 +229,7 @@ public class ResourceNode : MonoBehaviour
         private set
         {
             _AmountAvailable = value >= 0 ? value : 0;
+            _FloatingStatBar.SetValue(_AmountAvailable);
         }
     }
 

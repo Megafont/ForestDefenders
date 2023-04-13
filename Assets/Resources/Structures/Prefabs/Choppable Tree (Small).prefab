@@ -89,7 +89,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ResourceType: 2
-  _MaxAmountInNode: 50
+  _MaxAmountInNode: 100
 --- !u!114 &1347049943588390821
 MonoBehaviour:
   m_ObjectHideFlags: 0

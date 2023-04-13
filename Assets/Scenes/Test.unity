@@ -97,9 +97,9 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000000, guid: d7ce9d2f0949e344ab324215cde3c8d5,
+  m_LightingDataAsset: {fileID: 112000000, guid: 5de0872c70f62f049a893536b3de615c,
     type: 2}
-  m_LightingSettings: {fileID: 4890085278179872738, guid: 43e41014f54945a49baa261d0bc5d64d,
+  m_LightingSettings: {fileID: 4890085278179872738, guid: 0d1ed6b89383b3b4a9121b113958e18c,
     type: 2}
 --- !u!196 &4
 NavMeshSettings:
@@ -1888,8 +1888,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10c25618c627bb4488492681e1589bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _NextResourceNodeRegion: {fileID: 0}
-  _PreviousResourceNodeRegion: {fileID: 0}
+  _AllowedBridgeType: 0
+  _NextArea: 0
+  _PreviousArea: 0
   _BridgesInThisZone: []
   _LockRotation: 0
 --- !u!65 &440966121
@@ -7374,6 +7375,7 @@ MonoBehaviour:
   VillagerHealBuildingsCheckFrequency: 5
   VillagerHealBuildingsAmount: 5
   BuildingHealFoodCostMultiplier: 5
+  GatheringCostMultiplier: 5
 --- !u!114 &828217631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18183,6 +18185,7 @@ MonoBehaviour:
   PlayerHealFoodCostMultiplier: 2
   StartingXP: 0
   XP_EarnedPerWave: 5
+  ShowFloatingStatBars: 0
   PlayerAttackBuffAmountPerLevelUp: 2
   PlayerGatheringBuffAmountPerLevelUp: 1
   PlayerHealthBuffAmountPerLevelUp: 5

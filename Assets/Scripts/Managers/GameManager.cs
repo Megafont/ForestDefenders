@@ -32,6 +32,7 @@ public class GameManager : MonoBehaviour
     public float PlayerHealFoodCostMultiplier = 2f;
     public int StartingXP = 0;
     public int XP_EarnedPerWave = 2;
+    public bool ShowFloatingStatBars = false;
 
     [Header("Village - Level Up Settings")]
     public float PlayerAttackBuffAmountPerLevelUp = 2f;
@@ -44,7 +45,7 @@ public class GameManager : MonoBehaviour
     public float VillagersStartingMaxHealth = 25f;
     public float VillagersStartingGatherRate = 3f;
     public float MaxAttackPowerCap = 100f;
-    public float MaxHealthCap = 200f;
+    public float MaxHealthCap = 200f;    
     [Tooltip("The maximum amount of resource that can be collected in a single punch.")]
     public float MaxGatheringCap = 20f;
 
@@ -96,7 +97,8 @@ public class GameManager : MonoBehaviour
     private TMP_Text _UI_WoodCountText;
     private TMP_Text _UI_StoneCountText;
 
-
+    private GameObject _UI_FloatingStatusBarPrefab;
+    private Camera _UI_FloatingStatusBarOverviewCam; // The overview cam that draws the floating status bars over all geometry.
 
 
     public static GameManager Instance;
@@ -172,7 +174,6 @@ public class GameManager : MonoBehaviour
 
 
         InitCameras();
-
 
 
         // Fade in the scene.        
@@ -337,6 +338,10 @@ public class GameManager : MonoBehaviour
 
     private void InitCameras()
     {
+        CameraManager.OnCameraTransitionStarted += OnCameraTransitionStarted;
+        CameraManager.OnCameraTransitionEnded += OnCameraTransitionEnded;
+
+
         switch (SceneSwitcher.ActiveSceneName)
         {
             case "Main Menu":
@@ -373,6 +378,12 @@ public class GameManager : MonoBehaviour
 
     private void InitCameras_Level()
     {
+        // Find the world space UI overlay camera.
+        GameObject cam = GameObject.Find("World Space UI Camera");
+        if (cam)
+            _UI_FloatingStatusBarOverviewCam = cam.GetComponent<Camera>();
+
+
         // Register player follow camera.
         ICinemachineCamera mainCam = GameObject.Find("CM Player Follow Camera").GetComponent<ICinemachineCamera>();
         CameraManager.RegisterCamera((int)CameraIDs.PlayerFollow, mainCam);
@@ -449,6 +460,8 @@ public class GameManager : MonoBehaviour
         _UI_FoodCountText = GameObject.Find("UI/HUD/Bottom Bar/Food Count Text (TMP)").GetComponent<TMP_Text>();
         _UI_WoodCountText = GameObject.Find("UI/HUD/Bottom Bar/Wood Count Text (TMP)").GetComponent<TMP_Text>();
         _UI_StoneCountText = GameObject.Find("UI/HUD/Bottom Bar/Stone Count Text (TMP)").GetComponent<TMP_Text>();
+
+        _UI_FloatingStatusBarPrefab = Resources.Load<GameObject>("UI/Common/Floating Stat Bar");
     }
 
     private void GetBridgeConstructionZoneReferences()
@@ -798,6 +811,37 @@ public class GameManager : MonoBehaviour
 
         return null;
     }
+
+    public GameObject GetFloatingStatusBarPrefab()
+    {
+        return _UI_FloatingStatusBarPrefab;
+    }
+
+    private void OnCameraTransitionStarted(ICinemachineCamera startCam, ICinemachineCamera endCam)
+    {
+        // Show the floating status bars only when the player follow cam is active.
+        // This is an easy way to enable/disable them, without messing with the camera
+        // stack on the player camera, which specifies the overlay camera.
+        if (_UI_FloatingStatusBarOverviewCam != null)
+        {
+            _UI_FloatingStatusBarOverviewCam.gameObject.SetActive(false);
+        }
+        
+    }
+
+    private void OnCameraTransitionEnded(ICinemachineCamera startCam, ICinemachineCamera endCam)
+    {
+        // Show the floating status bars only when the player follow cam is active.
+        // This is an easy way to enable/disable them, without messing with the camera
+        // stack on the player camera, which specifies the overlay camera.
+        if (_UI_FloatingStatusBarOverviewCam != null)
+        {
+            bool showFloatingStatusBars = (endCam.VirtualCameraGameObject.name == "CM Player Follow Camera");
+            _UI_FloatingStatusBarOverviewCam.gameObject.SetActive(showFloatingStatusBars);
+        }
+
+    }
+
 
 
 
