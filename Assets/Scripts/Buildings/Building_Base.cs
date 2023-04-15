@@ -80,7 +80,7 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
 
     protected virtual void ConfigureBuildingComponents()
     {
-        _Health.MaxHealth = _BuildingDefinition.MaxHealth;
+        _Health.SetMaxHealth(_BuildingDefinition.MaxHealth);
         _Health.ResetHealthToMax();
     }
 

@@ -293,6 +293,7 @@ GameObject:
   - component: {fileID: 186345174372973254}
   - component: {fileID: 7959664472650420284}
   - component: {fileID: 3278410852329176038}
+  - component: {fileID: 5053829899526913349}
   - component: {fileID: 6862917981531699727}
   - component: {fileID: 5909176728129252967}
   m_Layer: 8
@@ -404,6 +405,7 @@ MonoBehaviour:
   _FallTimeout: 0.15
   _AttackPower: 20
   _AttackCooldownTime: 0.5
+  _DamageType: 2
   _Grounded: 1
   _GroundedOffset: -0.14
   _GroundedRadius: 0.28
@@ -415,6 +417,25 @@ MonoBehaviour:
   _BottomClamp: -15
   _CameraAngleOverride: 0
   _LockCameraPosition: 0
+--- !u!114 &5053829899526913349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 186345174372973260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbeb2b8411abefc41a2ddd6525cf7836, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _MaxHunger: 100
+  _HungerIncreaseFrequency: 5
+  _HungerIncreaseAmount: 1
+  _FoodCostToHealOneHungerPoint: 1
+  _HungerPointsToHealEachTimeOnEating: 5
+  _StarvationDamageFrequency: 9
+  _StarvationDamagePercent: 0.05
 --- !u!114 &6862917981531699727
 MonoBehaviour:
   m_ObjectHideFlags: 0

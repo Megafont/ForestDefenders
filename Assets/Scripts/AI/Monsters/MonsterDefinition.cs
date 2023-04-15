@@ -28,7 +28,7 @@ public class MonsterDefinition
         monster.ScoreValue = ScoreValue;
         monster.MaxChaseDistance = MaxChaseDistance;
 
-        monster.HealthComponent.MaxHealth = MaxHealth;
+        monster.HealthComponent.SetMaxHealth(MaxHealth);
         monster.HealthComponent.ResetHealthToMax();
 
         monster.TargetCheckFrequency = TargetCheckFrequency;

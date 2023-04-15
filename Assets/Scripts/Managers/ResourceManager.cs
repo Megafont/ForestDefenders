@@ -11,11 +11,13 @@ public class ResourceManager : MonoBehaviour
 {
     public GameObject ResourcesParent;
 
+
     [Header("Stockpiles Settings")]
     public uint ResourceStockpilesStartAmount = 0;
 
-    public uint ResourceStockpilesOkThreshold = 200;
-    public uint ResourceStockpilesLowThreshold = 100;
+    public uint ResourceStockpilesLowThreshold = 250;
+    public uint ResourceStockpilesOkThreshold = 500;
+    public uint ResourceStockpilesPlentifulThreshold = 1000;
 
 
     [Header("Gathering Settings")]
@@ -26,7 +28,7 @@ public class ResourceManager : MonoBehaviour
     [Tooltip("The max percentage that the amount of resources obtained per gather can vary by. If this percentage is 0, then the amount obtained per gather is always equal to the character's gathering rate stat.")]
     [Range(0f, 1f)]
     public float GatherAmountVariance = 0.15f;
- 
+
 
 
     private Dictionary<ResourceTypes, GameObject> _ResourceTypeParents;
@@ -38,14 +40,7 @@ public class ResourceManager : MonoBehaviour
     private List<ResourceNode> _ActiveResourceNodes;
     private List<ResourceNode> _DepletedResourceNodes;
 
-    
 
-    public Dictionary<ResourceTypes, float> Stockpiles
-    {
-        get { return _ResourceStockpilesByType; }
-    }
-
-    
 
     void Awake()
     {
@@ -60,7 +55,6 @@ public class ResourceManager : MonoBehaviour
         InitResourceTypeParentObjects();
         InitResourceStockpiles();
         InitResourceNodeLists();
-
     }
 
     private void Start()
@@ -71,7 +65,7 @@ public class ResourceManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     void OnDestroy()
@@ -80,6 +74,63 @@ public class ResourceManager : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Adds the specified amount of resources to the specified stockpile.
+    /// </summary>
+    /// <param name="stockpile">The stockpile to add resources to.</param>
+    /// <param name="amount">The amount of resources being added.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException">When amount is 0 or negative.</exception>
+    public void AddToStockpile(ResourceTypes stockpile, float amount)
+    {
+        if (amount < 1)
+            throw new Exception($"The amount of resources added to the \"{stockpile}\" stockpile must be positive!");
+
+        _ResourceStockpilesByType[stockpile] += amount;
+    }
+
+    /// <summary>
+    /// This function will attempt to expend the requested amount of resources from the specified stockpile.
+    /// </summary>
+    /// <param name="stockpile">The stockpile to request resources from.</param>
+    /// <param name="amount">The amount of resources being requested.</param>
+    /// <returns>True if the resources were expended, or false if there wasn't enough.</returns>
+    /// <exception cref="ArgumentException">When amount is 0 or negative.</exception>
+    public bool ExpendFromStockpile(ResourceTypes stockpile, float amount)
+    {
+        if (amount < 1)
+            throw new ArgumentException($"The amount of resources requested from the \"{stockpile}\" stockpile must be positive!");
+
+
+        if (_ResourceStockpilesByType[stockpile] >= amount)
+        {
+            _ResourceStockpilesByType[stockpile] -= amount;
+            return true;
+        }
+
+
+        return false;
+    }
+
+    public bool IsStockpileLevelLow(ResourceTypes stockpile)
+    {
+        return _ResourceStockpilesByType[stockpile] <= ResourceStockpilesLowThreshold;
+    }
+
+    public bool IsStockpileLevelOK(ResourceTypes stockpile)
+    {
+        return _ResourceStockpilesByType[stockpile] >= ResourceStockpilesOkThreshold;
+    }
+
+    public bool IsStockpileLevelPlentiful(ResourceTypes stockpile)
+    {
+        return _ResourceStockpilesByType[stockpile] >= ResourceStockpilesPlentifulThreshold;
+    }
+
+    public float GetStockpileLevel(ResourceTypes stockpile)
+    {
+        return _ResourceStockpilesByType[stockpile];
+    }
 
     public void RestoreResourceNodes()
     {

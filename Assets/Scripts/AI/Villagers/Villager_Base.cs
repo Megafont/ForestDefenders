@@ -99,7 +99,8 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
             // The villager should heal the building if it needs it AND stockpiles are NOT low.
             if (bHealth.CurrentHealth < bHealth.MaxHealth &&
-                _ResourceManager.Stockpiles[ResourceTypes.Food] >= _ResourceManager.ResourceStockpilesLowThreshold)
+                !_ResourceManager.IsStockpileLevelLow(ResourceTypes.Stone) &&
+                !_ResourceManager.IsStockpileLevelLow(ResourceTypes.Wood))
             {
                 float villagerHealAmount = _VillageManager_Villagers.VillagerHealBuildingsAmount;
 
@@ -109,18 +110,20 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
                 if (healthAfterHeal > bHealth.MaxHealth)
                     healAmount = healthAfterHeal - bHealth.MaxHealth;
 
-                int foodAmount = Mathf.RoundToInt(healAmount * _VillageManager_Villagers.BuildingHealFoodCostMultiplier);
+                int resourcesCost = Mathf.RoundToInt(healAmount * _VillageManager_Villagers.BuildingHealResourceCostMultiplier);
 
 
-                //Debug.Log($"HealAmnt: {healAmount}    Food: {foodAmount}    BCurH: {bHealth.CurrentHealth}    BMaxH: {bHealth.MaxHealth}    vHAmnt: {villagerHealAmount}");
+                //Debug.Log($"HealAmnt: {healAmount}    Resources Cost: {resourcesCost}    BCurH: {bHealth.CurrentHealth}    BMaxH: {bHealth.MaxHealth}    vHAmnt: {villagerHealAmount}");
 
-                // Don't heal the building if there isn't enough food!
-                if (_ResourceManager.Stockpiles[ResourceTypes.Food] >= _ResourceManager.ResourceStockpilesOkThreshold)
+                // Don't heal the building if there isn't enough resources!
+                if (_ResourceManager.GetStockpileLevel(ResourceTypes.Stone) >= resourcesCost &&
+                    _ResourceManager.GetStockpileLevel(ResourceTypes.Wood) >= resourcesCost)
                 {
-                    bHealth.Heal(healAmount, gameObject);
+                    // Expend resources from the stockpile.
+                    _ResourceManager.ExpendFromStockpile(ResourceTypes.Stone, resourcesCost);
+                    _ResourceManager.ExpendFromStockpile(ResourceTypes.Wood, resourcesCost);
 
-                    // Use some food from the stockpile.
-                    _ResourceManager.Stockpiles[ResourceTypes.Food] -= foodAmount;
+                    bHealth.Heal(healAmount, gameObject);
                 }
                 else
                 {

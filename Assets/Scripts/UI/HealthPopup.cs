@@ -36,15 +36,14 @@ public class HealthPopup : MonoBehaviour
     private static GameObject _HealthPopupPrefab;
     private static GameObject _HealthPopupsParent; // The parent object that will contain all health popups in the hierarchy.
 
-    private static GameObject _PlayerCamera;
+    private static CameraManager _CameraManager;
 
 
 
     // Start is called before the first frame update
     void Start()
     {
-        if (_PlayerCamera == null)
-            _PlayerCamera = GameManager.Instance.CameraManager.GetCameraWithID((int) CameraIDs.PlayerFollow).VirtualCameraGameObject;
+        _CameraManager = GameManager.Instance.CameraManager;
     }
 
     // Update is called once per frame
@@ -74,7 +73,7 @@ public class HealthPopup : MonoBehaviour
         // We need to use the parent here, because the text component is on a child object rotated 180 degrees so it always faces the right way.
         // Otherwise it ends up backwards when the parent object turns around to face the camera. The text is facing down the negative Z-axis by default.
         transform.parent.position += Vector3.up * _MoveSpeed * Time.deltaTime;
-        transform.parent.LookAt(_PlayerCamera.transform); // Make the text always face the player's camera.
+        transform.parent.LookAt(_CameraManager.GetActiveCamera().VirtualCameraGameObject.transform); // Make the text always face the player's camera.
     }
 
     public void ResetHealthPopup(float healthChangedAmount, float buffAmount = 0)

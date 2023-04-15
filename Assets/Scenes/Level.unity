@@ -884,9 +884,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ResourcesParent: {fileID: 97276842}
-  ResourceStockpilesStartAmount: 200
-  ResourceStockpilesOkThreshold: 200
-  ResourceStockpilesLowThreshold: 100
+  ResourceStockpilesStartAmount: 0
+  ResourceStockpilesLowThreshold: 250
+  ResourceStockpilesOkThreshold: 500
+  ResourceStockpilesPlentifulThreshold: 1000
   ResourceNodeAmountVariance: 0.3333
   GatherAmountVariance: 0.3333
 --- !u!1 &224973805
@@ -2508,8 +2509,7 @@ MonoBehaviour:
   VillagersCanHealBuildings: 0
   VillagerHealBuildingsCheckFrequency: 5
   VillagerHealBuildingsAmount: 5
-  BuildingHealFoodCostMultiplier: 2
-  GatheringCostMultiplier: 1
+  BuildingHealResourceCostMultiplier: 5
 --- !u!114 &828217631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3883,6 +3883,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c8c75b2878e15b4abfa650e57838db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ConstructionIsFree: 0
+  ResearchIsFree: 0
+  GodMode: 0
+  StartWithAllTechUnlocked: 0
   AttackDamageVariance: 0.2
   EnablePlayerSpawn: 1
   PlayerSpawnPoint: {fileID: 509338921}
@@ -3890,9 +3894,7 @@ MonoBehaviour:
   PlayerFallOutOfWorldDeathHeight: -32
   PlayerStartingAttackPower: 10
   PlayerStartingMaxHealth: 25
-  PlayerStartingGatherRate: 4
-  StartWithAllTechUnlocked: 0
-  ConstructionIsFree: 0
+  PlayerStartingGatherRate: 5
   PlayerHealFoodCostMultiplier: 2
   StartingXP: 0
   XP_EarnedPerWave: 5
@@ -3905,7 +3907,7 @@ MonoBehaviour:
   VillagersHealthBuffAmountPerLevelUp: 5
   VillagersStartingAttackPower: 10
   VillagersStartingMaxHealth: 25
-  VillagersStartingGatherRate: 4
+  VillagersStartingGatherRate: 5
   MaxAttackPowerCap: 100
   MaxHealthCap: 200
   MaxGatheringCap: 20
@@ -3914,9 +3916,9 @@ MonoBehaviour:
   MusicParams: {fileID: 11400000, guid: 6d4482e0e753c7c48bf4e6bb30aca35a, type: 2}
   SoundParams: {fileID: 11400000, guid: 09a69c7b16d29b141a5619678e04ba78, type: 2}
   GamePhaseTextFadeOutTime: 2.5
-  ResourceStockPilesVeryLowColor: {r: 1, g: 0, b: 0, a: 1}
-  ResourceStockPilesLowColor: {r: 1, g: 0.5019608, b: 0, a: 1}
-  ResourceStockPilesColor: {r: 1, g: 1, b: 1, a: 1}
+  ResourceStockPilesLowColor: {r: 1, g: 0, b: 0, a: 1}
+  ResourceStockPilesOkColor: {r: 1, g: 0.5019608, b: 0, a: 1}
+  ResourceStockPilesPlentifulColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &1633597783 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7970094270755011121, guid: 82c14c16d36522f43bed3ccd9d4f4226,
@@ -5067,14 +5069,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 115647886}
     m_Modifications:
-    - target: {fileID: 1420357014, guid: c58a471f8bfb23140a0602957cf7806a, type: 3}
-      propertyPath: _BorderThickness
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 1420357014, guid: c58a471f8bfb23140a0602957cf7806a, type: 3}
-      propertyPath: _LengthMultiplier
-      value: 5
-      objectReference: {fileID: 0}
     - target: {fileID: 5143628557679512038, guid: c58a471f8bfb23140a0602957cf7806a,
         type: 3}
       propertyPath: m_Name

@@ -148,14 +148,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d4d2d43fef8d3a40bc358184f8e99bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DefaultAttackPower: 10
-  DefaultMaxLifespan: 60
-  DefaultSpeed: 5
-  DamageType: 2
-  DieOnImpact: 1
-  TargetLayers:
+  _DefaultAttackPower: 10
+  _DefaultMaxLifespan: 60
+  _DefaultSpeed: 5
+  _DamageType: 4
+  _DieOnImpact: 1
+  _TargetLayers:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 4294967295
 --- !u!108 &899975074679488807
 Light:
   m_ObjectHideFlags: 0

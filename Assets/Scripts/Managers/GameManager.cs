@@ -12,6 +12,12 @@ using Unity.VisualScripting;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Dev Cheats")]
+    public bool ConstructionIsFree = false;
+    public bool ResearchIsFree = false;
+    public bool GodMode = false;
+    public bool StartWithAllTechUnlocked = false;
+
     [Header("Combat")]
     [Tooltip("The max percentage that the amount of damage an attack does can vary by. If this percentage is 0, then the amount of damage dealt is always equal to the original attack damage.")]
     [Range(0f, 1f)]
@@ -25,8 +31,6 @@ public class GameManager : MonoBehaviour
     public float PlayerStartingAttackPower = 20f;
     public float PlayerStartingMaxHealth = 50f;
     public float PlayerStartingGatherRate = 3f;
-    public bool StartWithAllTechUnlocked = false;
-    public bool ConstructionIsFree = false;
 
     [Header("Village")]
     public float PlayerHealFoodCostMultiplier = 2f;
@@ -62,9 +66,9 @@ public class GameManager : MonoBehaviour
     public float GamePhaseTextFadeOutTime = 3.0f;
 
     [Header("UI Elements (Bottom Bar)")]
-    public Color ResourceStockPilesVeryLowColor = Color.red;
-    public Color ResourceStockPilesLowColor = new Color32(255, 128, 0, 255);
-    public Color ResourceStockPilesColor = Color.white;
+    public Color ResourceStockPilesLowColor = Color.red;
+    public Color ResourceStockPilesOkColor = new Color32(255, 128, 0, 255);
+    public Color ResourceStockPilesPlentifulColor = Color.white;
 
 
     public bool PlayerHasSpawned { get; private set; } = false;
@@ -124,6 +128,16 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
+        if (ConstructionIsFree)
+            Debug.LogWarning("The ConstructionIsFree dev cheat is on in the game manager.");
+        if (ResearchIsFree)
+            Debug.LogWarning("The ResearchIsFree dev cheat is on in the game manager.");
+        if (GodMode)
+            Debug.LogWarning("The GodMode dev cheat is on in the game manager.");
+        if (StartWithAllTechUnlocked)
+            Debug.LogWarning("The StartWithAllTechUnlocked dev cheat is on in the game manager.");
+
+
         if (Instance == null)
             Instance = this;
         else
@@ -253,9 +267,9 @@ public class GameManager : MonoBehaviour
         _UI_BuildingCountText.text = $"Buildings: {VillageManager_Buildings.TotalBuildingCount:n0}";
         _UI_XPCountText.text = $"XP: {_UI_TechTreeDialog.AvailableXP:n0}";
 
-        UpdateResourceStockpileCounterUI(_UI_FoodCountText, "Food: ", ResourceManager.Stockpiles[ResourceTypes.Food]);
-        UpdateResourceStockpileCounterUI(_UI_WoodCountText, "Wood: ", ResourceManager.Stockpiles[ResourceTypes.Wood]);
-        UpdateResourceStockpileCounterUI(_UI_StoneCountText, "Stone: ", ResourceManager.Stockpiles[ResourceTypes.Stone]);
+        UpdateResourceStockpileCounterUI(_UI_FoodCountText, "Food: ", ResourceManager.GetStockpileLevel(ResourceTypes.Food));
+        UpdateResourceStockpileCounterUI(_UI_WoodCountText, "Wood: ", ResourceManager.GetStockpileLevel(ResourceTypes.Wood));
+        UpdateResourceStockpileCounterUI(_UI_StoneCountText, "Stone: ", ResourceManager.GetStockpileLevel(ResourceTypes.Stone));
 
     }
 
@@ -299,25 +313,31 @@ public class GameManager : MonoBehaviour
         float colorBlendAmount = 0f;
 
         float lowThreshold = ResourceManager.ResourceStockpilesLowThreshold;
-        float normalThreshold = ResourceManager.ResourceStockpilesOkThreshold;
+        float okThreshold = ResourceManager.ResourceStockpilesOkThreshold;
+        float plentifulThreshold = ResourceManager.ResourceStockpilesPlentifulThreshold;
 
 
-        if (currentAmount >= normalThreshold)
+        if (currentAmount >= plentifulThreshold)
         {
-            textUI.color = ResourceStockPilesColor;
+            textUI.color = ResourceStockPilesPlentifulColor;
             return;
         }
-        else if (currentAmount < lowThreshold)
+        else if (currentAmount <= lowThreshold)
         {
-            startColor = ResourceStockPilesVeryLowColor;
-            endColor = ResourceStockPilesLowColor;
-            colorBlendAmount = currentAmount / lowThreshold;
+            textUI.color = ResourceStockPilesLowColor;
+            return;
         }
-        else if (currentAmount < normalThreshold)
+        else if (currentAmount > lowThreshold && currentAmount <= okThreshold)
         {
             startColor = ResourceStockPilesLowColor;
-            endColor = ResourceStockPilesColor;
-            colorBlendAmount = (currentAmount - lowThreshold) / (normalThreshold - lowThreshold);
+            endColor = ResourceStockPilesOkColor;
+            colorBlendAmount = (currentAmount - lowThreshold) / (okThreshold - lowThreshold);
+        }
+        else if (currentAmount > okThreshold && currentAmount <= plentifulThreshold)
+        {
+            startColor = ResourceStockPilesOkColor;
+            endColor = ResourceStockPilesPlentifulColor;
+            colorBlendAmount = (currentAmount - okThreshold) / (plentifulThreshold - okThreshold);
         }
 
 
@@ -507,7 +527,8 @@ public class GameManager : MonoBehaviour
     {
         // NOTE: We don't check if the player is dead here, as we receive an event when that happens via the OnPlayerDeath() method below, which instantly switches us to the GameOver game state;
         if (Player == null ||
-            Player.transform.position.y <= PlayerFallOutOfWorldDeathHeight)
+            Player.transform.position.y <= PlayerFallOutOfWorldDeathHeight ||
+            GameState == GameStates.GameOver)
         {
             ChangeGameState(GameStates.GameOver);
 
@@ -544,6 +565,11 @@ public class GameManager : MonoBehaviour
 
     private void ChangeGameState(GameStates newGameState)
     {
+        // We don't need to do anything if the new game state is the same one we're already in.
+        if (newGameState == GameState)
+            return;
+
+
         PreviousGameState = GameState;
         bool prevGameStateWasStartup = GameState == GameStates.Startup;
         GameState = newGameState;
@@ -582,7 +608,17 @@ public class GameManager : MonoBehaviour
 
             case GameStates.GameOver:
                 if (PreviousGameState != GameStates.MonsterAttackPhase)
+                {
                     MusicPlayer.FadeToTrack(MusicParams.MonsterAttackPhaseMusic, true, MusicParams.MonsterAttackPhaseMusicVolume);
+
+                    _UI_TimeToNextWaveText.enabled = false;
+
+                    _UI_MonstersLeftText.enabled = true;
+                    _UI_WaveNumberText.enabled = true;
+
+                    MonsterManager.BeginNextWave();
+                }
+
 
                 // Disable HUD.
                 //EnableHUD(false);
@@ -602,11 +638,11 @@ public class GameManager : MonoBehaviour
                 // Fire the game over event.
                 OnGameOver?.Invoke();
 
-                //if (HighScores.IsNewHighScore(Score, SurvivalTime))
-                //{
+               if (Utils_HighScores.IsNewHighScore(Score, SurvivalTime))
+               {
                     // Activate the parent canvas of the name entry dialog to show the dialog.
                     _UI_GameOverDialog.OpenDialog();
-                //}
+               }
 
 
                 break;
@@ -680,8 +716,13 @@ public class GameManager : MonoBehaviour
     }
 
     private void GameState_GameOver()
-    {        
+    {
         //Debug.LogError("Game Over!");
+
+        int monstersLeft = MonsterManager.MonstersLeft;
+
+        _UI_MonstersLeftText.text = $"Monsters Left: {monstersLeft} of {MonsterManager.CurrentWaveSize}";
+        _UI_WaveNumberText.text = $"Wave #{MonsterManager.CurrentWaveNumber} Incoming!";
     }
 
     private void SetupGameOverCamera()
@@ -717,22 +758,7 @@ public class GameManager : MonoBehaviour
 
 
         _UI_TopBar.gameObject.SetActive(state);
-        /*
-        UI_TopBar.enabled = state;
-        UI_MonstersLeftText.enabled = state;
-        UI_ScoreText.enabled = state;
-        UI_TimeToNextWaveText.enabled = state;
-        UI_WaveNumberText.enabled = state;
-        */
-
         _UI_BottomBar.gameObject.SetActive(state);
-        /*
-        UI_BottomBar.enabled = state;        
-        UI_PopulationCountText.enabled = state;
-        UI_FoodCountText.enabled = state;
-        UI_WoodCountText.enabled = state;
-        UI_StoneCountText.enabled = state;
-        */
     }
 
     private IEnumerator ShowGamePhaseTextAndFadeOut(string text, Color32 color)
@@ -819,9 +845,7 @@ public class GameManager : MonoBehaviour
 
     private void OnCameraTransitionStarted(ICinemachineCamera startCam, ICinemachineCamera endCam)
     {
-        // Show the floating status bars only when the player follow cam is active.
-        // This is an easy way to enable/disable them, without messing with the camera
-        // stack on the player camera, which specifies the overlay camera.
+        // Disable the floating status bars.
         if (_UI_FloatingStatusBarOverviewCam != null)
         {
             _UI_FloatingStatusBarOverviewCam.gameObject.SetActive(false);

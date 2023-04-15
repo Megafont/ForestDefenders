@@ -69,7 +69,10 @@ public class BuildModeManager : MonoBehaviour
         buildCam.Follow = _BuildingConstructionGhost.transform;
         buildCam.LookAt = _BuildingConstructionGhost.transform;
         _CameraManager.RegisterCamera((int) CameraIDs.BuildMode,
-                                      buildCam);       
+                                      buildCam);
+
+        _CameraManager.OnCameraTransitionStarted += OnCameraTransitionStarted;
+        _CameraManager.OnCameraTransitionEnded += OnCameraTransitionEnded;
     }
 
     // Update is called once per frame
@@ -77,8 +80,15 @@ public class BuildModeManager : MonoBehaviour
     {
         // Check if player is entering build mode.
         bool input = _InputManager.Player.EnterBuildMode;
-        if (input && _GameManager.GameState == GameStates.PlayerBuildPhase && !_GameManager.GamePhaseTextIsVisible && !IsBuildModeActive && !Dialog_Base.AreAnyDialogsOpen())
+        if (input && 
+            _GameManager.GameState == GameStates.PlayerBuildPhase &&
+            !_CameraManager.IsTransitioning &&
+            !_GameManager.GamePhaseTextIsVisible &&
+            !IsBuildModeActive &&
+            !Dialog_Base.AreAnyDialogsOpen())
+        {
             StartCoroutine(EnableBuildMode(input));
+        }
             
         
         // Do build mode checks only when build mode is on.
@@ -149,8 +159,6 @@ public class BuildModeManager : MonoBehaviour
             yield return null;
         }
 
-
-        _BuildingConstructionGhost.gameObject.SetActive(state);
 
 
         if (state)
@@ -375,7 +383,7 @@ public class BuildModeManager : MonoBehaviour
 
         foreach (MaterialCost cost in constructionCosts)
         {
-            if (_ResourceManager.Stockpiles[cost.Resource] < cost.Amount)
+            if (_ResourceManager.GetStockpileLevel(cost.Resource) < cost.Amount)
             {
                 result = false;
                 break;
@@ -396,7 +404,8 @@ public class BuildModeManager : MonoBehaviour
 
         foreach (MaterialCost cost in def.ConstructionCosts)
         {
-            _ResourceManager.Stockpiles[cost.Resource] -= cost.Amount;
+            if (!_ResourceManager.ExpendFromStockpile(cost.Resource, cost.Amount))
+                Debug.LogWarning($"Could not expend {cost.Amount} {cost.Resource}! The stockpile somehow did not have enough!");
         }
     }
 
@@ -409,9 +418,25 @@ public class BuildModeManager : MonoBehaviour
 
         foreach (MaterialCost cost in def.ConstructionCosts)
         {
-            _ResourceManager.Stockpiles[cost.Resource] += (int) (cost.Amount * PercentageOfMaterialsRecoveredOnBuildingDestruction);
+            _ResourceManager.AddToStockpile(cost.Resource, cost.Amount * PercentageOfMaterialsRecoveredOnBuildingDestruction);
         }
 
+    }
+
+
+
+    private void OnCameraTransitionStarted(ICinemachineCamera startCam, ICinemachineCamera endCam)
+    {
+        // Disable the build mode construction ghost.
+        _BuildingConstructionGhost.gameObject.SetActive(false);
+    }
+
+    private void OnCameraTransitionEnded(ICinemachineCamera startCam, ICinemachineCamera endCam)
+    {
+        // Show the build mode construction ghost only when the build mode cam is active.
+        bool showConstructionGhost = (endCam.VirtualCameraGameObject.name == "CM Build Mode Camera");
+        _BuildingConstructionGhost.gameObject.SetActive(showConstructionGhost);
+        
     }
 
 }

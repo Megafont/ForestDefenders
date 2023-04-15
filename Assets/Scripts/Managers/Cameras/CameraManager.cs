@@ -73,6 +73,9 @@ public class CameraManager : MonoBehaviour
 
     private IEnumerator WaitForCameraTransitionToFinish(ICinemachineCamera startCam, ICinemachineCamera endCam)
     {
+        IsTransitioning = true;
+
+
         if (startCam != null && endCam != null)
         {
             // Wait until the blend actually begins, because there is a slight delay between when the code that
@@ -85,6 +88,9 @@ public class CameraManager : MonoBehaviour
 
 
         //Debug.Log($"Camera Transition Ended      | Start Camera: \"{(startCam != null ? startCam.VirtualCameraGameObject.name : "null")}\"    | End Camera: \"{(endCam != null ? endCam.VirtualCameraGameObject.name : "null")}\"");
+
+
+        IsTransitioning = false;
 
         OnCameraTransitionEnded?.Invoke(startCam, endCam);
     }
@@ -135,5 +141,8 @@ public class CameraManager : MonoBehaviour
         }
     }
 
+
+
+    public bool IsTransitioning { get; private set; } = false;
 
 }

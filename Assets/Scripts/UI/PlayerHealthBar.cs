@@ -8,7 +8,10 @@ using TMPro;
 
 public class PlayerHealthBar : MonoBehaviour
 {
-    [Tooltip("The length of the healthbar is the current value of the bar times this multiplier.")]
+    [Tooltip("The length of the bar when the player has no upgrades to max health.")]
+    [SerializeField] private float _BaseBarLength = 50;
+
+    [Tooltip("The length of the health bar is the current value of the bar times this multiplier.")]
     [Range(0.25f, 10f)]
     [SerializeField] private float _LengthMultiplier = 5f;
 
@@ -79,7 +82,8 @@ public class PlayerHealthBar : MonoBehaviour
 
 
         // Set the length of the parent object in case the player's max health has changed.
-        _RectTransform.sizeDelta = new Vector2(maxValue * _LengthMultiplier, _RectTransform.sizeDelta.y);
+        float width = (_BaseBarLength + _PlayerHealthComponent.TotalMaxHealthIncrease) * _LengthMultiplier;
+        _RectTransform.sizeDelta = new Vector2(width, _RectTransform.sizeDelta.y);
 
 
         // How far should we fill the health bar?
@@ -109,7 +113,7 @@ public class PlayerHealthBar : MonoBehaviour
 
 
         // Update the health bar text.
-        _UI_HealthBarText.text = $"HP: {currentValue} / {maxValue}";
+        _UI_HealthBarText.text = $"Health: {currentValue} / {maxValue}";
 
 
         _HealthChanged = false;

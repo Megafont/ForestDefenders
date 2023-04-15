@@ -36,12 +36,14 @@ public class MonsterManager : MonoBehaviour
     private List<GameObject> _AliveMonsters;
     private float _LastMonsterDeathTime;
 
+    private GameManager _GameManager;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        //MonsterPrefabs.Sort(CompareMonsters);
+        _GameManager =  GameManager.Instance;
+
         MonsterStats.InitMonsterDefinitions(MonsterPrefabs);
         _MonsterDefinitions = MonsterStats.MonsterDefinitions;
 
@@ -140,8 +142,16 @@ public class MonsterManager : MonoBehaviour
                                              Quaternion.identity,
                                              _MonstersParent.transform);
 
-            // Initialize the monster's stats.
+            // Initialize the monster's stats.          
             monsterDef.ApplyStatsToMonster(monster.GetComponent<Monster_Base>());
+
+
+            // If a monster wave has started in the game over state, it means the game over was caused by the player dying while not in a monster attack phase.
+            // So if that is the case, make all spawning monsters invincible so we can see them destroy everything on the game over screen!
+            // This ensures that the villagers can't kill them all. ;)
+            if (_GameManager.GameState == GameStates.GameOver)
+                monster.GetComponent<Health>().IsInvincible = true;
+
 
             // Subscribe to the monster's OnDeath event and add it to the list of alive monsters.
             monster.GetComponent<Health>().OnDeath += OnDeath;

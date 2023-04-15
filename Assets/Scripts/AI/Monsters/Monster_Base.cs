@@ -30,11 +30,24 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
 
     protected GameObject _Player;
 
+    protected bool _SpawnedDuringGameOver = false;
+    protected bool _AllBuildingsAndVillagersDestroyedDuringGameOver = false;
+
+
+    protected VillageManager_Buildings _VillageManager_Buildings;
+    protected VillageManager_Villagers _VillageManager_Villagers;
 
 
 
     protected override void InitAI()
     {
+        if (_GameManager.GameState == GameStates.GameOver)
+            _SpawnedDuringGameOver = true;
+
+        _VillageManager_Buildings = _GameManager.VillageManager_Buildings;
+        _VillageManager_Villagers = _GameManager.VillageManager_Villagers;
+
+
         _NearbyTargetDetector = transform.GetComponentInChildren<MonsterTargetDetector>();
 
 
@@ -53,7 +66,12 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
 
     protected override void UpdateAI()
     {
-        if (_GameManager.GameState != GameStates.GameOver)
+        DoPostGameOverVictoryCelebrationCheck();
+
+
+        // Monsters do not attack things during game over unless they were spawned during the game over state.
+        if (_GameManager.GameState != GameStates.GameOver || 
+            (_SpawnedDuringGameOver && !_AllBuildingsAndVillagersDestroyedDuringGameOver)) // This line controls whether the AI will update during the game over state.
             base.UpdateAI();
         else
             OnGameOver();
@@ -62,6 +80,7 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
     protected override void DoTargetCheck()
     {
         //Debug.Log($"AI: {name}    Target: {_Target}    Attackable: {TargetIsAttackable()}    InRange: {TargetIsWithinAttackRange()}    Path: {_NavMeshAgent.pathStatus}   Destination: {_NavMeshAgent.destination}");
+
 
         if (_Target == null)
         {
@@ -183,8 +202,29 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
 
     protected void OnGameOver()
     {
-        if (_Animator)
+        if (!_SpawnedDuringGameOver && _Animator != null)
             _Animator.SetTrigger("Victory");
+    }
+
+    protected bool DoPostGameOverVictoryCelebrationCheck()
+    {
+        if (_AllBuildingsAndVillagersDestroyedDuringGameOver)
+            return true;
+
+        
+        if (_VillageManager_Buildings.TotalBuildingCount < 1 &&
+            _VillageManager_Villagers.Population < 1)
+        {
+            _AllBuildingsAndVillagersDestroyedDuringGameOver = true;
+
+            if (_Animator)
+                _Animator.SetTrigger("Victory");
+
+            return true;
+        }
+               
+        
+        return false;
     }
 
 

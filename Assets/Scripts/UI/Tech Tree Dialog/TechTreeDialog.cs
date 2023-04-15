@@ -150,7 +150,7 @@ public class TechTreeDialog : Dialog_Base, IDialog
 
 
         if (sender.TileData.IsAvailableToResearch &&
-            AvailableXP >= sender.TileData.XPCost)
+            (AvailableXP >= sender.TileData.XPCost || _GameManager.ResearchIsFree))
         {
             AvailableXP -= sender.TileData.XPCost;
             UpdateXPCountText();

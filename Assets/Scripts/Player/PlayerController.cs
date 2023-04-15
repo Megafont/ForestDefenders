@@ -9,9 +9,6 @@ using UnityEngine;
 
 using Random = UnityEngine.Random;
 
-using StarterAssets;
-using Unity.VisualScripting;
-
 
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
  */
@@ -56,7 +53,8 @@ public class PlayerController : MonoBehaviour
     [Header("Player Stats")]
     [SerializeField] private float _AttackPower = 20;
     [SerializeField] private float _AttackCooldownTime = 0.5f;
-       
+    [SerializeField] protected DamageTypes _DamageType = DamageTypes.Physical;
+
 
     [Header("Player Grounded")]
     [Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")]
@@ -134,6 +132,9 @@ public class PlayerController : MonoBehaviour
     private ResourceManager _ResourceManager;
     private VillageManager_Buildings _VillageManager_Buildings;
 
+    private Health _HealthComponent;
+    private Hunger _HungerComponent;
+
     private const float _threshold = 0.01f;
 
     private bool _hasAnimator;
@@ -147,7 +148,7 @@ public class PlayerController : MonoBehaviour
     private SoundSetPlayer _SoundSetPlayer;
     private SoundParams _SoundParams;
 
-
+    
 
     public float AttackPower { get { return _AttackPower; } set { _AttackPower = value; } }
 
@@ -174,6 +175,10 @@ public class PlayerController : MonoBehaviour
 
 
         _GameManager = GameManager.Instance;
+
+        _HealthComponent = GetComponent<Health>();
+        _HungerComponent = GetComponent<Hunger>();
+
         _AttackPower = _GameManager.PlayerStartingAttackPower;
 
         _ResourceManager = _GameManager.ResourceManager;
@@ -207,7 +212,10 @@ public class PlayerController : MonoBehaviour
         _fallTimeoutDelta = _FallTimeout;
 
 
-        GetComponent<Health>().OnDeath += OnDeath;
+        _HealthComponent.OnDeath += OnDeath;
+
+        if (_GameManager.GodMode)
+            _HealthComponent.IsInvincible = true;
     }
 
 
@@ -462,6 +470,7 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    private float foodGatheredWhileHungry;
     private void DoAttackAction()
     {
         int n = Random.Range(1, 4);
@@ -481,7 +490,7 @@ public class PlayerController : MonoBehaviour
                 if (hit.collider.CompareTag("Monster") || 
                     (_GameManager.PlayerCanDamageVillagers && hit.collider.CompareTag("Villager")))
                 {
-                    health.DealDamage(_AttackPower, DamageTypes.Physical, gameObject);
+                    health.DealDamage(_AttackPower, _DamageType, gameObject);
                 }
             }
             
@@ -498,7 +507,11 @@ public class PlayerController : MonoBehaviour
             if (node != null && !node.IsDepleted)
             {
                 //Debug.Log("node is not depleted. Mining it!");
-                node.Gather(gameObject);
+                float gatherAmount = node.Gather(gameObject);
+
+
+                if (_HungerComponent.HungerLevel > 0 && node.ResourceType == ResourceTypes.Food)
+                    EatFood(gatherAmount);
 
                 // Since we found a resource node and gathered from it, break out of this loop.
                 // This prevents the player mining the same garden/farm multiple times in one hit
@@ -508,6 +521,35 @@ public class PlayerController : MonoBehaviour
 
         } // end foreach hit
 
+    }
+
+    private void EatFood(float gatherAmount)
+    {
+        // Track food gathered while the player is hungry.
+        foodGatheredWhileHungry += gatherAmount;
+
+        float foodCostPerHungerPoint = _HungerComponent.HungerReductionFoodAmount;
+
+        // How many points of hunger will be alleviated this time?
+        float hungerPtsToRestore = Mathf.Min(_HungerComponent.HungerLevel, _HungerComponent.HungerPointsToHealEachTimeOnEating);
+        _HungerComponent.AlleviateHunger(hungerPtsToRestore);
+
+        // Calculate total food cost.
+        float totalFoodCost = foodCostPerHungerPoint * hungerPtsToRestore;
+        
+        // Deduct food eaten from the player's foodGatheredWhileHungry counter.
+        foodGatheredWhileHungry -= totalFoodCost;
+
+        //Debug.Log($"Eating. Healed {hungerPtsToRestore} hunger with {totalFoodCost} food. Gather amount: {gatherAmount}");
+
+        // Expend eaten food from the stockpile.
+        _ResourceManager.ExpendFromStockpile(ResourceTypes.Food, totalFoodCost);
+
+        // If the player's hunger is fully satiated, then clear the foodGatheredWhileHungry counter.
+        // We DO NOT add excess food into the stockpile. This is because all food gathered was already
+        // added to the stockpile in DoAttackAction(). The line above expends some of it from the stockpile.
+        if (foodGatheredWhileHungry > 0 && _HungerComponent.HungerLevel == 0)
+            foodGatheredWhileHungry = 0;
     }
 
     private void DoDestroyAction(GameObject objToDestroy)

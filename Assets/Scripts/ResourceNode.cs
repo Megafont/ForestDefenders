@@ -21,6 +21,7 @@ public class ResourceNode : MonoBehaviour
 
 
     private GameManager _GameManager;
+    private BuildModeManager _BuildModeManager;
     private ResourceManager _ResourceManager;
     private SoundSetPlayer _SoundSetPlayer;
     private VillageManager_Villagers _VillageManager_Villagers;
@@ -53,6 +54,7 @@ public class ResourceNode : MonoBehaviour
         
 
         _GameManager = GameManager.Instance;
+        _BuildModeManager = _GameManager.BuildModeManager;
         _ResourceManager = _GameManager.ResourceManager;
 
         InitFloatingStatusBar();
@@ -101,29 +103,10 @@ public class ResourceNode : MonoBehaviour
             return 0;
 
 
-        // If the gatherer is a villager, expend food used to do the work.
-        // NOTE: We don't do this if it is the player to ensure that they can still gather even if food is in short supply.
-        if (gatherer.CompareTag("Villager"))
-        {
-            int foodAmount = Mathf.RoundToInt(_VillageManager_Villagers.GatheringCostMultiplier * gatherAmount);
-
-            // If there is not enough food available, then tell the villager to stop targeting this resource node.
-            if (foodAmount > _ResourceManager.Stockpiles[ResourceTypes.Food])
-            {
-                if (gatherer.CompareTag("Villager"))
-                    villager.SetTarget(null, true);
-
-                return 0;
-            }
-
-
-            _ResourceManager.Stockpiles[ResourceTypes.Food] -= foodAmount;
-        }
-
 
         // Gather the resource and add it to the appropriate stockpile.
         AmountAvailable -= gatherAmount;
-        _ResourceManager.Stockpiles[_ResourceType] += gatherAmount;
+        _ResourceManager.AddToStockpile(_ResourceType, gatherAmount);
 
 
         // If the gatherer is the player, add some points to their score.
@@ -137,7 +120,10 @@ public class ResourceNode : MonoBehaviour
         // Only fire the NodeDepleted event if the node is depleted, and it wasn't already empty at the start of this function. Then we know this particular gather is the one that depleted it.
         // This ensures we only fire the event once.
         if (IsDepleted && amountBeforeGather > 0)
+        {
+            _FloatingStatBar.gameObject.SetActive(false); // Make the floating status bar disappear.
             OnNodeDepleted?.Invoke(this);
+        }
 
 
         return gatherAmount;
@@ -162,6 +148,9 @@ public class ResourceNode : MonoBehaviour
 
         _FloatingStatBar.MaxValue = _AmountAvailable;
         _FloatingStatBar.SetValue(_AmountAvailable);
+
+        if (!_BuildModeManager.IsBuildModeActive && _GameManager.GameState != GameStates.GameOver)
+            _FloatingStatBar.gameObject.SetActive(true);
     }
 
     public void AddVillagerToMiningList(IVillager villager)

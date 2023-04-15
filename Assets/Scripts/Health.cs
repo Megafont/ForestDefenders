@@ -37,12 +37,6 @@ public class Health : MonoBehaviour
 
 
 
-    public float CurrentHealth { get; private set; }
-    public float MaxHealth { get { return _MaxHealth; } set { _MaxHealth = value; } }
-    public bool IsInvincible { get { return _IsInvincible; } }
-
-
-
     public delegate void Health_OnDeathEventHandler(GameObject sender, GameObject attacker);
     public delegate void Health_OnDamagedEventHandler(GameObject sender, GameObject attacker, float amount, DamageTypes damageType);
     public delegate void Health_OnHealedEventHandler(GameObject sender, GameObject healer, float amount);
@@ -211,4 +205,33 @@ public class Health : MonoBehaviour
         _SkinnedMeshRenderers = new List<SkinnedMeshRenderer>(GetComponentsInChildren<SkinnedMeshRenderer>());        
     }
 
+    public void SetMaxHealth(float amount)
+    {
+        _MaxHealth = amount;
+        TotalMaxHealthIncrease = 0;
+    }
+
+    public void IncreaseMaxHealth(float amount)
+    {
+        _MaxHealth += amount;
+        TotalMaxHealthIncrease += amount;
+    }
+
+
+
+    public float CurrentHealth { get; private set; }
+    
+    public float MaxHealth 
+    { 
+        get { return _MaxHealth; } 
+        private set { _MaxHealth = value; } 
+    }
+
+    public bool IsInvincible
+    {
+        get { return _IsInvincible; }
+        set { _IsInvincible = value; }
+    }
+
+    public float TotalMaxHealthIncrease { get; private set; }
 }

@@ -215,7 +215,7 @@ MonoBehaviour:
   _InteractionFrequency: 2
   _AttackPower: 3
   _AttackCheckFrequency: 1
-  _DamageType: 1
+  _DamageType: 2
   _MaxChaseDistance: 20
   _TargetCheckFrequency: 3
   _TargetCheckRadius: 5

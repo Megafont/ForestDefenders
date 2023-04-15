@@ -42,11 +42,9 @@ public class VillageManager_Villagers : MonoBehaviour
     [Tooltip("The amount a villager heals a building each time they \"hit\" it.")]
     public float VillagerHealBuildingsAmount = 5.0f;
 
-    [Tooltip("Each time a villager heals a building, he/she expends food equal to this multipler times the number of HP healed.")]
-    public float BuildingHealFoodCostMultiplier = 5f;
+    [Tooltip("Each time a villager heals a building, he/she expends wood and stone equal to this multipler times the number of HP healed.")]
+    public float BuildingHealResourceCostMultiplier = 5f;
 
-    [Tooltip("Each time a villager gathers from a resource node, he/she expends food equal to this multipler times the number of resources gathered.")]
-    public float GatheringCostMultiplier = 5f;
 
 
     private GameManager _GameManager;
@@ -70,6 +68,10 @@ public class VillageManager_Villagers : MonoBehaviour
 
     private void Awake()
     {
+        if (VillagersCanHealBuildings)
+            Debug.LogWarning("The VillagersCanHealBuildings option is on in the village manager.");
+
+
         _GameManager = GameManager.Instance;
         _PopulationCap = StartingPopulationCap;
 
@@ -228,7 +230,7 @@ public class VillageManager_Villagers : MonoBehaviour
             {
                 // Set the villager's max health, and reset their health to max.
                 Health vHealth = villagerComponent.HealthComponent;
-                vHealth.MaxHealth = _GameManager.LevelUpDialog.CurrentVillagerMaxHealth;
+                vHealth.IncreaseMaxHealth(_GameManager.VillagersHealthBuffAmountPerLevelUp);
                 vHealth.ResetHealthToMax();
             }
             else
@@ -270,31 +272,35 @@ public class VillageManager_Villagers : MonoBehaviour
         while (true)
         {
             if (_AllVillagers.Count < _PopulationCap &&
-                _ResourceManager.Stockpiles[ResourceTypes.Food] >= VillagerFoodCost)
+                _ResourceManager.IsStockpileLevelOK(ResourceTypes.Food))
             {
                 GameObject prefab = SelectVillagerPrefab();
-                _ResourceManager.Stockpiles[ResourceTypes.Food] -= VillagerFoodCost;
 
 
-                GameObject newVillager = Instantiate(prefab,
-                                                     townCenter.transform.position,
-                                                     townCenter.transform.rotation,
-                                                     _VillagerTypeParents[prefab.name].transform);
+                if (_ResourceManager.ExpendFromStockpile(ResourceTypes.Food, VillagerFoodCost))
+                {
+
+                    GameObject newVillager = Instantiate(prefab,
+                                                         townCenter.transform.position,
+                                                         townCenter.transform.rotation,
+                                                         _VillagerTypeParents[prefab.name].transform);
 
 
-                IVillager villagerComponent = newVillager.GetComponent<IVillager>();
+                    IVillager villagerComponent = newVillager.GetComponent<IVillager>();
 
-                // Set the villager's max health, and reset their health to max.
-                Health vHealth = villagerComponent.HealthComponent;
-                vHealth.MaxHealth = _GameManager.LevelUpDialog.CurrentVillagerMaxHealth;
-                vHealth.ResetHealthToMax();
+                    // Set the villager's max health, and reset their health to max.
+                    Health vHealth = villagerComponent.HealthComponent;
+                    vHealth.SetMaxHealth(_GameManager.LevelUpDialog.CurrentVillagerMaxHealth);
+                    vHealth.ResetHealthToMax();
 
-                // Set the villager's attack power.
-                (villagerComponent as AI_WithAttackBehavior).AttackPower = _GameManager.LevelUpDialog.CurrentVillagerAttackPower;
+                    // Set the villager's attack power.
+                    (villagerComponent as AI_WithAttackBehavior).AttackPower = _GameManager.LevelUpDialog.CurrentVillagerAttackPower;
 
-                AddVillager(villagerComponent);
+                    AddVillager(villagerComponent);
 
-                TotalVillagersSpawned++;
+                    TotalVillagersSpawned++;
+                }
+
             }
 
             yield return _VillagerSpawnWaitTime;
@@ -399,7 +405,7 @@ public class VillageManager_Villagers : MonoBehaviour
 
         while (damagedBuildings.Count > 0)
         {
-            Debug.Log($"Villagers are healing {damagedBuildings.Count} buildings...");
+            //Debug.Log($"Villagers are healing {damagedBuildings.Count} buildings...");
 
 
             for (int j = 0; j < _VillagersHealingBuildings.Keys.Count; j++)
@@ -416,10 +422,11 @@ public class VillageManager_Villagers : MonoBehaviour
                 { 
                     removeBuilding = true;
                 }
+
                 // Check if the building is fully healed.
                 else if (building.HealthComponent.CurrentHealth == building.HealthComponent.MaxHealth)
                 {
-                    Debug.Log($"Villagers finished healing building \"{building.Category}/{building.Name}\"!");
+                    //Debug.Log($"Villagers finished healing building \"{building.Category}/{building.Name}\"!");
 
                     if (_VillagersHealingBuildings.ContainsKey(building))
                     {
@@ -431,7 +438,8 @@ public class VillageManager_Villagers : MonoBehaviour
 
                     } // end if
 
-                } // end if
+                }
+
                 else
                 {
                     // If the villager is not in combat, and is not targetting the building they are supposed to be healing, then tell them to target the building again.
@@ -447,23 +455,23 @@ public class VillageManager_Villagers : MonoBehaviour
             } // end foreach villager healing a building
             
 
-            Debug.Log($"Food: {_ResourceManager.Stockpiles[ResourceTypes.Food]}    Ok Level: {_ResourceManager.ResourceStockpilesOkThreshold}");
-
 
             // Don't send villagers to repair buildings if stockpiles are low.
-            if (_ResourceManager.Stockpiles[ResourceTypes.Food] >= _ResourceManager.ResourceStockpilesOkThreshold)
+            if (_ResourceManager.IsStockpileLevelOK(ResourceTypes.Stone) &&
+                _ResourceManager.IsStockpileLevelOK(ResourceTypes.Wood))
             {
-                Debug.Log($"Requesting help for {damagedBuildings.Count} buildings!");
+                //Debug.Log($"Requesting help for {damagedBuildings.Count} buildings!");
 
 
                 // Send villagers to heal the damaged buildings.
                 foreach (KeyValuePair<IBuilding, GameObject> pair in damagedBuildings)
                 {
-                    Debug.Log($"{pair.Key}    {pair.Value}");
+                    //Debug.Log($"{pair.Key}    {pair.Value}");
+
                     // Check if the building does NOT have a villager healing it.
                     if (!_VillagersHealingBuildings.ContainsKey(pair.Key))
                     {                        
-                        Debug.Log($"Sending villager to heal building \"{pair.Key.Category}/{pair.Key.Name}\"!");
+                        //Debug.Log($"Sending villager to heal building \"{pair.Key.Category}/{pair.Key.Name}\"!");
                         SendRandomVillagerToHealBuilding(pair.Key, pair.Value);
                     }
 

@@ -30,11 +30,15 @@ public class FloatingStatusBar : MonoBehaviour
     private Image _UI_StatBarImage;
     private TMP_Text _UI_StatBarText;
 
+    private CameraManager _CameraManager;
+
 
 
     // Start is called before the first frame update
     void Start()
     {
+        _CameraManager = GameManager.Instance.CameraManager;
+
         StatBarScale = 0.0025f;
         VerticalPosOffset = 1f;
 
@@ -56,7 +60,7 @@ public class FloatingStatusBar : MonoBehaviour
     {
         // We need to use the parent here, because the text component is on a child object rotated 180 degrees so it always faces the right way.
         // Otherwise it ends up backwards when the parent object turns around to face the camera. The text is facing down the negative Z-axis by default.
-        transform.LookAt(GameManager.Instance.CameraManager.GetActiveCamera().VirtualCameraGameObject.transform); // Make the text always face the player's camera.
+        transform.LookAt(_CameraManager.GetActiveCamera().VirtualCameraGameObject.transform); // Make the text always face the player's camera.
 
     }
 
@@ -66,9 +70,9 @@ public class FloatingStatusBar : MonoBehaviour
         if (_UI_StatBarImage == null || _UI_StatBarText == null)
             return;
 
-
         // Set the length of the parent object in case the player's max health has changed.
-        _RectTransform.sizeDelta = new Vector2(MaxValue * _LengthMultiplier, _RectTransform.sizeDelta.y);
+        float width = Mathf.Max(MaxValue * _LengthMultiplier, 150f); // Make sure the bar is never too narrow for the text.
+        _RectTransform.sizeDelta = new Vector2(width, _RectTransform.sizeDelta.y);
 
 
         // How far should we fill the health bar?

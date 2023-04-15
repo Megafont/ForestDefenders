@@ -8,8 +8,9 @@ using UnityEngine;
 [Flags]
 public enum DamageTypes
 {
-    Physical    = 1,   
-    Electric    = 2,
-    Fire        = 4,
-    Ice         = 8,
+    Starvation  = 1,
+    Physical    = 2,   
+    Electric    = 4,
+    Fire        = 8,
+    Ice         = 16,
 }

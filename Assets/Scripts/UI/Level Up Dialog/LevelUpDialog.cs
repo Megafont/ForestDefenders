@@ -63,7 +63,7 @@ public class LevelUpDialog : Dialog_Base
         _VillageManager_Villagers = _GameManager.VillageManager_Villagers;
 
         Health pHealth = _Player.GetComponent<Health>();
-        pHealth.MaxHealth = CurrentPlayerMaxHealth;
+        pHealth.SetMaxHealth(CurrentPlayerMaxHealth);
         pHealth.ResetHealthToMax();
 
 
@@ -74,6 +74,9 @@ public class LevelUpDialog : Dialog_Base
 
     protected override void Dialog_OnUpdate()
     {
+        RefreshMenuItems();
+
+
         if (Time.time - _LastGamepadSelectionChange >= _GamepadMenuSelectionDelay)
         {
             // If the mouse has caused the selection to be lost by clicking not on a button, then reselect the currently selected button according to this class's stored index.
@@ -209,7 +212,7 @@ public class LevelUpDialog : Dialog_Base
         float foodCost = amountToHeal * _GameManager.PlayerHealFoodCostMultiplier;
 
         if (healthCurrentValue < healthMaxValue &&
-            _GameManager.ResourceManager.Stockpiles[ResourceTypes.Food] >= foodCost)
+            _GameManager.ResourceManager.GetStockpileLevel(ResourceTypes.Food) >= foodCost)
         {
             menuItem.GetComponent<TMP_Text>().text = $"Heal Player\t\t\t(-{foodCost} Food)"; // "Up To {_GameManager.PlayerHealAmount} HP";
             menuItem.GetComponent<Button>().interactable = true;
@@ -266,7 +269,7 @@ public class LevelUpDialog : Dialog_Base
         CurrentPlayerMaxHealth += _GameManager.PlayerHealthBuffAmountPerLevelUp;
         
         Health pHealth = _Player.GetComponent<Health>();
-        pHealth.MaxHealth = CurrentPlayerMaxHealth;
+        pHealth.IncreaseMaxHealth(_GameManager.PlayerHealthBuffAmountPerLevelUp);
         pHealth.Heal(_GameManager.PlayerHealthBuffAmountPerLevelUp, null);
         
     }
@@ -287,7 +290,8 @@ public class LevelUpDialog : Dialog_Base
         float healAmount = playerHealth.MaxHealth - playerHealth.CurrentHealth;
         playerHealth.ResetHealthToMax();
 
-        _GameManager.ResourceManager.Stockpiles[ResourceTypes.Food] -= Mathf.CeilToInt(healAmount * _GameManager.PlayerHealFoodCostMultiplier);
+        _GameManager.ResourceManager.ExpendFromStockpile(ResourceTypes.Food, 
+                                                         Mathf.CeilToInt(healAmount * _GameManager.PlayerHealFoodCostMultiplier));
 
     }
 
