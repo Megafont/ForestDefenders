@@ -659,8 +659,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ResourcesParent: {fileID: 97276842}
   ResourceStockpilesStartAmount: 400
-  ResourceStockpilesOkThreshold: 200
   ResourceStockpilesLowThreshold: 100
+  ResourceStockpilesOkThreshold: 200
+  ResourceStockpilesPlentifulThreshold: 1000
   ResourceNodeAmountVariance: 0.2
   GatherAmountVariance: 2
 --- !u!1 &224973805
@@ -969,7 +970,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 380441286}
   m_HandleRect: {fileID: 380441285}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -2098,6 +2099,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b86ff4ee1d240e428cc95600abd1b6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _StartupNavMeshGenerationDelay: 5
   _NavMeshSurfaceObjects:
   - {fileID: 90193581000238572}
   - {fileID: 406806339}
@@ -3673,8 +3675,7 @@ MonoBehaviour:
   VillagersCanHealBuildings: 0
   VillagerHealBuildingsCheckFrequency: 5
   VillagerHealBuildingsAmount: 5
-  BuildingHealFoodCostMultiplier: 5
-  GatheringCostMultiplier: 5
+  BuildingHealResourceCostMultiplier: 5
 --- !u!114 &828217631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3687,7 +3688,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22ea295225aaf01449354a1635b7e881, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BuildingsParent: {fileID: 406806339}
+  _BuildingsParent: {fileID: 406806339}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -5542,8 +5543,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 565840457}
   m_HandleRect: {fileID: 565840456}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.5285714
+  m_Value: 1.0000002
+  m_Size: 0.5285715
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5708,12 +5709,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MonsterPrefabs:
-  - {fileID: 3988121084957535917, guid: 5003cf80a7fda6d46ae321ce3e77a715, type: 3}
-  - {fileID: 1978132322001731305, guid: 4ac77db1ab1c01846bfa9b7525821040, type: 3}
-  - {fileID: 570609795744236789, guid: 065d8651ff958cf49b8c8b4bf419caf1, type: 3}
-  - {fileID: 6861705712704142444, guid: a5c51504388285141a86ba951e9e3d74, type: 3}
-  - {fileID: 7379400250753777495, guid: a757558f0eb69e449a4278b60acf15c6, type: 3}
+  - {fileID: 4940049640011710311, guid: 6d9258be41f3bc94f8291e3e40fc8cea, type: 3}
+  - {fileID: 3025507434665554091, guid: 32c8567b885e3f340ba8412f3cb6e456, type: 3}
+  - {fileID: 2063826522646730475, guid: c21f16c18bce73541b0fa5ba8b67867a, type: 3}
+  - {fileID: 125004503625926304, guid: 981270a97d621df4e83e01b875f6a6d2, type: 3}
+  - {fileID: 8716344725668139527, guid: 4d72fdb17910a3c4196ce601721051b2, type: 3}
   - {fileID: 6328135014314387927, guid: a18b69470a7cd3146bea16bf590b6a18, type: 3}
+  - {fileID: 3569792454841415309, guid: 0b122e99926f7914a8d7071da9366835, type: 3}
+  - {fileID: 7379400250753777495, guid: a757558f0eb69e449a4278b60acf15c6, type: 3}
+  - {fileID: 570609795744236789, guid: 065d8651ff958cf49b8c8b4bf419caf1, type: 3}
+  - {fileID: 5100035828411193088, guid: 8cd7f8519f08c0847a9035ebde37af56, type: 3}
+  - {fileID: 6861705712704142444, guid: a5c51504388285141a86ba951e9e3d74, type: 3}
+  - {fileID: 3988121084957535917, guid: 5003cf80a7fda6d46ae321ce3e77a715, type: 3}
+  - {fileID: 5200210668780164917, guid: 78918677015d3ac41b6fb332fd49853d, type: 3}
+  - {fileID: 5562013684407524798, guid: dbffef88d72fa2a418da86e5e085c0d4, type: 3}
+  - {fileID: 1978132322001731305, guid: 4ac77db1ab1c01846bfa9b7525821040, type: 3}
+  - {fileID: 719936773627144340, guid: 70b2a70cf6950f14fb4618dc0a09aea3, type: 3}
   ComboStreakResetTime: 5
   BaseMonsterSpawnAmount: 3
   MaxMonstersOfAnyGivenType: 5
@@ -6005,6 +6016,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c8c75b2878e15b4abfa650e57838db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _StartupInitDelay: 5
+  ConstructionIsFree: 0
+  ResearchIsFree: 0
+  GodMode: 0
+  StartWithAllTechUnlocked: 0
+  StartWithAllZonesBridged: 0
+  DisableMonstersSpawning: 0
   AttackDamageVariance: 0.2
   EnablePlayerSpawn: 0
   PlayerSpawnPoint: {fileID: 509338921}
@@ -6013,8 +6031,6 @@ MonoBehaviour:
   PlayerStartingAttackPower: 20
   PlayerStartingMaxHealth: 50
   PlayerStartingGatherRate: 3
-  StartWithAllTechUnlocked: 0
-  ConstructionIsFree: 0
   PlayerHealFoodCostMultiplier: 2
   StartingXP: 0
   XP_EarnedPerWave: 5
@@ -6036,9 +6052,9 @@ MonoBehaviour:
   MusicParams: {fileID: 11400000, guid: 6d4482e0e753c7c48bf4e6bb30aca35a, type: 2}
   SoundParams: {fileID: 11400000, guid: 09a69c7b16d29b141a5619678e04ba78, type: 2}
   GamePhaseTextFadeOutTime: 2.5
-  ResourceStockPilesVeryLowColor: {r: 1, g: 0, b: 0, a: 1}
   ResourceStockPilesLowColor: {r: 1, g: 0.5019608, b: 0, a: 1}
-  ResourceStockPilesColor: {r: 1, g: 1, b: 1, a: 1}
+  ResourceStockPilesOkColor: {r: 1, g: 0.5019608, b: 0, a: 1}
+  ResourceStockPilesPlentifulColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &1621077957
 GameObject:
   m_ObjectHideFlags: 0

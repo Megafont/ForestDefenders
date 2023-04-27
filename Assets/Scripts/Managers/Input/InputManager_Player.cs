@@ -23,6 +23,7 @@ public class InputManager_Player : InputSubManager
 
 
     [Header("Movement Settings")]
+    [Tooltip("If enabled, the player's walking speed will depend on how far you press the joystick.")]
     public bool analogMovement;
 
     [Header("Mouse Cursor Settings")]

@@ -10,10 +10,7 @@ using Random = UnityEngine.Random;
 
 public class VillageManager_Buildings : MonoBehaviour
 {
-    public GameObject BuildingsParent;
-
-
-    [Header("Buildings Settings")]
+    [SerializeField] public GameObject _BuildingsParent;    
 
 
     private BuildModeManager _BuildModeManager;
@@ -40,11 +37,6 @@ public class VillageManager_Buildings : MonoBehaviour
         _BuildModeManager = GameManager.Instance.BuildModeManager;
         _NavMeshManager = GameManager.Instance.NavMeshManager;
         _ResourceManager = GameManager.Instance.ResourceManager;
-
-        FindTownCenter();
-
-        InitBuildingCategoryParentObjects();
-        FindPreExistingBuildings();
     }
 
     // Start is called before the first frame update
@@ -55,17 +47,19 @@ public class VillageManager_Buildings : MonoBehaviour
         //Debug.Log("C3: " + GetTotalBuildingCount());
     }
 
-    // Update is called once per frame
-    void Update()
+    public void DoDelayedInitialization()
     {
-        
+        FindTownCenter();
+
+        InitBuildingCategoryParentObjects();
+        FindPreExistingBuildings();
     }
 
     void OnDestroy()
     {
         StopAllCoroutines();
 
-        Utils.DestroyAllChildGameObjects(BuildingsParent);
+        Utils.DestroyAllChildGameObjects(_BuildingsParent);
     }
 
 
@@ -83,7 +77,7 @@ public class VillageManager_Buildings : MonoBehaviour
 
     private void InitBuildingCategoryParentObjects()
     {
-        Utils.DestroyAllChildGameObjects(BuildingsParent);
+        Utils.DestroyAllChildGameObjects(_BuildingsParent);
 
 
         // Create a parent game object for each building category.
@@ -91,14 +85,14 @@ public class VillageManager_Buildings : MonoBehaviour
         {
             GameObject buildingCategoryParent = new GameObject(category);
 
-            buildingCategoryParent.transform.parent = BuildingsParent.transform;
+            buildingCategoryParent.transform.parent = _BuildingsParent.transform;
             _BuildingCategoryParents.Add(category, buildingCategoryParent);
 
 
             // Create a parent game object for each building type in the category.
             foreach (string buildingName in BuildModeDefinitions.GetList_BuildingNamesInCategory(category))
             {
-                GameObject buildingTypeParent = new GameObject($"{buildingName}s");
+                GameObject buildingTypeParent = new GameObject($"TYPE: {buildingName}");
 
                 buildingTypeParent.transform.parent = buildingCategoryParent.transform;
                 _BuildingCategoryParents.Add($"{category}/{buildingName}", buildingTypeParent);
@@ -108,7 +102,7 @@ public class VillageManager_Buildings : MonoBehaviour
 
         // Create a parent object for unknown buildings.
         GameObject unknown = new GameObject("Unknown");
-        unknown.transform.parent = BuildingsParent.transform;
+        unknown.transform.parent = _BuildingsParent.transform;
         _BuildingCategoryParents.Add("None/None", unknown);
     }
 
@@ -272,6 +266,10 @@ public class VillageManager_Buildings : MonoBehaviour
     {
         TotalBuildingCount++;
 
+        if (building.Category == "Bridges")
+            BridgeCount++;
+
+
         _BuildingCategoryParents.TryGetValue($"{building.Category}/{building.Name}", out GameObject parent);
 
         // Set the parent of the building.
@@ -308,6 +306,9 @@ public class VillageManager_Buildings : MonoBehaviour
     {
         TotalBuildingCount--;
 
+        if (building.Category == "Bridges")
+            BridgeCount--;
+
 
         // Debug.Log("Building destroyed: " + building.Name);
 
@@ -324,7 +325,7 @@ public class VillageManager_Buildings : MonoBehaviour
 
 
         // If the building is a bridge, remove it from the NavMeshManager and regenerate the navmesh.
-        if (building.Name == "Wood Bridge")
+        if (building.Category == "Bridges")
         {
             //_NavMeshManager.RegenerateAllNavMeshes();
             StartCoroutine(WaitForBuildingToDespawn(building.gameObject));
@@ -381,5 +382,7 @@ public class VillageManager_Buildings : MonoBehaviour
     public Dictionary<IBuilding, GameObject> DamagedBuildingsDictionary { get; private set; }
     public GameObject TownCenter { get; private set; }
     public int TotalBuildingCount { get; private set; }
+
+    public int BridgeCount { get; private set; }
 
 }

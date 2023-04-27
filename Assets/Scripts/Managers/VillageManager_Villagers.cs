@@ -97,22 +97,18 @@ public class VillageManager_Villagers : MonoBehaviour
         _AllVillagers = new List<IVillager>();
       
 
-        InitVillagerTypes();
-
-        FindPreExistingVillagers();
-
-        StartCoroutine(SpawnVillagers());
-
-
         //Debug.Log("C1: " + GetBuildingCount("Walls", "Simple Fence"));
         //Debug.Log("C2: " + GetBuildingCountForCategory("Defense"));
         //Debug.Log("C3: " + GetTotalBuildingCount());
     }
 
-    // Update is called once per frame
-    void Update()
+    public void DoDelayedInitialization()
     {
-        
+        InitVillagerTypes();
+
+        FindPreExistingVillagers();
+
+        StartCoroutine(SpawnVillagers());
     }
 
     void OnDestroy()
@@ -272,8 +268,9 @@ public class VillageManager_Villagers : MonoBehaviour
         while (true)
         {
             if (_AllVillagers.Count < _PopulationCap &&
-                _ResourceManager.IsStockpileLevelOK(ResourceTypes.Food))
-            {
+                (!_ResourceManager.IsStockpileLevelOK(ResourceTypes.Food) ||                        // Allow new villagers to spawn only if the food stockpile is at least at an OK level.
+                 (Population == 0 && !_ResourceManager.IsStockpileLevelLow(ResourceTypes.Food))))   // However, if there are no villagers then the first one is allowed to spawn as long as
+            {                                                                                       // the food stockpile is not low.            
                 GameObject prefab = SelectVillagerPrefab();
 
 

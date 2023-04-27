@@ -77,7 +77,7 @@ public class PlayerHungerBar : MonoBehaviour
             return;
 
 
-        float currentValue = _PlayerHungerComponent.HungerLevel;
+        float currentValue = _PlayerHungerComponent.CurrentHunger;
         float maxValue = _PlayerHungerComponent.MaxHunger;
 
 
@@ -105,7 +105,7 @@ public class PlayerHungerBar : MonoBehaviour
         // Fade the bar between colors as health drops if enabled.
         if (_FadeBarColorAsHealthDrops)
         {
-            if (_PlayerHungerComponent.HungerLevel >= _PlayerHungerComponent.MaxHunger / 2)
+            if (_PlayerHungerComponent.CurrentHunger >= _PlayerHungerComponent.MaxHunger / 2)
                 _UI_HungerBarImage.color = Color.Lerp(_MediumColor, _FullColor, (fillPercentage - 0.5f) * 2f);
             else
                 _UI_HungerBarImage.color = Color.Lerp(_LowColor, _MediumColor, fillPercentage * 2f);

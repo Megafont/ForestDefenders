@@ -4,7 +4,9 @@ using UnityEngine;
 
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
     using UnityEngine.InputSystem;
-    using UnityEngine.InputSystem.iOS;
+    // NOTE: I commented this line out because otherwise Unity will fail if you tell it to create a build of the game,
+    //       since the "iOS Build Support" component is not installed as we don't need it.
+    //using UnityEngine.InputSystem.iOS;
 #endif
 
 using Random = UnityEngine.Random;
@@ -53,7 +55,11 @@ public class PlayerController : MonoBehaviour
     [Header("Player Stats")]
     [SerializeField] private float _AttackPower = 20;
     [SerializeField] private float _AttackCooldownTime = 0.5f;
-    [SerializeField] protected DamageTypes _DamageType = DamageTypes.Physical;
+    [SerializeField] private DamageTypes _DamageType = DamageTypes.Physical;
+    [Tooltip("The player's fall damage is the height fallen multiplied by this value.")] 
+    [SerializeField] private float _FallDamageMultiplier = 1.0f;
+    [Tooltip("The player has to fall at least this many units to take fall damage.")]
+    [SerializeField] private float _MinFallDamageHeight = 2.0f;
 
 
     [Header("Player Grounded")]
@@ -148,7 +154,10 @@ public class PlayerController : MonoBehaviour
     private SoundSetPlayer _SoundSetPlayer;
     private SoundParams _SoundParams;
 
-    
+    private float _FallStartHeight;
+    private bool _IsFalling;
+
+
 
     public float AttackPower { get { return _AttackPower; } set { _AttackPower = value; } }
 
@@ -224,6 +233,10 @@ public class PlayerController : MonoBehaviour
     {
         _hasAnimator = TryGetComponent(out _animator);
 
+
+        DoFallDamageCheck();
+
+
         if (!_BuildModeManager.IsSelectingBuilding && !_IsDead)
         {
             JumpAndGravity();
@@ -249,7 +262,8 @@ public class PlayerController : MonoBehaviour
                     DoDestroyAction(hit.collider.gameObject);
                 }
             }
-}
+
+        }
 
     }
 
@@ -284,6 +298,7 @@ public class PlayerController : MonoBehaviour
         {
             _animator.SetBool(_animIDGrounded, _Grounded);
         }
+
     }
 
     private void CameraRotation()
@@ -510,7 +525,7 @@ public class PlayerController : MonoBehaviour
                 float gatherAmount = node.Gather(gameObject);
 
 
-                if (_HungerComponent.HungerLevel > 0 && node.ResourceType == ResourceTypes.Food)
+                if (_HungerComponent.CurrentHunger > 0 && node.ResourceType == ResourceTypes.Food)
                     EatFood(gatherAmount);
 
                 // Since we found a resource node and gathered from it, break out of this loop.
@@ -531,7 +546,7 @@ public class PlayerController : MonoBehaviour
         float foodCostPerHungerPoint = _HungerComponent.HungerReductionFoodAmount;
 
         // How many points of hunger will be alleviated this time?
-        float hungerPtsToRestore = Mathf.Min(_HungerComponent.HungerLevel, _HungerComponent.HungerPointsToHealEachTimeOnEating);
+        float hungerPtsToRestore = Mathf.Min(_HungerComponent.CurrentHunger, _HungerComponent.HungerPointsToHealEachTimeOnEating);
         _HungerComponent.AlleviateHunger(hungerPtsToRestore);
 
         // Calculate total food cost.
@@ -548,7 +563,7 @@ public class PlayerController : MonoBehaviour
         // If the player's hunger is fully satiated, then clear the foodGatheredWhileHungry counter.
         // We DO NOT add excess food into the stockpile. This is because all food gathered was already
         // added to the stockpile in DoAttackAction(). The line above expends some of it from the stockpile.
-        if (foodGatheredWhileHungry > 0 && _HungerComponent.HungerLevel == 0)
+        if (foodGatheredWhileHungry > 0 && _HungerComponent.CurrentHunger == 0)
             foodGatheredWhileHungry = 0;
     }
 
@@ -576,6 +591,29 @@ public class PlayerController : MonoBehaviour
         else
         {
             Debug.LogError($"GameObject \"{objToDestroy.name}\" cannot be destroyed as it is not a building!");
+        }
+    }
+
+    private void DoFallDamageCheck()
+    {
+        if (!_Grounded && !_IsFalling)
+        {
+            _IsFalling = true;
+            _FallStartHeight = transform.position.y;
+        }
+        else if (_Grounded && _IsFalling)
+        {
+            _IsFalling = false;
+            float fallEndHeight = transform.position.y;
+            float fallHeight = _FallStartHeight - fallEndHeight;
+
+            if (fallHeight >= _MinFallDamageHeight)
+            {
+                float fallDamage = fallHeight * _FallDamageMultiplier;
+                _HealthComponent.DealDamage(fallDamage, DamageTypes.Physical, null);
+
+                //Debug.Log($"Player took {fallDamage} fall damage.    Start height: {_FallStartHeight}    End height: {fallEndHeight}    Fall Height: {fallHeight}");
+            }
         }
     }
 

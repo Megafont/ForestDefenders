@@ -39,7 +39,16 @@ public static class Utils_World
             string objName = hitInfo.collider.gameObject.name;
             if (objName.Length >= 7)
             {
-                parentArea = (LevelAreas)int.Parse(objName.Substring(5, 2));
+                try
+                {
+                    parentArea = (LevelAreas)int.Parse(objName.Substring(5, 2));
+                }
+                catch
+                {
+                    Debug.LogWarning("Areas need their ground meshes to be named using the format \"Area ##\" so that certain entities can detect what area they are in.");
+                    parentArea = LevelAreas.Area1;
+                }
+
                 return true;
             }
         }
@@ -213,7 +222,7 @@ public static class Utils_World
         return closestObject;
     }
 
-    public static GameObject FindNearestBuildingAtOrBelowTier(GameObject caller, int callerTier)
+    public static GameObject FindNearestBuildingAtOrBelowTier(GameObject caller, int callerTier, bool ignoreBridges = false)
     {
         UnityObject[] objects = GameObject.FindObjectsOfType(typeof(Building_Base), false);
 
@@ -226,6 +235,12 @@ public static class Utils_World
         {
             GameObject buildingGameObject = uObj.GameObject();
             IBuilding buildingComponent = buildingGameObject.GetComponent<IBuilding>();
+
+
+            if (buildingComponent.Category == "Bridges" && ignoreBridges)
+                continue;
+
+
             int buildingTier = buildingComponent.GetBuildingDefinition().Tier;
 
             float distance = Vector3.Distance(caller.transform.position, buildingGameObject.transform.position);

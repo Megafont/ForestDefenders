@@ -12,11 +12,17 @@ using Unity.VisualScripting;
 
 public class GameManager : MonoBehaviour
 {
+    [Tooltip("When the game starts up, wait this long before doing delayed initialization steps.  WARNING: You may sometimes get a lag spike when this delayed initialization occurs, probably in part due to the nav mesh generation. As such, it is best for this value to be as low as possible so it hopefully occurs before the player starts playing.")]
+    [Range(0f, 5f)]
+    [SerializeField] private float _StartupInitDelay = 5.0f;
+
     [Header("Dev Cheats")]
     public bool ConstructionIsFree = false;
     public bool ResearchIsFree = false;
     public bool GodMode = false;
     public bool StartWithAllTechUnlocked = false;
+    public bool StartWithAllZonesBridged = false;
+    public bool DisableMonstersSpawning = false;
 
     [Header("Combat")]
     [Tooltip("The max percentage that the amount of damage an attack does can vary by. If this percentage is 0, then the amount of damage dealt is always equal to the original attack damage.")]
@@ -91,6 +97,7 @@ public class GameManager : MonoBehaviour
     private TMP_Text _UI_ScoreText;
 
     private PlayerHealthBar _UI_PlayerHealthBar;
+    private PlayerHungerBar _UI_PlayerHungerBar;
     private TMP_Text _UI_KillComboCountText;
 
     private Image _UI_BottomBar;
@@ -136,6 +143,8 @@ public class GameManager : MonoBehaviour
             Debug.LogWarning("The GodMode dev cheat is on in the game manager.");
         if (StartWithAllTechUnlocked)
             Debug.LogWarning("The StartWithAllTechUnlocked dev cheat is on in the game manager.");
+        if (StartWithAllZonesBridged)
+            Debug.LogWarning("The StartWithAllZonesBridged dev cheat is on in the game manager.");
 
 
         if (Instance == null)
@@ -192,6 +201,8 @@ public class GameManager : MonoBehaviour
 
         // Fade in the scene.        
         SceneSwitcher.FadeIn();
+
+        StartCoroutine("DoDelayedInitialization");
     }
 
     bool _PrintedWarning = false;
@@ -241,6 +252,17 @@ public class GameManager : MonoBehaviour
             }
         }
 
+    }
+
+    private IEnumerator DoDelayedInitialization()
+    {
+        yield return new WaitForSeconds(_StartupInitDelay);
+
+
+        NavMeshManager.RegenerateAllNavMeshes();
+
+        VillageManager_Buildings.DoDelayedInitialization();
+        VillageManager_Villagers.DoDelayedInitialization();
     }
 
     /// <summary>
@@ -387,8 +409,9 @@ public class GameManager : MonoBehaviour
     {
         // Register game over camera.
         ICinemachineCamera gameOverCam = GameObject.Find("CM Game Over Cam").GetComponent<ICinemachineCamera>();
-        gameOverCam.Follow = VillageManager_Buildings.TownCenter.transform;
-        gameOverCam.LookAt = VillageManager_Buildings.TownCenter.transform;
+        GameObject townCenter = GameObject.FindGameObjectWithTag("Town Center");
+        gameOverCam.Follow = townCenter.transform;
+        gameOverCam.LookAt = townCenter.transform;
         CameraManager.RegisterCamera((int) CameraIDs.GameOver, gameOverCam);
 
 
@@ -471,6 +494,7 @@ public class GameManager : MonoBehaviour
         _UI_ScoreText = GameObject.Find("UI/HUD/Top Bar/Score Text (TMP)").GetComponent<TMP_Text>();
 
         _UI_PlayerHealthBar = GameObject.Find("Player Health Bar").GetComponent<PlayerHealthBar>();
+        _UI_PlayerHungerBar = GameObject.Find("Player Hunger Bar").GetComponent<PlayerHungerBar>();        
         _UI_KillComboCountText = GameObject.Find("UI/HUD/Kill Combo Count Text (TMP)").GetComponent<TMP_Text>();
 
         _UI_BottomBar = GameObject.Find("UI/HUD/Bottom Bar").GetComponent<Image>();
@@ -681,10 +705,14 @@ public class GameManager : MonoBehaviour
              !Dialog_Base.AreAnyDialogsOpen() && !GamePhaseTextIsVisible &&                                 // With no dialogs or game phase text currently open
              !SceneSwitcher.IsFading && !SceneSwitcher.IsTransitioningToScene && !MusicPlayer.IsFading))    // And no transitions taking place?
         {
-            timeToNextWave = 0;
-            _UI_TimeToNextWaveText.enabled = false;
 
-            ChangeGameState(GameStates.MonsterAttackPhase);
+            if (!DisableMonstersSpawning)
+            {
+                timeToNextWave = 0;
+                _UI_TimeToNextWaveText.enabled = false;
+
+                ChangeGameState(GameStates.MonsterAttackPhase);
+            }
 
             return;
         }
@@ -743,6 +771,9 @@ public class GameManager : MonoBehaviour
 
     private void UpdateWaveTimer(float timeToNextWave)
     {
+        if (timeToNextWave < 0)
+            timeToNextWave = 0;
+
         _UI_TimeToNextWaveText.text = $"Next Wave In: {Utils_HighScores.TimeValueToString(timeToNextWave, false)}";
     }
 
@@ -755,6 +786,8 @@ public class GameManager : MonoBehaviour
     {
         if (_UI_PlayerHealthBar)
             _UI_PlayerHealthBar.gameObject.SetActive(state);
+        if (_UI_PlayerHungerBar)
+            _UI_PlayerHungerBar.gameObject.SetActive(state);
 
 
         _UI_TopBar.gameObject.SetActive(state);

@@ -86,6 +86,13 @@ public class Health : MonoBehaviour
             return;
 
 
+
+        amount = Mathf.RoundToInt(amount);
+        if (amount == 0)
+            return;
+
+
+
         if (_EnableDamageFlash &&
             Time.time - _LastDamageTime > _DamageFlashTime)
         {
@@ -100,7 +107,7 @@ public class Health : MonoBehaviour
 
 
         float randomVariance = Random.Range(0.0f, _GameManager.AttackDamageVariance);
-        float changeAmount = Mathf.CeilToInt(amount - (amount * randomVariance));
+        float changeAmount = Mathf.RoundToInt(amount - (amount * randomVariance));
         changeAmount = Mathf.Max(changeAmount, 1.0f); // Enforce that the attack will always at least 1 point of damage.
 
         float buffAmount = 0;

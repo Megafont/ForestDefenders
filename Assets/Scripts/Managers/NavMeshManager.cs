@@ -17,8 +17,13 @@ using Unity.AI.Navigation;
 /// </remarks>
 public class NavMeshManager : MonoBehaviour
 {
-    [SerializeField]
-    private List<GameObject> _NavMeshSurfaceObjects;
+    [Tooltip("When the game starts up, the nav mesh generation will be delayed by this amount of time (in seconds).")]
+    [Range(0f, 60f)]
+    [SerializeField] private float _StartupNavMeshGenerationDelay = 5.0f;
+
+    [SerializeField] private List<GameObject> _NavMeshSurfaceObjects;
+
+
 
     private List<NavMeshSurface> _NavMeshSurfaces;
 
@@ -34,13 +39,7 @@ public class NavMeshManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        RegenerateAllNavMeshes();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        //StartCoroutine("DoDelayedNavMeshGeneration");
     }
 
 
@@ -164,5 +163,11 @@ public class NavMeshManager : MonoBehaviour
 
     }
 
+    private IEnumerator DoDelayedNavMeshGeneration()
+    {
+        yield return new WaitForSeconds(_StartupNavMeshGenerationDelay);
+
+        RegenerateAllNavMeshes();
+    }
     
 }

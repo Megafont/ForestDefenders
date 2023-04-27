@@ -31,17 +31,45 @@ public class BridgeConstructionZone : MonoBehaviour
     [SerializeField] private float _LockRotation = 0f;
 
 
+    private GameManager _GameManager;
+
 
 
     private void Awake()
     {
-        GameManager.Instance.VillageManager_Buildings.OnBuildingDestroyed += OnBridgeDestroyed;
+        _GameManager = GameManager.Instance;
+
+        _GameManager.VillageManager_Buildings.OnBuildingDestroyed += OnBridgeDestroyed;
     }
 
+    private void Start()
+    {
+        if (_GameManager.StartWithAllZonesBridged)
+        {
+           
+            string bridgeType = "";
+            if (_AllowedBridgeType == BridgeTypes.WoodBridge_10m)
+                bridgeType = "Wood Bridge (10m)";
+            else if (_AllowedBridgeType == BridgeTypes.WoodBridge_20m)
+                bridgeType = "Wood Bridge (20m)";
+
+
+            GameObject prefab = BuildModeDefinitions.GetBuildingPrefab("Bridges", bridgeType);
+
+
+            GameObject bridge = Instantiate(prefab, transform);
+            if (gameObject == null)
+            {
+                Debug.LogError($"GameManager.StartWithAllZonesBridged is on, but failed to generate bridge of type \"{bridgeType}\" for bridge zone \"{gameObject.name}\"!");
+            }
+        }
+    }
 
     public void ApplyConstraints(Transform gameObject)
     {
         Vector3 position = gameObject.transform.position;
+        position.y = transform.position.y; // Force the bridge to snap to the y-position of the bridge construction zone.
+
         Vector3 rotation = Vector3.zero;
 
 

@@ -65,32 +65,33 @@ public class Hunger : MonoBehaviour
         // Is it time for hunger to increase again?
         if (Time.time - _LastHungerIncreaseTime >= _HungerIncreaseFrequency)
         {
-            float prevHungerLevel = HungerLevel;
+            float prevHungerLevel = CurrentHunger;
 
 
             // Increase the character's hunger level.
             _LastHungerIncreaseTime = Time.time;
-            HungerLevel = Mathf.Min(HungerLevel + _HungerIncreaseAmount, 100f);
+            CurrentHunger = Mathf.Min(CurrentHunger + _HungerIncreaseAmount, 100f);
 
 
             // If we are NOT the player and hunger level is greater than 0, then try to eat some food to alleviatge it.
-            if (gameObject.tag != "Player" && HungerLevel > 0)
+            if (gameObject.tag != "Player" && CurrentHunger > 0)
                 AttemptToEat();
 
 
-            OnHungerChanged?.Invoke(gameObject, HungerLevel - prevHungerLevel);
+            OnHungerChanged?.Invoke(gameObject, CurrentHunger - prevHungerLevel);
         }
 
     }
 
     private void DoStarvationCheck()
     {
-        if (HungerLevel == MaxHunger)
+        if (CurrentHunger == MaxHunger)
         {
             _StarvationTimeElapsed += Time.deltaTime;
 
             // Is it time to apply starvation damage again?
-            if (_StarvationTimeElapsed >= _StarvationDamageFrequency)
+            if (_StarvationTimeElapsed >= _StarvationDamageFrequency &&
+                _ParentHealthComponent.CurrentHealth > 0)
             {
                 float damageAmount = _ParentHealthComponent.CurrentHealth * _StarvationDamagePercent;
                 _ParentHealthComponent.DealDamage(damageAmount, DamageTypes.Starvation, null);
@@ -102,16 +103,16 @@ public class Hunger : MonoBehaviour
 
     private void AttemptToEat()
     {
-        float foodNeeded = HungerLevel * _FoodCostToHealOneHungerPoint;
+        float foodNeeded = CurrentHunger * _FoodCostToHealOneHungerPoint;
 
 
         // Draw a random number to see if this character will eat some food this time.
         // The more hungery the character is, the more likely it is that they will try to eat.
         float rand = Random.Range(1, 100);
-        if (rand <= HungerLevel)
+        if (rand <= CurrentHunger)
         {
             // How many points of hunger will be alleviated this time?
-            float hungerPtsToRestore = Mathf.Min(HungerLevel, HungerPointsToHealEachTimeOnEating);
+            float hungerPtsToRestore = Mathf.Min(CurrentHunger, HungerPointsToHealEachTimeOnEating);
 
             // Calculate total food cost.
             float totalFoodCost = _FoodCostToHealOneHungerPoint * hungerPtsToRestore;
@@ -121,7 +122,7 @@ public class Hunger : MonoBehaviour
             {
                 //Debug.Log($"Eating. Healed {hungerPtsToRestore} hunger with {totalFoodCost} food.");
 
-                HungerLevel -= hungerPtsToRestore;
+                CurrentHunger -= hungerPtsToRestore;
 
                 // NOTE: We DO NOT invoke the OnHungerChanged event here, because that is handled
                 // in DoHungerCheck(), which calls this function.
@@ -137,7 +138,7 @@ public class Hunger : MonoBehaviour
     /// <param name="amount">The amount of hunger to alleviate.</param>
     public void AlleviateHunger(float amount)
     {
-        HungerLevel = Mathf.Max(0, HungerLevel - amount);
+        CurrentHunger = Mathf.Max(0, CurrentHunger - amount);
 
         OnHungerChanged?.Invoke(gameObject, -amount);
     }
@@ -156,7 +157,7 @@ public class Hunger : MonoBehaviour
 
 
 
-    public float HungerLevel { get; private set; } = 0;
+    public float CurrentHunger { get; private set; } = 0;
     public float HungerPointsToHealEachTimeOnEating { get { return _HungerPointsToHealEachTimeOnEating; } }
     public float HungerReductionFoodAmount { get { return _FoodCostToHealOneHungerPoint; } }
     public float MaxHunger

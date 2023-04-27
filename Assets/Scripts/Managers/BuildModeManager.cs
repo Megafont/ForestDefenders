@@ -427,16 +427,18 @@ public class BuildModeManager : MonoBehaviour
 
     private void OnCameraTransitionStarted(ICinemachineCamera startCam, ICinemachineCamera endCam)
     {
-        // Disable the build mode construction ghost.
-        _BuildingConstructionGhost.gameObject.SetActive(false);
+        // Show the build mode construction ghost only if we are transitioning to the build mode cam.
+        bool showConstructionGhost = (endCam.VirtualCameraGameObject.name == "CM Build Mode Camera");
+        _BuildingConstructionGhost.gameObject.SetActive(showConstructionGhost);
     }
 
     private void OnCameraTransitionEnded(ICinemachineCamera startCam, ICinemachineCamera endCam)
     {
-        // Show the build mode construction ghost only when the build mode cam is active.
+        // Show the build mode construction ghost only if we are transitioning to the build mode cam.
         bool showConstructionGhost = (endCam.VirtualCameraGameObject.name == "CM Build Mode Camera");
         _BuildingConstructionGhost.gameObject.SetActive(showConstructionGhost);
         
     }
+
 
 }
