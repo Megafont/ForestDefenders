@@ -233,8 +233,17 @@ public class BuildingConstructionGhost : MonoBehaviour
         transform.rotation = q;
 
 
-        if (_IsBridgeCompletelyInsideBridgeZone)
-            ParentBridgeConstructionZone.ApplyConstraints(transform);
+        if (ParentBridgeConstructionZone)
+        {
+            _IsBridgeCompletelyInsideBridgeZone = ParentBridgeConstructionZone.IsCompletelyInsideBridgeZone(gameObject, _BuildingDefinition);
+
+            if (_IsBridgeCompletelyInsideBridgeZone)
+                ParentBridgeConstructionZone.ApplyConstraints(transform);
+        }
+        else
+        {
+            _IsBridgeCompletelyInsideBridgeZone = false;
+        }
     }
 
     /// <summary>
@@ -528,18 +537,19 @@ public class BuildingConstructionGhost : MonoBehaviour
 
 
         _IsBridgeCompletelyInsideBridgeZone = false;
-        
+
 
         // Check if we are completely inside a bridge construction zone while trying to build a bridge.
+        BridgeConstructionZone zone = collider.GetComponent<BridgeConstructionZone>();
         if (BuildModeDefinitions.BuildingIsBridge(_BuildingDefinition) &&
             collider.CompareTag("BridgeConstructionZone") &&
-            Utils_Math.ObjectIsCompletelyInsideBoxCollider((BoxCollider) collider, _MeshFilter.mesh.bounds, transform))
+            (zone &&
+             zone.IsCompletelyInsideBridgeZone(gameObject, _BuildingDefinition)))
         {
             //Debug.Log("Can build bridge!");
 
-            ParentBridgeConstructionZone = collider.GetComponent<BridgeConstructionZone>();
+            ParentBridgeConstructionZone = zone;
             _IsBridgeCompletelyInsideBridgeZone = true;
-
         }
         // Add the collider we hit to the list of obstructions if it is not already in the list.
         else if (!_OverlappingObjects.Contains(collider))
@@ -583,7 +593,10 @@ public class BuildingConstructionGhost : MonoBehaviour
                 else
                     result = true;
             }
-        
+            else
+            {
+                result = true;
+            }
         }
 
         // The building is obstructed since it is overlapping one or more other things.

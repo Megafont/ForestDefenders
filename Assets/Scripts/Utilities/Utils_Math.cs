@@ -138,6 +138,11 @@ public static class Utils_Math
             return target.transform.position;
     }
 
+    public static Vector3 RotatePointAroundPoint(Vector3 point, Vector3 pivot, Quaternion rotation)
+    {
+        return rotation * (point - pivot) + pivot;
+    }
+
     /// <summary>
     /// Determines if an object is completely inside of a box collider.
     /// </summary>

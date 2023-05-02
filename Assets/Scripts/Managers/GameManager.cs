@@ -703,7 +703,7 @@ public class GameManager : MonoBehaviour
         if (timeToNextWave <= 0 ||
             (InputManager.Player.EndBuildPhase && !BuildModeManager.IsBuildModeActive &&                    // Is the player pressing the end build phase button while not in build mode
              !Dialog_Base.AreAnyDialogsOpen() && !GamePhaseTextIsVisible &&                                 // With no dialogs or game phase text currently open
-             !SceneSwitcher.IsFading && !SceneSwitcher.IsTransitioningToScene && !MusicPlayer.IsFading))    // And no transitions taking place?
+             !SceneSwitcher.IsFading && !SceneSwitcher.IsTransitioningToScene && !MusicPlayer.IsFading && !CameraManager.IsTransitioning))    // And no transitions taking place?
         {
 
             if (!DisableMonstersSpawning)

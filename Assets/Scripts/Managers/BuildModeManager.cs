@@ -91,8 +91,8 @@ public class BuildModeManager : MonoBehaviour
         }
             
         
-        // Do build mode checks only when build mode is on.
-        if (IsBuildModeActive && !input)
+        // Do build mode checks only when build mode is on, we are entering build mode, and the camera is not still transitioning.
+        if (IsBuildModeActive && !input && !_CameraManager.IsTransitioning)
             DoBuildModeChecks();
     }
 

@@ -69,10 +69,10 @@ public static class BuildModeDefinitions
         string category = "Bridges";
         _BuildingCategories.Add(category, _Buildings_Other);
 
-        CreateBuildingDefinition(category, "Wood Bridge (10m)", 250, 1, TechDefinitionIDs.Buildings_WoodBridge_10m, _MaterialRecoveryRate, 0, new Vector3(10, 2.5f, 6), false, new MaterialCost[]
+        CreateBuildingDefinition(category, "Wood Bridge (10m)", 250, 1, TechDefinitionIDs.Buildings_WoodBridge_10m, _MaterialRecoveryRate, 0, new Vector3(10, 2.5f, 4.75f), false, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 500), 
               CreateMaterialCost(ResourceTypes.Stone, 500) });
-        CreateBuildingDefinition(category, "Wood Bridge (20m)", 500, 2, TechDefinitionIDs.Buildings_WoodBridge_20m, _MaterialRecoveryRate, 0, new Vector3(20, 5.0f, 6), false, new MaterialCost[]
+        CreateBuildingDefinition(category, "Wood Bridge (20m)", 500, 2, TechDefinitionIDs.Buildings_WoodBridge_20m, _MaterialRecoveryRate, 0, new Vector3(20, 5.0f, 4.75f), false, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 1000),
               CreateMaterialCost(ResourceTypes.Stone, 1000) });
     }
