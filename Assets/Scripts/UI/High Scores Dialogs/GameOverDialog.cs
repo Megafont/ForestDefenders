@@ -47,6 +47,16 @@ public class GameOverDialog : Dialog_Base, IDialog
         _InputField.ActivateInputField();
     }
 
+    protected override void Dialog_OnConfirm()
+    {
+        OnDoneClick();
+    }
+
+    protected override void Dialog_OnCancel()
+    {
+        // Do nothing here, as the player should not be able to cancel out of the game over dialog.
+    }
+
     public void OnDoneClick()
     {
         if (IsRecordScore)

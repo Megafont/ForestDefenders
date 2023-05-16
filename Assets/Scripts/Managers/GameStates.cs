@@ -3,7 +3,7 @@
 public enum GameStates
 {
     Startup,
-    Menu,
+    MainMenu,
     PlayerBuildPhase,
     MonsterAttackPhase,
     GameOver,

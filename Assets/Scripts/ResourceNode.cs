@@ -83,7 +83,7 @@ public class ResourceNode : MonoBehaviour
 
         _FloatingStatBar = bar.GetComponent<FloatingStatusBar>();
         _FloatingStatBar.MaxValue = AmountAvailable;
-        _FloatingStatBar.Label = $"{_ResourceType.ToString()}:";
+        _FloatingStatBar.Label = $"{_ResourceType}:";
         _FloatingStatBar.SetValue(AmountAvailable);
     }
 
@@ -106,7 +106,8 @@ public class ResourceNode : MonoBehaviour
 
         // Gather the resource and add it to the appropriate stockpile.
         AmountAvailable -= gatherAmount;
-        _ResourceManager.AddToStockpile(_ResourceType, gatherAmount);
+        if (gatherAmount > 0)
+            _ResourceManager.AddToStockpile(_ResourceType, gatherAmount);
 
 
         // If the gatherer is the player, add some points to their score.

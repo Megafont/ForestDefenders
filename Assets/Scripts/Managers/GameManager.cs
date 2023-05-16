@@ -68,6 +68,14 @@ public class GameManager : MonoBehaviour
     public MusicParams MusicParams;
     public SoundParams SoundParams;
 
+    [Header("UI")]
+    [Tooltip("When the player closes a dialog, this much time will elapse before player input is re-enabled. This prevents the player character from acting on the last UI button press.")]
+    [Range(0.1f, 1.0f)]
+    public float DialogCloseInputChangeDelay = 0.2f;
+    [Tooltip("This much time in seconds must elapse before the menu will respond to another input event to keep it from moving too fast.")]
+    [Range(0.1f, 1.0f)]
+    public float GamepadMenuSelectionDelay = 0.2f;
+
     [Header("UI Elements")]
     public float GamePhaseTextFadeOutTime = 3.0f;
 
@@ -84,6 +92,7 @@ public class GameManager : MonoBehaviour
     private TMP_Text _UI_GamePhaseText;
     private GameOverDialog _UI_GameOverDialog;
     private LevelUpDialog _UI_LevelUpDialog;
+    private PauseMenuDialog _UI_PauseMenuDialog;
     private RadialMenuDialog _UI_RadialMenuDialog;
     private TechTreeDialog _UI_TechTreeDialog;
 
@@ -193,7 +202,7 @@ public class GameManager : MonoBehaviour
         if (PlayerIsInGame())
             ChangeGameState(GameStates.PlayerBuildPhase);
         else
-            ChangeGameState(GameStates.Menu);
+            ChangeGameState(GameStates.MainMenu);
 
 
         InitCameras();
@@ -203,6 +212,11 @@ public class GameManager : MonoBehaviour
         SceneSwitcher.FadeIn();
 
         StartCoroutine("DoDelayedInitialization");
+    }
+
+    private void OnDestroy()
+    {
+        Instance = null;
     }
 
     bool _PrintedWarning = false;
@@ -217,7 +231,7 @@ public class GameManager : MonoBehaviour
 
         switch (GameState)
         {
-            case GameStates.Menu:
+            case GameStates.MainMenu:
                 GameState_Menu();
                 break;
 
@@ -484,6 +498,10 @@ public class GameManager : MonoBehaviour
         _UI_RadialMenuDialog = GameObject.Find("UI/Radial Menu Dialog").GetComponent<RadialMenuDialog>();
         _UI_TechTreeDialog = GameObject.Find("UI/Tech Tree Dialog").GetComponent<TechTreeDialog>();
 
+        GameObject obj = GameObject.Find("UI/Pause Menu Dialog");
+        if (obj)
+            _UI_PauseMenuDialog = obj.GetComponent<PauseMenuDialog>();
+
         _UI_TopBar = GameObject.Find("UI/HUD/Top Bar").GetComponent<Image>();
         _UI_TimeToNextWaveText = GameObject.Find("UI/HUD/Top Bar/Time To Next Wave Text (TMP)").GetComponent<TMP_Text>();
         _UI_WaveNumberText = GameObject.Find("UI/HUD/Top Bar/Wave Number Text (TMP)").GetComponent<TMP_Text>();
@@ -515,8 +533,7 @@ public class GameManager : MonoBehaviour
         _BridgeConstructionZones = new List<BridgeConstructionZone>();
         foreach (UnityObject uObj in objs)
         {
-            BridgeConstructionZone bZone = uObj.GameObject().GetComponent<BridgeConstructionZone>();
-            if (bZone != null)
+            if (uObj.GameObject().TryGetComponent(out BridgeConstructionZone bZone))
                 _BridgeConstructionZones.Add(bZone);
         }
 
@@ -571,16 +588,25 @@ public class GameManager : MonoBehaviour
 
     public void TogglePauseGameState()
     {
+        if (GameState == GameStates.Startup || 
+            GameState == GameStates.GameOver || 
+            GameState == GameStates.MainMenu)
+        {
+            GameIsPaused = false;
+            return;
+        }
+
+
         if (!GameIsPaused)
         {
             GameIsPaused = true;
             Time.timeScale = 0.0f;
 
-            ShowGamePhaseText("Game Paused!", Color.cyan);
+            _UI_PauseMenuDialog.OpenDialog();
         }
         else
         {
-            _UI_GamePhaseText.enabled = false;
+            _UI_PauseMenuDialog.CloseDialog();
 
             Time.timeScale = 1.0f;
             GameIsPaused = false;
@@ -603,7 +629,7 @@ public class GameManager : MonoBehaviour
 
         switch (GameState)
         {
-            case GameStates.Menu:
+            case GameStates.MainMenu:
                 MusicPlayer.FadeToTrack(MusicParams.PlayerBuildPhaseMusic, false, MusicParams.PlayerBuildPhaseMusicVolume);
 
                 EnableHUD(false);

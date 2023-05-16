@@ -293,8 +293,7 @@ public class ResourceManager : MonoBehaviour
         foreach (ResourceNode node in resourceNodes)
         {
             // If this resource node is a building, skip it.
-            IBuilding building = node.GetComponent<IBuilding>();
-            if (building != null /*&& building.gameObject.tag == "Building Prefab"*/)
+            if (node.TryGetComponent(out IBuilding building /*&& building.gameObject.tag == "Building Prefab"*/))
                 continue;
 
 

@@ -39,7 +39,7 @@ public class NavMeshManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //StartCoroutine("DoDelayedNavMeshGeneration");
+        StartCoroutine("DoDelayedNavMeshGeneration");
     }
 
 

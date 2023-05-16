@@ -82,6 +82,16 @@ public class TechTreeDialog : Dialog_Base, IDialog
         }    
     }
 
+    protected override void Dialog_OnConfirm()
+    {
+        CloseDialog();
+    }
+
+    protected override void Dialog_OnCancel()
+    {
+        CloseDialog();
+    }
+
     public override void OpenDialog(bool closeOtherOpenDialogs = false)
     {
         UpdateXPCountText();

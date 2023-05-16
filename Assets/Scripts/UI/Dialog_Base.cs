@@ -44,48 +44,43 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
         Dialog_OnEnable();
     }
 
+    void OnDestroy()
+    {
+        Dialog_OnDestroy();
+
+        OpenDialogs.Clear();
+    }
+
     // Update is called once per frame
     void Update()
     {
         Dialog_OnUpdate();
+
+
+        if (_InputManager_UI != null)
+        {
+            if (_InputManager_UI.Confirm)
+                Dialog_OnConfirm();
+            else if (_InputManager_UI.Cancel)
+                Dialog_OnCancel();
+        }
+
     }
 
     void OnGUI()
     {
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-    }
-
-    void OnDestroy()
-    { 
-        Dialog_OnDestroy(); 
-    }
-
-
-    protected virtual void Dialog_OnAwake()
-    {
 
     }
 
-    protected virtual void Dialog_OnStart()
-    {
 
-    }
 
-    protected virtual void Dialog_OnEnable()
-    {
-
-    }
-
-    protected virtual void Dialog_OnUpdate()
-    {
-
-    }
-
-    protected virtual void Dialog_OnDestroy()
-    {
-
-    }
+    protected virtual void Dialog_OnAwake() { }
+    protected virtual void Dialog_OnStart() { }
+    protected virtual void Dialog_OnEnable() { }
+    protected virtual void Dialog_OnUpdate() { }
+    protected virtual void Dialog_OnDestroy() { }
+    protected virtual void Dialog_OnConfirm() { }
+    protected virtual void Dialog_OnCancel() { }
 
 
 
@@ -95,16 +90,24 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
             Time.timeScale = 1.0f;
 
 
-        Cursor.visible = false;
-
-        SwitchInputMaps(false);
-
-        gameObject.SetActive(false);
         OpenDialogs.Remove(this);
+
+
+        if (OpenDialogs.Count < 1)
+            Cursor.visible = false;
+
+
+        StartCoroutine(SwitchInputMaps(false));
+
+
     }
 
     public virtual void OpenDialog(bool closeOtherOpenDialogs = false)
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+
         if (_InputManager == null)
         {
             Debug.LogWarning($"The \"{this.GetType()}\" could not open, because the InputManager is not ready yet!");
@@ -137,24 +140,24 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
             Time.timeScale = 0.0f;
 
 
-        SwitchInputMaps(true);
-
         OpenDialogs.Add(this);
         gameObject.SetActive(true);
+
+        StartCoroutine(SwitchInputMaps(true));
     }
 
     public void CloseAllOpenDialogs()
     {
-        SwitchInputMaps(false);
+        StartCoroutine(SwitchInputMaps(false));
 
         CloseAllDialogs();
     }
 
-    protected virtual void SwitchInputMaps(bool dialogIsOpening)
-    {
+    protected virtual IEnumerator SwitchInputMaps(bool dialogIsOpening)
+    {        
         if (dialogIsOpening)
         {
-            //_GameManager.InputManager.SwitchToActionMap((int)InputActionMapIDs.UI);
+            //_GameManager.InputManager.SwitchToActionMap((int)InputActionMapIDs.UI)
 
             // Switch to the UI input map.
             _PreviouslyActiveInputMap = _InputManager.GetPlayerInputComponent().currentActionMap;
@@ -171,7 +174,20 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
             // Switch to the previously active input map.
             _InputManager.GetPlayerInputComponent().actions.FindActionMap(InputManager.ACTION_MAP_UI).Disable();
 
-            _PreviouslyActiveInputMap?.Enable();
+            // Wait for a short delay so the player character can't react to the last UI button press.
+            // The UI confirm button and player attack buttons are the same one, so this prevents that issue.
+            yield return new WaitForSeconds(_GameManager.DialogCloseInputChangeDelay);
+
+
+            // This check is here, because otherwise the building selection menu will auto close a fraction of a second after the second menu opens.
+            // So this check catches that scenario and aborts the rest of this code since setting the GameObject to be inactive hides the window.
+            if (!IsOpen())
+            {
+                _PreviouslyActiveInputMap?.Enable();
+
+                // Lastly, disable the dialog's GameObject.
+                gameObject.SetActive(false);
+            }
         }
 
     }

@@ -128,8 +128,9 @@ public class FloatingStatusBar : MonoBehaviour
         {
             _VerticalPosOffset = value;
 
-            Vector3 curPos = gameObject.transform.position;
-            gameObject.transform.position = new Vector3(transform.parent.position.x, _VerticalPosOffset, transform.parent.position.z);
+            gameObject.transform.position = new Vector3(transform.parent.position.x, 
+                                                        transform.parent.position.y + _VerticalPosOffset,
+                                                        transform.parent.position.z);
         }
     }
 

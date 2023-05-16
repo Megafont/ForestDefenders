@@ -241,7 +241,7 @@ public static class BuildModeDefinitions
     {
         BuildingDefinition def = GetBuildingDefinition(category, buildingName);
 
-        return def.Prefab.gameObject;
+        return def.Prefab;
     }
 
     public static List<MaterialCost> GetList_BuildingConstructionCosts(string category, string buildingName)

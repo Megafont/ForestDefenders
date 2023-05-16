@@ -3,18 +3,130 @@ using System.Collections.Generic;
 
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-
-public class RadialMenuItem : MonoBehaviour
+public class RadialMenuItem : MonoBehaviour, IPointerEnterHandler
 {
-    public static Color TextColor = Color.gray;
-    public static Color TextHighlightColor = Color.white;
     public static float DefaultTextSize;
 
 
     private string _Name;
 
-    private TMP_Text _UI_Object;
+    private TMP_Text _UI_TMPComponent;
+    private Button _UI_ButtonComponent;
+
+
+
+    public delegate void RadialMenuItem_EventHandler(GameObject sender);
+
+    public event RadialMenuItem_EventHandler OnMouseClick;
+    public event RadialMenuItem_EventHandler OnMouseEnter;
+
+
+
+
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        _UI_TMPComponent = GetComponent<TMP_Text>();
+        _UI_ButtonComponent = GetComponent<Button>();
+
+        DefaultTextSize = _UI_TMPComponent.fontSize;
+
+        _UI_TMPComponent.text = _Name;
+
+        if (!IsDefaultMenuItem)
+            Unhighlight();
+        else
+            Highlight();
+
+        IsInited = true;
+    }
+
+    public void SetText(string text)
+    {
+        if (_UI_TMPComponent == null)
+            return;
+
+        _UI_TMPComponent.text = text;
+
+        // Set the game object name.
+        name = $"Radial Menu Item \"{_Name}\" (TMP)";
+    }
+
+    public void Show(bool show = true)
+    {
+        if (_UI_TMPComponent == null)
+            return;
+
+        gameObject.SetActive(show);
+    }
+
+    public void Highlight()
+    {
+        if (_UI_TMPComponent == null)
+            return;
+
+
+        _UI_TMPComponent.faceColor = _UI_ButtonComponent.colors.pressedColor;
+        _UI_TMPComponent.fontSize = DefaultTextSize + 4;
+    }
+
+    public void Unhighlight()
+    {
+        if (_UI_TMPComponent == null)
+            return;
+
+
+        _UI_TMPComponent.fontSize = DefaultTextSize;
+        _UI_TMPComponent.faceColor = _UI_ButtonComponent.colors.normalColor;
+    }
+
+
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        OnMouseEnter?.Invoke(gameObject);
+    }
+
+    public void OnButtonClick()
+    {
+        OnMouseClick?.Invoke(gameObject);
+    }
+
+
+
+
+    private void SetNormalColor(Color32 newColor)
+    {
+        ColorBlock cBlock = _UI_ButtonComponent.colors;
+        cBlock.normalColor = newColor;
+        _UI_ButtonComponent.colors = cBlock;
+
+
+        if (_UI_TMPComponent == null)
+            return;
+
+
+        if (!IsHighlighted)
+            _UI_TMPComponent.color = newColor;
+    }
+
+    private void SetHighlightColor(Color32 newColor)
+    {
+        if (_UI_TMPComponent == null)
+            return;
+
+
+        ColorBlock cBlock = _UI_ButtonComponent.colors;
+        cBlock.pressedColor = newColor;
+        _UI_ButtonComponent.colors = cBlock;
+
+        if (IsHighlighted)
+            _UI_TMPComponent.color = newColor;
+    }
 
 
 
@@ -24,10 +136,15 @@ public class RadialMenuItem : MonoBehaviour
     // The Name property exists for the same reason, but for setting the menu item's text.
     public bool IsDefaultMenuItem { get; set; }
 
+    public bool IsHighlighted 
+    { 
+        get { return _UI_TMPComponent.color == _UI_ButtonComponent.colors.pressedColor; } 
+    }
+
     public bool IsInited { get; private set; }
 
-    public string Name 
-    { 
+    public string Name
+    {
         get
         {
             return _Name;
@@ -39,90 +156,22 @@ public class RadialMenuItem : MonoBehaviour
         }
     }
 
-
-
-
-    // Start is called before the first frame update
-    void Start()
+    public Color TextNormalColor
     {
-        _UI_Object = GetComponent<TMP_Text>();
-        DefaultTextSize = _UI_Object.fontSize;
-
-        _UI_Object.text = _Name;
-
-        if (!IsDefaultMenuItem)
-            Unhighlight();
-        else
-            Highlight();
-
-        IsInited = true;
+        get { return _UI_ButtonComponent.colors.normalColor; }
+        set
+        {
+            SetNormalColor(value);
+        }
     }
 
-
-    public void SetColor(Color32 newColor)
+    public Color TextHighlightColor
     {
-        TextColor = newColor;
-
-
-        if (_UI_Object == null)
-            return;
-
-        if (_UI_Object.color != TextHighlightColor)
-            _UI_Object.color = newColor;
+        get { return _UI_ButtonComponent.colors.pressedColor; }
+        set
+        {
+            SetNormalColor(value);
+        }
     }
-
-    public void SetHighlightColor(Color32 newColor)
-    {
-        bool isHighlighted = _UI_Object.color == TextHighlightColor;
-        
-        TextHighlightColor = newColor;
-
-
-        if (_UI_Object == null)
-            return;
-
-        if (isHighlighted)
-            _UI_Object.color = newColor;
-    }
-
-    public void SetText(string text)
-    {
-        if (_UI_Object == null)
-            return;
-
-        _UI_Object.text = text;
-
-        // Set the game object name.
-        name = $"Radial Menu Item \"{_Name}\" (TMP)";
-    }
-
-    public void Show(bool show = true)
-    {
-        if (_UI_Object == null)
-            return;
-
-        gameObject.SetActive(show);
-    }
-
-    public void Highlight()
-    {
-        if (_UI_Object == null)
-            return;
-
-
-        _UI_Object.faceColor = TextHighlightColor;
-        _UI_Object.fontSize = DefaultTextSize + 4;
-    }
-
-    public void Unhighlight()
-    {
-        if (_UI_Object == null)
-            return;
-
-
-        _UI_Object.fontSize = DefaultTextSize;
-        _UI_Object.faceColor = TextColor;
-    }
-
 
 }

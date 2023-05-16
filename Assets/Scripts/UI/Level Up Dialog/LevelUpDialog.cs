@@ -68,7 +68,7 @@ public class LevelUpDialog : Dialog_Base
 
 
         foreach (Transform t in _MenuItems)
-            t.GetComponent<LevelUpMenuItem>().OnMouseUp += OnButtonClicked;
+            t.GetComponent<LevelUpMenuItem>().OnMouseEnter += OnMouseEnterMenuItem;
 
     }
 
@@ -126,21 +126,24 @@ public class LevelUpDialog : Dialog_Base
             }
 
 
-
-            if (_InputManager_UI.Confirm)
-            {
-                Button pressedBtn = _MenuItems.GetChild(_SelectedMenuItemIndex).GetComponent<Button>();
-
-                PointerEventData eventData = new PointerEventData(EventSystem.current);
-                pressedBtn.OnPointerClick(eventData);
-
-                _LastGamepadSelectionChange = Time.time;
-            }
-
         }
 
     }
 
+    protected override void Dialog_OnConfirm()
+    {
+        Button pressedBtn = _MenuItems.GetChild(_SelectedMenuItemIndex).GetComponent<Button>();
+
+        PointerEventData eventData = new PointerEventData(EventSystem.current);
+        pressedBtn.OnPointerClick(eventData);
+
+        _LastGamepadSelectionChange = Time.time;
+    }
+
+    protected override void Dialog_OnCancel()
+    {
+        // Do nothing here, as the player should not be able to cancel out of this dialog.
+    }
 
     public override void OpenDialog(bool closeOtherOpenDialogs = true)
     {
@@ -247,9 +250,15 @@ public class LevelUpDialog : Dialog_Base
 
 
 
-    public void OnButtonClicked(GameObject sender)
+    public void OnMouseEnterMenuItem(GameObject sender)
     {
+        if (!sender)
+            return;
+
+
         _SelectedMenuItemIndex = GetIndexOfMenuItem(sender.transform);
+
+        SelectMenuItem();
     }
 
 

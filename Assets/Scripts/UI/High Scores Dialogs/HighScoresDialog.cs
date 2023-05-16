@@ -159,4 +159,14 @@ public class HighScoresDialog : Dialog_Base, IDialog
         _MainMenuParent.SetActive(true);
     }
 
+    protected override void Dialog_OnConfirm()
+    {
+        OnDoneClick();
+    }
+
+    protected override void Dialog_OnCancel() 
+    {
+        OnDoneClick();
+    }
+
 }

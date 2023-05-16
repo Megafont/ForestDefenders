@@ -5,11 +5,11 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 
-public class LevelUpMenuItem : MonoBehaviour, IPointerUpHandler
+public class LevelUpMenuItem : MonoBehaviour, IPointerEnterHandler
 {
     public delegate void MainMenuItem_EventHandler(GameObject sender);
 
-    public event MainMenuItem_EventHandler OnMouseUp;
+    public event MainMenuItem_EventHandler OnMouseEnter;
 
 
 
@@ -26,9 +26,10 @@ public class LevelUpMenuItem : MonoBehaviour, IPointerUpHandler
     }
     
 
-    public void OnPointerUp(PointerEventData eventData)
+
+    public void OnPointerEnter(PointerEventData eventData)
     {
-        OnMouseUp?.Invoke(gameObject);
+        OnMouseEnter?.Invoke(gameObject);
     }
     
 

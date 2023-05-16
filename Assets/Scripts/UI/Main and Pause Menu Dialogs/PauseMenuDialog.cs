@@ -7,22 +7,15 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 
-public class MainMenuDialog : Dialog_Base, IDialog
+public class PauseMenuDialog : Dialog_Base, IDialog
 {
-    [Tooltip("This much time in seconds must elapse before the menu will respond to another input event to keep it from moving too fast.")]
-    [SerializeField] private float _GamepadMenuSelectionDelay = 0.1f;
-
-    [SerializeField] GameObject _TitleDisplayCanvas;
-    [SerializeField] HighScoresDialog _HighScoresDialog;
-
-
     private SceneSwitcher _SceneSwitcher;
     private Transform _MenuItems;
 
 
-    private float _LastGamepadSelectionChange;
+    private float _LastGamepadSelectionChangeTime;
     private int _SelectedMenuItemIndex;
-
+    
 
 
     protected override void Dialog_OnAwake()
@@ -35,20 +28,17 @@ public class MainMenuDialog : Dialog_Base, IDialog
         _SceneSwitcher = _GameManager.SceneSwitcher;
 
         foreach (Transform t in _MenuItems)
-            t.GetComponent<MainMenuItem>().OnMouseUp += OnButtonClicked;
-
-        OpenDialog();
+            t.GetComponent<MenuDialogsMenuItem>().OnMouseUp += OnButtonClicked;
     }
 
     protected override void Dialog_OnEnable()
     {
-        if (_TitleDisplayCanvas)
-            _TitleDisplayCanvas.SetActive(true);
     }
 
     protected override void Dialog_OnUpdate()
-    {        
-        if (Time.time - _LastGamepadSelectionChange >= _GamepadMenuSelectionDelay)
+    {
+        /// NOTE: We have to use Time.unscaledTime here since the time scale is set to 0 while the game is paused.
+        if (Time.unscaledTime - _LastGamepadSelectionChangeTime >= _GameManager.GamepadMenuSelectionDelay)
         {
             // If the mouse has caused the selection to be lost by clicking not on a button, then reselect the currently selected button according to this class's stored index.
             if (EventSystem.current.currentSelectedGameObject == null)
@@ -74,7 +64,7 @@ public class MainMenuDialog : Dialog_Base, IDialog
                         break;
                 }
 
-                _LastGamepadSelectionChange = Time.time;
+                _LastGamepadSelectionChangeTime = Time.unscaledTime;
             }
             else if (y > 0.5f) // User is pressing up
             {
@@ -94,35 +84,30 @@ public class MainMenuDialog : Dialog_Base, IDialog
 
                 }
 
-                _LastGamepadSelectionChange = Time.time;
+                _LastGamepadSelectionChangeTime = Time.unscaledTime;
             }
 
-
-
-            if (_InputManager_UI.Confirm && !_SceneSwitcher.IsTransitioningToScene)
-            {
-                Button pressedBtn = _MenuItems.GetChild(_SelectedMenuItemIndex).GetComponent<Button>();
-
-                PointerEventData eventData = new PointerEventData(EventSystem.current);
-                pressedBtn.OnPointerClick(eventData);
-
-                _LastGamepadSelectionChange = Time.time;
-            }
 
         }
 
     }
 
-
-    public override void OpenDialog(bool closeOtherOpenDialogs = true)
+    protected override void Dialog_OnConfirm()
     {
-        if (_TitleDisplayCanvas)
-            _TitleDisplayCanvas.SetActive(true);
+        if (!_SceneSwitcher.IsTransitioningToScene)
+        {
+            Button pressedBtn = _MenuItems.GetChild(_SelectedMenuItemIndex).GetComponent<Button>();
 
-        // Select the first menu item.
-        EventSystem.current.SetSelectedGameObject(_MenuItems.GetChild(0).gameObject);
+            PointerEventData eventData = new PointerEventData(EventSystem.current);
+            pressedBtn.OnPointerClick(eventData);
 
-        base.OpenDialog(closeOtherOpenDialogs);
+            _LastGamepadSelectionChangeTime = Time.unscaledTime;
+        }
+    }
+
+    protected override void Dialog_OnCancel()
+    {
+        OnResumeGame();
     }
 
     public void OnButtonClicked(GameObject sender)
@@ -130,23 +115,30 @@ public class MainMenuDialog : Dialog_Base, IDialog
         _SelectedMenuItemIndex = GetIndexOfMenuItem(sender.transform);
     }
     
-    public void OnStartGame()
+    public void OnResumeGame()
     {
-        Debug.LogWarning("Main menu button \"Start\" goes to Test scene. Don't forget to change it to the actual in-game scene!");
-        _SceneSwitcher.FadeToScene("Level");
+        _GameManager.TogglePauseGameState();
     }
 
-    public void OnHighScores()
+    public void OnReturnToMainMenu()
     {
-        _HighScoresDialog.OpenDialog();
-
-        _TitleDisplayCanvas.SetActive(false);
-        CloseDialog();
+        // We have to reset the time scale since it is set to 0 while the game is paused. Otherwise the transition between scenes won't work.
+        Time.timeScale = 1.0f;
+        _SceneSwitcher.FadeToScene("Main Menu");
     }
 
     public void OnExitGame()
     {
         Application.Quit();
+    }
+
+
+    public override void OpenDialog(bool closeOtherOpenDialogs = true)
+    {
+        // Select the first menu item.
+        EventSystem.current.SetSelectedGameObject(_MenuItems.GetChild(0).gameObject);
+
+        base.OpenDialog(closeOtherOpenDialogs);
     }
 
     private int GetIndexOfMenuItem(Transform child)

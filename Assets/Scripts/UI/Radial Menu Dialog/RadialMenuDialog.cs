@@ -55,8 +55,7 @@ public class RadialMenuDialog : Dialog_Base, IDialog
         _MenuItems = new List<RadialMenuItem>();
 
         // Create one menu item so the list isn't empty (to prevent errors).
-        GameObject newItem = Instantiate(_RadialMenuItemPrefab, Vector3.zero, Quaternion.identity, _RadialMenuItemsParent.transform);
-        _MenuItems.Add(newItem.GetComponent<RadialMenuItem>());
+        CreateMenuItem();
 
     }
 
@@ -92,7 +91,7 @@ public class RadialMenuDialog : Dialog_Base, IDialog
         InitMenuItemsVisualElements(names, defaultItemIndex);
 
         _RadialMenuPanel.SetActive(true);
-        SelectedItemIndex = 0;
+        SelectedMenuItemIndex = 0;
 
         _IsInitializing = false;
     }
@@ -124,13 +123,13 @@ public class RadialMenuDialog : Dialog_Base, IDialog
 
         while (true)
         {
-            DoUIChecks();
+            RefreshUI();
 
             //Debug.Log($"Confirm: {MenuConfirmed}    Cancel: {MenuCancelled}");
             if (MenuConfirmed || MenuCancelled)
                 break;
 
-            yield return null;
+            yield return null; // Wait one frame.
         }
 
 
@@ -149,29 +148,51 @@ public class RadialMenuDialog : Dialog_Base, IDialog
         CloseDialog();
     }
 
-    private void DoUIChecks()
+    private void RefreshUI()
     {
         if (_IsInitializing)
             return;
 
 
-        GetSelectedItemIndex();
+        GetSelectedItemIndexFromGamepadInput();
+    }
 
-        if (_InputManager.UI.Confirm && !MenuCancelled)
+
+    public void OnMouseClickItem(GameObject sender)
+    {
+        Dialog_OnConfirm();
+    }
+
+    public void OnMouseEnterMenuItem(GameObject sender)
+    {
+        if (!sender)
+            return;
+
+
+        int index = _MenuItems.IndexOf(sender.GetComponent<RadialMenuItem>());
+        SelectItem(index);
+    }
+
+    protected override void Dialog_OnConfirm()
+    {
+        if (!MenuCancelled)
         {
-            if (SelectedItemName != "Cancel")
+            if (SelectedMenuItemName != "Cancel")
                 MenuConfirmed = true;
             else
                 MenuCancelled = true;
         }
-        else if (_InputManager.UI.Cancel && !MenuConfirmed)
+    }
+
+    protected override void Dialog_OnCancel()
+    {
+        if (!MenuConfirmed)
         {
             MenuCancelled = true;
         }
-
     }
 
-    private void GetSelectedItemIndex()
+    private void GetSelectedItemIndexFromGamepadInput()
     {
         Vector2 dir = _InputManager.UI.Navigate;
         dir.y *= -1;
@@ -204,20 +225,28 @@ public class RadialMenuDialog : Dialog_Base, IDialog
         */
 
 
-        if (index != SelectedItemIndex)
-        {
-            _PrevSelectedItemIndex = SelectedItemIndex;
-            SelectedItemIndex = index;
+        if (index != SelectedMenuItemIndex)
+            SelectItem(index);
+    }
 
-            UpdateSelection();
-        }
+    private void SelectItem(int index)
+    {
+        // If the menu item is already selected, then return so we don't set _PrevSelectedItemIndex below.
+        if (index == SelectedMenuItemIndex)
+            return;
 
+
+        _PrevSelectedItemIndex = SelectedMenuItemIndex;
+
+        SelectedMenuItemIndex = index;
+
+        UpdateSelection();
     }
 
     private void UpdateSelection()
-    {
-        if (SelectedItemIndex >= 0)
-            _MenuItems[SelectedItemIndex].Highlight();
+    {        
+        if (SelectedMenuItemIndex >= 0)
+            _MenuItems[SelectedMenuItemIndex].Highlight();
 
         if (_PrevSelectedItemIndex >= 0)
             _MenuItems[_PrevSelectedItemIndex].Unhighlight();
@@ -324,7 +353,14 @@ public class RadialMenuDialog : Dialog_Base, IDialog
                                              Quaternion.identity,
                                              _RadialMenuItemsParent.transform);
 
-        _MenuItems.Add(newMenuItem.GetComponent<RadialMenuItem>());
+
+        RadialMenuItem item = newMenuItem.GetComponent<RadialMenuItem>();
+
+        item.OnMouseClick += OnMouseClickItem;
+        item.OnMouseEnter += OnMouseEnterMenuItem;
+        
+        _MenuItems.Add(item);
+
     }
 
 
@@ -334,28 +370,28 @@ public class RadialMenuDialog : Dialog_Base, IDialog
 
     public Color32 MenuItemTextColor
     {
-        get { return RadialMenuItem.TextColor; }
+        get { return _MenuItems[0].TextNormalColor; }
         set
         {
-            RadialMenuItem.TextColor = value;
-
             foreach (RadialMenuItem item in _MenuItems)
-                item.SetColor(value);
+                item.TextNormalColor = value;
         }
     }
 
     public Color32 MenuItemHighlightTextColor
     {
-        get { return RadialMenuItem.TextHighlightColor; }
+        get { return _MenuItems[0].TextHighlightColor; }
         set
         {
-            RadialMenuItem.TextHighlightColor = value;
-            _MenuItems[SelectedItemIndex].SetHighlightColor(value);
+            foreach (RadialMenuItem item in _MenuItems)
+                item.TextHighlightColor = value;
+
+            _MenuItems[SelectedMenuItemIndex].TextHighlightColor = value;
         }
     }
     
-    public int SelectedItemIndex { get; private set; }
-    public string SelectedItemName { get { return _MenuItems[SelectedItemIndex].Name; } }
+    public int SelectedMenuItemIndex { get; private set; }
+    public string SelectedMenuItemName { get { return _MenuItems[SelectedMenuItemIndex].Name; } }
 
     public string BottomBarText
     {

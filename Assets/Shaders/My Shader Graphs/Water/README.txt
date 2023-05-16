@@ -1,4 +1,4 @@
-I created this water shader by following this YouTube tutorial by Binary Lunar:
+I created this URP water shader graph by following this YouTube tutorial by Binary Lunar:
 
 3D Stylized Water with Refraction and Foam Shader Graph - Unity Tutorial
 https://www.youtube.com/watch?v=MHdDUqJHJxM

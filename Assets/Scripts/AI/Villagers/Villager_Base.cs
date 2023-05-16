@@ -272,16 +272,14 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
             // If the current target is a resource node, then remove this villager from it's list of villagers currently mining it.
             if (_Target)
             {
-                ResourceNode oldNode = _Target.GetComponent<ResourceNode>();
-                if (oldNode != null)
+                if (_Target.TryGetComponent(out ResourceNode oldNode))
                     oldNode.RemoveVillagerFromMiningList(this);
             }
 
             // If the new target is a resource node, then add this villager to it's list of villagers mining it.
             if (newTarget)
             {
-                ResourceNode newNode = newTarget.GetComponent<ResourceNode>();
-                if (newNode != null)
+                if (newTarget.TryGetComponent(out ResourceNode newNode))
                     newNode.AddVillagerToMiningList(this);
             }
         }
@@ -304,7 +302,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
             float newTargetDistance = Vector3.Distance(newTarget.transform.position, transform.position);
 
             // If the new target and the current target are both monsters, then only allow changing targets if the new one is closer.
-            return newTargetDistance < currentTargetDistance ? true : false;
+            return newTargetDistance < currentTargetDistance;
         }
         else
         {

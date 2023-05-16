@@ -208,7 +208,7 @@ public class BuildModeManager : MonoBehaviour
                 yield return null;
 
 
-            _TempCategory = _RadialMenu.SelectedItemName;
+            _TempCategory = _RadialMenu.SelectedMenuItemName;
 
 
             if (_RadialMenu.MenuCancelled)
@@ -246,7 +246,7 @@ public class BuildModeManager : MonoBehaviour
                 yield return null;
 
 
-            building = _RadialMenu.SelectedItemName;
+            building = _RadialMenu.SelectedMenuItemName;
 
             _RadialMenu.OnSelectionChanged -= OnRadialMenuSelectionChangedHandler;
 
@@ -287,7 +287,7 @@ public class BuildModeManager : MonoBehaviour
     private void OnRadialMenuSelectionChangedHandler(GameObject sender)
     {
         // The user selected "Cancel" rather than a building, so return (otherwise we'd try to find a building called "Cancel").
-        if (_RadialMenu.SelectedItemName == "Cancel" || _RadialMenu.SelectedItemName == "Unused")
+        if (_RadialMenu.SelectedMenuItemName == "Cancel" || _RadialMenu.SelectedMenuItemName == "Unused")
         {
             _RadialMenu.BottomBarText = "";
             return;
@@ -296,7 +296,7 @@ public class BuildModeManager : MonoBehaviour
 
         StringBuilder b = new StringBuilder("Construction Cost:  ");
 
-        List<MaterialCost> constructionCosts = BuildModeDefinitions.GetList_BuildingConstructionCosts(_TempCategory, _RadialMenu.SelectedItemName);
+        List<MaterialCost> constructionCosts = BuildModeDefinitions.GetList_BuildingConstructionCosts(_TempCategory, _RadialMenu.SelectedMenuItemName);
 
         for (int i = 0; i < constructionCosts.Count; i++)
         {
@@ -330,7 +330,7 @@ public class BuildModeManager : MonoBehaviour
             _SelectedBuildingName = buildingName;
             _SelectedBuildingCategory = category;
 
-            _SelectedBuildingPrefab = buildingDef.Prefab.gameObject;
+            _SelectedBuildingPrefab = buildingDef.Prefab;
             
             
             if (buildingDef == null)

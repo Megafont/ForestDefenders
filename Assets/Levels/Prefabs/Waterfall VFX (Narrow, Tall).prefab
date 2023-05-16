@@ -32,7 +32,7 @@ Transform:
   - {fileID: 2984447651674231962}
   - {fileID: 3383951072245569556}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &7956390277852271416
 PrefabInstance:
@@ -186,6 +186,11 @@ PrefabInstance:
       propertyPath: InitialModule.startLifetime.scalar
       value: 2.8
       objectReference: {fileID: 0}
+    - target: {fileID: 3916932307297794423, guid: 3ea2e97ecd341a442929abf12269b687,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 29d5e051148d617469a5139f608df282, type: 2}
     - target: {fileID: 3916932307928609177, guid: 3ea2e97ecd341a442929abf12269b687,
         type: 3}
       propertyPath: InitialModule.maxNumParticles
@@ -257,7 +262,8 @@ PrefabInstance:
       value: Waterfall Top Particles
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 3916932307928609180, guid: 3ea2e97ecd341a442929abf12269b687, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3ea2e97ecd341a442929abf12269b687, type: 3}

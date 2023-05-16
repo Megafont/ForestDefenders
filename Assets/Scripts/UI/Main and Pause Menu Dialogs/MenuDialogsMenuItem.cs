@@ -6,11 +6,11 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 
-public class MainMenuItem : MonoBehaviour, IPointerUpHandler
+public class MenuDialogsMenuItem : MonoBehaviour, IPointerUpHandler
 {
-    public delegate void MainMenuItem_EventHandler(GameObject sender);
+    public delegate void MenuDialogItem_EventHandler(GameObject sender);
 
-    public event MainMenuItem_EventHandler OnMouseUp;
+    public event MenuDialogItem_EventHandler OnMouseUp;
 
 
 

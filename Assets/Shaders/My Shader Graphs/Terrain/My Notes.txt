@@ -1,0 +1,54 @@
+My terrain shaders are all URP shader graphs. By default, the triplanar projections make the
+textures tile once every Unity unit (1 meter). The scale property scales this value.
+So a scale of 2 doubles how many times the texture tiles per unit.
+
+NOTE: If you see weird results from the shaders discussed below, check that the normal maps are
+      set up properly (and the AO and metallic maps). The normal maps will be the ones most likely
+      to make it look weird, though (as in the texture looks dark and discolored). You can use the
+      shaders without providing any normal maps by setting Normal Maps Strength to 0. You can also
+      use them without providing AO or metallic maps.
+
+The splat map shader was created with a little help from this response to someone's post here:
+https://blender.stackexchange.com/questions/49705/texture-splatting-mix-multiple-4-textures
+
+It uses a shared sampler state for everything, as otherwise I got an error that
+"the maximum ps_5_0 sampler register index (16) was exceeded for D3D 11".
+This shader uses two sub shaders I also made to clean things up a bit:
+Splat Map Blend
+Splat Map Normal Map Blend
+
+
+I made the triplanar shaders by following this tutorial:
+https://www.youtube.com/watch?v=yuiQo54Baos&t=376s
+
+This shader also uses the fix for the "ps_5_0 maximum sampler register index (16) was exceeded for D3D 11"
+error mentioned above for the splat map shader.
+
+The 2 materials version just passes the side texture into both the side and front projection parts
+of the shader, and the "(2 Materials) With Side UV Projection" one is very similar. It uses the
+triplanar projection for the top texture, but the side texture is projected using the model's own
+UV coordinates rather than world coordinates like the triplanar projection does. As a result, the
+tiling scale property (renamed to "Top Texture Tiling Scale") is no longer a Vector3, since it only
+controls the top texture. There is also a Top Texture Amount property, which controls how much of
+the top texture is blended into upward pointing faces of the model. Both this and the 2 materials
+triplanar shader are useful for things like adding snow onto a mesh. The former just lets you have
+the side texture projected via the model's own UV map. So basically, the model can have its own
+texture map like normal (the side texture in the shader), and it adds snow onto the model's upward
+pointing faces.
+
+NOTE: The test splat map texture won't work properly on a sphere, as it wasn't painted on a sphere
+      in Blender. I just made the texture in gimp as a quick test. All of the splat map shader
+      variants (and the "(2 Materials) With Side UV Projection" shader require the model to have
+      a proper UV map. If not, you may obviously get strange results.)
+
+The "(3 Materials) With Splat Map" shader is a variant of the 3 materials shader that uses
+a splat map to control what texture is used for the ground at any point on the mesh.
+
+I also quickly finished off by creating a "(2 Materials) With Splat Map" shader as well by
+duplicating the original 2 materials one, and adding in a few more nodes.
+
+NOTE: For both the 2 and 3 materials shaders (with and without splat maps), the scale property was
+      originally a single Vector3. I had to change it to three separate Vector2 properties so each
+      of the three triplanar projections can have completely independent scale settings. This way
+      you can scale any of the textures any way you want without affecting the others. I also did
+      the same for the offset property, since it was either that or drop it entirely.

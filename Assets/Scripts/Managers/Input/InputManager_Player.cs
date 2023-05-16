@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -113,10 +113,11 @@ public class InputManager_Player : InputSubManager
         //Debug.Log($"C: {context.canceled}    P: {context.performed}    S: {context.started}");
 
         // Only call if the button was released.
-        if (context.canceled)
+        if (context.performed)
             GameManager.Instance.TogglePauseGameState();
 
-        PauseInput(context.control.IsPressed());
+        PauseInput(context.performed);
+
     }
 
 
