@@ -5,10 +5,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using TMPro;
-
+using UnityEngine.UI;
 
 public class HighScoresDialog : Dialog_Base, IDialog
 {
+    const float KEYBOARD_SCROLL_SPEED = 10.0f;
+
+
     [SerializeField] private GameObject _MainMenuParent;    
     [SerializeField] private GameObject _ScrollViewContentArea;
     [SerializeField] private GameObject _ScoreTableRowPrefab;
@@ -28,6 +31,9 @@ public class HighScoresDialog : Dialog_Base, IDialog
     private List<HighScoreData> _HighScoresTable;
     private List<HighScoreData> _HighTimesTable;
 
+    private ScrollRect _ScrollRect;
+
+
 
     protected override void Dialog_OnStart()
     {
@@ -44,6 +50,11 @@ public class HighScoresDialog : Dialog_Base, IDialog
             throw new Exception("The BestTimesButtonText property has not been set in the inspector!");
 
 
+        _ScrollRect = transform.GetComponentInChildren<ScrollRect>();
+        if (_ScrollRect == null)
+            Debug.LogError("The ScrollView's ScrollRect component was not found!");
+
+
         InitHighScoresTableRows();
         LoadHighScoresTables();
 
@@ -52,6 +63,11 @@ public class HighScoresDialog : Dialog_Base, IDialog
         _DoneButtonText.color = _DeselectedTablecolor;
 
         gameObject.SetActive(false);
+    }
+
+    protected override void Dialog_OnUpdate()
+    {
+
     }
 
     private void InitHighScoresTableRows()
@@ -157,6 +173,25 @@ public class HighScoresDialog : Dialog_Base, IDialog
         gameObject.SetActive(false); // Disable this dialog to hide this window.
 
         _MainMenuParent.SetActive(true);
+    }
+
+    protected override void Dialog_OnNavigate()
+    {
+        // Check if the user is pressing up or down. If so, scrolls the high scores table.        
+        float scrollMagnitude = _InputManager_UI.Navigate.y;
+        if (scrollMagnitude != 0)
+        {
+            float scrollableHeight = _ScrollRect.content.sizeDelta.y - _ScrollRect.viewport.rect.height;
+            float scrollAmount = KEYBOARD_SCROLL_SPEED * scrollMagnitude;// * Time.unscaledDeltaTime;
+            _ScrollRect.verticalNormalizedPosition += scrollAmount / scrollableHeight;
+        }
+
+
+        // Check if the user is pressing left or right a significant amount. If so, switch tabs.
+        if (_InputManager_UI.Navigate.x > 0.75f)
+            OnBestTimesClick();
+        else if (_InputManager_UI.Navigate.x < -0.75f)
+            OnBestScoresClick();
     }
 
     protected override void Dialog_OnConfirm()

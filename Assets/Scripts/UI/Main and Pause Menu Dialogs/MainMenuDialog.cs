@@ -34,7 +34,7 @@ public class MainMenuDialog : Dialog_Base, IDialog
         _SceneSwitcher = _GameManager.SceneSwitcher;
 
         foreach (Transform t in _MenuItems)
-            t.GetComponent<MenuDialogsMenuItem>().OnMouseUp += OnButtonClicked;
+            t.GetComponent<MenuDialogsMenuItem>().OnMouseEnter += OnMouseEnterMenuItem;
 
         OpenDialog();
     }
@@ -119,9 +119,11 @@ public class MainMenuDialog : Dialog_Base, IDialog
         // We do nothing here, as the player should not be able to cancel out of the main menu.
     }
 
-    public void OnButtonClicked(GameObject sender)
+    public void OnMouseEnterMenuItem(GameObject sender)
     {
         _SelectedMenuItemIndex = GetIndexOfMenuItem(sender.transform);
+
+        SelectMenuItem();
     }
     
     public void OnStartGame()
@@ -131,10 +133,10 @@ public class MainMenuDialog : Dialog_Base, IDialog
 
     public void OnHighScores()
     {
-        _HighScoresDialog.OpenDialog();
-
         _TitleDisplayCanvas.SetActive(false);
         CloseDialog();
+
+        _HighScoresDialog.OpenDialog();
     }
 
     public void OnExitGame()

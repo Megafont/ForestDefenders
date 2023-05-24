@@ -588,6 +588,8 @@ public class GameManager : MonoBehaviour
 
     public void TogglePauseGameState()
     {
+        Debug.Log($"Game State {GameState}");
+
         if (GameState == GameStates.Startup || 
             GameState == GameStates.GameOver || 
             GameState == GameStates.MainMenu)

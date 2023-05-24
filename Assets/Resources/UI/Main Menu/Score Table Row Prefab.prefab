@@ -578,7 +578,7 @@ RectTransform:
   - {fileID: 2905934116573710673}
   - {fileID: 2905934116324745503}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -597,7 +597,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f38161d5d790c04599be4093afadccd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RankText: {fileID: 2905934115730058993}
-  NameText: {fileID: 2905934116278890468}
-  ScoreText: {fileID: 2905934116573710672}
-  TimeText: {fileID: 2905934116324745502}
+  _RankText: {fileID: 2905934115730058993}
+  _NameText: {fileID: 2905934116278890468}
+  _ScoreText: {fileID: 2905934116573710672}
+  _TimeText: {fileID: 2905934116324745502}

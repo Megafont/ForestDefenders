@@ -39,7 +39,7 @@ public static class TechDefinitions
         };
 
 
-        _TechTreeDialog.AddResearchGroup(groupName, tilesData);
+        _TechTreeDialog.AddTechGroup(groupName, tilesData);
     }
 
     private static void GenerateTechGroup_Defense()
@@ -55,7 +55,7 @@ public static class TechDefinitions
         };
 
 
-        _TechTreeDialog.AddResearchGroup(groupName, tilesData);
+        _TechTreeDialog.AddTechGroup(groupName, tilesData);
     }
 
     private static void GenerateTechGroup_Farming()
@@ -70,7 +70,7 @@ public static class TechDefinitions
         };
 
 
-        _TechTreeDialog.AddResearchGroup(groupName, tilesData);
+        _TechTreeDialog.AddTechGroup(groupName, tilesData);
     }
 
     private static void GenerateTechGroup_Housing()
@@ -85,7 +85,7 @@ public static class TechDefinitions
         };
 
 
-        _TechTreeDialog.AddResearchGroup(groupName, tilesData);
+        _TechTreeDialog.AddTechGroup(groupName, tilesData);
     }
 
     private static void GenerateTechGroup_Walls()
@@ -100,7 +100,7 @@ public static class TechDefinitions
         };
 
 
-        _TechTreeDialog.AddResearchGroup(groupName, tilesData);
+        _TechTreeDialog.AddTechGroup(groupName, tilesData);
     }
 
     private static void GenerateTechGroup_Villagers()
@@ -114,7 +114,7 @@ public static class TechDefinitions
         };
 
 
-        _TechTreeDialog.AddResearchGroup(groupName, tilesData);
+        _TechTreeDialog.AddTechGroup(groupName, tilesData);
     }
 
 }

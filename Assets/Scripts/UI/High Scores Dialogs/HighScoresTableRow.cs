@@ -28,7 +28,6 @@ public class HighScoresTableRow : MonoBehaviour
             throw new Exception("The time text object is not set in the inspector!");
     }
 
-
     public void SetRowData(HighScoreData scoreData, HighScoreTypes tableType)
     {
         if (tableType == HighScoreTypes.Score)

@@ -28,11 +28,12 @@ public class PauseMenuDialog : Dialog_Base, IDialog
         _SceneSwitcher = _GameManager.SceneSwitcher;
 
         foreach (Transform t in _MenuItems)
-            t.GetComponent<MenuDialogsMenuItem>().OnMouseUp += OnButtonClicked;
+            t.GetComponent<MenuDialogsMenuItem>().OnMouseEnter += OnMouseEnterMenuItem;
     }
 
     protected override void Dialog_OnEnable()
     {
+
     }
 
     protected override void Dialog_OnUpdate()
@@ -110,9 +111,11 @@ public class PauseMenuDialog : Dialog_Base, IDialog
         OnResumeGame();
     }
 
-    public void OnButtonClicked(GameObject sender)
+    public void OnMouseEnterMenuItem(GameObject sender)
     {
         _SelectedMenuItemIndex = GetIndexOfMenuItem(sender.transform);
+
+        SelectMenuItem();
     }
     
     public void OnResumeGame()
@@ -129,6 +132,7 @@ public class PauseMenuDialog : Dialog_Base, IDialog
 
     public void OnExitGame()
     {
+        Time.timeScale = 1.0f;
         Application.Quit();
     }
 

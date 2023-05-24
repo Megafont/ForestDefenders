@@ -6,11 +6,11 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 
-public class MenuDialogsMenuItem : MonoBehaviour, IPointerUpHandler
+public class MenuDialogsMenuItem : MonoBehaviour, IPointerEnterHandler
 {
     public delegate void MenuDialogItem_EventHandler(GameObject sender);
 
-    public event MenuDialogItem_EventHandler OnMouseUp;
+    public event MenuDialogItem_EventHandler OnMouseEnter;
 
 
 
@@ -27,9 +27,9 @@ public class MenuDialogsMenuItem : MonoBehaviour, IPointerUpHandler
     }
     
 
-    public void OnPointerUp(PointerEventData eventData)
+    public void OnPointerEnter(PointerEventData eventData)
     {
-        OnMouseUp?.Invoke(gameObject);
+        OnMouseEnter?.Invoke(gameObject);
     }
     
 

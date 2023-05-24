@@ -6,9 +6,10 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
+using System.Runtime.CompilerServices;
+using System.Diagnostics.Tracing;
 
-
-public class TechTreeTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public partial class TechTreeTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     private TechTreeTileData _TileData;
 
@@ -17,7 +18,10 @@ public class TechTreeTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     private TMP_Text _XPCostText;
     private Image _IconImage;
 
+    private GameManager _GameManager;
     private TechTreeDialog _ParentDialog;
+
+    private bool _IsHighlighted;
 
 
 
@@ -32,12 +36,14 @@ public class TechTreeTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     // Start is called before the first frame update
     void Start()
     {
+        _GameManager = GameManager.Instance;
+
         _Button = GetComponent<Button>();
         _TitleText = transform.Find("Title Text (TMP)").GetComponent<TMP_Text>();
         _XPCostText = transform.Find("XP Cost Text (TMP)").GetComponent<TMP_Text>();
         _IconImage = GetComponentInChildren<Image>();
 
-        UpdateUIColors();
+        UpdateGUIColors();
 
         UpdateGUI();
     }
@@ -63,7 +69,14 @@ public class TechTreeTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         OnMouseExit?.Invoke(this);
     }
 
-    public void UpdateUIColors()
+    private void UpdateGUI()
+    {
+        _TitleText.text = _TileData.IsAvailableToResearch ? _TileData.Title : _ParentDialog.LockedTileDescriptionText;
+
+        _XPCostText.text = !_TileData.IsResearched ? $"Cost: {_TileData.XPCost} XP" : null; // Display the XP only if the tech item has NOT been researched yet.
+    }
+
+    public void UpdateGUIColors()
     {
         if (_Button == null)
             return;
@@ -79,29 +92,39 @@ public class TechTreeTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         }
         else
         {
-            _XPCostText.color = _TileData.XPCost <= _ParentDialog.AvailableXP ? _ParentDialog.TileXPTextColor : _ParentDialog.TileNotEnoughXPTextColor;
+            if (_GameManager.ResearchIsFree || _TileData.XPCost <= _ParentDialog.AvailableXP)
+                _XPCostText.color = _ParentDialog.TileXPTextColor;
+            else
+                _XPCostText.color = _ParentDialog.TileNotEnoughXPTextColor;
 
-            if (_TileData.IsAvailableToResearch)
+
+            if (_GameManager.StartWithAllTechUnlocked || _TileData.IsAvailableToResearch)
                 color = _ParentDialog.UnlockedColor;
             else
-                color = _ParentDialog.LockedColor;                
+                color = _ParentDialog.LockedColor;
         }
 
 
+       
+        if (IsHighlighted)
+            color = _ParentDialog.HighlightColor;
+        //if (_SelectionState == TechTreeTileSelectionStates.Selected)
+        //    color = _ParentDialog.SelectedColor;
+
         block.normalColor = color;
         block.disabledColor = color;
+        block.selectedColor = color;
+        block.highlightedColor = color;
         
-        block.selectedColor = _ParentDialog.SelectedColor;
-        block.highlightedColor = _ParentDialog.HighlightColor;
-
         _Button.colors = block;
     }
+
 
     public void SetIsAvailableToResearchFlag(bool value)
     {
         _TileData.IsAvailableToResearch = value;
 
-        UpdateUIColors();
+        UpdateGUIColors();
         UpdateGUI();
     }
 
@@ -109,7 +132,7 @@ public class TechTreeTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     {
         _TileData.IsResearched = value;
 
-        UpdateUIColors();
+        UpdateGUIColors();
         UpdateGUI();
     }
 
@@ -119,14 +142,21 @@ public class TechTreeTile : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         _TileData = tileData;
     }
 
-    private void UpdateGUI()
-    {
-        _TitleText.text = _TileData.IsAvailableToResearch ? _TileData.Title : _ParentDialog.LockedTileDescriptionText;
 
-        _XPCostText.text = !_TileData.IsResearched ? $"Cost: {_TileData.XPCost} XP" : null; // Display the XP only if the tech item has NOT been researched yet.
-    }
 
     
+    public bool IsHighlighted 
+    { 
+        get { return _IsHighlighted; } 
+        set
+        {
+            _IsHighlighted = value;
+
+            UpdateGUIColors();
+        }
+    }
+
+
     public TechTreeTileData TileData { get { return _TileData; } }
 }
 

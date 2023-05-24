@@ -6,18 +6,23 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
 using UnityEngine.UI;
-
+using Unity.VisualScripting;
+using UnityEngine.UIElements;
 
 public class TechTreeDialog : Dialog_Base, IDialog
 {
+    const float GAMEPAD_MIN_THRESHOLD = 0.5f; // The minimum amount the left stick must be pressed to move the selection.
+    const float KEYBOARD_SCROLL_SPEED = 10.0f;
+
+
     [SerializeField] private GameObject _TileGroupHeaderPrefab;
     [SerializeField] private GameObject _TileGroupPrefab;
     [SerializeField] private GameObject _TilePrefab;
 
-    [SerializeField] private string _LockedTileDescriptionText = "???";
+    [SerializeField] private string _LockedTileNameText = "???";
+    [SerializeField] private string _LockedTileDescriptionText = "-";
 
     [SerializeField] private Color32 _HighlightColor = new Color32(220, 150, 0, 200);
-    [SerializeField] private Color32 _SelectedColor = new Color32(180, 110, 0, 200);
     [SerializeField] private Color32 _LockedColor = new Color32(64, 64, 64, 200);
     [SerializeField] private Color32 _UnlockedColor = new Color32(0, 0, 0, 200);
     [SerializeField] private Color32 _ResearchedColor = new Color32(0, 64, 0, 200);
@@ -34,16 +39,22 @@ public class TechTreeDialog : Dialog_Base, IDialog
     }
 
 
+    private TMP_Text _TechNameText;
+    private TMP_Text _TechDescriptionText;
     private TMP_Text _AvailableXPText;
-    private TMP_Text _BottomBarText;
 
+
+    private ScrollRect _ScrollViewScrollRect;
     private GameObject _ScrollViewContentObject;
 
     private Dictionary<TechDefinitionIDs, TechTreeTile> _TechTreeTilesLookup;
     private List<TechTreeTileGroup> _TechTreeTileGroups;
 
-    private TechTreeTile _LastTileHighlighted;
-    private TechTreeTile _LastTileSelected;
+    private Vector2Int _SelectedTileIndices;
+
+    private ScrollRect _ScrollRect;
+
+    private float _LastGamepadSelectionChangeTime;
 
 
 
@@ -57,17 +68,38 @@ public class TechTreeDialog : Dialog_Base, IDialog
         _InputManager = GameManager.Instance.InputManager;
         _InputManager_UI = _InputManager.UI;
 
+
+        _ScrollRect = transform.GetComponentInChildren<ScrollRect>();
+        if (_ScrollRect == null)
+            Debug.LogError("The ScrollView's ScrollRect component was not found!");
+
+
         _AvailableXPText = transform.Find("Panel/XP Count Text (TMP)").GetComponent<TMP_Text>();
 
-        _BottomBarText = transform.Find("Panel/Bottom Text Bar/Bottom Text Bar Text (TMP)").GetComponent<TMP_Text>();
-        _BottomBarText.text = _LockedTileDescriptionText;
+        _TechNameText = transform.Find("Panel/Tech Name Text (TMP)").GetComponent<TMP_Text>();
+        _TechNameText.text = _LockedTileNameText;
 
+        _TechDescriptionText = transform.Find("Panel/Tech Description Text (TMP)").GetComponent<TMP_Text>();
+        _TechDescriptionText.text = _LockedTileDescriptionText;
+
+        _ScrollViewScrollRect = transform.Find("Panel/Scroll View").GetComponent<ScrollRect>();
         _ScrollViewContentObject = transform.Find("Panel/Scroll View/Viewport/Content").gameObject;
+
 
         _TechTreeTilesLookup = new Dictionary<TechDefinitionIDs, TechTreeTile>();
         _TechTreeTileGroups = new List<TechTreeTileGroup>();
 
         TechDefinitions.GetTechDefinitions(this);
+        if (_TechTreeTileGroups.Count > 0)
+        {
+            _SelectedTileIndices = Vector2Int.zero;
+            SelectedTile.IsHighlighted = true;
+        }
+        else
+        {
+            _SelectedTileIndices = new Vector2Int(-1, -1);
+        }
+
 
         CloseDialog();
 
@@ -82,9 +114,103 @@ public class TechTreeDialog : Dialog_Base, IDialog
         }    
     }
 
+    protected override void Dialog_OnNavigate()
+    {
+        if (Time.unscaledTime - _LastGamepadSelectionChangeTime < _GameManager.GamepadMenuSelectionDelay)
+            return;
+
+
+
+        float scrollMagnitudeY = _InputManager_UI.Navigate.y;
+        float scrollMagnitudeX = _InputManager_UI.Navigate.x;
+
+        TechTreeTile curTile = SelectedTile;
+
+        bool playerScrolled = false;
+
+
+        // Did the player scroll up?
+        if (scrollMagnitudeY >= GAMEPAD_MIN_THRESHOLD)
+        {
+            _SelectedTileIndices.y -= 1;
+            if (_SelectedTileIndices.y < 0)
+                _SelectedTileIndices.y = _TechTreeTileGroups.Count - 1;
+
+            playerScrolled = true;
+        }
+
+        // Did the player scroll down?
+        if (scrollMagnitudeY <= -GAMEPAD_MIN_THRESHOLD)
+        {
+            _SelectedTileIndices.y += 1;
+            if (_SelectedTileIndices.y >= _TechTreeTileGroups.Count)
+                _SelectedTileIndices.y = 0;
+
+            playerScrolled = true;
+        }
+
+
+        // If we selected a different row, make sure the x index is still valid. If not, snap it to the end of the row.
+        TechTreeTileGroup selectedTileGroup = _TechTreeTileGroups[_SelectedTileIndices.y];
+        if (_SelectedTileIndices.x >= selectedTileGroup.TechTiles.Count)
+            _SelectedTileIndices.x = selectedTileGroup.TechTiles.Count - 1;
+
+
+        // Did the player scroll left?
+        if (scrollMagnitudeX <= -GAMEPAD_MIN_THRESHOLD)
+        {
+            _SelectedTileIndices.x -= 1;
+            if (_SelectedTileIndices.x < 0)
+                _SelectedTileIndices.x = selectedTileGroup.TechTiles.Count - 1;
+
+            playerScrolled = true;
+        }
+
+
+        // Did the player scroll right?
+        if (scrollMagnitudeX >= GAMEPAD_MIN_THRESHOLD)
+        {
+            _SelectedTileIndices.x += 1;
+            if (_SelectedTileIndices.x >= selectedTileGroup.TechTiles.Count)
+                _SelectedTileIndices.x = 0;
+
+            playerScrolled = true;
+        }
+
+
+        if (playerScrolled)
+        {
+            _LastGamepadSelectionChangeTime = Time.unscaledTime;
+
+            curTile.IsHighlighted = false;
+
+            TechTreeTile selected = SelectedTile;
+            
+            selected.IsHighlighted = true;
+            _ScrollViewScrollRect.FocusOnItem(selected.GetComponent<RectTransform>());
+
+            UpdateDescriptionText(selected);
+        }
+        
+
+
+        /* THIS IS OLD CODE THAT SCROLLS THE SCROLLVIEW WITHOUT FOCUSING IT ON THE SELECTED ITEM.
+        // Check if the user is pressing up or down. If so, scrolls the high scores table.        
+        if (scrollMagnitudeY != 0)
+        {
+            float scrollableHeight = _ScrollRect.content.sizeDelta.y - _ScrollRect.viewport.rect.height;
+            float scrollAmount = KEYBOARD_SCROLL_SPEED * scrollMagnitudeY;// * Time.unscaledDeltaTime;
+            _ScrollRect.verticalNormalizedPosition += scrollAmount / scrollableHeight;
+        }
+        */
+
+
+    }
+
     protected override void Dialog_OnConfirm()
     {
-        CloseDialog();
+        // Attempt to unlock the selected tile.
+        UnlockTile(SelectedTile);
     }
 
     protected override void Dialog_OnCancel()
@@ -105,6 +231,29 @@ public class TechTreeDialog : Dialog_Base, IDialog
         CloseDialog();
     }
 
+    private Vector2Int GetTileIndices(TechTreeTile tile)
+    {
+        if (!tile || _TechTreeTileGroups.Count < 1)
+            return new Vector2Int(-1, -1);
+
+
+        Vector2Int indices = Vector2Int.zero;
+
+        for (int i = 0; i < _TechTreeTileGroups.Count; i++)
+        {
+            if (_TechTreeTileGroups[i].TechTiles.Contains(tile))
+            {
+                indices.x = _TechTreeTileGroups[i].TechTiles.IndexOf(tile);
+                indices.y = i;
+
+                break;
+            }
+
+        } // end for
+
+        return indices;
+    }
+
     public void AddXP(int amount)
     {
         if (amount <= 0)
@@ -113,7 +262,7 @@ public class TechTreeDialog : Dialog_Base, IDialog
         AvailableXP += amount;
     }
 
-    public void AddResearchGroup(string headerText, List<TechTreeTileData> techTiles)
+    public void AddTechGroup(string headerText, List<TechTreeTileData> techTiles)
     {
         if (string.IsNullOrWhiteSpace(headerText))
             throw new Exception("The passed in header text is null, empty, or whitespace!");
@@ -149,27 +298,75 @@ public class TechTreeDialog : Dialog_Base, IDialog
 
     private void OnTileClicked(TechTreeTile sender)
     {
-        // Debug.Log($"Tile \"{sender.TileData.Title}\" clicked!");
-
-
-        _LastTileSelected = sender;
-
-
-        if (sender.TileData.IsResearched)
+        if (!sender)
             return;
 
 
-        if (sender.TileData.IsAvailableToResearch &&
-            (AvailableXP >= sender.TileData.XPCost || _GameManager.ResearchIsFree))
+        // Debug.Log($"Tile \"{sender.TileData.Title}\" clicked!");
+
+
+        // Attempt to unlock the clicked tile.
+        UnlockTile(sender);
+
+    }
+
+    private void OnTileMouseEnter(TechTreeTile sender)
+    {
+        // Deselect the current tile.
+        SelectedTile.IsHighlighted = false;
+
+
+        // Select the new tile.
+        _SelectedTileIndices = GetTileIndices(sender);
+
+        UpdateDescriptionText(sender);
+
+        sender.IsHighlighted = true;
+    }
+
+    public void OnTileMouseExit(TechTreeTile sender)
+    {
+        
+        TechTreeTile selected = SelectedTile;
+        
+        // If the tile the mouse left is no longer the selected tile, then unhighlight it.
+        if (sender != selected)
+            sender.IsHighlighted = false;
+
+        // Since the mouse left this tile, display the description text for the selected tile if there is one.
+        if (selected != null)
         {
-            AvailableXP -= sender.TileData.XPCost;
+            UpdateDescriptionText(selected);
+        }
+        else
+        {
+            UpdateDescriptionText(null);
+        }
+
+    }
+
+    private void UnlockTile(TechTreeTile tileToUnlock)
+    {
+        _SelectedTileIndices = GetTileIndices(tileToUnlock);
+
+        if (tileToUnlock.TileData.IsResearched)
+            return;
+
+
+        if (tileToUnlock.TileData.IsAvailableToResearch &&
+            (AvailableXP >= tileToUnlock.TileData.XPCost || _GameManager.ResearchIsFree))
+        {
+
+            if (!_GameManager.ResearchIsFree)
+                AvailableXP -= tileToUnlock.TileData.XPCost;
+
             UpdateXPCountText();
 
-            sender.SetResearchedFlag(true);
+            tileToUnlock.SetResearchedFlag(true);
 
 
             // Unlock the next tile in the row if there is one.
-            Vector2Int tileIndices = sender.TileData.TileIndices;
+            Vector2Int tileIndices = tileToUnlock.TileData.TileIndices;
             TechTreeTileGroup tileGroup = _TechTreeTileGroups[tileIndices.y];
             if (tileIndices.x < tileGroup.TechTiles.Count - 1)
             {
@@ -179,44 +376,31 @@ public class TechTreeDialog : Dialog_Base, IDialog
 
 
             // Update the description text if necessary.
-            UpdateDescriptionText(sender);
+            UpdateDescriptionText(tileToUnlock);
 
 
-            _GameManager.AddToScore(sender.TileData.XPCost * _GameManager.PlayerResearchScoreMultiplier * _GameManager.MonsterManager.CurrentWaveNumber);
+            int monsterWaveMultiplier = (int)Mathf.Max(_GameManager.MonsterManager.CurrentWaveNumber, 1.0f); // This line ensures this value is at least 1.0f since CurrentWaveNumber is 0 at the very start of the game.
+            _GameManager.AddToScore(tileToUnlock.TileData.XPCost * _GameManager.PlayerResearchScoreMultiplier * monsterWaveMultiplier);
 
 
             // Enable the technology referenced by this tile.
-            TechEnabler.EnableTech(sender.TileData.Title);
-        }
+            TechEnabler.EnableTech(tileToUnlock.TileData.Title);
+        } // end if
 
-    }
-
-    private void OnTileMouseEnter(TechTreeTile sender)
-    {
-        UpdateDescriptionText(sender);
-
-        _LastTileHighlighted = sender;
-    }
-
-    public void OnTileMouseExit(TechTreeTile sender)
-    {
-        // Since the mouse left this tile, display the description text for the selected tile if there is one.
-        if (_LastTileSelected != null)
-            UpdateDescriptionText(_LastTileSelected);
-        else
-            UpdateDescriptionText(null);      
     }
 
     private void UpdateDescriptionText(TechTreeTile techTile)
     {
-        if (_BottomBarText == null || techTile == null)
-            return;
-
-
         if (techTile == null || techTile.TileData.IsAvailableToResearch)
-            _BottomBarText.text = techTile.TileData.DescriptionText; 
+        {
+            _TechNameText.text = $"{techTile.TileData.Title}";
+            _TechDescriptionText.text = $"{techTile.TileData.DescriptionText}";
+        }
         else
-            _BottomBarText.text = _LockedTileDescriptionText;
+        {
+            _TechNameText.text = $"{_LockedTileNameText}";
+            _TechDescriptionText.text = $"{_LockedTileDescriptionText}";
+        }
     }
 
     private void RefreshTileUIColors(TechTreeTile curTile)
@@ -224,7 +408,7 @@ public class TechTreeDialog : Dialog_Base, IDialog
         foreach (KeyValuePair<TechDefinitionIDs, TechTreeTile> pair in _TechTreeTilesLookup)
         {
             if (pair.Value != curTile)
-                pair.Value.UpdateUIColors();
+                pair.Value.UpdateGUIColors();
         }
     }
 
@@ -267,10 +451,13 @@ public class TechTreeDialog : Dialog_Base, IDialog
             // Add this research tile to the lookup table.
             if (_TechTreeTilesLookup.ContainsKey(tileData.TechID))
                 throw new Exception($"A tech tile has already been created for the tech ID \"{tileData.TechID}\"");
+
             _TechTreeTilesLookup.Add(tileData.TechID, newTile);
 
             // Also add research tile into the current group data block.
             newGroup.TechTiles.Add(newTile);
+
+
 
         } // end foreach tileData
 
@@ -324,8 +511,8 @@ public class TechTreeDialog : Dialog_Base, IDialog
         };
 
 
-        AddResearchGroup("Test Group", tilesData);
-        AddResearchGroup("Test Group 2", tilesData2);
+        AddTechGroup("Test Group", tilesData);
+        AddTechGroup("Test Group 2", tilesData2);
     }
 
 
@@ -333,10 +520,21 @@ public class TechTreeDialog : Dialog_Base, IDialog
     public int AvailableXP { get; private set; }
 
 
+    public string LockedTileNameText { get { return _LockedTileNameText; } }
     public string LockedTileDescriptionText { get { return _LockedTileDescriptionText; } }
 
+    public TechTreeTile SelectedTile 
+    { 
+        get 
+        {
+            if (_TechTreeTileGroups.Count < 1)
+                return null;
+
+            return _TechTreeTileGroups[_SelectedTileIndices.y].TechTiles[_SelectedTileIndices.x]; 
+        } 
+    }
+
     public Color32 HighlightColor { get { return _HighlightColor; } }
-    public Color32 SelectedColor { get { return _SelectedColor; } }
     public Color32 ResearchedColor { get { return _ResearchedColor; } }
     public Color32 LockedColor { get { return _LockedColor; } }
     public Color32 UnlockedColor { get { return _UnlockedColor; } }

@@ -16,15 +16,19 @@ public static class TechEnabler
                 break;
 
             // Building Unlocks
+            case "Large Garden":
             case "Farm":
             case "Medium House":
+            case "Large House":
             case "Wood Walls":
             case "Stone Walls":
-            case "Spike Tower":
+            case "Turret":
+            case "Ice Turret":
             case "Mage Tower":
-            case "Wooden Bridge":
-                // For buildings we do nothing since the menu simply asks the tech tree if they are researched
-                // or not. If so, they are displayed in the menu. So we simpyly break here.
+            case "Wood Bridge (10m)":
+            case "Wood Bridge (20m)":
+                // For buildings we do nothing since the building menu simply asks the tech tree if they are researched
+                // or not. If so, they are displayed in the menu.
                 break;
 
             default:

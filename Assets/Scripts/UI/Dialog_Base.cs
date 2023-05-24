@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -32,11 +32,13 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
     void Start()
     {
         _InputManager = _GameManager.InputManager;
-        _InputManager_UI = _InputManager.UI;
-        
-        CloseDialog();
+        _InputManager_UI = _InputManager.UI;       
 
         Dialog_OnStart();
+
+        // If the dialog has opened by default, leave it alone. Otherwise, deactivate its game object.
+        if (!IsOpen())
+            gameObject.SetActive(false);
     }
 
     void OnEnable()
@@ -53,9 +55,16 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
 
     // Update is called once per frame
     void Update()
-    {
+    {       
+        if (!IsOpen())
+            return;
+
+
         Dialog_OnUpdate();
 
+
+        if (_InputManager_UI.Navigate != Vector2.zero)
+            Dialog_OnNavigate();
 
         if (_InputManager_UI != null)
         {
@@ -79,6 +88,11 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
     protected virtual void Dialog_OnEnable() { }
     protected virtual void Dialog_OnUpdate() { }
     protected virtual void Dialog_OnDestroy() { }
+
+
+    // This method is called when the user uses any non-mouse navigational UI controls (WASD/Arrow keys, Joystick, Gamepad).
+    protected virtual void Dialog_OnNavigate() { }
+    // These two methods are called when the users presses the confirm or cancel buttons on the gamepad.
     protected virtual void Dialog_OnConfirm() { }
     protected virtual void Dialog_OnCancel() { }
 
@@ -98,7 +112,6 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
 
 
         StartCoroutine(SwitchInputMaps(false));
-
 
     }
 
@@ -126,7 +139,7 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
         {
             if (closeOtherOpenDialogs)
             {
-                CloseAllDialogs();
+                CloseAllDialogsExcept(this);
             }
             else
             {
@@ -150,7 +163,7 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
     {
         StartCoroutine(SwitchInputMaps(false));
 
-        CloseAllDialogs();
+        CloseAllDialogsExcept(null);
     }
 
     protected virtual IEnumerator SwitchInputMaps(bool dialogIsOpening)
@@ -214,11 +227,12 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
 
 
 
-    public static void CloseAllDialogs()
+    public static void CloseAllDialogsExcept(Dialog_Base dialogToIgnore)
     {
         for (int i = 0; i < OpenDialogs.Count; i++)
         {
-            OpenDialogs[i].CloseDialog();
+            if (dialogToIgnore != null && OpenDialogs[i] == (IDialog) dialogToIgnore)
+                OpenDialogs[i].CloseDialog();
 
         } // end for i
     }

@@ -65,8 +65,8 @@ public class GameOverDialog : Dialog_Base, IDialog
                 return;
 
             Utils_HighScores.RegisterHighScore(_InputField.text,
-                                         GameManager.Instance.Score,
-                                         GameManager.Instance.SurvivalTime);
+                                                GameManager.Instance.Score,
+                                                GameManager.Instance.SurvivalTime);
         }
 
 

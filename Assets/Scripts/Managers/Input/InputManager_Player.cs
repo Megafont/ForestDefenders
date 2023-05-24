@@ -112,7 +112,6 @@ public class InputManager_Player : InputSubManager
     {
         //Debug.Log($"C: {context.canceled}    P: {context.performed}    S: {context.started}");
 
-        // Only call if the button was released.
         if (context.performed)
             GameManager.Instance.TogglePauseGameState();
 
