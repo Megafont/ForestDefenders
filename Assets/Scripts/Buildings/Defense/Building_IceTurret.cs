@@ -34,8 +34,6 @@ public class Building_IceTurret : Building_Base
     [SerializeField] private AnimationCurve _TopAnimCurve;
 
 
-    private GameManager _GameManager;
-
     private GameObject _TurretTop;
     
     private GameObject _IceWave;

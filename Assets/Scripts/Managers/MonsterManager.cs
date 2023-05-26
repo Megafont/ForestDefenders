@@ -233,7 +233,7 @@ public class MonsterManager : MonoBehaviour
 
         CurrentWaveSize = _MonsterSpawnList.Count;
 
-        Utils.ShuffleList(_MonsterSpawnList);
+        Utils_Misc.ShuffleList(_MonsterSpawnList);
     }
 
     private int GetMonsterCountForWave(IMonster monster, int monsterIndex)

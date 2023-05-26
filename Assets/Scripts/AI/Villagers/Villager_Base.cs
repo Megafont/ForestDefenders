@@ -212,41 +212,6 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
     }
 
-    /*
-    protected void DoTargetCheck_BuildPhase_OLD()
-    {
-        if (_Target == null)
-        {
-            // This villager is not chasing a target. So if the target check time has elapsed, then do a new target check.                        
-
-            // Find a non-empty resource node of the same type as the lowest resource stockpile.
-            ResourceTypes lowest = _ResourceManager.GetLowestResourceStockpileType();
-            ResourceNode possibleTargetResourceNode = _ResourceManager.FindNearestResourceNode(transform.position, lowest);
-
-            // If another villager is already mining the nearest node, randomly choose a different one that is not depleted.
-            if (possibleTargetResourceNode == null || possibleTargetResourceNode.VillagersMiningThisNode > 0)            
-                possibleTargetResourceNode = _ResourceManager.GetRandomActiveResourceNode();
-
-
-            // Did we find a non-empty resource node?
-            if (possibleTargetResourceNode && !possibleTargetResourceNode.IsDepleted)
-            {
-                SetTarget(possibleTargetResourceNode.gameObject);
-            }
-        }
-
-        // If this villager is chasing a target and the target gets far enough away, revert to the previous target.
-        else if (_Target.CompareTag("Monster") || _Target.CompareTag("Player"))
-        {
-            if (!TargetIsWithinChaseRange() && !_VillageManager_Villagers.VillagerIsOnBuildingHealCall(this))
-            {
-                SetTarget(_PrevTarget);
-            }
-        }
-
-    }
-    */
-
     protected void DoTargetCheck_MonsterAttackPhase()
     {
         // Check if there is an unoccupied Mage Tower.

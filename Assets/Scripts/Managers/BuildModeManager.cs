@@ -17,9 +17,12 @@ public class BuildModeManager : MonoBehaviour
     [Tooltip("The percentage of construction materials the player gets back when they destroy a building.")]
     public float PercentageOfMaterialsRecoveredOnBuildingDestruction = 1.0f;
 
-
-    public bool IsBuildModeActive { get; private set; }
-    public bool IsSelectingBuilding { get; private set; }
+    public AudioClip BuildingConstructionSound;
+    [Range(0,1)]
+    public float BuildingConstructionSoundVolume = 1.0f;
+    public AudioClip BuildingDestructionSound;
+    [Range(0, 1)]
+    public float BuildingDestructionSoundVolume = 1.0f;
 
 
     private GameManager _GameManager;
@@ -361,11 +364,16 @@ public class BuildModeManager : MonoBehaviour
                                                                              _BuildingConstructionGhost.BuildPosition,
                                                                              _BuildingConstructionGhost.transform.rotation);
 
-            // If the bridge is a building, we need to add it to the list in the parent bridge construction zone,
+            // If the building is a bridge, we need to add it to the list in the parent bridge construction zone,
             // to keep track of whether the zone is bridged or not.
             IBuilding building = buildingObj.GetComponent<IBuilding>();
             if (BuildModeDefinitions.BuildingIsBridge(building.GetBuildingDefinition()))
                 _BuildingConstructionGhost.ParentBridgeConstructionZone.AddBridge(building);
+
+
+            building.AudioSource.clip = BuildingConstructionSound;
+            building.AudioSource.volume = BuildingConstructionSoundVolume;
+            building.AudioSource.Play();
 
 
             _LastBuildTime = Time.time;
@@ -440,5 +448,9 @@ public class BuildModeManager : MonoBehaviour
         
     }
 
+
+
+    public bool IsBuildModeActive { get; private set; }
+    public bool IsSelectingBuilding { get; private set; }
 
 }

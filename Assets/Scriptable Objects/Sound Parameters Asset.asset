@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d8199872b71ee94e8590fb4c7e7cbfd, type: 3}
   m_Name: Sound Parameters Asset
   m_EditorClassIdentifier: 
-  _SoundSets:
+  SoundSets:
   - {fileID: 11400000, guid: cf1e788effede0e4ca70cbfd7eabb4f9, type: 2}
   - {fileID: 11400000, guid: 64319d96921401f40b750b3d084f07ca, type: 2}
   - {fileID: 11400000, guid: 2c455a39b5785d146baca2cfa53adedf, type: 2}
   - {fileID: 11400000, guid: f35a3381b1bded04384f8100255cd2a9, type: 2}
-  _PlayerLandingSound: {fileID: 8300000, guid: ff697d3070687ce4583faa0561a145a2, type: 3}
-  _PlayerLandingSoundVolume: 1
+  PlayerLandingSound: {fileID: 8300000, guid: 6aeefb601c305f64487cebdfacae5b6c, type: 3}
+  PlayerLandingSoundVolume: 1
+  PlayPlayerLandingSoundAs3DSound: 0
+  BirdSoundsVolume: 1
+  BirdSoundsFadeTime: 4

@@ -354,7 +354,7 @@ RectTransform:
   - {fileID: 4917586927449106605}
   - {fileID: 86682339}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1961,7 +1961,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 70, y: 160, z: 0}
 --- !u!114 &410087042
 MonoBehaviour:
@@ -2294,6 +2294,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 470642618}
+  - component: {fileID: 470642619}
   m_Layer: 3
   m_Name: Terrain
   m_TagString: Untagged
@@ -2320,8 +2321,104 @@ Transform:
   - {fileID: 649040215}
   - {fileID: 925239972}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &470642619
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 470642617}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: bec1cfb465efc7a41bd5ccbac5b6f2a2, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &483737405
 GameObject:
   m_ObjectHideFlags: 0
@@ -2814,7 +2911,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &504759308 stripped
 GameObject:
@@ -3018,7 +3115,7 @@ MonoBehaviour:
     m_Bits: 4294967295
   m_UseGeometry: 1
   m_DefaultArea: 0
-  m_GenerateLinks: 0
+  m_GenerateLinks: 1
   m_IgnoreNavMeshAgent: 1
   m_IgnoreNavMeshObstacle: 1
   m_OverrideTileSize: 0
@@ -3049,7 +3146,7 @@ MonoBehaviour:
     m_Bits: 4294967295
   m_UseGeometry: 1
   m_DefaultArea: 0
-  m_GenerateLinks: 0
+  m_GenerateLinks: 1
   m_IgnoreNavMeshAgent: 1
   m_IgnoreNavMeshObstacle: 1
   m_OverrideTileSize: 0
@@ -3106,6 +3203,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BuildPhaseBaseLength: 300
   PercentageOfMaterialsRecoveredOnBuildingDestruction: 1
+  BuildingConstructionSound: {fileID: 8300000, guid: e418f54724d0cd5469b0d48bb88af91c,
+    type: 3}
+  BuildingConstructionSoundVolume: 1
+  BuildingDestructionSound: {fileID: 8300000, guid: b08f83a76ccf9634aaea62b7bfa3e79e,
+    type: 3}
+  BuildingDestructionSoundVolume: 0.5
 --- !u!1 &828217628
 GameObject:
   m_ObjectHideFlags: 0
@@ -3159,7 +3262,6 @@ MonoBehaviour:
   VillagerFoodCost: 100
   VillagerSpawnFrequency: 2
   BuildingBackupCallMaxDistance: 20
-  VillagersCanHealBuildings: 0
   VillagerHealBuildingsCheckFrequency: 5
   VillagerHealBuildingsAmount: 5
   BuildingHealResourceCostMultiplier: 5
@@ -3223,7 +3325,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &848707369
 PrefabInstance:
@@ -3375,6 +3477,84 @@ MonoBehaviour:
   m_IgnoreFromBuild: 1
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffff
+--- !u!1001 &958397911
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3498206886117766571, guid: 9d79d92c21b8d3347897f6061c7007ba,
+        type: 3}
+      propertyPath: m_Name
+      value: Small Garden
+      objectReference: {fileID: 0}
+    - target: {fileID: 3498206886117766571, guid: 9d79d92c21b8d3347897f6061c7007ba,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4307675504937250577, guid: 9d79d92c21b8d3347897f6061c7007ba,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4307675504937250577, guid: 9d79d92c21b8d3347897f6061c7007ba,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -13.10507
+      objectReference: {fileID: 0}
+    - target: {fileID: 4307675504937250577, guid: 9d79d92c21b8d3347897f6061c7007ba,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.0000009536743
+      objectReference: {fileID: 0}
+    - target: {fileID: 4307675504937250577, guid: 9d79d92c21b8d3347897f6061c7007ba,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -5.7839503
+      objectReference: {fileID: 0}
+    - target: {fileID: 4307675504937250577, guid: 9d79d92c21b8d3347897f6061c7007ba,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4307675504937250577, guid: 9d79d92c21b8d3347897f6061c7007ba,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4307675504937250577, guid: 9d79d92c21b8d3347897f6061c7007ba,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4307675504937250577, guid: 9d79d92c21b8d3347897f6061c7007ba,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4307675504937250577, guid: 9d79d92c21b8d3347897f6061c7007ba,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4307675504937250577, guid: 9d79d92c21b8d3347897f6061c7007ba,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4307675504937250577, guid: 9d79d92c21b8d3347897f6061c7007ba,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9d79d92c21b8d3347897f6061c7007ba, type: 3}
 --- !u!1 &962547004 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2556334988664054180, guid: 9c981b49dd632294384d706ff680284e,
@@ -4075,7 +4255,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1171873055 stripped
 GameObject:
@@ -4167,6 +4347,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Force Field
+      objectReference: {fileID: 0}
+    - target: {fileID: 7646068016684732430, guid: 7a20ea1e0c51ca540b5bf8832a3c40c1,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3855663258307860687, guid: 7a20ea1e0c51ca540b5bf8832a3c40c1, type: 3}
@@ -4443,7 +4628,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1336596523
 GameObject:
@@ -4886,7 +5071,7 @@ MonoBehaviour:
   DisableMonstersSpawning: 0
   AttackDamageVariance: 0.2
   EnablePlayerSpawn: 1
-  PlayerSpawnPoint: {fileID: 391700450}
+  PlayerSpawnPoint: {fileID: 509338921}
   PlayerCanDamageVillagers: 1
   PlayerFallOutOfWorldDeathHeight: -32
   PlayerStartingAttackPower: 10
@@ -5354,7 +5539,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1955907256 stripped
 Transform:
@@ -5722,7 +5907,7 @@ PrefabInstance:
     - target: {fileID: 246499199170009135, guid: ec8709eb12d89c141b4d00ee3d690ab0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 246499199170009135, guid: ec8709eb12d89c141b4d00ee3d690ab0,
         type: 3}
@@ -5846,11 +6031,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Waterfall VFX (Right Channel - Bottom)
-      objectReference: {fileID: 0}
-    - target: {fileID: 3724535875527370495, guid: e6b04cfa47d5f364193d825d4bc31d1f,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.655
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

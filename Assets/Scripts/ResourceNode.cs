@@ -169,15 +169,15 @@ public class ResourceNode : MonoBehaviour
         switch (_ResourceType)
         {
             case ResourceTypes.Food:
-                _SoundSetPlayer._SoundSet = GameManager.Instance.SoundParams.GetSoundSet("Sound Set - Gathering Food");
+                _SoundSetPlayer.SoundSet = GameManager.Instance.SoundParams.GetSoundSet("Sound Set - Gathering Food");
                 break;
 
             case ResourceTypes.Stone:
-                _SoundSetPlayer._SoundSet = GameManager.Instance.SoundParams.GetSoundSet("Sound Set - Mining Stone");
+                _SoundSetPlayer.SoundSet = GameManager.Instance.SoundParams.GetSoundSet("Sound Set - Mining Stone");
                 break;
 
             case ResourceTypes.Wood:
-                _SoundSetPlayer._SoundSet = GameManager.Instance.SoundParams.GetSoundSet("Sound Set - Chopping Wood");
+                _SoundSetPlayer.SoundSet = GameManager.Instance.SoundParams.GetSoundSet("Sound Set - Chopping Wood");
                 break;
 
 

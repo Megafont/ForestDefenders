@@ -1,5 +1,5 @@
 ﻿using System;
-
+using Unity.VisualScripting;
 using UnityEngine;
 
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
@@ -157,6 +157,7 @@ public class PlayerController : MonoBehaviour
     private float _FallStartHeight;
     private bool _IsFalling;
 
+    private AudioSource _PlayerLandAudio;
 
 
     public float AttackPower { get { return _AttackPower; } set { _AttackPower = value; } }
@@ -194,8 +195,12 @@ public class PlayerController : MonoBehaviour
 
         _SoundSetPlayer = GetComponent<SoundSetPlayer>();
         _SoundParams = _GameManager.SoundParams;
-        _SoundSetPlayer._SoundSet = _SoundParams.GetSoundSet("Sound Set - Player Footsteps");
+        _SoundSetPlayer.SoundSet = _SoundParams.GetSoundSet("Sound Set - Player Footsteps");
 
+        _PlayerLandAudio = this.AddComponent<AudioSource>();
+        _PlayerLandAudio.spatialize = false; // Disable 3D sound since the player land and footstep sound is too quiet when played as a 3D sound.
+        _PlayerLandAudio.clip = _SoundParams.PlayerLandingSound;
+        _PlayerLandAudio.volume = _SoundParams.PlayerLandingSoundVolume;
 
         _VillageManager_Buildings = _GameManager.VillageManager_Buildings;
     }
@@ -670,7 +675,12 @@ public class PlayerController : MonoBehaviour
         // I disabled this if statement since it is not needed with our player animation.
         //if (animationEvent.animatorClipInfo.weight > 0.5f)
         //{
-            AudioSource.PlayClipAtPoint(_SoundParams._PlayerLandingSound, transform.TransformPoint(_controller.center), _SoundParams._PlayerLandingSoundVolume);
+            //AudioSource.PlayClipAtPoint(_SoundParams._PlayerLandingSound, transform.TransformPoint(_controller.center), _SoundParams._PlayerLandingSoundVolume);
+
+            _PlayerLandAudio.spatialize = _SoundParams.PlayPlayerLandingSoundAs3DSound;
+            _PlayerLandAudio.volume = _SoundParams.PlayerLandingSoundVolume;
+            _PlayerLandAudio.PlayOneShot(_SoundParams.PlayerLandingSound); 
+
         //}
     }
     

@@ -1,22 +1,37 @@
 using System.Collections;
 using System.Collections.Generic;
-
+using Unity.VisualScripting;
 using UnityEngine;
 
 
 public class SoundSetPlayer : MonoBehaviour
 {
-    public SoundSet _SoundSet;
+    [SerializeField]
+    private SoundSet _SoundSet;
+
+    private AudioSource _AudioSource;
 
 
-    private int _NextSoundIndex;
 
+    private void Awake()
+    {
+        _AudioSource = this.AddComponent<AudioSource>();
+        
+        if (_SoundSet)
+            _AudioSource.volume = _SoundSet.Volume;
+    }
 
     public void PlaySound()
     {
-        if (_SoundSet.SoundsList == null)
+        if (_SoundSet == null)
         {
             Debug.LogError($"Could not play a sound, because the sound set is null!");
+            return;
+        }
+
+        if (_SoundSet.SoundsList == null)
+        {
+            Debug.LogError($"Could not play a sound, because the sound set \"SoundSet.Name\" contains no sounds!");
             return;
         }
 
@@ -28,7 +43,26 @@ public class SoundSetPlayer : MonoBehaviour
 
 
         var index = Random.Range(0, _SoundSet.SoundsList.Count);
-        AudioSource.PlayClipAtPoint(_SoundSet.SoundsList[index], transform.position, _SoundSet.Volume);
+
+        //AudioSource.PlayClipAtPoint(_SoundSet.SoundsList[index], transform.position, _SoundSet.Volume);
+
+        _AudioSource.spatialize = _SoundSet.PlayAs3DSound;
+        _AudioSource.volume = _SoundSet.Volume;
+        _AudioSource.PlayOneShot(_SoundSet.SoundsList[index]);
+    }
+
+
+
+    public SoundSet SoundSet
+    {
+        get { return _SoundSet; }
+        set
+        {
+            if (!value)
+                Debug.LogWarning("The passed in SoundSet is null!");
+            
+            _SoundSet = value;
+        }
     }
 
 }

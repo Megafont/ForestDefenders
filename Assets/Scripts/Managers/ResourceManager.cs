@@ -70,7 +70,7 @@ public class ResourceManager : MonoBehaviour
 
     void OnDestroy()
     {
-        Utils.DestroyAllChildGameObjects(ResourcesParent);
+        Utils_Misc.DestroyAllChildGameObjects(ResourcesParent);
     }
 
 
@@ -245,7 +245,7 @@ public class ResourceManager : MonoBehaviour
 
     private void InitResourceTypeParentObjects()
     {
-        Utils.DestroyAllChildGameObjects(ResourcesParent);
+        Utils_Misc.DestroyAllChildGameObjects(ResourcesParent);
 
 
         List<GameObject> resourceNodes;

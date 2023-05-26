@@ -59,7 +59,7 @@ public class VillageManager_Buildings : MonoBehaviour
     {
         StopAllCoroutines();
 
-        Utils.DestroyAllChildGameObjects(_BuildingsParent);
+        Utils_Misc.DestroyAllChildGameObjects(_BuildingsParent);
     }
 
 
@@ -77,7 +77,7 @@ public class VillageManager_Buildings : MonoBehaviour
 
     private void InitBuildingCategoryParentObjects()
     {
-        Utils.DestroyAllChildGameObjects(_BuildingsParent);
+        Utils_Misc.DestroyAllChildGameObjects(_BuildingsParent);
 
 
         // Create a parent game object for each building category.
@@ -252,13 +252,18 @@ public class VillageManager_Buildings : MonoBehaviour
         }
 
 
+        // If the building is already in the process of deconstructing, then simply return.
+        if (building.IsDeconstructing)
+            return;
+
+
         _BuildModeManager.RestoreBuildingMaterials(building.Category, building.Name);
 
         OnBuildingDestroyed?.Invoke(building, true);
 
         RemoveBuilding(building);
 
-        Destroy(building.gameObject);
+        building.Deconstruct(gameObject);
     }
 
 

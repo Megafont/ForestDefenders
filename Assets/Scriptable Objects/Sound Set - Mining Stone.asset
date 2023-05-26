@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Sound Set - Mining Stone
   m_EditorClassIdentifier: 
   SoundsList:
-  - {fileID: 8300000, guid: c71017fbf3808e8499c5a4269fb807a4, type: 3}
-  - {fileID: 8300000, guid: 64d81066c49da064ab40efb463a265d5, type: 3}
-  - {fileID: 8300000, guid: 9add12bb601f30e499cb6cb955085969, type: 3}
-  - {fileID: 8300000, guid: 133c3e16aad99974683c5e4df55d1cbc, type: 3}
-  - {fileID: 8300000, guid: 61add7343ba471d47ac68257eabe56c6, type: 3}
+  - {fileID: 8300000, guid: 16dd0b2743cc7004a94d0a0a562a44dc, type: 3}
+  - {fileID: 8300000, guid: aaee89578842a254998d29cfc0bc8882, type: 3}
+  - {fileID: 8300000, guid: 3ec91dc960fe59142b42382b8563fb10, type: 3}
+  - {fileID: 8300000, guid: b7ecfda5fb71fe846901f48b309a3cc3, type: 3}
   Volume: 1
+  PlayAs3DSound: 1

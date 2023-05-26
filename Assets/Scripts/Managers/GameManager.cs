@@ -5,10 +5,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityObject = UnityEngine.Object;
+using Debug = UnityEngine.Debug;
 
 using Cinemachine;
 using TMPro;
 using Unity.VisualScripting;
+using System.Diagnostics;
+
 
 public class GameManager : MonoBehaviour
 {
@@ -124,6 +127,8 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
 
+    private AudioSource _BirdsAudioSource;
+
     private float _BuildPhaseLength;
 
     private float _GameStateStartTime;
@@ -144,16 +149,7 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        if (ConstructionIsFree)
-            Debug.LogWarning("The ConstructionIsFree dev cheat is on in the game manager.");
-        if (ResearchIsFree)
-            Debug.LogWarning("The ResearchIsFree dev cheat is on in the game manager.");
-        if (GodMode)
-            Debug.LogWarning("The GodMode dev cheat is on in the game manager.");
-        if (StartWithAllTechUnlocked)
-            Debug.LogWarning("The StartWithAllTechUnlocked dev cheat is on in the game manager.");
-        if (StartWithAllZonesBridged)
-            Debug.LogWarning("The StartWithAllZonesBridged dev cheat is on in the game manager.");
+        DoDevCheatsCheck();
 
 
         if (Instance == null)
@@ -164,6 +160,13 @@ public class GameManager : MonoBehaviour
 
         if (PlayerSpawnPoint == null)
             throw new Exception("The player spawn point has not been set in the inspector!");
+
+
+        GameObject terrainObj = GameObject.Find("Terrain");
+        if (!terrainObj)
+            throw new Exception("The GameObject \"Terrain\" was not found!");
+
+        _BirdsAudioSource = terrainObj.GetComponent<AudioSource>();
 
 
         GetManagerReferences();
@@ -181,12 +184,15 @@ public class GameManager : MonoBehaviour
 
 
         if (MusicPlayer.Instance)
+        {
             MusicPlayer = MusicPlayer.Instance;
+        }
         else
         {
             MusicPlayer prefab = Resources.Load<GameObject>("Music Player").GetComponent<MusicPlayer>();
             MusicPlayer = Instantiate(prefab, Vector3.zero, Quaternion.identity);
         }
+
     }
 
     private void Start()
@@ -198,6 +204,7 @@ public class GameManager : MonoBehaviour
 
 
         SceneSwitcher = SceneSwitcher.Instance;
+
 
         if (PlayerIsInGame())
             ChangeGameState(GameStates.PlayerBuildPhase);
@@ -266,6 +273,23 @@ public class GameManager : MonoBehaviour
             }
         }
 
+    }
+    
+    [Conditional("DEBUG")] // This function only needs to be called in a DEBUG build.
+    private void DoDevCheatsCheck()
+    {
+        if (ConstructionIsFree)
+            Debug.LogWarning("The dev cheat ConstructionIsFree is on in the game manager.");
+        if (ResearchIsFree)
+            Debug.LogWarning("The dev cheat ResearchIsFree is on in the game manager.");
+        if (GodMode)
+            Debug.LogWarning("The dev cheat GodMode is on in the game manager.");
+        if (StartWithAllTechUnlocked)
+            Debug.LogWarning("The dev cheat StartWithAllTechUnlocked is on in the game manager.");
+        if (StartWithAllZonesBridged)
+            Debug.LogWarning("The dev cheat StartWithAllZonesBridged is on in the game manager.");
+        if (DisableMonstersSpawning)
+            Debug.LogWarning("The dev cheat DisableMonstersSpawning is on in the game mamanger.");
     }
 
     private IEnumerator DoDelayedInitialization()
@@ -634,11 +658,17 @@ public class GameManager : MonoBehaviour
             case GameStates.MainMenu:
                 MusicPlayer.FadeToTrack(MusicParams.PlayerBuildPhaseMusic, false, MusicParams.PlayerBuildPhaseMusicVolume);
 
+                // Fade in the bird sounds.
+                StartCoroutine(Utils_Audio.FadeAudioSource(_BirdsAudioSource, 0f, SoundParams.BirdSoundsVolume, SoundParams.BirdSoundsFadeTime));
+
                 EnableHUD(false);
                 break;
 
             case GameStates.PlayerBuildPhase:
                 MusicPlayer.FadeToTrack(MusicParams.PlayerBuildPhaseMusic, false, MusicParams.PlayerBuildPhaseMusicVolume);
+
+                // Fade in the bird sounds.
+                StartCoroutine(Utils_Audio.FadeAudioSource(_BirdsAudioSource, 0f, SoundParams.BirdSoundsVolume, SoundParams.BirdSoundsFadeTime));
 
                 ResourceManager.RestoreResourceNodes();
                 _UI_TimeToNextWaveText.enabled = true;
@@ -651,6 +681,10 @@ public class GameManager : MonoBehaviour
             case GameStates.MonsterAttackPhase:
                 MusicPlayer.FadeToTrack(MusicParams.MonsterAttackPhaseMusic, true, MusicParams.MonsterAttackPhaseMusicVolume);
 
+                // Fade out the bird sounds.
+                StartCoroutine(Utils_Audio.FadeAudioSource(_BirdsAudioSource, SoundParams.BirdSoundsVolume, 0f, SoundParams.BirdSoundsFadeTime));
+
+
                 _UI_MonstersLeftText.enabled = true;
                 _UI_WaveNumberText.enabled = true;
                 StartCoroutine(ShowGamePhaseTextAndFadeOut("Monsters Are Attacking!", Color.red));
@@ -659,6 +693,9 @@ public class GameManager : MonoBehaviour
                 break;
 
             case GameStates.GameOver:
+                // Fade out the bird sounds.
+                StartCoroutine(Utils_Audio.FadeAudioSource(_BirdsAudioSource, SoundParams.BirdSoundsVolume, 0f, SoundParams.BirdSoundsFadeTime));
+
                 if (PreviousGameState != GameStates.MonsterAttackPhase)
                 {
                     MusicPlayer.FadeToTrack(MusicParams.MonsterAttackPhaseMusic, true, MusicParams.MonsterAttackPhaseMusicVolume);

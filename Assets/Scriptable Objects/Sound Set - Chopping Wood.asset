@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Sound Set - Chopping Wood
   m_EditorClassIdentifier: 
   SoundsList:
-  - {fileID: 8300000, guid: 003fa738b0a903c498fb969dbe86664b, type: 3}
-  - {fileID: 8300000, guid: 18b1e504b0a308346994057841e9c626, type: 3}
-  - {fileID: 8300000, guid: e1aa915cd09292b42bca71a2a6eb3977, type: 3}
-  - {fileID: 8300000, guid: f03579c49471b444c9e054d20cf138b7, type: 3}
-  - {fileID: 8300000, guid: e8e9d3abb56984c4a8bd39e002d7ff27, type: 3}
+  - {fileID: 8300000, guid: cf77f6ee11323ce43beff75cafcd7927, type: 3}
+  - {fileID: 8300000, guid: 01781279b88d60a42b5a6248e0319c84, type: 3}
+  - {fileID: 8300000, guid: 835c105aafcd320449532d50cf477c1d, type: 3}
+  - {fileID: 8300000, guid: c5fcdd679e5c54e41b016a5df849c1c3, type: 3}
   Volume: 1
+  PlayAs3DSound: 1

@@ -28,8 +28,6 @@ public class Building_Turret : Building_Base
 
 
 
-    private GameManager _GameManager;
-
     private IMonster _Target;
     private GameObject _TurretTop;
 
@@ -46,8 +44,6 @@ public class Building_Turret : Building_Base
     protected override void InitBuilding()
     {
         ConfigureBasicBuildingSetup("Defense", "Turret");
-
-        _GameManager = GameManager.Instance;
 
         _TurretDirection = transform.forward;
     }

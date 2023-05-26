@@ -394,7 +394,22 @@ public abstract class AI_Base : MonoBehaviour
     {
         //Debug.Log(name + " is starting death fade out!");
 
-        yield return _DeathFadeOutDelay;
+        // Wait slightly for death animation to start.
+        yield return new WaitForSeconds(0.2f);
+        // Wait for the death animation to finsih.
+        while (true)
+        {
+            // normalizedTime is a float that tells you how many times the animation has played.
+            if (_Animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1.0f && !_Animator.IsInTransition(0))
+                break;
+            else
+                yield return null;
+        }
+
+        yield return new WaitForSeconds(0.2f);
+
+        // Start the shrink animation and wait for it to complete.
+        yield return StartCoroutine(Utils_Misc.ShrinkObjectToNothing(transform, 0.4f));
 
         //Debug.Log(name + " finished death fade out!");
 

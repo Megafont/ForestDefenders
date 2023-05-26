@@ -11,5 +11,8 @@ public class SoundSet : ScriptableObject
 
     [Range(0, 1)]
     public float Volume = SoundParams.DEFAULT_SOUND_VOLUME;
+
+    [Tooltip("Whether or not the sound is played at a 3D position in the world. Disabling this is helpful if the sound is too quiet at max volume.")]
+    public bool PlayAs3DSound = true;
 }
 

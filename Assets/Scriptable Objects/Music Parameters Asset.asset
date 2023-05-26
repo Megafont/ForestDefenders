@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97d77c68f5db61e458b6e21846450546, type: 3}
   m_Name: Music Parameters Asset
   m_EditorClassIdentifier: 
-  PlayerBuildPhaseMusic: {fileID: 8300000, guid: ae67315abed1f8142b80537cfa69a8da,
+  PlayerBuildPhaseMusic: {fileID: 8300000, guid: 832fa5dbbfb556c4f855b56eb25509ef,
     type: 3}
-  PlayerBuildPhaseMusicVolume: 0.05
-  MonsterAttackPhaseMusic: {fileID: 8300000, guid: d42bb77dca36b5a4683f863a243c292d,
+  PlayerBuildPhaseMusicVolume: 0.2
+  MonsterAttackPhaseMusic: {fileID: 8300000, guid: 4272224466a228340b6feb2204f25247,
     type: 3}
-  MonsterAttackPhaseMusicVolume: 0.1
+  MonsterAttackPhaseMusicVolume: 0.5

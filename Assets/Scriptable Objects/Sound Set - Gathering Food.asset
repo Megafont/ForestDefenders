@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: Sound Set - Gathering Food
   m_EditorClassIdentifier: 
   SoundsList:
-  - {fileID: 8300000, guid: 92aa0e7cc69bc364abe6440a897c4e8e, type: 3}
-  - {fileID: 8300000, guid: fe251e0628fb090469a08c9fc8c23193, type: 3}
-  - {fileID: 8300000, guid: 7b06d6123fa01f34cb3648508a83228a, type: 3}
-  - {fileID: 8300000, guid: cf1e1c99639b8ab4c88827bf7216f0f2, type: 3}
-  - {fileID: 8300000, guid: 770f6426dc8abbd419b17f4bff358bd4, type: 3}
+  - {fileID: 8300000, guid: b9334290a81d9f449b0cbe402356d7db, type: 3}
+  - {fileID: 8300000, guid: f35c58ab4b7a1a343b693bf1b5551093, type: 3}
+  - {fileID: 8300000, guid: eaa6fe79ad6dbc54b8b93e19da1d1f61, type: 3}
+  - {fileID: 8300000, guid: 492371f7d0720fa4d9ce2a5a769dfef0, type: 3}
   Volume: 1

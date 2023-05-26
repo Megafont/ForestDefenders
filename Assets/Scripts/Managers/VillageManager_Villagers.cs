@@ -33,9 +33,6 @@ public class VillageManager_Villagers : MonoBehaviour
 
     [Header("Build Phase Heal Building Settings")]
 
-    [Tooltip("Specifies whether or not villagers will heal damaged buildings at the beginning of the player build phase.")]
-    public bool VillagersCanHealBuildings = false;
-
     [Tooltip("The delay (in seconds) between each time a damaged building check is performed at the beginning of the build phase until all buildings get healed (if there is enough food in the stockpile).")]
     public float VillagerHealBuildingsCheckFrequency = 5.0f;
 
@@ -68,10 +65,6 @@ public class VillageManager_Villagers : MonoBehaviour
 
     private void Awake()
     {
-        if (VillagersCanHealBuildings)
-            Debug.LogWarning("The VillagersCanHealBuildings option is on in the village manager.");
-
-
         _GameManager = GameManager.Instance;
         _PopulationCap = StartingPopulationCap;
 
@@ -115,13 +108,13 @@ public class VillageManager_Villagers : MonoBehaviour
     {
         StopAllCoroutines();
 
-        Utils.DestroyAllChildGameObjects(VillagersParent);
+        Utils_Misc.DestroyAllChildGameObjects(VillagersParent);
     }
 
 
     private void InitVillagerTypes()
     {
-        Utils.DestroyAllChildGameObjects(VillagersParent);
+        Utils_Misc.DestroyAllChildGameObjects(VillagersParent);
 
 
         // Get a list of all types that implement IVillager.
@@ -547,5 +540,7 @@ public class VillageManager_Villagers : MonoBehaviour
 
     public int TotalVillagersSpawned { get; private set; }
     public int TotalVillagersLost { get; private set; }
+
+    public bool VillagersCanHealBuildings { get; set; } = false;
 
 }

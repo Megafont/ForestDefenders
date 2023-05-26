@@ -18,18 +18,24 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
     protected BuildingDefinition _BuildingDefinition;
     protected VillageManager_Buildings _VillageManager_Buildings;
     protected VillageManager_Villagers _VillageManager_Villagers;
-    
-    
 
-    public string Category { get; protected set; }
-    public string Name { get; protected set; }
-    
-    public Health HealthComponent { get { return _Health; } }
+    protected AudioSource _AudioSource;
 
+    protected GameManager _GameManager;
+    protected BuildModeManager _BuildModeManager;
+
+    protected bool _IsDeconstructing = false;
+
+    public AnimationCurve _Curve;
 
 
     void Awake()
     {
+        _GameManager = GameManager.Instance;
+        _BuildModeManager = _GameManager.BuildModeManager;
+
+        _AudioSource = gameObject.AddComponent<AudioSource>();
+
         _VillageManager_Buildings = GameManager.Instance.VillageManager_Buildings;
         _VillageManager_Villagers = GameManager.Instance.VillageManager_Villagers;
 
@@ -96,8 +102,23 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
             return;
     }
 
+    public void Deconstruct(GameObject sender)
+    {
+        if (_IsDeconstructing)
+            return;
+
+
+        _IsDeconstructing = true;
+
+        OnDeath(sender, null);
+    }
+
     protected virtual void OnDeath(GameObject sender, GameObject attacker)
     {
+        _AudioSource.clip = _BuildModeManager.BuildingDestructionSound;
+        _AudioSource.volume = _BuildModeManager.BuildingDestructionSoundVolume;
+        _AudioSource.Play();
+
         StartCoroutine(FadeOutAfterDeath());
     }
 
@@ -107,14 +128,16 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
     }
 
 
-    WaitForSeconds _FadeOutDelay = new WaitForSeconds(2.0f);
+    WaitForSeconds _FadeOutDelay = new WaitForSeconds(3.0f);
     protected virtual IEnumerator FadeOutAfterDeath()
-    {       
-        //yield return _FadeOutDelay;
+    {
+        // Start the shrink animation and wait for it to complete.
+        yield return StartCoroutine(Utils_Misc.ShrinkObjectToNothing(transform, 0.4f));
+
+        // This extra delay is just to allow the building destruction sound enough time to finish playing.
+        yield return new WaitForSeconds(1.5f);
 
         Destroy(gameObject);
-
-        yield break;
     }
 
 
@@ -130,5 +153,15 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
         InitBuilding();
     }
 
+
+
+    public AudioSource AudioSource { get { return _AudioSource; } }
+
+    public string Category { get; protected set; }
+    public string Name { get; protected set; }
+
+    public Health HealthComponent { get { return _Health; } }
+
+    public bool IsDeconstructing { get { return _IsDeconstructing; } }
 
 }
