@@ -29,6 +29,8 @@ public class Health : MonoBehaviour
 
     private float _LastDamageTime;
 
+    private SoundParams _SoundParams;
+    private SoundSetPlayer _SoundSetPlayer;
 
 
     // These hold references to all child objects with MeshRenderers or SkinnedMeshRenderers so the entire object can be made to flash when damage is taken.
@@ -53,6 +55,9 @@ public class Health : MonoBehaviour
     {
         _GameManager = GameManager.Instance;
         _MonsterManager = _GameManager.MonsterManager;
+
+        _SoundParams = _GameManager.SoundParams;
+        _SoundSetPlayer = gameObject.AddComponent<SoundSetPlayer>();
 
         _MeshRenderers = new List<MeshRenderer>();
         _SkinnedMeshRenderers = new List<SkinnedMeshRenderer>();
@@ -91,6 +96,8 @@ public class Health : MonoBehaviour
         if (amount == 0)
             return;
 
+
+        PlayAttackHitSound();
 
 
         if (_EnableDamageFlash &&
@@ -171,6 +178,21 @@ public class Health : MonoBehaviour
 
         OnHealthChanged?.Invoke(gameObject, null, changeAmount);
         OnHeal?.Invoke(gameObject, null, changeAmount);
+    }
+
+    private void PlayAttackHitSound()
+    {
+        // Play sound effect.
+        if (gameObject.CompareTag("Building"))
+        {
+            _SoundSetPlayer.SoundSet = _SoundParams.GetSoundSet("Sound Set - Attack Impacts On Buildings");
+            _SoundSetPlayer.PlayRandomSound();
+        }
+        else // The object getting hit is a character (player, monster, or villager).
+        {
+            _SoundSetPlayer.SoundSet = _SoundParams.GetSoundSet("Sound Set - Attack Impacts On Characters");
+            _SoundSetPlayer.PlayRandomSound();
+        }
     }
 
     private IEnumerator DoDamageFlash()

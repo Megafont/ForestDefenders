@@ -115,7 +115,7 @@ public class ResourceNode : MonoBehaviour
             _GameManager.AddToScore((int) gatherAmount * _GameManager.PlayerGatheringScoreMultiplier);
 
 
-        _SoundSetPlayer.PlaySound();
+        _SoundSetPlayer.PlayRandomSound();
 
 
         // Only fire the NodeDepleted event if the node is depleted, and it wasn't already empty at the start of this function. Then we know this particular gather is the one that depleted it.

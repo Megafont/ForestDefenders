@@ -295,7 +295,6 @@ GameObject:
   - component: {fileID: 3278410852329176038}
   - component: {fileID: 5053829899526913349}
   - component: {fileID: 6862917981531699727}
-  - component: {fileID: 5909176728129252967}
   m_Layer: 8
   m_Name: Player Armature
   m_TagString: Player
@@ -406,6 +405,8 @@ MonoBehaviour:
   _AttackPower: 20
   _AttackCooldownTime: 0.5
   _DamageType: 2
+  _FallDamageMultiplier: 1
+  _MinFallDamageHeight: 2
   _Grounded: 1
   _GroundedOffset: -0.14
   _GroundedRadius: 0.28
@@ -455,19 +456,6 @@ MonoBehaviour:
   _IsResistantTo: 0
   _IsVulnerableTo: 0
   _IsInvincible: 0
---- !u!114 &5909176728129252967
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 186345174372973260}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 438b47afa9012ae409cbfe5c00a9bef8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _SoundSet: {fileID: 11400000, guid: f35a3381b1bded04384f8100255cd2a9, type: 2}
 --- !u!1 &303646539035693345
 GameObject:
   m_ObjectHideFlags: 0

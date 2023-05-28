@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c879c265787dc14381f3d6b4dfbf8ff, type: 3}
+  m_Name: Sound Set - Attack Impacts On Buildings
+  m_EditorClassIdentifier: 
+  SoundsList:
+  - {fileID: 8300000, guid: b9334290a81d9f449b0cbe402356d7db, type: 3}
+  - {fileID: 8300000, guid: f35c58ab4b7a1a343b693bf1b5551093, type: 3}
+  - {fileID: 8300000, guid: eaa6fe79ad6dbc54b8b93e19da1d1f61, type: 3}
+  - {fileID: 8300000, guid: 492371f7d0720fa4d9ce2a5a769dfef0, type: 3}
+  Volume: 0.5
+  PlayAs3DSound: 1

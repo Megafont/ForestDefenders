@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c879c265787dc14381f3d6b4dfbf8ff, type: 3}
+  m_Name: Sound Set - Player Attacks
+  m_EditorClassIdentifier: 
+  SoundsList:
+  - {fileID: 8300000, guid: aafe2bba696f04f4783a5ee8d7c24c54, type: 3}
+  - {fileID: 8300000, guid: 994e54049cab1bd4896f710a8036608f, type: 3}
+  Volume: 0.5
+  PlayAs3DSound: 0

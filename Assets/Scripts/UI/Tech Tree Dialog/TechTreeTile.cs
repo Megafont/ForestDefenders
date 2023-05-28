@@ -34,15 +34,18 @@ public partial class TechTreeTile : MonoBehaviour, IPointerEnterHandler, IPointe
 
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         _GameManager = GameManager.Instance;
 
         _Button = GetComponent<Button>();
         _TitleText = transform.Find("Title Text (TMP)").GetComponent<TMP_Text>();
         _XPCostText = transform.Find("XP Cost Text (TMP)").GetComponent<TMP_Text>();
-        _IconImage = GetComponentInChildren<Image>();
+        _IconImage = transform.Find("Icon").GetComponent<Image>();
+    }
 
+    void Start()
+    {
         UpdateGUIColors();
 
         UpdateGUI();
@@ -71,9 +74,11 @@ public partial class TechTreeTile : MonoBehaviour, IPointerEnterHandler, IPointe
 
     private void UpdateGUI()
     {
-        _TitleText.text = _TileData.IsAvailableToResearch ? _TileData.Title : _ParentDialog.LockedTileDescriptionText;
+        _TitleText.text = _TileData.IsAvailableToResearch ? _TileData.Title : _ParentDialog.LockedTileNameText;
 
         _XPCostText.text = !_TileData.IsResearched ? $"Cost: {_TileData.XPCost} XP" : null; // Display the XP only if the tech item has NOT been researched yet.
+
+        _IconImage.sprite = !TileData.IsAvailableToResearch ? _ParentDialog.LockedTileThumbnail : _TileData.Thumbnail;
     }
 
     public void UpdateGUIColors()
@@ -140,6 +145,9 @@ public partial class TechTreeTile : MonoBehaviour, IPointerEnterHandler, IPointe
     {
         _ParentDialog = parentDialog;
         _TileData = tileData;
+
+        if (_TileData.Thumbnail)
+            _IconImage.sprite = _TileData.Thumbnail;
     }
 
 

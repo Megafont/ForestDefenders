@@ -20,7 +20,6 @@ using Random = UnityEngine.Random;
 /// This third person character controller is a modified version of Unity's third person character controller asset.
 /// </summary>
 [RequireComponent(typeof(CharacterController))]
-[RequireComponent(typeof(SoundSetPlayer))]
 public class PlayerController : MonoBehaviour
 {
     [Header("Player")]
@@ -151,8 +150,9 @@ public class PlayerController : MonoBehaviour
     private float _AttackCooldownRemainingTime;
 
 
-    private SoundSetPlayer _SoundSetPlayer;
     private SoundParams _SoundParams;
+    private SoundSetPlayer _SoundSetPlayer_Attacks;
+    private SoundSetPlayer _SoundSetPlayer_Footsteps;
 
     private float _FallStartHeight;
     private bool _IsFalling;
@@ -193,14 +193,7 @@ public class PlayerController : MonoBehaviour
 
         _ResourceManager = _GameManager.ResourceManager;
 
-        _SoundSetPlayer = GetComponent<SoundSetPlayer>();
-        _SoundParams = _GameManager.SoundParams;
-        _SoundSetPlayer.SoundSet = _SoundParams.GetSoundSet("Sound Set - Player Footsteps");
-
-        _PlayerLandAudio = this.AddComponent<AudioSource>();
-        _PlayerLandAudio.spatialize = false; // Disable 3D sound since the player land and footstep sound is too quiet when played as a 3D sound.
-        _PlayerLandAudio.clip = _SoundParams.PlayerLandingSound;
-        _PlayerLandAudio.volume = _SoundParams.PlayerLandingSoundVolume;
+        InitAudio();
 
         _VillageManager_Buildings = _GameManager.VillageManager_Buildings;
     }
@@ -276,6 +269,22 @@ public class PlayerController : MonoBehaviour
     {
         if (!_BuildModeManager.IsSelectingBuilding)
             CameraRotation();
+    }
+
+    private void InitAudio()
+    {
+        _SoundParams = _GameManager.SoundParams;
+
+        _SoundSetPlayer_Attacks = gameObject.AddComponent<SoundSetPlayer>();
+        _SoundSetPlayer_Attacks.SoundSet = _SoundParams.GetSoundSet("Sound Set - Player Attacks");
+
+        _SoundSetPlayer_Footsteps = gameObject.AddComponent<SoundSetPlayer>();
+        _SoundSetPlayer_Footsteps.SoundSet = _SoundParams.GetSoundSet("Sound Set - Player Footsteps");
+
+        _PlayerLandAudio = this.AddComponent<AudioSource>();
+        _PlayerLandAudio.spatialize = false; // Disable 3D sound since the player land and footstep sound is too quiet when played as a 3D sound.
+        _PlayerLandAudio.clip = _SoundParams.PlayerLandingSound;
+        _PlayerLandAudio.volume = _SoundParams.PlayerLandingSoundVolume;
     }
 
     private void AssignAnimationIDs()
@@ -499,7 +508,14 @@ public class PlayerController : MonoBehaviour
         _animator.ResetTrigger(trigger);
         _animator.SetTrigger(trigger);
 
+
+        // Find all objects that the player hit.
         RaycastHit[] raycastHits = Physics.SphereCastAll(transform.position + transform.forward * 0.75f, 1.0f, transform.forward, 0.1f);
+
+
+        bool hitResourceNode = false;
+
+        // Check each object the player hit.
         foreach (RaycastHit hit in raycastHits)
         { 
             Health health = hit.collider.GetComponent<Health>();
@@ -526,6 +542,8 @@ public class PlayerController : MonoBehaviour
             // If we found a ResourceNode component and it is not depleted, then mine it.
             if (node != null && !node.IsDepleted)
             {
+                hitResourceNode = true;
+
                 //Debug.Log("node is not depleted. Mining it!");
                 float gatherAmount = node.Gather(gameObject);
 
@@ -541,6 +559,12 @@ public class PlayerController : MonoBehaviour
 
         } // end foreach hit
 
+
+        // If the player did not hit a resource node, then play an attack sound
+        // NOTE: Different sounds are played if a resource node was hit.
+        if (!hitResourceNode)
+            _SoundSetPlayer_Attacks.PlayRandomSound();
+        
     }
 
     private void EatFood(float gatherAmount)
@@ -667,7 +691,7 @@ public class PlayerController : MonoBehaviour
     private void OnFootstep(AnimationEvent animationEvent)
     {
         if (animationEvent.animatorClipInfo.weight > 0.5f)
-            _SoundSetPlayer.PlaySound();
+            _SoundSetPlayer_Footsteps.PlayRandomSound();
     }
 
     private void OnLand(AnimationEvent animationEvent)

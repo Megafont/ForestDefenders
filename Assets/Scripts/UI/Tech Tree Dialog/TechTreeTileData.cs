@@ -14,5 +14,6 @@ public class TechTreeTileData
     public bool IsAvailableToResearch; // Whether this tile is still locked, or is unlocked and ready to be researched.
     public bool IsResearched; // Whether this tile has been researched.
 
+    public Sprite Thumbnail; // The image to be displayed on this tech tile.
 }
 

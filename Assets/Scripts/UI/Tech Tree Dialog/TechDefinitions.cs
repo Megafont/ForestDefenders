@@ -34,8 +34,8 @@ public static class TechDefinitions
 
         List<TechTreeTileData> tilesData = new List<TechTreeTileData>()
         {
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_WoodBridge_10m, Title = "Wood Bridge (10m)", DescriptionText = "Gain the technology to build 10-meter long wooden bridges and reach new areas.", XPCost = 20 },
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_WoodBridge_20m, Title = "Wood Bridge (20m)", DescriptionText = "Gain the technology to build 20-meter long wooden bridges and reach new areas.", XPCost = 40 },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_WoodBridge_10m, Title = "Wood Bridge (10m)", DescriptionText = "Gain the technology to build 10-meter long wooden bridges and reach new areas.", XPCost = 20, Thumbnail = BuildModeDefinitions.GetBuildingDefinition("Bridges", "Wood Bridge (10m)").Thumbnail },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_WoodBridge_20m, Title = "Wood Bridge (20m)", DescriptionText = "Gain the technology to build 20-meter long wooden bridges and reach new areas.", XPCost = 40, Thumbnail = BuildModeDefinitions.GetBuildingDefinition("Bridges", "Wood Bridge (20m)").Thumbnail },
         };
 
 
@@ -49,9 +49,9 @@ public static class TechDefinitions
 
         List<TechTreeTileData> tilesData = new List<TechTreeTileData>()
         {
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_Turret, Title = "Turret", DescriptionText = "Gain the technology to build simple turrets.", XPCost = 20 },
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_IceTurret, Title = "Ice Turret", DescriptionText = "Gain the technology to build ice turrets that can slow enemies.", XPCost = 30 },
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_MageTower, Title = "Mage Tower", DescriptionText = "Gain the technology to build mage towers.", XPCost = 40 },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_Turret, Title = "Turret", DescriptionText = "Gain the technology to build simple turrets.", XPCost = 20, Thumbnail = BuildModeDefinitions.GetBuildingDefinition("Defense", "Turret").Thumbnail },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_IceTurret, Title = "Ice Turret", DescriptionText = "Gain the technology to build ice turrets that can slow enemies.", XPCost = 30, Thumbnail = BuildModeDefinitions.GetBuildingDefinition("Defense", "Ice Turret").Thumbnail },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_MageTower, Title = "Mage Tower", DescriptionText = "Gain the technology to build mage towers.", XPCost = 40, Thumbnail = BuildModeDefinitions.GetBuildingDefinition("Defense", "Mage Tower").Thumbnail },
         };
 
 
@@ -65,8 +65,8 @@ public static class TechDefinitions
 
         List<TechTreeTileData> tilesData = new List<TechTreeTileData>()
         {
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_LargeGarden, Title = "Large Garden", DescriptionText = "Gain the technology to build large guardens.", XPCost = 20 },
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_Farm, Title = "Farm", DescriptionText = "Gain the technology to build farms.", XPCost = 40 },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_LargeGarden, Title = "Large Garden", DescriptionText = "Gain the technology to build large guardens.", XPCost = 20, Thumbnail = BuildModeDefinitions.GetBuildingDefinition("Farming", "Large Garden").Thumbnail },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_Farm, Title = "Farm", DescriptionText = "Gain the technology to build farms.", XPCost = 40, Thumbnail = BuildModeDefinitions.GetBuildingDefinition("Farming", "Farm").Thumbnail },
         };
 
 
@@ -80,8 +80,8 @@ public static class TechDefinitions
 
         List<TechTreeTileData> tilesData = new List<TechTreeTileData>()
         {
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_MediumHouse, Title = "Medium House", DescriptionText = "Gain the technology to build medium size houses, which increase max population by 2.", XPCost = 20 },
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_LargeHouse, Title = "Large House", DescriptionText = "Gain the technology to build large size houses, which increase max population by 4.", XPCost = 40 },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_MediumHouse, Title = "Medium House", DescriptionText = "Gain the technology to build medium size houses, which increase max population by 2.", XPCost = 20, Thumbnail = BuildModeDefinitions.GetBuildingDefinition("Housing", "Medium House").Thumbnail },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_LargeHouse, Title = "Large House", DescriptionText = "Gain the technology to build large size houses, which increase max population by 4.", XPCost = 40, Thumbnail = BuildModeDefinitions.GetBuildingDefinition("Housing", "Large House").Thumbnail },
         };
 
 
@@ -95,8 +95,8 @@ public static class TechDefinitions
 
         List<TechTreeTileData> tilesData = new List<TechTreeTileData>()
         {
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_WoodWall, Title = "Wood Walls", DescriptionText = "Gain the technology to build wooden walls.", XPCost = 10 },          
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_StoneWall, Title = "Stone Walls", DescriptionText = "Gain the technology to build stone walls.", XPCost = 20 },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_WoodWall, Title = "Wood Walls", DescriptionText = "Gain the technology to build wooden walls.", XPCost = 20, Thumbnail = BuildModeDefinitions.GetBuildingDefinition("Walls", "Wood Wall").Thumbnail },          
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_StoneWall, Title = "Stone Walls", DescriptionText = "Gain the technology to build stone walls.", XPCost = 40, Thumbnail = BuildModeDefinitions.GetBuildingDefinition("Walls", "Stone Wall").Thumbnail },
         };
 
 
@@ -110,7 +110,7 @@ public static class TechDefinitions
 
         List<TechTreeTileData> tilesData = new List<TechTreeTileData>()
         {
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Villagers_RepairBuildings, Title = "Repair Damaged Buildings", DescriptionText = "Villagers gain the tools to repair damaged buildings. The hard work makes them hungry, though!", XPCost = 40 },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Villagers_RepairBuildings, Title = "Repair Damaged Buildings", DescriptionText = "Villagers gain the tools to repair damaged buildings. The hard work makes them hungry, though!", XPCost = 40, Thumbnail = Resources.Load<Sprite>("UI/Villagers Can Repair Buildings") },
         };
 
 

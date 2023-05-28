@@ -15,13 +15,42 @@ public class SoundSetPlayer : MonoBehaviour
 
     private void Awake()
     {
-        _AudioSource = this.AddComponent<AudioSource>();
-        
+        _AudioSource = this.AddComponent<AudioSource>();        
+    }
+
+    private void Start()
+    {
         if (_SoundSet)
             _AudioSource.volume = _SoundSet.Volume;
     }
 
-    public void PlaySound()
+    public void PlaySound(int index)
+    {
+        if (_SoundSet == null)
+        {
+            Debug.LogError($"Could not play a sound, because the sound set is null!");
+            return;
+        }
+
+        if (_SoundSet.SoundsList == null)
+        {
+            Debug.LogError($"Could not play a sound, because the sound set \"SoundSet.Name\" contains no sounds!");
+            return;
+        }
+
+        if (_SoundSet.SoundsList.Count == 0)
+        {
+            Debug.LogError($"Could not play a sound, because the sound set \"SoundSet.Name\" is empty!");
+            return;
+        }
+
+
+        _AudioSource.spatialize = _SoundSet.PlayAs3DSound;
+        _AudioSource.volume = _SoundSet.Volume;
+        _AudioSource.PlayOneShot(_SoundSet.SoundsList[index]);
+    }
+
+    public void PlayRandomSound()
     {
         if (_SoundSet == null)
         {

@@ -15,6 +15,10 @@ public class RadialMenuDialog : Dialog_Base, IDialog
     [Min(1)]
     [SerializeField] private float _Radius = 150;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip _MenuClickSound;
+    [SerializeField] private float _MenuClickSoundVolume = 1.0f;
+
 
 
     public delegate void RadialMenuEventHandler(GameObject sender);
@@ -40,6 +44,10 @@ public class RadialMenuDialog : Dialog_Base, IDialog
 
     private GameObject _RadialMenuItemsParent;
 
+    private AudioSource _AudioSource;
+
+    private Sprite _CancelIcon;
+
 
 
     protected override void Dialog_OnAwake()
@@ -48,6 +56,10 @@ public class RadialMenuDialog : Dialog_Base, IDialog
         _MenuBottomBarUI = GameObject.Find("Radial Menu Dialog/Panel/Bottom Text Bar/Bottom Text Bar (TMP)").GetComponent<TMP_Text>();
         _RadialMenuPanel = GameObject.Find("Radial Menu Dialog/Panel");
         _RadialMenuItemsParent = GameObject.Find("Radial Menu Dialog/Panel/Menu Items Parent");
+
+        _AudioSource = gameObject.AddComponent<AudioSource>();
+
+        _CancelIcon = Resources.Load<Sprite>("UI/Cancel");
     }
 
     protected override void Dialog_OnStart()
@@ -61,7 +73,7 @@ public class RadialMenuDialog : Dialog_Base, IDialog
 
 
 
-    public void SetMenuParams(string title, string[] names, int defaultItemIndex = 0)
+    public void SetMenuParams(string title, string[] names, Sprite[] thumbnails = null, int defaultItemIndex = 0)
     {
         if (names.Length == 0)
             throw new Exception("The passed in menu items list is empty!");
@@ -69,6 +81,8 @@ public class RadialMenuDialog : Dialog_Base, IDialog
             throw new Exception("The passed in default menu item index must be positive!");
         if (defaultItemIndex >= names.Length) // This is >= instead of > to take into account the "Cancel" item that is added to the end of the menu automatically.
             throw new Exception("The passed in default menu item index must not be larger than the number of menu items!");
+        if (thumbnails != null && thumbnails.Length != names.Length)
+            throw new Exception("The passed in thumbnails list must be the same length as the passed in names list!");
 
         if (_RadialMenuPanel == null)
             throw new Exception("The radial menu panel is null!");
@@ -76,7 +90,7 @@ public class RadialMenuDialog : Dialog_Base, IDialog
 
         if (_IsInitializing || IsOpen())
         {
-            Debug.LogError("Can't show radial menu because one is already open!");
+            Debug.LogError("Can't set radial menu parameters because a radial menu is already being setup or is already open!");
             return;
         }
 
@@ -88,9 +102,8 @@ public class RadialMenuDialog : Dialog_Base, IDialog
 
         _MenuTitleUI.text = title;
 
-        InitMenuItemsVisualElements(names, defaultItemIndex);
+        InitMenuItemsVisualElements(names, thumbnails, defaultItemIndex);
 
-        _RadialMenuPanel.SetActive(true);
         SelectedMenuItemIndex = 0;
 
         _IsInitializing = false;
@@ -101,6 +114,8 @@ public class RadialMenuDialog : Dialog_Base, IDialog
         if (IsOpen())
             throw new Exception("Cannot display the radial menu, because one is already displayed!");
 
+
+        _RadialMenuPanel.SetActive(true);
 
         base.OpenDialog(closeOtherOpenDialogs);
 
@@ -175,8 +190,10 @@ public class RadialMenuDialog : Dialog_Base, IDialog
 
     protected override void Dialog_OnConfirm()
     {
-        if (!MenuCancelled)
+        if (!MenuCancelled && !MenuConfirmed)
         {
+            PlayMenuClickSound();
+
             if (SelectedMenuItemName != "Cancel")
                 MenuConfirmed = true;
             else
@@ -186,10 +203,19 @@ public class RadialMenuDialog : Dialog_Base, IDialog
 
     protected override void Dialog_OnCancel()
     {
-        if (!MenuConfirmed)
+        if (!MenuCancelled && !MenuConfirmed)
         {
+            PlayMenuClickSound();
+
             MenuCancelled = true;
         }
+    }
+
+    protected void PlayMenuClickSound()
+    {
+        _AudioSource.spatialize = false;
+        _AudioSource.volume = _MenuClickSoundVolume;
+        _AudioSource.PlayOneShot(_MenuClickSound);
     }
 
     private void GetSelectedItemIndexFromGamepadInput()
@@ -256,7 +282,7 @@ public class RadialMenuDialog : Dialog_Base, IDialog
     }
 
 
-    private void InitMenuItemsVisualElements(string[] names, int defaultItemIndex)
+    private void InitMenuItemsVisualElements(string[] names, Sprite[] thumbnails, int defaultItemIndex)
     {
         _ActiveMenuItemsCount = names.Length + 1;
 
@@ -268,7 +294,10 @@ public class RadialMenuDialog : Dialog_Base, IDialog
         Quaternion q = Quaternion.identity;
         float angle = 0;
 
-        float menuItemVerticalOffset = CalculateMenuItemsVerticalOffset();
+
+        bool addThumbnailOffset = (thumbnails != null && thumbnails[0] != null);        
+        float menuItemVerticalOffset = CalculateMenuItemsVerticalOffset(addThumbnailOffset);
+        //Debug.Log($"OFFSET: {menuItemVerticalOffset}");
 
         // Get the number of items we need to iterate through (whichever one is higher is what we need).
         // The plus one takes into account the Cancel item that is added to the end of the menu automatically below.
@@ -290,6 +319,7 @@ public class RadialMenuDialog : Dialog_Base, IDialog
                 q.eulerAngles = new Vector3(0, 0, -angle); // We negate the angle so the menu items are placed around the center going clockwise rather than the inverse.
                 Vector3 offset = q * (Vector3.up * _Radius);
 
+
                 // Position the menu item.
                 // The last part of this line in ()s shifts the menu items down by half the height of the title bar so they appear centered in the area beneath it.
                 _MenuItems[i].transform.position = _RadialMenuPanel.transform.position + offset + new Vector3(0, menuItemVerticalOffset, 0);
@@ -300,22 +330,40 @@ public class RadialMenuDialog : Dialog_Base, IDialog
                 // Remove highlighting if this menu item is highlighted.
                 _MenuItems[i].Unhighlight();
 
+
+                // Set the thumbnail of the menu item. We MUST do this before we set the name,
+                // otherwise this code will inadvertantly disable the thumbnail image on the cancel button.
+                if (thumbnails == null || i >= thumbnails.Length)
+                    _MenuItems[i].SetThumbnail(null);
+                else
+                    _MenuItems[i].SetThumbnail(thumbnails[i]);
+
+
                 // Set the name of the menu item.
                 if (i < names.Length)
                     _MenuItems[i].Name = names[i];
                 else if (i == names.Length)
+                {
                     _MenuItems[i].Name = "Cancel";
+
+                    // If this menu is using icons, then give the cancel command a default cancel icon.
+                    if (_MenuItems[0].HasThumbnail)
+                        _MenuItems[i].SetThumbnail(_CancelIcon);
+                }
+
+
+
 
 
                 // If this is the first menu item, set it as the default.
                 if (i == defaultItemIndex)
                 {
-                    _MenuItems[i].IsDefaultMenuItem = true;
+                    _MenuItems[i].NewItemIsDefaultMenuItem = true;
                     _MenuItems[i].Highlight();
                 }
                 else
                 {
-                    _MenuItems[i].IsDefaultMenuItem = false;
+                    _MenuItems[i].NewItemIsDefaultMenuItem = false;
                 }
 
 
@@ -337,13 +385,27 @@ public class RadialMenuDialog : Dialog_Base, IDialog
     /// <summary>
     /// Offsets the menu items vertically so they are centered between the title bar and the bottom bar.
     /// </summary>
-    /// <returns></returns>
-    private float CalculateMenuItemsVerticalOffset()
+    /// <param name="addThumbnailOffset">Whether or not to add an extra offset to account for thumbnail images.</param>
+    /// <returns>The vertical offset amount for the radial menu items.</returns>
+    private float CalculateMenuItemsVerticalOffset(bool addThumbnailOffset)
     {
         float titleBarHeight = _MenuTitleUI.rectTransform.rect.height;
         float bottomBarHeight = _MenuBottomBarUI.rectTransform.rect.height;
 
-        return ((-titleBarHeight) + (bottomBarHeight)) / 2;
+        float offset = ((-titleBarHeight) + (bottomBarHeight)) / 2;
+
+
+        // Shift the menu items down if they have thumbnails so the menu will still appear centered in the dialog.
+        if (addThumbnailOffset)
+            offset -= 70;
+
+        // If we are displaying the building categories menu, then shift it back up a bit so it isn't off center.
+        // This happens just because of how the menu ends up arranged with 6 menu items in it.
+        if (_MenuTitleUI.text == "Select Building Type")
+            offset += 30;
+
+
+        return offset;
     }
 
     private void CreateMenuItem()

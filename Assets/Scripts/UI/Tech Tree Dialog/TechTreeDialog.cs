@@ -15,13 +15,12 @@ public class TechTreeDialog : Dialog_Base, IDialog
     const float KEYBOARD_SCROLL_SPEED = 10.0f;
 
 
+    [Header("UI Prefabs")]
     [SerializeField] private GameObject _TileGroupHeaderPrefab;
     [SerializeField] private GameObject _TileGroupPrefab;
     [SerializeField] private GameObject _TilePrefab;
 
-    [SerializeField] private string _LockedTileNameText = "???";
-    [SerializeField] private string _LockedTileDescriptionText = "-";
-
+    [Header("Colors")]
     [SerializeField] private Color32 _HighlightColor = new Color32(220, 150, 0, 200);
     [SerializeField] private Color32 _LockedColor = new Color32(64, 64, 64, 200);
     [SerializeField] private Color32 _UnlockedColor = new Color32(0, 0, 0, 200);
@@ -30,7 +29,15 @@ public class TechTreeDialog : Dialog_Base, IDialog
     [SerializeField] private Color32 _TileNormalXPCostTextColor = Color.white;
     [SerializeField] private Color32 _TileNotEnoughXPTextColor = Color.red;
 
+    [Header("Display")]
+    [SerializeField] private string _LockedTileNameText = "???";
+    [SerializeField] private string _LockedTileDescriptionText = "-";
+    [SerializeField] private Sprite _LockedTileThumbnail;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip _UnlockTechSound;
+    [Range(0,1)]
+    [SerializeField] private float _UnlockTechSoundVolume = 1.0f;
 
     private struct TechTreeTileGroup
     {
@@ -56,11 +63,15 @@ public class TechTreeDialog : Dialog_Base, IDialog
 
     private float _LastGamepadSelectionChangeTime;
 
+    AudioSource _UnlockTechAudioSource;
+
 
 
     protected override void Dialog_OnAwake()
     {
         _PauseGameWhileDialogOpen = true;
+
+        _UnlockTechAudioSource = gameObject.AddComponent<AudioSource>();
     }
 
     protected override void Dialog_OnStart()
@@ -360,6 +371,12 @@ public class TechTreeDialog : Dialog_Base, IDialog
             if (!_GameManager.ResearchIsFree)
                 AvailableXP -= tileToUnlock.TileData.XPCost;
 
+
+            // Play sound effect.
+            _UnlockTechAudioSource.volume = _UnlockTechSoundVolume;
+            _UnlockTechAudioSource.PlayOneShot(_UnlockTechSound);
+
+
             UpdateXPCountText();
 
             tileToUnlock.SetResearchedFlag(true);
@@ -522,6 +539,7 @@ public class TechTreeDialog : Dialog_Base, IDialog
 
     public string LockedTileNameText { get { return _LockedTileNameText; } }
     public string LockedTileDescriptionText { get { return _LockedTileDescriptionText; } }
+    public Sprite LockedTileThumbnail { get { return _LockedTileThumbnail; } }
 
     public TechTreeTile SelectedTile 
     { 

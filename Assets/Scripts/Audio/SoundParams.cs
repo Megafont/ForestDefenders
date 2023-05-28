@@ -13,6 +13,7 @@ public class SoundParams : ScriptableObject
     [Header("Sound Sets")]
     public List<SoundSet> SoundSets = new List<SoundSet>();
 
+
     [Header("Player")]
     public AudioClip PlayerLandingSound;
     
@@ -20,10 +21,15 @@ public class SoundParams : ScriptableObject
     public float PlayerLandingSoundVolume = DEFAULT_SOUND_VOLUME;
     [Tooltip("Whether or not the player landing sound is played at a 3D position in the world. Disabling this is helpful if the sound is too quiet at max volume.")]
     public bool PlayPlayerLandingSoundAs3DSound = true;
+
+
+    [Header("Birds")]
     [Range(0, 1)]
     public float BirdSoundsVolume = 1.0f;
     [Range(1, 5)]
     public float BirdSoundsFadeTime = 2.0f;
+
+
 
     private Dictionary<string, SoundSet> _SoundSetsByName;
 

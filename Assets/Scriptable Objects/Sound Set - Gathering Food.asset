@@ -13,8 +13,15 @@ MonoBehaviour:
   m_Name: Sound Set - Gathering Food
   m_EditorClassIdentifier: 
   SoundsList:
-  - {fileID: 8300000, guid: b9334290a81d9f449b0cbe402356d7db, type: 3}
-  - {fileID: 8300000, guid: f35c58ab4b7a1a343b693bf1b5551093, type: 3}
-  - {fileID: 8300000, guid: eaa6fe79ad6dbc54b8b93e19da1d1f61, type: 3}
-  - {fileID: 8300000, guid: 492371f7d0720fa4d9ce2a5a769dfef0, type: 3}
+  - {fileID: 8300000, guid: 55be8db2dd6ec3c44a97659525a7a7f5, type: 3}
+  - {fileID: 8300000, guid: 4833a2218122e0d46b29f905f7c7f619, type: 3}
+  - {fileID: 8300000, guid: 6855b547b00809b40bccf8fe7bdfc22b, type: 3}
+  - {fileID: 8300000, guid: 101df1d8d0af2e543a14ea362a904b27, type: 3}
+  - {fileID: 8300000, guid: 2cf5684b051f37a4ba614cd0d29631a9, type: 3}
+  - {fileID: 8300000, guid: 0a371e9eb35d68a4aad314f7b72ef159, type: 3}
+  - {fileID: 8300000, guid: 3ade40d969944474489575d4cac85464, type: 3}
+  - {fileID: 8300000, guid: 8a0b02e5dbff2654aaa5a55e30a6a02e, type: 3}
+  - {fileID: 8300000, guid: 7908f34de8ab35248ab4d1b54ac59a05, type: 3}
+  - {fileID: 8300000, guid: acec63b807163214ea3c77446098717c, type: 3}
   Volume: 1
+  PlayAs3DSound: 0

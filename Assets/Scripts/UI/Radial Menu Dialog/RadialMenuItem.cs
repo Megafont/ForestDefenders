@@ -9,12 +9,17 @@ using UnityEngine.EventSystems;
 public class RadialMenuItem : MonoBehaviour, IPointerEnterHandler
 {
     public static float DefaultTextSize;
-
+    public static float ImageSizeIncreaseOnSelection = 50;
+    public static Color ThumbnailUnhighlightedColor = new Color32(100, 100, 100, 255);
 
     private string _Name;
 
     private TMP_Text _UI_TMPComponent;
     private Button _UI_ButtonComponent;
+    private Image _UI_Thumbnail;
+
+    private Vector2 _DefaultThumbnailSize;
+    private Vector3 _DefaultThumbnailPosition;
 
 
 
@@ -33,15 +38,20 @@ public class RadialMenuItem : MonoBehaviour, IPointerEnterHandler
         _UI_TMPComponent = GetComponent<TMP_Text>();
         _UI_ButtonComponent = GetComponent<Button>();
 
+        _UI_Thumbnail = transform.Find("Icon").GetComponent<Image>();
+        _DefaultThumbnailSize = _UI_Thumbnail.rectTransform.sizeDelta;
+        _DefaultThumbnailPosition = _UI_Thumbnail.rectTransform.localPosition;
+
         DefaultTextSize = _UI_TMPComponent.fontSize;
 
         _UI_TMPComponent.text = _Name;
 
-        if (!IsDefaultMenuItem)
+        if (!NewItemIsDefaultMenuItem)
             Unhighlight();
         else
             Highlight();
 
+        
         IsInited = true;
     }
 
@@ -54,6 +64,26 @@ public class RadialMenuItem : MonoBehaviour, IPointerEnterHandler
 
         // Set the game object name.
         name = $"Radial Menu Item \"{_Name}\" (TMP)";
+    }
+
+    public void SetThumbnail(Sprite thumbnail)
+    {
+        if (_UI_Thumbnail == null)
+            _UI_Thumbnail = transform.Find("Icon").GetComponent<Image>();
+
+
+        if (thumbnail)
+        {
+            Debug.Log($"Set Thumb: {_Name}");
+            _UI_Thumbnail.enabled = true;
+            _UI_Thumbnail.sprite = thumbnail;
+        }
+        else
+        {
+            Debug.Log($"Set Thumb null: {_Name}");
+            _UI_Thumbnail.enabled = false;
+        }
+
     }
 
     public void Show(bool show = true)
@@ -72,6 +102,10 @@ public class RadialMenuItem : MonoBehaviour, IPointerEnterHandler
 
         _UI_TMPComponent.faceColor = _UI_ButtonComponent.colors.pressedColor;
         _UI_TMPComponent.fontSize = DefaultTextSize + 4;
+
+        _UI_Thumbnail.color = Color.white;
+        _UI_Thumbnail.rectTransform.sizeDelta = _DefaultThumbnailSize + new Vector2(ImageSizeIncreaseOnSelection, ImageSizeIncreaseOnSelection);
+        _UI_Thumbnail.rectTransform.localPosition = _DefaultThumbnailPosition + new Vector3(0, ImageSizeIncreaseOnSelection, 0);
     }
 
     public void Unhighlight()
@@ -82,6 +116,10 @@ public class RadialMenuItem : MonoBehaviour, IPointerEnterHandler
 
         _UI_TMPComponent.fontSize = DefaultTextSize;
         _UI_TMPComponent.faceColor = _UI_ButtonComponent.colors.normalColor;
+
+        _UI_Thumbnail.color = ThumbnailUnhighlightedColor;
+        _UI_Thumbnail.rectTransform.sizeDelta = _DefaultThumbnailSize;
+        _UI_Thumbnail.rectTransform.localPosition = _DefaultThumbnailPosition;
     }
 
 
@@ -134,7 +172,7 @@ public class RadialMenuItem : MonoBehaviour, IPointerEnterHandler
     // I couldn't get the default menu item to highlight at first, because this GameObject isn't initialized yet when the RadialMenu.InitMenuItemsVisualElements() function
     // creates a new menu item on the fly and sets it up. So I added this property so the new menu item can handle updating itself in the Start() that first time.
     // The Name property exists for the same reason, but for setting the menu item's text.
-    public bool IsDefaultMenuItem { get; set; }
+    public bool NewItemIsDefaultMenuItem { get; set; }
 
     public bool IsHighlighted 
     { 
@@ -171,6 +209,17 @@ public class RadialMenuItem : MonoBehaviour, IPointerEnterHandler
         set
         {
             SetNormalColor(value);
+        }
+    }
+
+    public bool HasThumbnail
+    {
+        get 
+        {
+            if (_UI_Thumbnail == null)
+                return false;
+            else
+                return _UI_Thumbnail.enabled; 
         }
     }
 

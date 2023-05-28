@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 
@@ -169,7 +169,7 @@ public static class BuildModeDefinitions
 
             Size = size,
             IsRound = isRound,
-
+            
             // The Prefab and ConstructionGhostMesh properties are left out here on purpose, as they are set by the LoadBuildingPrefabs() function.
         };
 
@@ -219,10 +219,13 @@ public static class BuildModeDefinitions
             // Store the prefab and construction ghost in the building definition.
             pair.Value.Prefab = prefab;
             pair.Value.ConstructionGhostMesh = combinedMesh;
+
+
+            // Load the thumbnail.
+            pair.Value.Thumbnail = LoadBuildingThumbnail(pair.Value.Category, pair.Value.Name);
         }
 
-    }
-
+    }    
 
     private static MaterialCost CreateMaterialCost(ResourceTypes resource, int amount)
     {
@@ -317,6 +320,30 @@ public static class BuildModeDefinitions
         return names.ToArray();
     }
 
+    public static Sprite[] GetList_ThumbnailsOfResearchedbuildingsInCategory(string category)
+    {
+        BuildingDefinition[] defs;
+
+        defs = GetList_BuildingDefinitionsInCategory(category);
+
+
+        GameManager gameManager = GameManager.Instance;
+
+        List<Sprite> thumbnails = new List<Sprite>();
+        foreach (BuildingDefinition buildingDef in defs)
+        {
+            // Has this building been researched yet?
+            TechDefinitionIDs techId = buildingDef.TechID;
+            if (techId == TechDefinitionIDs.NOT_APPLICABLE || // Building is not researchable if this is its ID
+                gameManager.TechTreeDialog.IsTechnologyResearched(buildingDef.TechID))
+            {
+                thumbnails.Add(buildingDef.Thumbnail);
+            }
+        }
+
+        return thumbnails.ToArray();
+    }
+
     public static bool BuildingIsBridge(BuildingDefinition buildingDef)
     {
         if (buildingDef.Category == "Bridges")
@@ -345,7 +372,19 @@ public static class BuildModeDefinitions
 
     }
 
+    private static Sprite LoadBuildingThumbnail(string category, string buildingName)
+    {
+        Sprite thumbnail = Resources.Load<Sprite>($"Structures/Thumbnails/{category}/{buildingName}");
 
+
+        if (thumbnail)
+            Debug.Log($"    - Loaded building thumbnail \"Resources/Structures/Thumbnails/{category}/{buildingName}\".");
+        //else
+        //    throw new Exception($"    - Failed to load building thumbnail \"Resources/Structures/Thumbnails/{category}/{buildingName}\"!");
+
+
+        return thumbnail;
+    }
 
     public static bool IsInitialized { get; private set; }
 }

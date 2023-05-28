@@ -22,4 +22,6 @@ public class BuildingDefinition
 
     public GameObject Prefab;
     public Mesh ConstructionGhostMesh;
+
+    public Sprite Thumbnail;
 }

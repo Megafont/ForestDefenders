@@ -195,7 +195,13 @@ public class BuildModeManager : MonoBehaviour
             // ----------------------------------------------------------------------------------------------------
 
             _RadialMenu.BottomBarText = "";
-            _RadialMenu.SetMenuParams("Select Building Type", BuildModeDefinitions.GetList_BuildingCategoriesContainingResearchedBuildings());
+            _RadialMenu.SetMenuParams("Select Building Type", 
+                                      BuildModeDefinitions.GetList_BuildingCategoriesContainingResearchedBuildings(),
+                                      new Sprite[] { BuildModeDefinitions.GetBuildingDefinition("Bridges", "Wood Bridge (10m)").Thumbnail,
+                                                     BuildModeDefinitions.GetBuildingDefinition("Defense", "Turret").Thumbnail,
+                                                     BuildModeDefinitions.GetBuildingDefinition("Farming", "Large Garden").Thumbnail,
+                                                     BuildModeDefinitions.GetBuildingDefinition("Housing", "Medium House").Thumbnail,
+                                                     BuildModeDefinitions.GetBuildingDefinition("Walls",   "Wood Wall").Thumbnail, });
             _RadialMenu.OpenDialog();
 
 
@@ -232,7 +238,9 @@ public class BuildModeManager : MonoBehaviour
             // ----------------------------------------------------------------------------------------------------
 
             _RadialMenu.OnSelectionChanged += OnRadialMenuSelectionChangedHandler;
-            _RadialMenu.SetMenuParams($"Select {_TempCategory} Building", BuildModeDefinitions.GetList_NamesOfResearchedbuildingsInCategory(_TempCategory));
+            _RadialMenu.SetMenuParams($"Select {_TempCategory} Building", 
+                                      BuildModeDefinitions.GetList_NamesOfResearchedbuildingsInCategory(_TempCategory),
+                                      BuildModeDefinitions.GetList_ThumbnailsOfResearchedbuildingsInCategory(_TempCategory));
             _RadialMenu.OpenDialog();
 
 
