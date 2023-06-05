@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Terrain
+  m_Name: Terrain (Splat Map)
   m_Shader: {fileID: -6465566751694194690, guid: 16745a86b3af2e54c80d82df4c6c6581,
     type: 3}
   m_Parent: {fileID: 0}
@@ -268,7 +268,7 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
-    - _Normal_Maps_Strength: 1
+    - _Normal_Maps_Strength: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueControl: 0
@@ -300,7 +300,7 @@ Material:
     - _Tiling_Scale: {r: 1, g: 1, b: 1, a: 0}
     - _Top_Texture_Tiling_Scale: {r: 1, g: 1, b: 1, a: 0}
     - _Top_Y_Axis_Offset: {r: 0, g: 0, b: 0, a: 0}
-    - _Top_Y_Axis_Tiling_Scale: {r: 1, g: 1, b: 0, a: 0}
+    - _Top_Y_Axis_Tiling_Scale: {r: 0.5, g: 0.5, b: 0, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &7633014100943241402
 MonoBehaviour:

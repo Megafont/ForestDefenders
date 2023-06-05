@@ -463,6 +463,11 @@ PrefabInstance:
       propertyPath: EmissionModule.rateOverTime.scalar
       value: 150
       objectReference: {fileID: 0}
+    - target: {fileID: 3916932307928609177, guid: 3ea2e97ecd341a442929abf12269b687,
+        type: 3}
+      propertyPath: InitialModule.gravityModifier.scalar
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3916932307928609178, guid: 3ea2e97ecd341a442929abf12269b687,
         type: 3}
       propertyPath: m_Enabled
@@ -481,7 +486,7 @@ PrefabInstance:
     - target: {fileID: 3916932307928609179, guid: 3ea2e97ecd341a442929abf12269b687,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.36
+      value: -0.19
       objectReference: {fileID: 0}
     - target: {fileID: 3916932307928609179, guid: 3ea2e97ecd341a442929abf12269b687,
         type: 3}
@@ -491,7 +496,7 @@ PrefabInstance:
     - target: {fileID: 3916932307928609179, guid: 3ea2e97ecd341a442929abf12269b687,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 6.39
+      value: 7.13
       objectReference: {fileID: 0}
     - target: {fileID: 3916932307928609179, guid: 3ea2e97ecd341a442929abf12269b687,
         type: 3}

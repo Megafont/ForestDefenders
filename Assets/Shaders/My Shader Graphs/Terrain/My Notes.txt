@@ -8,21 +8,15 @@ NOTE: If you see weird results from the shaders discussed below, check that the 
       shaders without providing any normal maps by setting Normal Maps Strength to 0. You can also
       use them without providing AO or metallic maps.
 
-The splat map shader was created with a little help from this response to someone's post here:
-https://blender.stackexchange.com/questions/49705/texture-splatting-mix-multiple-4-textures
 
-It uses a shared sampler state for everything, as otherwise I got an error that
-"the maximum ps_5_0 sampler register index (16) was exceeded for D3D 11".
-This shader uses two sub shaders I also made to clean things up a bit:
-Splat Map Blend
-Splat Map Normal Map Blend
-
+TRIPLANAR SHADERS:
+=====================
 
 I made the triplanar shaders by following this tutorial:
 https://www.youtube.com/watch?v=yuiQo54Baos&t=376s
 
 This shader also uses the fix for the "ps_5_0 maximum sampler register index (16) was exceeded for D3D 11"
-error mentioned above for the splat map shader.
+error mentioned below for the splat map shaders.
 
 The 2 materials version just passes the side texture into both the side and front projection parts
 of the shader, and the "(2 Materials) With Side UV Projection" one is very similar. It uses the
@@ -35,6 +29,34 @@ triplanar shader are useful for things like adding snow onto a mesh. The former 
 the side texture projected via the model's own UV map. So basically, the model can have its own
 texture map like normal (the side texture in the shader), and it adds snow onto the model's upward
 pointing faces.
+
+
+TRIPLANAR WITH SPLAT MAP SHADERS:
+===================================
+
+The splat map shader was created with a little help from this response to someone's post here:
+https://blender.stackexchange.com/questions/49705/texture-splatting-mix-multiple-4-textures
+
+It uses a shared sampler state for everything, as otherwise I got an error that
+"the maximum ps_5_0 sampler register index (16) was exceeded for D3D 11".
+This shader uses two sub shaders I also made to clean things up a bit: 
+    Splat Map Blend
+    Splat Map Normal Map Blend
+
+The splat map shaders take five sets of materials. The base map is the first material all others
+get blended on top of. This prevents darker areas, which were caused because originally the shader
+blended the first material with pure black, so it ended up with darkened borders around it.
+The four materials that get blended on top of the base material use the RGBA channels of the splat
+map as their strength values. 0 means none of this texture is blended at this point, and 1 means
+this texture will completely cover any previous material already shaded at this point. Each channel
+is just used as an alpha value for each blend material.
+
+The vertex color variants of these shaders are the same except that instead of pulling the blending
+values from a splat map texture, they instead read in the mesh's vertex colors and use those. 
+This solves the issue that splat maps can't handle terrain with overhangs for the same reason
+height maps can't. Note that these shaders simply pass in 0 for the alpha channel. This is because
+vertex colors do not have an alpha channel, at least not in Blender. As a result, the alpha channel
+was defaulting to a value of 1, which caused the last blend material to cover the entire surface.
 
 NOTE: The test splat map texture won't work properly on a sphere, as it wasn't painted on a sphere
       in Blender. I just made the texture in gimp as a quick test. All of the splat map shader
@@ -52,3 +74,20 @@ NOTE: For both the 2 and 3 materials shaders (with and without splat maps), the 
       of the three triplanar projections can have completely independent scale settings. This way
       you can scale any of the textures any way you want without affecting the others. I also did
       the same for the offset property, since it was either that or drop it entirely.
+
+
+TRIPLANAR WITH VERTEX COLORS SHADERS:
+========================================
+
+Since splat maps don't work the best on terrain with overhangs, I ended up creating these shaders.
+It was a super simple modification to the splat map shaders. All I had to do was replace the
+"Splat Map Channels Values" custom node, with a new custom node that reads the color data in
+from the geometry's vertex colors rather than from a splat map. I only had to swap one node inside
+that shader subgraph to create the new custom node!
+
+NOTE: With both these and the splat map shaders, you can get around the limit of four materials blended
+      on your terrain. Since the shader is applied to geometry as a material, simply create multiple
+      variants of this material with different textures and add them into the mesh' materials list.
+      Then different parts of the mesh can use a different material that blends the desired textures
+      on that part of the terrain.
+      

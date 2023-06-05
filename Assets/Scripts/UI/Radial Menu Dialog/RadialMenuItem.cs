@@ -74,13 +74,13 @@ public class RadialMenuItem : MonoBehaviour, IPointerEnterHandler
 
         if (thumbnail)
         {
-            Debug.Log($"Set Thumb: {_Name}");
+            //Debug.Log($"Set Thumb: {_Name}");
             _UI_Thumbnail.enabled = true;
             _UI_Thumbnail.sprite = thumbnail;
         }
         else
         {
-            Debug.Log($"Set Thumb null: {_Name}");
+            //Debug.Log($"Set Thumb null: {_Name}");
             _UI_Thumbnail.enabled = false;
         }
 
