@@ -46,6 +46,7 @@ public class SoundSetPlayer : MonoBehaviour
 
 
         _AudioSource.spatialize = _SoundSet.PlayAs3DSound;
+        _AudioSource.spatialBlend = _SoundSet.SpatialBlend;
         _AudioSource.volume = _SoundSet.Volume;
         _AudioSource.PlayOneShot(_SoundSet.SoundsList[index]);
     }
@@ -76,6 +77,7 @@ public class SoundSetPlayer : MonoBehaviour
         //AudioSource.PlayClipAtPoint(_SoundSet.SoundsList[index], transform.position, _SoundSet.Volume);
 
         _AudioSource.spatialize = _SoundSet.PlayAs3DSound;
+        _AudioSource.spatialBlend = _SoundSet.SpatialBlend;
         _AudioSource.volume = _SoundSet.Volume;
         _AudioSource.PlayOneShot(_SoundSet.SoundsList[index]);
     }

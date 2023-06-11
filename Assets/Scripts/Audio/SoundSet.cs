@@ -14,5 +14,8 @@ public class SoundSet : ScriptableObject
 
     [Tooltip("Whether or not the sound is played at a 3D position in the world. Disabling this is helpful if the sound is too quiet at max volume.")]
     public bool PlayAs3DSound = true;
+
+    [Tooltip("The spatial blend amount to use betwen 3D sound and 2D when PlayAs3DSound is enabled.")]
+    public float SpatialBlend = 1.0f;
 }
 

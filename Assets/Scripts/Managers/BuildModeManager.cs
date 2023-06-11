@@ -6,7 +6,7 @@ using System.Text;
 using UnityEngine;
 
 using Cinemachine;
-
+using UnityEngine.InputSystem.Editor;
 
 public class BuildModeManager : MonoBehaviour
 {
@@ -29,6 +29,7 @@ public class BuildModeManager : MonoBehaviour
     private PlayerController _Player;
 
     private CameraManager _CameraManager;
+    private ICinemachineCamera _BuildModeCam;
     private InputManager _InputManager;
     private ResourceManager _ResourceManager;
     private VillageManager_Buildings _VillageManager_Buildings;
@@ -36,6 +37,7 @@ public class BuildModeManager : MonoBehaviour
     private BuildingConstructionGhost _BuildingConstructionGhost;
 
     private float _LastBuildTime;
+    private float _LastExitTime;
 
     private string _SelectedBuildingName;
     private string _SelectedBuildingCategory;
@@ -44,10 +46,25 @@ public class BuildModeManager : MonoBehaviour
     private RadialMenuDialog _RadialMenu;
     private string _TempCategory; // Tracks the selected category while the second building selection menu is open.
 
+    private List<MaterialCost> _TotalBuildCostsInCurrentBuildModeSession; // Tracks the total resources the player spent constructing buildings in the current build mode session.
+    private int _TotalBuildingsCreatedInCurrentBuildModeSession; // The number of buildings the player constructed in the current build mode session.
+
 
 
     private void Awake()
     {
+        _TotalBuildCostsInCurrentBuildModeSession = new List<MaterialCost>();
+        foreach (ResourceTypes resource in Enum.GetValues(typeof(ResourceTypes)))
+        {
+            MaterialCost mc = new MaterialCost();
+
+            mc.Resource = resource;
+            mc.Amount = 0;
+
+            _TotalBuildCostsInCurrentBuildModeSession.Add(mc);
+        }
+
+
         BuildModeDefinitions.InitBuildingDefinitionLookupTables();
     }
 
@@ -68,11 +85,11 @@ public class BuildModeManager : MonoBehaviour
         InitBuildingGhost();
 
 
-        ICinemachineCamera buildCam = GameObject.Find("CM Build Mode Camera").GetComponent<ICinemachineCamera>();
-        buildCam.Follow = _BuildingConstructionGhost.transform;
-        buildCam.LookAt = _BuildingConstructionGhost.transform;
+        _BuildModeCam = GameObject.Find("CM Build Mode Camera").GetComponent<ICinemachineCamera>();
+        _BuildModeCam.Follow = _BuildingConstructionGhost.transform;
+        _BuildModeCam.LookAt = _BuildingConstructionGhost.transform;
         _CameraManager.RegisterCamera((int) CameraIDs.BuildMode,
-                                      buildCam);
+                                      _BuildModeCam);
 
         _CameraManager.OnCameraTransitionStarted += OnCameraTransitionStarted;
         _CameraManager.OnCameraTransitionEnded += OnCameraTransitionEnded;
@@ -81,22 +98,27 @@ public class BuildModeManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Check if player is entering build mode.
-        bool input = _InputManager.Player.EnterBuildMode;
-        if (input && 
+        // Check if the player can enter/exit build mode.
+        // 
+        if (!_GameManager.PlayerIsDead &&
             _GameManager.GameState == GameStates.PlayerBuildPhase &&
             !_CameraManager.IsTransitioning &&
-            !_GameManager.GamePhaseTextIsVisible &&
-            !IsBuildModeActive &&
-            !Dialog_Base.AreAnyDialogsOpen())
+            !_GameManager.GamePhaseTextIsVisible)
         {
-            StartCoroutine(EnableBuildMode(input));
+            // Check if player is entering build mode.
+            bool input = _InputManager.Player.EnterBuildMode;
+
+            if (input && !IsBuildModeActive)
+            {
+                StartCoroutine(EnableBuildMode(input));
+            }
+            else if (!input && IsBuildModeActive && !_CameraManager.IsTransitioning)
+            {
+                DoBuildModeChecks();
+            }
+
         }
-            
-        
-        // Do build mode checks only when build mode is on, we are entering build mode, and the camera is not still transitioning.
-        if (IsBuildModeActive && !input && !_CameraManager.IsTransitioning)
-            DoBuildModeChecks();
+
     }
 
     private void InitBuildingGhost()
@@ -107,6 +129,7 @@ public class BuildModeManager : MonoBehaviour
                                        Vector3.zero,
                                        Quaternion.identity,
                                        parent.transform);
+
         _BuildingConstructionGhost = ghost.GetComponent<BuildingConstructionGhost>();
 
         _BuildingConstructionGhost.Init();
@@ -118,12 +141,14 @@ public class BuildModeManager : MonoBehaviour
 
     private void DoBuildModeChecks()
     {
-
         // Check if the player is exiting buildmode.
         bool input = _InputManager.BuildMode.ExitBuildMode;
-        if (input)
+        if (input && Time.time - _LastExitTime > 0.25f)
         {
+            _LastExitTime = Time.time;
+
             StartCoroutine(EnableBuildMode(false));
+
             return;
         }
 
@@ -144,7 +169,7 @@ public class BuildModeManager : MonoBehaviour
 
     private IEnumerator EnableBuildMode(bool state)
     {
-        if (IsSelectingBuilding)
+        if (IsSelectingBuilding || state == IsBuildModeActive)
             yield break;
 
 
@@ -168,13 +193,27 @@ public class BuildModeManager : MonoBehaviour
         {
             _CameraManager.SwitchToCamera((int) CameraIDs.BuildMode);
             _InputManager.SwitchToActionMap((int) InputActionMapIDs.BuildMode);
-
-            _BuildingConstructionGhost.ResetTransform();
         }
         else
-        { 
+        {
             _CameraManager.SwitchToCamera((int) CameraIDs.PlayerFollow);
             _InputManager.SwitchToActionMap((int) InputActionMapIDs.Player);
+
+
+            if (_TotalBuildingsCreatedInCurrentBuildModeSession > 0)
+            {
+                StartCoroutine(TextPopup.ShowTextPopupDelayed(2f,
+                                                              TextPopup.AdjustStartPosition(_Player.gameObject),
+                                                              MaterialCostListToString(_TotalBuildCostsInCurrentBuildModeSession, "Used ", $" on {_TotalBuildingsCreatedInCurrentBuildModeSession} building(s)"),
+                                                              TextPopupColors.ExpendedResourceColor,
+                                                              12f,
+                                                              maxMoveSpeed: 1f));
+            }
+
+
+            _TotalBuildingsCreatedInCurrentBuildModeSession = 0;
+
+            ResetTotalMaterialCosts();
         }
 
 
@@ -362,6 +401,9 @@ public class BuildModeManager : MonoBehaviour
         if (_BuildingConstructionGhost.CanBuild &&
             Time.time - _LastBuildTime >= 0.1f)
         {
+            _LastBuildTime = Time.time;
+
+
             if (!_GameManager.ConstructionIsFree)
                 ApplyBuildCosts();
 
@@ -383,8 +425,7 @@ public class BuildModeManager : MonoBehaviour
             building.AudioSource.volume = BuildingConstructionSoundVolume;
             building.AudioSource.Play();
 
-
-            _LastBuildTime = Time.time;
+            _TotalBuildingsCreatedInCurrentBuildModeSession++;
         }
         else
         {
@@ -417,12 +458,24 @@ public class BuildModeManager : MonoBehaviour
     private void ApplyBuildCosts()
     {
         BuildingDefinition def = BuildModeDefinitions.GetBuildingDefinition(_SelectedBuildingCategory, _SelectedBuildingName);
+      
 
-        foreach (MaterialCost cost in def.ConstructionCosts)
-        {
+        for (int i = 0; i < def.ConstructionCosts.Count; i++)
+        {            
+            MaterialCost cost = def.ConstructionCosts[i];
+
+            // Add this cost to the total build costs of this build mode session.
+            AddToTotalMaterialCosts(cost);
+
             if (!_ResourceManager.ExpendFromStockpile(cost.Resource, cost.Amount))
+            {
+                // NOTE: This code should NEVER run, as the game already checked if the player has enough resources before this
+                //       function was ever called, because the BuildingConstructionGhost's CanBuild property includes a resources check.
                 Debug.LogWarning($"Could not expend {cost.Amount} {cost.Resource}! The stockpile somehow did not have enough!");
-        }
+            }
+
+        } // end for i
+
     }
 
     /// <summary>
@@ -432,26 +485,104 @@ public class BuildModeManager : MonoBehaviour
     {
         BuildingDefinition def = BuildModeDefinitions.GetBuildingDefinition(buildingCategory, buildingName);
 
-        foreach (MaterialCost cost in def.ConstructionCosts)
-        {
-            _ResourceManager.AddToStockpile(cost.Resource, cost.Amount * PercentageOfMaterialsRecoveredOnBuildingDestruction);
-        }
 
+        for (int i = 0; i < def.ConstructionCosts.Count; i++)
+        {
+            MaterialCost cost = def.ConstructionCosts[i];
+
+            _ResourceManager.AddToStockpile(cost.Resource, cost.Amount * PercentageOfMaterialsRecoveredOnBuildingDestruction);
+
+        } // end for i
+
+
+        TextPopup.ShowTextPopup(TextPopup.AdjustStartPosition(_Player.gameObject), 
+                                MaterialCostListToString(def.ConstructionCosts, "Recovered ", ""), 
+                                TextPopupColors.RecoveredResourceColor,
+                                12f,
+                                maxMoveSpeed: 1f);
     }
 
+    private string MaterialCostListToString(List<MaterialCost> costList, string prefix, string suffix)
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.Append(prefix);
 
+
+        // Filter out resource types that have a total cost of 0.
+        List<MaterialCost> filteredList = new List<MaterialCost>();
+        foreach (MaterialCost cost in costList)
+        {
+            if (cost.Amount > 0)
+                filteredList.Add(cost);
+        }
+
+
+        // Construct the string.
+        for (int i = 0; i < filteredList.Count; i++)
+        {
+            MaterialCost cost = filteredList[i];
+
+
+            if (filteredList.Count > 1 && i == filteredList.Count - 1)
+                builder.Append("and ");
+
+            builder.Append($"{cost.Amount} {cost.Resource}");
+
+            if (i < filteredList.Count - 1)
+                builder.Append(", ");
+
+        } // end for i
+
+        
+        builder.Append(suffix);
+
+        return builder.ToString();
+    }
+
+    private void ResetTotalMaterialCosts()
+    {
+        for (int i = 0; i < _TotalBuildCostsInCurrentBuildModeSession.Count; i++)
+        {
+            MaterialCost mc = _TotalBuildCostsInCurrentBuildModeSession[i];
+            
+            mc.Amount = 0;
+            _TotalBuildCostsInCurrentBuildModeSession[i] = mc;
+        }
+    }
+
+    /// <summary>
+    /// This function is used for tracking the total resource costs the player has amassed during the
+    /// current build mode session.
+    /// </summary>
+    /// <param name="cost">The material cost to add to the running total for the corresponding resource type.</param>
+    private void AddToTotalMaterialCosts(MaterialCost cost)
+    {
+        MaterialCost totalCost = _TotalBuildCostsInCurrentBuildModeSession[(int) cost.Resource];
+        
+        totalCost.Amount += cost.Amount;
+        _TotalBuildCostsInCurrentBuildModeSession[(int) cost.Resource] = totalCost;
+    }
 
     private void OnCameraTransitionStarted(ICinemachineCamera startCam, ICinemachineCamera endCam)
     {
-        // Show the build mode construction ghost only if we are transitioning to the build mode cam.
         bool showConstructionGhost = (endCam.VirtualCameraGameObject.name == "CM Build Mode Camera");
+
+
+        if (showConstructionGhost)
+        {
+            _BuildingConstructionGhost.gameObject.SetActive(true);
+            _BuildingConstructionGhost.ResetTransform();
+        }
+
         _BuildingConstructionGhost.gameObject.SetActive(showConstructionGhost);
+
     }
 
     private void OnCameraTransitionEnded(ICinemachineCamera startCam, ICinemachineCamera endCam)
     {
         // Show the build mode construction ghost only if we are transitioning to the build mode cam.
         bool showConstructionGhost = (endCam.VirtualCameraGameObject.name == "CM Build Mode Camera");
+        
         _BuildingConstructionGhost.gameObject.SetActive(showConstructionGhost);
         
     }

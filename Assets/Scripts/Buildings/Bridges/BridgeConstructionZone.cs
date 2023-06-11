@@ -84,6 +84,12 @@ public class BridgeConstructionZone : MonoBehaviour
             {
                 Debug.LogError($"GameManager.StartWithAllZonesBridged is on, but failed to generate bridge of type \"{bridgeType}\" for bridge zone \"{gameObject.name}\"!");
             }
+            else
+            {
+                _BridgesInThisZone.Add(bridge);
+                BridgedStateChanged();
+            }
+
         }
     }
 

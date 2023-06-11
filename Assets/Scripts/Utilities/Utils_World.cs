@@ -12,9 +12,63 @@ using Unity.VisualScripting; // This IS needed as UnityObject.GameObject() is fr
 
 public static class Utils_World
 {
+    private static GameManager _GameManager;
     private static ResourceManager _ResourceManager;
 
 
+    public static Vector2Int GetCoordinateInAreasMapSpace(Vector3 worldPos, Bounds terrainBounds, Vector2 areaMapSize)
+    {
+        // Calculate worldPos relative to the terrain bounds.
+        Vector3 relativeCoords = worldPos - terrainBounds.min;
+
+        // Calculate the position as percentages of the way from bounds.min to bounds.max on each axis.        
+        Vector2 percentages = new Vector2(relativeCoords.x / terrainBounds.size.x,
+                                          relativeCoords.z / terrainBounds.size.z);
+        
+        //Debug.Log($"WORLD: {worldPos}    REL: {relativeCoords}    PERC: {percentages}        BOUNDS: {terrainBounds}        MIN: {terrainBounds.min}        MAX: {terrainBounds.max}        SIZE: {terrainBounds.size}");
+        
+
+        // Calculate the coordinates in the areas map texture. The subraction operation is just there to invert the coordinates, since they are
+        // backwards.
+        Vector2Int texCoords = new Vector2Int(Mathf.RoundToInt(/*areaMapSize.x - */percentages.x * areaMapSize.x),
+                                              Mathf.RoundToInt(/*areaMapSize.y - */percentages.y * areaMapSize.y));
+
+        return texCoords;
+    }
+
+    /// <summary>
+    /// Uses the areas map and the passed in world position coordinates to determine which area that location is in.
+    /// </summary>
+    /// <param name="worldPos">The world position to get the parent area of.</param>
+    /// <returns>An integer from 1-5 indicating which area the specified point is in. Returns -1 if that point is not within any of the areas.</returns>
+    public static LevelAreas DetectAreaNumberFromPosition(Vector3 worldPos)
+    {
+        if (_GameManager == null)
+            _GameManager = GameManager.Instance;
+
+
+        Vector2Int texCoords = GetCoordinateInAreasMapSpace(worldPos, _GameManager.TerrainBounds, _GameManager.AreasMap.Size());
+
+        
+        Color32 mapColor = _GameManager.AreasMap.GetPixel(texCoords.x, texCoords.y);
+
+        //Debug.Log($"MAP COLOR: {mapColor}");
+
+        if (mapColor.g == 50)
+            return LevelAreas.Area1;
+        else if (mapColor.g == 100)
+            return LevelAreas.Area2;
+        else if (mapColor.g == 150)
+            return LevelAreas.Area3;
+        else if (mapColor.g == 200)
+            return LevelAreas.Area4;
+        else if (mapColor.g == 250)
+            return LevelAreas.Area5;
+        else
+            return LevelAreas.Unknown;
+    }
+
+    /*
     /// <summary>
     /// Fires a raycast to query the ground at the given position to determine what area it is in.
     /// </summary>
@@ -57,6 +111,7 @@ public static class Utils_World
         // No ground was detected.
         return false;
     }
+    */
 
     public static List<ResourceNode> FindAllResourceNodesAccessableFromArea(LevelAreas area)
     {
@@ -72,7 +127,8 @@ public static class Utils_World
         for (int i = 0; i < _ResourceManager.ActiveResourceNodesCount; i++)
         {
             ResourceNode node = _ResourceManager.GetActiveResourceNode(i);
-            DetectAreaNumberFromGroundPosition(node.transform.position.x, node.transform.position.z, LayerMask.GetMask(new string[] { "Ground" }), out LevelAreas nodeArea);
+            LevelAreas nodeArea = DetectAreaNumberFromPosition(node.transform.position);
+            //DetectAreaNumberFromGroundPosition(node.transform.position.x, node.transform.position.z, LayerMask.GetMask(new string[] { "Ground" }), out LevelAreas nodeArea);
 
             if (accessableAreas.Contains(nodeArea))
                 accessableResourceNodes.Add(node);

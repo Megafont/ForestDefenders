@@ -55,8 +55,11 @@ public class Hunger : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        DoHungerCheck();
-        DoStarvationCheck();
+        if (_ParentHealthComponent.IsAlive)
+        {
+            DoHungerCheck();
+            DoStarvationCheck();
+        }
     }
 
 
@@ -101,6 +104,10 @@ public class Hunger : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// This function is called if the entity this script is on is NOT the player (in other words a villager).
+    /// Monsters don't have hunger.
+    /// </summary>
     private void AttemptToEat()
     {
         float foodNeeded = CurrentHunger * _FoodCostToHealOneHungerPoint;
@@ -123,9 +130,12 @@ public class Hunger : MonoBehaviour
                 //Debug.Log($"Eating. Healed {hungerPtsToRestore} hunger with {totalFoodCost} food.");
 
                 CurrentHunger -= hungerPtsToRestore;
+                TextPopup.ShowTextPopup(TextPopup.AdjustStartPosition(gameObject), 
+                                        $"Ate {totalFoodCost} Food", 
+                                        TextPopupColors.ExpendedResourceColor);
 
                 // NOTE: We DO NOT invoke the OnHungerChanged event here, because that is handled
-                // in DoHungerCheck(), which calls this function.
+                //       in DoHungerCheck(), which calls this function.
             }
         }
 

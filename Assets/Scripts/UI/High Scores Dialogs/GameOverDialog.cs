@@ -29,6 +29,8 @@ public class GameOverDialog : Dialog_Base, IDialog
     {
         IsRecordScore = Utils_HighScores.IsNewHighScore(_GameManager.Score, _GameManager.SurvivalTime);
 
+        //Debug.Log($"Is record score: {IsRecordScore}");
+
         _TitleText.text = IsRecordScore ? "New Record Score!" : "Your Village Has Fallen!";
         _InputFieldLabel.text = IsRecordScore ? "Enter your name:" : "Regroup and try to hold out longer next time!";
 
@@ -44,7 +46,8 @@ public class GameOverDialog : Dialog_Base, IDialog
 
 
         // Set the focus to the input field so the user doesn't have to click on it first to start typing.
-        _InputField.ActivateInputField();
+        if (IsRecordScore)
+            _InputField.ActivateInputField();
     }
 
     protected override void Dialog_OnConfirm()

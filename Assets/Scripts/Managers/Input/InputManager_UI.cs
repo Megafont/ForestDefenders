@@ -40,6 +40,7 @@ public class InputManager_UI : InputSubManager
         // NOTE: This used to be "context.control.IsPressed()". However, this apparently caused a bug where sometimes this callback would not set the
         //       input value to false when the button is released. Changing it to "context.performed" fixes this problem.
         //       This issue does not seem to affect the player button controls like attack and jump for some reason, though.
+        //       It turns out this may have been caused by Steam running in the background.
         ConfirmInput(context.performed);
     }
 
@@ -48,6 +49,7 @@ public class InputManager_UI : InputSubManager
         // NOTE: This used to be "context.control.IsPressed()". However, this apparently caused a bug where sometimes this callback would not set the
         //       input value to false when the button is released. Changing it to "context.performed" fixes this problem.
         //       This issue does not seem to affect the player button controls like attack and jump for some reason, though.
+        //       It turns out this may have been caused by Steam running in the background.
         CancelInput(context.performed);
     }
 
@@ -56,6 +58,7 @@ public class InputManager_UI : InputSubManager
         // NOTE: This used to be "context.control.IsPressed()". However, this apparently caused a bug where sometimes this callback would not set the
         //       input value to false when the button is released. Changing it to "context.performed" fixes this problem.
         //       This issue does not seem to affect the player button controls like attack and jump for some reason, though.
+        //       It turns out this may have been caused by Steam running in the background.
         CloseTechTreeInput(context.performed);
     }
 

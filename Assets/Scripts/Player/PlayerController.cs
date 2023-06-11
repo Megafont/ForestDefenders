@@ -1,6 +1,8 @@
 ﻿using System;
+
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
     using UnityEngine.InputSystem;
@@ -160,7 +162,6 @@ public class PlayerController : MonoBehaviour
     private AudioSource _PlayerLandAudio;
 
 
-    public float AttackPower { get { return _AttackPower; } set { _AttackPower = value; } }
 
     private bool IsCurrentDeviceMouse
     {
@@ -226,7 +227,6 @@ public class PlayerController : MonoBehaviour
     }
 
 
-
     private void Update()
     {
         _hasAnimator = TryGetComponent(out _animator);
@@ -234,13 +234,13 @@ public class PlayerController : MonoBehaviour
 
         DoFallDamageCheck();
 
+        JumpAndGravity();
+        GroundedCheck();
+        Move();
+
 
         if (!_BuildModeManager.IsSelectingBuilding && !_IsDead)
         {
-            JumpAndGravity();
-            GroundedCheck();
-            Move();
-
             DoAttackChecks();
 
 
@@ -338,6 +338,13 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
+
+        // Get player input. 
+        // ------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        // NOTE: I modified this code, and a few lines from above and below were moved in here to put it in one place and have only one if statement.
+
+
         // set target speed based on move speed, sprint speed and if sprint is pressed
         float targetSpeed = _InputManager.Player.sprint ? _SprintSpeed : _MoveSpeed;
 
@@ -347,11 +354,27 @@ public class PlayerController : MonoBehaviour
         // if there is no input, set the target speed to 0
         if (_InputManager.Player.move == Vector2.zero) targetSpeed = 0.0f;
 
+
+        float inputMagnitude = _InputManager.Player.analogMovement ? _InputManager.Player.move.magnitude : 1f;
+        
+        // normalise input direction
+        Vector3 inputDirection = new Vector3(_InputManager.Player.move.x, 0.0f, _InputManager.Player.move.y).normalized;
+
+        if (!_HealthComponent.IsAlive)
+        {
+            targetSpeed = 0;
+            inputMagnitude = 0;
+            inputDirection = Vector3.zero;
+        }
+
+        // ------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
         // a reference to the players current horizontal velocity
         float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
 
         float speedOffset = 0.1f;
-        float inputMagnitude = _InputManager.Player.analogMovement ? _InputManager.Player.move.magnitude : 1f;
+
 
         // accelerate or decelerate to target speed
         if (currentHorizontalSpeed < targetSpeed - speedOffset ||
@@ -372,10 +395,7 @@ public class PlayerController : MonoBehaviour
 
         _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * _SpeedChangeRate);
         if (_animationBlend < 0.01f) _animationBlend = 0f;
-
-        // normalise input direction
-        Vector3 inputDirection = new Vector3(_InputManager.Player.move.x, 0.0f, _InputManager.Player.move.y).normalized;
-
+        
         // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
         // if there is a move input rotate player when the player is moving
         if (_InputManager.Player.move != Vector2.zero)
@@ -425,7 +445,8 @@ public class PlayerController : MonoBehaviour
             }
 
             // Jump
-            if (_InputManager.Player.jump && _jumpTimeoutDelta <= 0.0f)
+            if (_HealthComponent.IsAlive &&
+                _InputManager.Player.jump && _jumpTimeoutDelta <= 0.0f)
             {
                 // the square root of H * -2 * G = how much velocity needed to reach desired height
                 _verticalVelocity = Mathf.Sqrt(_JumpHeight * -2f * _Gravity);
@@ -586,7 +607,7 @@ public class PlayerController : MonoBehaviour
 
         //Debug.Log($"Eating. Healed {hungerPtsToRestore} hunger with {totalFoodCost} food. Gather amount: {gatherAmount}");
 
-        // Expend eaten food from the stockpile.
+        // Expend eaten food from the stockpile, as all gathered food was previously added to the stockpile (see next comment).
         _ResourceManager.ExpendFromStockpile(ResourceTypes.Food, totalFoodCost);
 
         // If the player's hunger is fully satiated, then clear the foodGatheredWhileHungry counter.
@@ -594,6 +615,10 @@ public class PlayerController : MonoBehaviour
         // added to the stockpile in DoAttackAction(). The line above expends some of it from the stockpile.
         if (foodGatheredWhileHungry > 0 && _HungerComponent.CurrentHunger == 0)
             foodGatheredWhileHungry = 0;
+
+        TextPopup.ShowTextPopup(TextPopup.AdjustStartPosition(gameObject),
+                                $"Ate {totalFoodCost} Food", 
+                                TextPopupColors.ExpendedResourceColor);
     }
 
     private void DoDestroyAction(GameObject objToDestroy)
@@ -652,7 +677,7 @@ public class PlayerController : MonoBehaviour
 
 
         _IsDead = true;
-
+        
         _animator.ResetTrigger("Die");
 
         // Play death animation.
@@ -702,10 +727,16 @@ public class PlayerController : MonoBehaviour
             //AudioSource.PlayClipAtPoint(_SoundParams._PlayerLandingSound, transform.TransformPoint(_controller.center), _SoundParams._PlayerLandingSoundVolume);
 
             _PlayerLandAudio.spatialize = _SoundParams.PlayPlayerLandingSoundAs3DSound;
+            _PlayerLandAudio.spatialBlend = _SoundParams.PlayerLandingSoundSpatialBlend;
             _PlayerLandAudio.volume = _SoundParams.PlayerLandingSoundVolume;
             _PlayerLandAudio.PlayOneShot(_SoundParams.PlayerLandingSound); 
 
         //}
     }
-    
+
+
+
+    public float AttackPower { get { return _AttackPower; } set { _AttackPower = value; } }
+
+
 }

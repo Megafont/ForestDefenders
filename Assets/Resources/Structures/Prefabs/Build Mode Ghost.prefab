@@ -141,6 +141,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _MaxMovementDistances: {x: 10, y: 8}
+  _MaxGroundHeightDifference: 0.5
+  _MaxVerticalOffsetFromPlayer: 2
   _GridSnapIncrement: 1
   _GridSnapRotationIncrement: 15
   _GridSnapOffIncrement: 0.1

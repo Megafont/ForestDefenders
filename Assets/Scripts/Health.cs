@@ -3,13 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
-using UnityEngine.AI;
 
 using Random = UnityEngine.Random;
 
 
 public class Health : MonoBehaviour
 {
+    private const float _HealthPopupTextSize = 20f;
+
+
+
     [SerializeField] private float _MaxHealth = 100;
     [SerializeField] private bool _EnableDamageFlash = true;
     [SerializeField] private Color _DamageFlashColor = Color.red;
@@ -112,10 +115,20 @@ public class Health : MonoBehaviour
         }
 
 
+        // If the damage type doesn't allow random variance, then directly apply the damage amount.
+        // Otherwise give it a random variance.
+        float changeAmount = 0.0f;
+        if (damageType == DamageTypes.Drowning)
+        {
+            changeAmount = amount;
+        }
+        else
+        {
+            float randomVariance = Random.Range(0.0f, _GameManager.AttackDamageVariance);
+            changeAmount = Mathf.RoundToInt(amount - (amount * randomVariance));
+            changeAmount = Mathf.Max(changeAmount, 1.0f); // Enforce that the attack will always at least 1 point of damage.
+        }
 
-        float randomVariance = Random.Range(0.0f, _GameManager.AttackDamageVariance);
-        float changeAmount = Mathf.RoundToInt(amount - (amount * randomVariance));
-        changeAmount = Mathf.Max(changeAmount, 1.0f); // Enforce that the attack will always at least 1 point of damage.
 
         float buffAmount = 0;
         if (GetComponent<Monster_Base>() != null)
@@ -128,6 +141,7 @@ public class Health : MonoBehaviour
 
         changeAmount += buffAmount;
         //Debug.Log($"Amount: {amount}    Buff: {buffAmount}");
+
 
         CurrentHealth -= changeAmount;
         if (CurrentHealth < 0)
@@ -212,20 +226,30 @@ public class Health : MonoBehaviour
 
     private void SpawnHealthPopup(float healthChangedAmount, float buffAmount = 0)
     {
-        Vector3 startPos = transform.position;
-        
-        NavMeshAgent agent = GetComponent<NavMeshAgent>();
-        IBuilding building = GetComponent<Building_Base>();
+        Color textColor = Color.white;
+        string text = "";
+        if (healthChangedAmount >= 0)
+        {
+            text = $"+{healthChangedAmount}";
+            textColor = TextPopupColors.HealColor;
+        }
+        else
+        {
+            text = $"{healthChangedAmount}";
 
-        if (agent != null)
-            startPos.y += agent.height / 2;
-        else if (building != null)
-            startPos.y += building.GetBuildingDefinition().Size.y - 1.0f;
-        else if (gameObject.CompareTag("Player"))
-            startPos.y += 1;
-        
+            if (buffAmount < 0)
+                textColor = TextPopupColors.DamageResistanceColor;
+            else if (buffAmount > 0)
+                textColor = TextPopupColors.DamageVulnerableColor;
+            else
+                textColor = TextPopupColors.DamageNormalColor;
+        }
 
-        HealthPopup popup = HealthPopup.ShowHealthPopup(startPos, healthChangedAmount, buffAmount);
+
+        TextPopup.ShowTextPopup(TextPopup.AdjustStartPosition(gameObject), 
+                                text, 
+                                textColor, 
+                                _HealthPopupTextSize);
     }
 
     private void FindRenderers()
@@ -254,6 +278,11 @@ public class Health : MonoBehaviour
     { 
         get { return _MaxHealth; } 
         private set { _MaxHealth = value; } 
+    }
+
+    public bool IsAlive
+    {
+        get { return CurrentHealth > 0; }
     }
 
     public bool IsInvincible

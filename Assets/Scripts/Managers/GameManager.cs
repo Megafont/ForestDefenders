@@ -11,7 +11,7 @@ using Cinemachine;
 using TMPro;
 using Unity.VisualScripting;
 using System.Diagnostics;
-
+using Test;
 
 public class GameManager : MonoBehaviour
 {
@@ -126,6 +126,7 @@ public class GameManager : MonoBehaviour
 
     public static GameManager Instance;
 
+    private bool _PlayerDrowned = false;
 
     private AudioSource _BirdsAudioSource;
 
@@ -138,6 +139,7 @@ public class GameManager : MonoBehaviour
 
     private List<BridgeConstructionZone> _BridgeConstructionZones;
 
+    private Texture2D _AreasMap;
 
     public delegate void GameManager_GameStateChangedEventHandler(GameStates newGameState);
     public delegate void GameManager_GameOverEventHandler();
@@ -149,6 +151,11 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
+        AreasMap = Resources.Load<Texture2D>("Areas Map");
+        if (AreasMap == null)
+            throw new Exception("Failed to load the areas map!");
+
+
         DoDevCheatsCheck();
 
 
@@ -165,8 +172,14 @@ public class GameManager : MonoBehaviour
         GameObject terrainObj = GameObject.Find("Terrain");
         if (!terrainObj)
             throw new Exception("The GameObject \"Terrain\" was not found!");
-
+        
         _BirdsAudioSource = terrainObj.GetComponent<AudioSource>();
+
+
+        // We use Renderer.bounds since it is in world space. Meanwhile, MeshFilter.bounds and Renderer.localbounds are in local space.
+        GameObject ground = terrainObj.transform.Find("Level01").gameObject;
+        ground = ground.transform.Find("Ground").gameObject;
+        TerrainBounds = ground.GetComponent<MeshRenderer>().bounds;
 
 
         GetManagerReferences();
@@ -446,7 +459,7 @@ public class GameManager : MonoBehaviour
     private void InitCameras_MenuScene()
     {
         // Register game over camera.
-        ICinemachineCamera gameOverCam = GameObject.Find("CM Game Over Cam").GetComponent<ICinemachineCamera>();
+        ICinemachineCamera gameOverCam = GameObject.Find("CM Game Over Camera").GetComponent<ICinemachineCamera>();
         GameObject townCenter = GameObject.FindGameObjectWithTag("Town Center");
         gameOverCam.Follow = townCenter.transform;
         gameOverCam.LookAt = townCenter.transform;
@@ -467,17 +480,17 @@ public class GameManager : MonoBehaviour
 
         // Register player follow camera.
         ICinemachineCamera mainCam = GameObject.Find("CM Player Follow Camera").GetComponent<ICinemachineCamera>();
-        CameraManager.RegisterCamera((int)CameraIDs.PlayerFollow, mainCam);
+        CameraManager.RegisterCamera((int) CameraIDs.PlayerFollow, mainCam);
 
         // Register game over camera.
-        ICinemachineCamera gameOverCam = GameObject.Find("CM Game Over Cam").GetComponent<ICinemachineCamera>();
+        ICinemachineCamera gameOverCam = GameObject.Find("CM Game Over Camera").GetComponent<ICinemachineCamera>();
         gameOverCam.Follow = Player.transform;
         gameOverCam.LookAt = Player.transform;
-        CameraManager.RegisterCamera((int)CameraIDs.GameOver, gameOverCam);
+        CameraManager.RegisterCamera((int) CameraIDs.GameOver, gameOverCam);
 
 
         // Switch to the main camera for this scene.
-        CameraManager.SwitchToCamera((int)CameraIDs.PlayerFollow);
+        CameraManager.SwitchToCamera((int) CameraIDs.PlayerFollow);
     }
 
     private void InitCameras_TestScene()
@@ -487,7 +500,7 @@ public class GameManager : MonoBehaviour
         CameraManager.RegisterCamera((int) CameraIDs.PlayerFollow, mainCam);
 
         // Register game over camera.
-        ICinemachineCamera gameOverCam = GameObject.Find("CM Game Over Cam").GetComponent<ICinemachineCamera>();
+        ICinemachineCamera gameOverCam = GameObject.Find("CM Game Over Camera").GetComponent<ICinemachineCamera>();
         gameOverCam.Follow = Player.transform;
         gameOverCam.LookAt = Player.transform;
         CameraManager.RegisterCamera((int) CameraIDs.GameOver, gameOverCam);
@@ -607,7 +620,7 @@ public class GameManager : MonoBehaviour
 
     public bool PlayerIsInGame()
     {
-        return GameManager.Instance.EnablePlayerSpawn;
+        return Instance.EnablePlayerSpawn;
     }
 
     public void TogglePauseGameState()
@@ -796,6 +809,9 @@ public class GameManager : MonoBehaviour
         if (MonsterManager.WaveComplete)
         {
             _UI_TechTreeDialog.AddXP(XP_EarnedPerWave);
+            TextPopup.ShowTextPopup(TextPopup.AdjustStartPosition(Player.gameObject),
+                                    $"+{XP_EarnedPerWave} XP", 
+                                    TextPopupColors.XPColor);
 
             _UI_MonstersLeftText.enabled = false;
             _UI_WaveNumberText.enabled = false;
@@ -820,7 +836,7 @@ public class GameManager : MonoBehaviour
 
     private void SetupGameOverCamera()
     {
-        ICinemachineCamera gameOvercam = CameraManager.GetCameraWithID((int)CameraIDs.GameOver);
+        ICinemachineCamera gameOvercam = CameraManager.GetCameraWithID((int) CameraIDs.GameOver);
         if (Player.transform.position.y <= PlayerFallOutOfWorldDeathHeight)
         {
             Transform townCenterTransform = VillageManager_Buildings.TownCenter.transform;
@@ -844,7 +860,19 @@ public class GameManager : MonoBehaviour
 
     private void OnPlayerDeath(GameObject sender, GameObject attacker)
     {
+        PlayerIsDead = true;
+
         ChangeGameState(GameStates.GameOver);
+    }
+
+    public void PlayerFellInWater()
+    {
+        // Don't let the code in this function run more than once.
+        if (_PlayerDrowned)
+            return;
+
+
+        _PlayerDrowned = true;
     }
 
     private void EnableHUD(bool state = true)
@@ -941,6 +969,7 @@ public class GameManager : MonoBehaviour
         return _UI_FloatingStatusBarPrefab;
     }
 
+    
     private void OnCameraTransitionStarted(ICinemachineCamera startCam, ICinemachineCamera endCam)
     {
         // Disable the floating status bars.
@@ -963,7 +992,7 @@ public class GameManager : MonoBehaviour
         }
 
     }
-
+    
 
 
 
@@ -984,6 +1013,9 @@ public class GameManager : MonoBehaviour
     public NavMeshManager NavMeshManager { get; private set; }
     public ResourceManager ResourceManager { get; private set; }
 
+    public Bounds TerrainBounds { get; private set; } // The terrain bounds in world space.
+
+    public bool PlayerIsDead { get; private set; }
 
     public int TotalMonstersKilled { get; private set; }
 
@@ -995,6 +1027,8 @@ public class GameManager : MonoBehaviour
     public int Score { get; private set; }
     public float SurvivalTime { get; private set; } // The total amount of time the player has survived so far.
 
+
+    public Texture2D AreasMap { get; private set; }
 
     public int BridgeConstructionZoneCount { get { return _BridgeConstructionZones.Count; } }
     public List<BridgeConstructionZone> BridgeConstructionZonesList {  get { return _BridgeConstructionZones; } }

@@ -105,20 +105,21 @@ public static class Utils_Math
     /// <param name="zPos">The Z-coordinate of the point to find the ground height at.</param>
     /// <param name="groundLayersMask">The ground layer(s).</param>
     /// <param name="groundHeight">Outputs the ground height.</param>
+    /// <param name="raycastStartHeight">The height at which the raycast to find the ground height starts at.</param>
     /// <returns>True if the ground height was found, or false if no ground was detected at the specified point.</returns>
-    public static bool DetectGroundHeightAtPos(float xPos, float zPos, LayerMask groundLayersMask, out float groundHeight)
+    public static bool DetectGroundHeightAtPos(float xPos, float zPos, LayerMask groundLayersMask, out float groundHeight, float raycastStartHeight = GROUND_CHECK_RAYCAST_START_HEIGHT)
     {
         groundHeight = 0f;
 
 
         // Detect the ground height at the current ground sample point.
-        if (Physics.Raycast(new Vector3(xPos, GROUND_CHECK_RAYCAST_START_HEIGHT, zPos),
+        if (Physics.Raycast(new Vector3(xPos, raycastStartHeight, zPos),
                             Vector3.down,
                             out RaycastHit hitInfo,
                             GROUND_CHECK_RAYCAST_MAX_DISTANCE,
                             groundLayersMask))
         {
-            groundHeight = GROUND_CHECK_RAYCAST_START_HEIGHT - hitInfo.distance;
+            groundHeight = raycastStartHeight - hitInfo.distance;
             return true;
         }
 

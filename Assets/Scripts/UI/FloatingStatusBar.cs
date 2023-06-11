@@ -3,17 +3,20 @@ using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.UI;
+using Cinemachine;
 using TMPro;
 
 
 public class FloatingStatusBar : MonoBehaviour
 {
-    [Tooltip("The length of the status bar is the current value of the bar times this multiplier.")]
-    [Range(0.25f, 10f)]
-    [SerializeField] private float _LengthMultiplier = 2.5f;
-
     [Range(1f, 10f)]
     [SerializeField] private float _BorderThickness = 3f;
+    [Min(25)]
+    [SerializeField] private int _BarLength = 100;
+    [Min(0)]
+    [SerializeField] private float _DefaultBarScale = 0.0025f;
+    [Min(1)]
+    [SerializeField] private int _MaxVisibleDistance = 20;
 
     [SerializeField] private bool _FadeBarColorAsStatDrops = true;
     [SerializeField] private Color32 _BackgroundColor = Color.gray;
@@ -30,16 +33,20 @@ public class FloatingStatusBar : MonoBehaviour
     private Image _UI_StatBarImage;
     private TMP_Text _UI_StatBarText;
 
+    private GameManager _GameManager;
     private CameraManager _CameraManager;
+
 
 
 
     // Start is called before the first frame update
     void Start()
     {
-        _CameraManager = GameManager.Instance.CameraManager;
+        _GameManager = GameManager.Instance;
+        _CameraManager = _GameManager.CameraManager;
 
-        StatBarScale = 0.0025f;
+        StatBarScale = _DefaultBarScale;
+
         VerticalPosOffset = 1f;
 
         GameObject healthBarBackgroundObj = transform.Find("Stat Bar Background").gameObject;
@@ -58,9 +65,29 @@ public class FloatingStatusBar : MonoBehaviour
 
     private void Update()
     {
-        // We need to use the parent here, because the text component is on a child object rotated 180 degrees so it always faces the right way.
-        // Otherwise it ends up backwards when the parent object turns around to face the camera. The text is facing down the negative Z-axis by default.
-        transform.LookAt(_CameraManager.GetActiveCamera().VirtualCameraGameObject.transform); // Make the text always face the player's camera.
+        //Debug.Log($"Distance from player: {Vector3.Distance(transform.position, _GameManager.Player.transform.position)}");
+
+        ICinemachineCamera camera = _CameraManager.GetActiveCamera();
+        if (camera == null)
+            return;
+
+
+        // If this floating status bar is within the distance limit from the active camera, then make it visible. Otherwise hide it.
+        if (Vector3.Distance(transform.position, camera.VirtualCameraGameObject.transform.position) <= _MaxVisibleDistance)
+        {
+            // Reset the bar's scale to make it visible.
+            StatBarScale = _DefaultBarScale;
+
+            // We need to use the parent here, because the text component is on a child object rotated 180 degrees so it always faces the right way.
+            // Otherwise it ends up backwards when the parent object turns around to face the camera. The text is facing down the negative Z-axis by default.
+            transform.LookAt(_CameraManager.GetActiveCamera().VirtualCameraGameObject.transform); // Make the text always face the player's camera.
+        }
+        else
+        {
+            // Hide the bar by setting its scale to 0. This way the status bar's GameObject is still active so it can redisplay itself when
+            // the player gets close enough.
+            StatBarScale = 0;
+        }
 
     }
 
@@ -71,8 +98,8 @@ public class FloatingStatusBar : MonoBehaviour
             return;
 
         // Set the length of the parent object in case the player's max health has changed.
-        float width = Mathf.Max(MaxValue * _LengthMultiplier, 150f); // Make sure the bar is never too narrow for the text.
-        _RectTransform.sizeDelta = new Vector2(width, _RectTransform.sizeDelta.y);
+        //float width = Mathf.Max(MaxValue * _LengthMultiplier, 150f); // Make sure the bar is never too narrow for the text.
+        _RectTransform.sizeDelta = new Vector2(_BarLength, _RectTransform.sizeDelta.y);
 
 
         // How far should we fill the health bar?
@@ -128,9 +155,9 @@ public class FloatingStatusBar : MonoBehaviour
         {
             _VerticalPosOffset = value;
 
-            gameObject.transform.position = new Vector3(transform.parent.position.x, 
-                                                        transform.parent.position.y + _VerticalPosOffset,
-                                                        transform.parent.position.z);
+            transform.localPosition = new Vector3(transform.localPosition.x, 
+                                                  transform.localPosition.y + _VerticalPosOffset,
+                                                  transform.localPosition.z);
         }
     }
 

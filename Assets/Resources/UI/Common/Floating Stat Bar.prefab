@@ -129,8 +129,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae6b404236b40c74693dc1cf7246bc3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _LengthMultiplier: 2.5
   _BorderThickness: 3
+  _BarLength: 200
+  _BarScale: 0.0025
+  _MaxVisibleDistance: 20
   _FadeBarColorAsStatDrops: 1
   _BackgroundColor:
     serializedVersion: 2
@@ -161,6 +163,7 @@ Canvas:
   m_OverrideSorting: 1
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0

@@ -80,12 +80,17 @@ public class InputManager_Player : InputSubManager
         // NOTE: This used to be "context.control.IsPressed()". However, this apparently caused a bug where sometimes this callback would not set the
         //       input value to false when the button is released. Changing it to "context.performed" fixes this problem.
         //       This issue does not seem to affect the player button controls like attack and jump for some reason, though.
+        //       It turns out this may have been caused by Steam running in the background.
         AttackInput(context.performed);
     }
 
     public void OnBuildMode(InputAction.CallbackContext context)
     {
-        EnterBuildModeInput(context.control.IsPressed());
+        // NOTE: This used to be "context.control.IsPressed()". However, this apparently caused a bug where sometimes this callback would not set the
+        //       input value to false when the button is released. Changing it to "context.performed" fixes this problem.
+        //       This issue does not seem to affect the player button controls like attack and jump for some reason, though.
+        //       It turns out this may have been caused by Steam running in the background.
+        EnterBuildModeInput(context.performed);
     }
 
     public void OnTechTree(InputAction.CallbackContext context)
@@ -93,6 +98,7 @@ public class InputManager_Player : InputSubManager
         // NOTE: This used to be "context.control.IsPressed()". However, this apparently caused a bug where sometimes this callback would not set the
         //       input value to false when the button is released. Changing it to "context.performed" fixes this problem.
         //       This issue does not seem to affect the player button controls like attack and jump for some reason, though.
+        //       It turns out this may have been caused by Steam running in the background.
         OpenTechTreeInput(context.performed);
     }
 

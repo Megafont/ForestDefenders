@@ -10,7 +10,18 @@ public class BuildingConstructionGhost : MonoBehaviour
     
     [Tooltip("The minimum distance in front of the player that the construction ghost must be.")]
     [SerializeField] private Vector2 _MaxMovementDistances = new Vector2(8f, 5f);
-
+    
+    [Tooltip("The difference between the highest and lowest terrain points under the building cannot be greater than this value, or the building is considered obstructed.")]
+    [Min(0)]
+    [SerializeField] private float _MaxGroundHeightDifference = 0.5f;
+    
+    [Tooltip("The build ghost will not move further above or below the player's elevation that this value. This prevents it from jumping to the bottom or top of cliffs.")]
+    [Min(0)]
+    [SerializeField] private float _MaxVerticalOffsetFromPlayer = 2f;
+    
+    [Tooltip("When determining the ground height at the ghost's position, the raycast will start at this value plus the y-position of the ghost. So if this value is 5, the raycast begins 5 units above the current position of the building ghost.")]
+    [Min(2)]
+    [SerializeField] private float _GroundCheckVerticalRaycastOffset = 5f;
 
     [Header("Grid Snap Settings")]
 
@@ -48,6 +59,7 @@ public class BuildingConstructionGhost : MonoBehaviour
 
 
     private GameManager _GameManager;
+    private CameraManager _CameraManager;
     private InputManager _InputManager;
 
     private GameObject _Player;
@@ -56,6 +68,7 @@ public class BuildingConstructionGhost : MonoBehaviour
     private BoxCollider _BoxCollider;
     private CapsuleCollider _CapsuleCollider; // We switch to this collider for round buildings.
 
+    private Rigidbody _Rigidbody;
     private MeshFilter _MeshFilter;
     private MeshRenderer _Renderer;
 
@@ -82,12 +95,22 @@ public class BuildingConstructionGhost : MonoBehaviour
 
     private float _GhostRotationInDegrees; // The rotation of the building ghost in degrees.
     private Vector2 _GhostOffsetRelativeToPlayer; // How much the player has shifted the building position.
+    private Vector2 _PrevOffsetReleativeToPlayer; // The value that was in _GhostOffsetRelativeToPlayer during the previous frame.
     private float _VerticalOffsetFromGround = 0.02f; // For displacing the construction ghost up a little to prevent it from colliding with the ground when it is on flat surfaces.
 
     private List<Vector3> _GroundSamplePoints;
+    private bool _AllGroundSamplePointsAreOnGround = false;
+    private float _GroundHeightVariance; // The difference between the lowest and highest points under the building ghost.
+    private float _PrevGroundHeightVariance; // The ground height variance from the previous frame.
+    private bool _GhostRanIntoCliffBase;
+    private bool _GhostRanIntoCliffTop;
+    private Quaternion _PrevRotation;
 
-    private bool _IsBridgeCompletelyInsideBridgeZone; // Whether or not the construction ghost is completely inside the bounds of _CurrentBridgeZone.
+    private bool _IsBridgeAndCompletelyInsideBridgeZone; // Whether or not the construction ghost is completely inside the bounds of _CurrentBridgeZone.
+    private int _OverlappingBridgeZonesCount;
+    private int _GroundLayerID;
 
+    private bool _BuildingIsBridge;
 
 
     /// <summary>
@@ -102,13 +125,16 @@ public class BuildingConstructionGhost : MonoBehaviour
 
     private void Awake()
     {
+        _GroundLayerID = LayerMask.NameToLayer("Ground");
+
         _GroundSamplePoints = new List<Vector3>();
         _OverlappingObjects = new List<Collider>();
     }
 
     void Update()
     {
-        if (!_BuildModeManager.IsSelectingBuilding)
+        if (_BuildModeManager.IsBuildModeActive && 
+            !_BuildModeManager.IsSelectingBuilding && !_CameraManager.IsTransitioning)
         {
             CheckGhostMovementInputs();
             UpdateGhostPositionAndRotation();
@@ -124,6 +150,8 @@ public class BuildingConstructionGhost : MonoBehaviour
         // was in build mode. Otherwise, this can prevent the player from being able to build since this script will think there
         // are still collisions in this case.
         _OverlappingObjects.Clear();
+
+        ResetTransform();
     }
 
     void OnTriggerStay(Collider other)
@@ -139,8 +167,12 @@ public class BuildingConstructionGhost : MonoBehaviour
         if (ParentBridgeConstructionZone != null && other.gameObject == ParentBridgeConstructionZone.gameObject)
         {
             ParentBridgeConstructionZone = null;
-            _IsBridgeCompletelyInsideBridgeZone = false;
+            _IsBridgeAndCompletelyInsideBridgeZone = false;
         }
+
+
+        if (other.CompareTag("BridgeConstructionZone"))
+            _OverlappingBridgeZonesCount--;
 
 
         if (_OverlappingObjects.Count == 0)
@@ -152,12 +184,14 @@ public class BuildingConstructionGhost : MonoBehaviour
     public void Init()
     {
         _GameManager = GameManager.Instance;
+        _CameraManager = _GameManager.CameraManager;
         _InputManager = _GameManager.InputManager;
 
         _Player = _GameManager.Player;
 
         _BuildModeManager = _GameManager.BuildModeManager;
 
+        _Rigidbody = GetComponent<Rigidbody>();
         _MeshFilter = GetComponent<MeshFilter>();
         _Renderer = GetComponent<MeshRenderer>();
 
@@ -184,6 +218,10 @@ public class BuildingConstructionGhost : MonoBehaviour
         _CurGridSnapState = _InputManager.BuildMode.GridSnap;
 
 
+        _PrevOffsetReleativeToPlayer = _GhostOffsetRelativeToPlayer;
+        _PrevRotation = transform.rotation;
+
+
         // First check for movement inputs.
         _GhostOffsetRelativeToPlayer.x += _CurMovePositionState.x * _GridSnapOffIncrement;
         _GhostOffsetRelativeToPlayer.y += _CurMovePositionState.y * _GridSnapOffIncrement;
@@ -205,17 +243,20 @@ public class BuildingConstructionGhost : MonoBehaviour
     }
 
     private void UpdateGhostPositionAndRotation()
-    {                                      
+    {
         // Update the position of the build ghost.
+
 
         Vector3 newPos = _GhostBasePosition;
         newPos += new Vector3(_GhostOffsetRelativeToPlayer.x,
                               _Player.transform.position.y,
                               _GhostOffsetRelativeToPlayer.y);
-        newPos.y = GetGhostYPos(newPos);
+
 
         if (_CurGridSnapState)
             newPos = Utils_Math.SnapPositionToGrid(newPos, _GridSnapIncrement);
+
+
 
         transform.position = newPos;
 
@@ -233,17 +274,49 @@ public class BuildingConstructionGhost : MonoBehaviour
         transform.rotation = q;
 
 
+        // We do this last after rotation, because this function gets the ground sample points under the mesh to determine
+        // the elevation of the construction ghost.
+        newPos.y = GetGhostYPos(newPos);
+
+
+        if (CheckIfGroundIsTooUneven())
+            return;
+
+
         if (ParentBridgeConstructionZone)
         {
-            _IsBridgeCompletelyInsideBridgeZone = ParentBridgeConstructionZone.IsCompletelyInsideBridgeZone(gameObject, _BuildingDefinition);
+            _IsBridgeAndCompletelyInsideBridgeZone = ParentBridgeConstructionZone.IsCompletelyInsideBridgeZone(gameObject, _BuildingDefinition);
 
-            if (_IsBridgeCompletelyInsideBridgeZone)
+            if (_IsBridgeAndCompletelyInsideBridgeZone)
                 ParentBridgeConstructionZone.ApplyConstraints(transform);
         }
         else
         {
-            _IsBridgeCompletelyInsideBridgeZone = false;
+            _IsBridgeAndCompletelyInsideBridgeZone = false;
         }
+    }
+
+    private bool CheckIfGroundIsTooUneven()
+    {
+        // If the max ground height is two big, don't allow the ghost to move in that direction anymore
+        // by simply returning from this function.
+        if (_GroundHeightVariance > _MaxGroundHeightDifference)
+        {
+            // The building ghost has encountered either a cliff base or cliff top.
+            if (!_BuildingIsBridge ||
+                (_BuildingIsBridge && _GhostRanIntoCliffBase)) // Allow bridges to still slide off cliff tops so you can build them over rivers.
+            {
+                _GhostOffsetRelativeToPlayer = _PrevOffsetReleativeToPlayer;
+                _GroundHeightVariance = _PrevGroundHeightVariance;
+
+                transform.rotation = _PrevRotation;
+
+                return true;
+            }
+        }
+
+
+        return false;
     }
 
     /// <summary>
@@ -256,34 +329,48 @@ public class BuildingConstructionGhost : MonoBehaviour
     {
         float groundHeight;
 
-
         // Get the necessary ground sample points depending on which type of building is currently selected
         // and calculate the ground's Y position under the construction ghost.
-        if (BuildModeDefinitions.BuildingIsBridge(_BuildingDefinition)) // Is the building a bridge?
+        if (_BuildingIsBridge) // Is the building a bridge?
         {
-            GetLeftAndRightCenterGroundSamplePoints_XandZCoords();
-            groundHeight = CalculateGroundHeight(CalculateGroundPositionOps.Max);
+            GetAllGroundSamplePoints_XandZCoords(newPos);
+            groundHeight = CalculateGroundHeight(newPos, CalculateGroundPositionOps.Max);
         }
         else
         {
-            GetCenterGroundSamplePoint_XandZCoords();
-            groundHeight = CalculateGroundHeight(CalculateGroundPositionOps.Average);
+            GetAllGroundSamplePoints_XandZCoords(newPos);
+            groundHeight = CalculateGroundHeight(newPos, CalculateGroundPositionOps.Average);
         }
 
+
+
+        // Clamp the ground height we found to be within the specified max vertical distance of the player.
+        groundHeight = Mathf.Clamp(groundHeight, 
+                                   _Player.transform.position.y - _MaxVerticalOffsetFromPlayer, 
+                                   _Player.transform.position.y + _MaxVerticalOffsetFromPlayer);
 
         return groundHeight;
     }
 
     private enum CalculateGroundPositionOps { Average = 0, Min, Max };
-    private float CalculateGroundHeight(CalculateGroundPositionOps operation)
+    private float CalculateGroundHeight(Vector3 ghostPos, CalculateGroundPositionOps operation)
     {
         float groundHeight = 0;
         float groundHeightsSum = 0;
         float min = float.MaxValue;
         float max = float.MinValue;
 
-        Vector3 ghostPos = transform.position;
 
+        // Reset this flag.
+        _AllGroundSamplePointsAreOnGround = true;
+
+        _PrevGroundHeightVariance = _GroundHeightVariance;
+
+
+        // This isn't just set to Utils_Math.GROUND_CHECK_RAYCAST_START_HEIGHT, because we need the rays to start much closer to the
+        // build ghost (aka closer to the ground). This prevents cliff overhangs from causing false positives when detecting sudden
+        // changes in ground height since the rays would hit those instead of the actual ground the player is trying to build on.
+        float raycastStartHeight = ghostPos.y + _GroundCheckVerticalRaycastOffset; // Utils_Math.GROUND_CHECK_RAYCAST_START_HEIGHT
 
         for (int i = 0; i < _GroundSamplePoints.Count; i++)
         {
@@ -291,33 +378,43 @@ public class BuildingConstructionGhost : MonoBehaviour
             if (Utils_Math.DetectGroundHeightAtPos(_GroundSamplePoints[i].x,
                                                    _GroundSamplePoints[i].z,
                                                    LayerMask.GetMask(new string[] { "Ground" }),
-                                                   out groundHeight))
+                                                   out groundHeight,
+                                                   raycastStartHeight))
             {
                 groundHeight += _VerticalOffsetFromGround;
             }
             else // No ground was detected at the current ground sample point, so just use the construction ghost's own y coordinate.
             {
                 groundHeight = ghostPos.y;
+                _AllGroundSamplePointsAreOnGround = false;
             }
 
 
-            // Update the ground heights sum depending on the specified operation type.
-            if (operation == CalculateGroundPositionOps.Average)
-                groundHeightsSum += groundHeight;
-            else if (operation == CalculateGroundPositionOps.Min)
-                min = Mathf.Min(groundHeight, min);
-            else if (operation == CalculateGroundPositionOps.Max)
-                max = Mathf.Max(groundHeight, max);
+            // Update the ground heights sum.
+            groundHeightsSum += groundHeight;
 
+            // Update the min and max ground heights if necessary.
+            min = Mathf.Min(groundHeight, min);
+            max = Mathf.Max(groundHeight, max);
+            
 
             // Display vertical debug lines showing where the sample points are below the building.
-            Debug.DrawLine(new Vector3(_GroundSamplePoints[i].x, Utils_Math.GROUND_CHECK_RAYCAST_START_HEIGHT, _GroundSamplePoints[i].z),
+            Debug.DrawLine(new Vector3(_GroundSamplePoints[i].x, raycastStartHeight, _GroundSamplePoints[i].z),
                            new Vector3(_GroundSamplePoints[i].x, groundHeight, _GroundSamplePoints[i].z),
                            new Color32(0, (byte)(75 * (i / 3) + 25), 0, 255)); // The green channel increments by 75 moving from lowest Z row to highest Z row of points (and 25 is added so the brightest lines are green = 255).
         
         } // end for _GroundSamplePoints
 
 
+        // Calculate the maximum height difference of the ground under the building ghost.
+        _GroundHeightVariance = max - min;
+        //Debug.Log($"Ground height variance from {_GroundSamplePoints.Count} points: {_GroundHeightVariance}");
+
+
+        _GhostRanIntoCliffBase = (max - ghostPos.y) > _MaxGroundHeightDifference;
+        _GhostRanIntoCliffTop = (ghostPos.y - min) > _MaxGroundHeightDifference;
+
+        //Debug.Log($"Hit cliff base: {_GhostRanIntoCliffBase}    Hit cliff top: {_GhostRanIntoCliffTop}          Base result: {(max - ghostPos.y)}    Top result: {(ghostPos.y - min)}");
 
         if (operation == CalculateGroundPositionOps.Average)
             return groundHeightsSum / _GroundSamplePoints.Count;
@@ -326,34 +423,39 @@ public class BuildingConstructionGhost : MonoBehaviour
         else if (operation == CalculateGroundPositionOps.Max)
             return max;
         else // NOTE: This case should never actually be able run and is just here to make the compiler stop whining that not all code paths return a value.
-            throw new Exception("An unexpected error occurred!");
+            throw new Exception("Unknown operation requested!");
     }
 
-    private void GetAllGroundSamplePoints_XandZCoords()
+    private void GetAllGroundSamplePoints_XandZCoords(Vector3 ghostPos)
     {
         _GroundSamplePoints.Clear();
 
 
         Bounds meshBounds = _MeshFilter.mesh.bounds;
+        Vector3 pivot = transform.position;
+        Quaternion rotation = transform.rotation;
+
+        //meshBounds.min = Utils_Math.RotatePointAroundPoint(meshBounds.min, pivot, rotation);
+        //meshBounds.min = Utils_Math.RotatePointAroundPoint(meshBounds.min, pivot, rotation);
 
 
         // Get nine sample points, one at each corner of the bounding box, one in the center of each side, and one in the center of the bounding box.
         // We go in rows of three from back to front on the Z-axis.
         // We also call TransformPoint() in order to convert each point into world space.
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.min.x,     0, meshBounds.min.z)));
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.center.x,  0, meshBounds.min.z)));
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.max.x,     0, meshBounds.min.z)));
+        AddGroundSamplePoint(ghostPos + new Vector3(meshBounds.min.x,     0, meshBounds.min.z), pivot, rotation);
+        AddGroundSamplePoint(ghostPos + new Vector3(meshBounds.center.x,  0, meshBounds.min.z), pivot, rotation);
+        AddGroundSamplePoint(ghostPos + new Vector3(meshBounds.max.x,     0, meshBounds.min.z), pivot, rotation);
 
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.min.x,     0, meshBounds.center.z)));
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.center.x,  0, meshBounds.center.z)));
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.max.x,     0, meshBounds.center.z)));
+        AddGroundSamplePoint(ghostPos + new Vector3(meshBounds.min.x,     0, meshBounds.center.z), pivot, rotation);
+        AddGroundSamplePoint(ghostPos + new Vector3(meshBounds.center.x,  0, meshBounds.center.z), pivot, rotation);
+        AddGroundSamplePoint(ghostPos + new Vector3(meshBounds.max.x,     0, meshBounds.center.z), pivot, rotation);
 
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.min.x,     0, meshBounds.max.z)));
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.center.x,  0, meshBounds.max.z)));
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.max.x,     0, meshBounds.max.z)));
+        AddGroundSamplePoint(ghostPos + new Vector3(meshBounds.min.x,     0, meshBounds.max.z), pivot, rotation);
+        AddGroundSamplePoint(ghostPos + new Vector3(meshBounds.center.x,  0, meshBounds.max.z), pivot, rotation);
+        AddGroundSamplePoint(ghostPos + new Vector3(meshBounds.max.x,     0, meshBounds.max.z), pivot, rotation);
     }
 
-    private void GetForwardAndBackGroundSamplePoints_XandZCoords()
+    private void GetForwardAndBackGroundSamplePoints_XandZCoords(Vector3 ghostPos)
     {
         _GroundSamplePoints.Clear();
 
@@ -361,16 +463,16 @@ public class BuildingConstructionGhost : MonoBehaviour
         Bounds meshBounds = _MeshFilter.mesh.bounds;
 
 
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.min.x,     0, meshBounds.min.z)));
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.center.x,  0, meshBounds.min.z)));
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.max.x,     0, meshBounds.min.z)));
+        _GroundSamplePoints.Add(ghostPos + new Vector3(meshBounds.min.x,     0, meshBounds.min.z));
+        _GroundSamplePoints.Add(ghostPos + new Vector3(meshBounds.center.x,  0, meshBounds.min.z));
+        _GroundSamplePoints.Add(ghostPos + new Vector3(meshBounds.max.x,     0, meshBounds.min.z));
 
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.min.x,     0, meshBounds.max.z)));
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.center.x,  0, meshBounds.max.z)));
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.max.x,     0, meshBounds.max.z)));
+        _GroundSamplePoints.Add(ghostPos + new Vector3(meshBounds.min.x,     0, meshBounds.max.z));
+        _GroundSamplePoints.Add(ghostPos + new Vector3(meshBounds.center.x,  0, meshBounds.max.z));
+        _GroundSamplePoints.Add(ghostPos + new Vector3(meshBounds.max.x,     0, meshBounds.max.z));
     }
 
-    private void GetLeftAndRightGroundSamplePoints_XandZCoords()
+    private void GetLeftAndRightGroundSamplePoints_XandZCoords(Vector3 ghostPos)
     {
         _GroundSamplePoints.Clear();
 
@@ -378,16 +480,16 @@ public class BuildingConstructionGhost : MonoBehaviour
         Bounds meshBounds = _MeshFilter.mesh.bounds;
 
 
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.min.x,    0, meshBounds.min.z)));
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.min.x,    0, meshBounds.center.z)));
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.min.x,    0, meshBounds.max.z)));
+        _GroundSamplePoints.Add(ghostPos + new Vector3(meshBounds.min.x,    0, meshBounds.min.z));
+        _GroundSamplePoints.Add(ghostPos + new Vector3(meshBounds.min.x,    0, meshBounds.center.z));
+        _GroundSamplePoints.Add(ghostPos + new Vector3(meshBounds.min.x,    0, meshBounds.max.z));
 
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.max.x,    0, meshBounds.min.z)));
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.max.x,    0, meshBounds.center.z)));
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.max.x,    0, meshBounds.max.z)));
+        _GroundSamplePoints.Add(ghostPos + new Vector3(meshBounds.max.x,    0, meshBounds.min.z));
+        _GroundSamplePoints.Add(ghostPos + new Vector3(meshBounds.max.x,    0, meshBounds.center.z));
+        _GroundSamplePoints.Add(ghostPos + new Vector3(meshBounds.max.x,    0, meshBounds.max.z));
     }
 
-    private void GetCornerGroundSamplePoints_XandZCoords()
+    private void GetCornerGroundSamplePoints_XandZCoords(Vector3 ghostPos)
     {
         _GroundSamplePoints.Clear();
 
@@ -395,13 +497,13 @@ public class BuildingConstructionGhost : MonoBehaviour
         Bounds meshBounds = _MeshFilter.mesh.bounds;
 
 
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.min.x, 0, meshBounds.min.z)));
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.max.x, 0, meshBounds.min.z)));
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.min.x, 0, meshBounds.max.z)));
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.max.x, 0, meshBounds.max.z)));
+        _GroundSamplePoints.Add(ghostPos + new Vector3(meshBounds.min.x, 0, meshBounds.min.z));
+        _GroundSamplePoints.Add(ghostPos + new Vector3(meshBounds.max.x, 0, meshBounds.min.z));
+        _GroundSamplePoints.Add(ghostPos + new Vector3(meshBounds.min.x, 0, meshBounds.max.z));
+        _GroundSamplePoints.Add(ghostPos + new Vector3(meshBounds.max.x, 0, meshBounds.max.z));
     }
 
-    private void GetForwardAndBackCenterGroundSamplePoints_XandZCoords()
+    private void GetForwardAndBackCenterGroundSamplePoints_XandZCoords(Vector3 ghostPos)
     {
         _GroundSamplePoints.Clear();
 
@@ -409,12 +511,12 @@ public class BuildingConstructionGhost : MonoBehaviour
         Bounds meshBounds = _MeshFilter.mesh.bounds;
 
 
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.center.x, 0, meshBounds.min.z)));
+        _GroundSamplePoints.Add(ghostPos + new Vector3(meshBounds.center.x, 0, meshBounds.min.z));
 
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.center.x, 0, meshBounds.max.z)));
+        _GroundSamplePoints.Add(ghostPos + new Vector3(meshBounds.center.x, 0, meshBounds.max.z));
     }
 
-    private void GetLeftAndRightCenterGroundSamplePoints_XandZCoords()
+    private void GetLeftAndRightCenterGroundSamplePoints_XandZCoords(Vector3 ghostPos)
     {
         _GroundSamplePoints.Clear();
 
@@ -422,12 +524,12 @@ public class BuildingConstructionGhost : MonoBehaviour
         Bounds meshBounds = _MeshFilter.mesh.bounds;
 
 
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.min.x, 0, meshBounds.center.z)));
+        _GroundSamplePoints.Add(ghostPos + new Vector3(meshBounds.min.x, 0, meshBounds.center.z));
 
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.max.x, 0, meshBounds.center.z)));
+        _GroundSamplePoints.Add(ghostPos + new Vector3(meshBounds.max.x, 0, meshBounds.center.z));
     }
 
-    private void GetCenterGroundSamplePoint_XandZCoords()
+    private void GetCenterGroundSamplePoint_XandZCoords(Vector3 ghostPos)
     {
         _GroundSamplePoints.Clear();
 
@@ -435,7 +537,12 @@ public class BuildingConstructionGhost : MonoBehaviour
         Bounds meshBounds = _MeshFilter.mesh.bounds;
 
 
-        _GroundSamplePoints.Add(transform.TransformPoint(new Vector3(meshBounds.center.x, 0, meshBounds.center.z)));
+        _GroundSamplePoints.Add(ghostPos + new Vector3(meshBounds.center.x, 0, meshBounds.center.z));
+    }
+
+    private void AddGroundSamplePoint(Vector3 point, Vector3 pivot, Quaternion rotation)
+    {
+        _GroundSamplePoints.Add(Utils_Math.RotatePointAroundPoint(point, pivot, rotation));
     }
 
     private void UpdateGhostColor()
@@ -457,8 +564,15 @@ public class BuildingConstructionGhost : MonoBehaviour
 
     public void ResetTransform()
     {
+        // Simply abort if the building ghost isn't initialized yet.
+        if (_Player == null)
+            return;
+
+
         ResetPosition();
         ResetRotation();
+
+        UpdateGhostPositionAndRotation();
     }
 
     /// <summary>
@@ -467,7 +581,7 @@ public class BuildingConstructionGhost : MonoBehaviour
     /// </summary>
     /// <param name="basePosition"></param>
     private void ResetPosition()
-    {       
+    {
         // Update the construction ghost's base position. The forward offset is left out here on purpose (see the next comments).
         _GhostBasePosition = _Player.transform.position;
         _GhostBasePosition.y += _VerticalOffsetFromGround;
@@ -491,6 +605,8 @@ public class BuildingConstructionGhost : MonoBehaviour
     public void ChangeMesh(Mesh newMesh, BuildingDefinition buildingDef)
     {
         _BuildingDefinition = buildingDef;
+
+        _BuildingIsBridge = BuildModeDefinitions.BuildingIsBridge(_BuildingDefinition);
 
         _MeshFilter.mesh = newMesh; // We have to use .sharedMesh here to avoid a Unity error saying you can't access .mesh on a prefab.
 
@@ -536,27 +652,30 @@ public class BuildingConstructionGhost : MonoBehaviour
         //Debug.Log($"Build ghost object collided with GameObject {collider.name}, {collider.tag}!");
 
 
-        _IsBridgeCompletelyInsideBridgeZone = false;
+        _IsBridgeAndCompletelyInsideBridgeZone = false;
 
+        bool isBridgeConstructionZone = collider.CompareTag("BridgeConstructionZone");
+        
 
         // Check if we are completely inside a bridge construction zone while trying to build a bridge.
         BridgeConstructionZone zone = collider.GetComponent<BridgeConstructionZone>();
-        if (BuildModeDefinitions.BuildingIsBridge(_BuildingDefinition) &&
-            collider.CompareTag("BridgeConstructionZone") &&
-            (zone &&
-             zone.IsCompletelyInsideBridgeZone(gameObject, _BuildingDefinition)))
+        if (_BuildingIsBridge && isBridgeConstructionZone &&
+            (zone && zone.IsCompletelyInsideBridgeZone(gameObject, _BuildingDefinition)))
         {
             //Debug.Log("Can build bridge!");
 
             ParentBridgeConstructionZone = zone;
-            _IsBridgeCompletelyInsideBridgeZone = true;
+            _IsBridgeAndCompletelyInsideBridgeZone = true;
         }
-        // Add the collider we hit to the list of obstructions if it is not already in the list.
-        else if (!_OverlappingObjects.Contains(collider))
+        // Add the collider we hit to the list of obstructions if it is not already in the list and is not the ground.
+        else if (!_OverlappingObjects.Contains(collider) && collider.gameObject.layer != _GroundLayerID)
         {
             // Make sure we don't end up with duplicate entries in the list, as this can cause the player to be unable to build things
             // since only one entry gets cleared in OnTriggerExit().
             _OverlappingObjects.Add(collider);
+
+            if (isBridgeConstructionZone)
+                _OverlappingBridgeZonesCount++;
         }
 
 
@@ -569,18 +688,30 @@ public class BuildingConstructionGhost : MonoBehaviour
         bool result = false;
 
 
+        if (!_AllGroundSamplePointsAreOnGround)
+            return true;
+
+
+        // Is the ground too uneven to build on? 
+        if (_GroundHeightVariance > _MaxGroundHeightDifference &&
+            !(_BuildingIsBridge && _GhostRanIntoCliffTop))
+        {
+            return true;
+        }
+
+
         // Is the construction ghost free of collisions with any other object?
         if (_OverlappingObjects.Count < 1)
         {
             // The building is not overlapping anything else, and is thus not in a bridge construction zone either.
-            if (BuildModeDefinitions.BuildingIsBridge(_BuildingDefinition))
+            if (_BuildingIsBridge)
                 result = true; // The building is a bridge that's not in a bridge construction zone, so it counts as obstructed.
             else
                 result = false; // The building is not a bridge and not in a bridge construction zone, so it is not considered obstructed.
         }
 
         // Is the construction ghost a bridge that is completely within a bridge construction zone?
-        else if (_IsBridgeCompletelyInsideBridgeZone) 
+        else if (_IsBridgeAndCompletelyInsideBridgeZone) 
         {
             // Is the construction ghost free of collisions with anything other than the bridge construction zone?
             if (_OverlappingObjects.Count == 1) 
@@ -598,11 +729,11 @@ public class BuildingConstructionGhost : MonoBehaviour
                 result = true;
             }
         }
-
-        // The building is obstructed since it is overlapping one or more other things.
-        else
+        
+        // The building is obstructed since it is overlapping something other than a bridge construction zone.
+        else if (_OverlappingObjects.Count - _OverlappingBridgeZonesCount > 0)
         {
-            result = true;
+            result = true;        
         }
 
 

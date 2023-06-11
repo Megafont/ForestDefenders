@@ -13,4 +13,5 @@ public enum DamageTypes
     Electric    = 4,
     Fire        = 8,
     Ice         = 16,
+    Drowning    = 32,
 }

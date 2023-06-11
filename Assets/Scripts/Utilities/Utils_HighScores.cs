@@ -46,7 +46,7 @@ public static class Utils_HighScores
         UpdateHighScoresTable(highScoresTable, scoreData, HighScoreTypes.Score);
         UpdateHighScoresTable(highTimesTable, scoreData, HighScoreTypes.SurvivalTime);
     }
-    
+
     public static bool IsNewHighScore(int score, float survivalTime)
     {
         string lastScoreKey = $"HighScore {HighScoreTypes.Score} {MAX_HIGHSCORES_TABLE_SIZE - 1}";
@@ -56,9 +56,16 @@ public static class Utils_HighScores
         string lastSurvivalTimeData = PlayerPrefs.GetString(lastSurvivalTimeKey);
 
 
+        // Debug.Log($"Last score data: \"{lastScoreData}\"");
+        // Debug.Log($"Last survival time data: \"{lastSurvivalTimeData}\"");
+
+
         // If the last slot in either table is the empty slot string, then we know for sure this score is a new high score since the table isn't full yet.
-        if (lastScoreData == EMPTY_SLOT_STRING || lastSurvivalTimeData == EMPTY_SLOT_STRING)
+        if (string.IsNullOrWhiteSpace(lastScoreData) || lastScoreData == EMPTY_SLOT_STRING ||
+            string.IsNullOrWhiteSpace(lastSurvivalTimeData) || lastSurvivalTimeData == EMPTY_SLOT_STRING)
+        {
             return true;
+        }
 
 
         int lastHighScore = ConvertStringToHighScoreData(lastScoreData).Score;
@@ -83,7 +90,7 @@ public static class Utils_HighScores
 
 
         for (int i = 0; i < MAX_HIGHSCORES_TABLE_SIZE; i++)
-        {          
+        {
             string key = $"HighScore {tableType} {i}";
 
             string record = PlayerPrefs.GetString(key, EMPTY_SLOT_STRING);
@@ -91,7 +98,7 @@ public static class Utils_HighScores
             //Debug.Log($"LOADED: \"{key}\"    \"{record}\"");
 
 
-            if (record != EMPTY_SLOT_STRING)
+            if (!string.IsNullOrWhiteSpace(record) && record != EMPTY_SLOT_STRING)
             {
                 HighScoreData scoreData = ConvertStringToHighScoreData(record);
                 highScoresTable.Add(scoreData);
@@ -127,7 +134,7 @@ public static class Utils_HighScores
             //Debug.Log($"SAVED: \"{key}\"    \"{HighScoreDataToString(curScore)}\"");
 
             PlayerPrefs.SetString(key, ConvertHighScoreDataToString(curScore));
-            
+
         }
 
     }
@@ -148,7 +155,7 @@ public static class Utils_HighScores
 
 
         // If the new score isn't good enough to get into the high scores table, simply return.
-        int lastScoreIndex = highScoresTable.Count - 1;        
+        int lastScoreIndex = highScoresTable.Count - 1;
         HighScoreData scoreData = highScoresTable[lastScoreIndex];
         if (!string.IsNullOrEmpty(scoreData.Name)) // Is the last table slot NOT an empty slot?
         {
@@ -166,14 +173,14 @@ public static class Utils_HighScores
 
             //if (i > 0)
             //{
-                // Is this the correct place to insert the new high score into the table?
-                if (string.IsNullOrEmpty(curScore.Name) || // Is this an empty slot?
-                    (tableType == HighScoreTypes.Score && newScoreData.Score > highScoresTable[i].Score) || // If this is the high scores table, is this score higher than the one in the current row?
-                    (tableType == HighScoreTypes.SurvivalTime && newScoreData.SurvivalTime > highScoresTable[i].SurvivalTime)) // If this is the high survival times table, is this time higher than the one in the current row?
-                {
-                    highScoresTable.Insert(i, newScoreData);
-                    break;
-                }
+            // Is this the correct place to insert the new high score into the table?
+            if (string.IsNullOrEmpty(curScore.Name) || // Is this an empty slot?
+                (tableType == HighScoreTypes.Score && newScoreData.Score > highScoresTable[i].Score) || // If this is the high scores table, is this score higher than the one in the current row?
+                (tableType == HighScoreTypes.SurvivalTime && newScoreData.SurvivalTime > highScoresTable[i].SurvivalTime)) // If this is the high survival times table, is this time higher than the one in the current row?
+            {
+                highScoresTable.Insert(i, newScoreData);
+                break;
+            }
             //}
 
         } // end for i
@@ -261,7 +268,7 @@ public static class Utils_HighScores
 
     public static void ClearAllHighScores()
     {
-        PlayerPrefs.DeleteAll();        
+        PlayerPrefs.DeleteAll();
 
         for (int i = 0; i < MAX_HIGHSCORES_TABLE_SIZE; i++)
         {
@@ -312,11 +319,11 @@ public static class Utils_HighScores
         // Print the record scores table to the Unity console.
         Debug.Log(separator);
         Debug.Log($"HIGH {scoreType}S TABLE:");
-        
+
         Debug.Log(separator);
 
 
-        int rank = 1;        
+        int rank = 1;
         for (int i = 0; i < MAX_HIGHSCORES_TABLE_SIZE; i++)
         {
             HighScoreData curScore = highScoresTable[i];

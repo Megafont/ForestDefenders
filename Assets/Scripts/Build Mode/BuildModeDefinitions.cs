@@ -379,8 +379,8 @@ public static class BuildModeDefinitions
 
         if (thumbnail)
             Debug.Log($"    - Loaded building thumbnail \"Resources/Structures/Thumbnails/{category}/{buildingName}\".");
-        //else
-        //    throw new Exception($"    - Failed to load building thumbnail \"Resources/Structures/Thumbnails/{category}/{buildingName}\"!");
+        else
+            Debug.LogError($"    - Failed to load building thumbnail \"Resources/Structures/Thumbnails/{category}/{buildingName}\"!");
 
 
         return thumbnail;

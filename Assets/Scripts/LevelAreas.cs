@@ -7,5 +7,4 @@ public enum LevelAreas
     Area3 = 3,
     Area4 = 4,
     Area5 = 5,
-    Area6 = 6,
 }

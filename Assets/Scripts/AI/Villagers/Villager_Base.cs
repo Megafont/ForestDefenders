@@ -123,6 +123,10 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
                     _ResourceManager.ExpendFromStockpile(ResourceTypes.Stone, resourcesCost);
                     _ResourceManager.ExpendFromStockpile(ResourceTypes.Wood, resourcesCost);
 
+                    TextPopup.ShowTextPopup(TextPopup.AdjustStartPosition(gameObject), 
+                                            $"Used {resourcesCost} Stone and Wood", 
+                                            TextPopupColors.ExpendedResourceColor);
+
                     bHealth.Heal(healAmount, gameObject);
                 }
                 else
@@ -165,8 +169,8 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
             // This villager is not chasing a target. So if the target check time has elapsed, then do a new target check.                        
 
             // Find all accessable resource nodes that are not depleted.
-            bool result = Utils_World.DetectAreaNumberFromGroundPosition(transform.position.x, transform.position.z, LayerMask.GetMask(new string[] { "Ground" }), out LevelAreas villagerCurrentArea);
-            if (result)
+            LevelAreas villagerCurrentArea = Utils_World.DetectAreaNumberFromPosition(transform.position);
+            if (villagerCurrentArea != LevelAreas.Unknown)
             {
                 List<ResourceNode> accessableResourceNodes = Utils_World.FindAllResourceNodesAccessableFromArea(villagerCurrentArea);
                 ResourceNode possibleTargetResourceNode = null;
