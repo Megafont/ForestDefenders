@@ -56,8 +56,9 @@ public class LevelUpDialog : Dialog_Base
 
     protected override void Dialog_OnStart()
     {
-        if (!_GameManager.PlayerIsInGame())
+        if (_GameManager.Player == null)
             return;
+
 
         _Player = _GameManager.Player;
         _VillageManager_Villagers = _GameManager.VillageManager_Villagers;

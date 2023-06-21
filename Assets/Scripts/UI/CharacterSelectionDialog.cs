@@ -5,45 +5,72 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using TMPro;
 
 
-public class MainMenuDialog : Dialog_Base, IDialog
+
+public class CharacterSelectionDialog : Dialog_Base, IDialog
 {
+    public static float ImageSizeIncreaseOnSelection = 100;
+    public static Color32 HightlightedColor = Color.white;
+    public static Color32 UnhighlightedColor = new Color32(100, 100, 100, 255);
+
+
+
     [Tooltip("This much time in seconds must elapse before the menu will respond to another input event to keep it from moving too fast.")]
 
-    [SerializeField] GameObject _TitleDisplayCanvas;
-    [SerializeField] CharacterSelectionDialog _CharacterSelectionDialog;
-    [SerializeField] HighScoresDialog _HighScoresDialog;
+    [SerializeField] private MainMenuDialog _MainMenuDialog;
 
 
     private SceneSwitcher _SceneSwitcher;
     private Transform _MenuItems;
 
+    private List<Image> _MenuItemImages;
+    private TMP_Text _SelectionText;
 
     private float _LastGamepadSelectionChangeTime;
     private int _SelectedMenuItemIndex;
+    private int _PrevSelectedMenuItemIndex;
+
+    private Vector2 _DefaultImageSize;
 
 
 
     protected override void Dialog_OnAwake()
     {
         _MenuItems = transform.Find("Panel/Menu Items").transform;
+
+        _MenuItemImages = new List<Image>();
+
+        _SelectionText = transform.Find("Panel/Selection Text").GetComponent<TMP_Text>();
     }
 
     protected override void Dialog_OnStart()
     {
         _SceneSwitcher = _GameManager.SceneSwitcher;
 
-        foreach (Transform t in _MenuItems)
-            t.GetComponent<MenuDialogsMenuItem>().OnMouseEnter += OnMouseEnterMenuItem;
 
-        OpenDialog();
+        _DefaultImageSize = _MenuItems.GetChild(0).GetComponent<Image>().rectTransform.sizeDelta;
+
+        for (int i = 0; i < _MenuItems.childCount; i++)
+        {
+            Transform child = _MenuItems.GetChild(i);
+            child.GetComponent<MenuDialogsMenuItem>().OnMouseEnter += OnMouseEnterMenuItem;
+
+            _MenuItemImages.Add(child.GetComponent<Image>());
+            
+            Unhighlight(i);
+        }
+
+
+        // Select the first character.
+        Highlight(0);
+
     }
 
     protected override void Dialog_OnEnable()
     {
-        if (_TitleDisplayCanvas)
-            _TitleDisplayCanvas.SetActive(true);
+
     }
 
     protected override void Dialog_OnUpdate()
@@ -56,15 +83,16 @@ public class MainMenuDialog : Dialog_Base, IDialog
 
             //Debug.Log("Selected: " + EventSystem.current.currentSelectedGameObject.name);
 
-            float y = _InputManager_UI.Navigate.y;
-            if (y < -0.5f) // User is pressing down
-            {
+            float x = _InputManager_UI.Navigate.x;
+            if (x < -0.5f) // User is pressing left
+            {                
                 while (true)
                 {
-                    _SelectedMenuItemIndex++;
+                    _PrevSelectedMenuItemIndex = _SelectedMenuItemIndex;
+                    _SelectedMenuItemIndex--;
 
-                    if (_SelectedMenuItemIndex >= _MenuItems.childCount)
-                        _SelectedMenuItemIndex = 0;
+                    if (_SelectedMenuItemIndex < 0)
+                        _SelectedMenuItemIndex = _MenuItems.childCount - 1;
 
                     SelectMenuItem();
 
@@ -76,14 +104,15 @@ public class MainMenuDialog : Dialog_Base, IDialog
 
                 _LastGamepadSelectionChangeTime = Time.unscaledTime;
             }
-            else if (y > 0.5f) // User is pressing up
+            else if (x > 0.5f) // User is pressing right
             {
                 while (true)
                 {
-                    _SelectedMenuItemIndex--;
+                    _PrevSelectedMenuItemIndex = _SelectedMenuItemIndex;
+                    _SelectedMenuItemIndex++;
 
-                    if (_SelectedMenuItemIndex < 0)
-                        _SelectedMenuItemIndex = _MenuItems.childCount - 1;
+                    if (_SelectedMenuItemIndex >= _MenuItems.childCount)
+                        _SelectedMenuItemIndex = 0;
 
                     SelectMenuItem();
 
@@ -106,7 +135,7 @@ public class MainMenuDialog : Dialog_Base, IDialog
     {
         if (!_SceneSwitcher.IsTransitioningToScene)
         {
-            Button pressedBtn = _MenuItems.GetChild(_SelectedMenuItemIndex).GetComponent<Button>();
+            Button pressedBtn = _MenuItemImages[_SelectedMenuItemIndex].GetComponent<Button>();
 
             PointerEventData eventData = new PointerEventData(EventSystem.current);
             pressedBtn.OnPointerClick(eventData);
@@ -117,42 +146,46 @@ public class MainMenuDialog : Dialog_Base, IDialog
 
     protected override void Dialog_OnCancel()
     {
-        // We do nothing here, as the player should not be able to cancel out of the main menu.
+        OnReturnToMainMenuConfirmed();
     }
 
     public void OnMouseEnterMenuItem(GameObject sender)
     {
+        _PrevSelectedMenuItemIndex = _SelectedMenuItemIndex;
+
         _SelectedMenuItemIndex = GetIndexOfMenuItem(sender.transform);
 
         SelectMenuItem();
     }
     
-    public void OnStartGame()
+    public void OnBoyConfirmed()
     {
-        _TitleDisplayCanvas.SetActive(false);
+        GameManager._SpawnBoy = true;
+
+        _SceneSwitcher.FadeToScene("Level 01");
+
         CloseDialog();
-        
-        _CharacterSelectionDialog.OpenDialog();
     }
 
-    public void OnHighScores()
+    public void OnGirlConfirmed()
     {
-        _TitleDisplayCanvas.SetActive(false);
+        GameManager._SpawnBoy = false;
+
+        _SceneSwitcher.FadeToScene("Level 01");
+
+        CloseDialog();
+    }
+
+    public void OnReturnToMainMenuConfirmed()
+    {
         CloseDialog();
 
-        _HighScoresDialog.OpenDialog();
+        _MainMenuDialog.OpenDialog();
     }
 
-    public void OnExitGame()
-    {
-        Application.Quit();
-    }
 
     public override void OpenDialog(bool closeOtherOpenDialogs = true)
     {
-        if (_TitleDisplayCanvas)
-            _TitleDisplayCanvas.SetActive(true);
-
         // Select the first menu item.
         EventSystem.current.SetSelectedGameObject(_MenuItems.GetChild(0).gameObject);
 
@@ -176,8 +209,30 @@ public class MainMenuDialog : Dialog_Base, IDialog
 
     private void SelectMenuItem()
     {
+        if (_MenuItemImages == null || _SelectionText == null)
+            return;
+
+
+        Unhighlight(_PrevSelectedMenuItemIndex);
+
+        Highlight(_SelectedMenuItemIndex);
+        _SelectionText.text = _MenuItemImages[_SelectedMenuItemIndex].gameObject.name;
+
+
         // Tell the Unity EventSystem to select the correct button.
         EventSystem.current.SetSelectedGameObject(_MenuItems.GetChild(_SelectedMenuItemIndex).gameObject);
+    }
+
+    private void Unhighlight(int index)
+    {
+        _MenuItemImages[index].rectTransform.sizeDelta = _DefaultImageSize;
+        _MenuItemImages[index].color = UnhighlightedColor;
+    }
+
+    private void Highlight(int index)
+    {
+        _MenuItemImages[index].rectTransform.sizeDelta = _DefaultImageSize + new Vector2(ImageSizeIncreaseOnSelection, ImageSizeIncreaseOnSelection);
+        _MenuItemImages[index].color = HightlightedColor;
     }
 
 }

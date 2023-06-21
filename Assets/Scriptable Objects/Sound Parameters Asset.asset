@@ -23,5 +23,6 @@ MonoBehaviour:
   PlayerLandingSound: {fileID: 8300000, guid: 6aeefb601c305f64487cebdfacae5b6c, type: 3}
   PlayerLandingSoundVolume: 1
   PlayPlayerLandingSoundAs3DSound: 0
+  PlayerLandingSoundSpatialBlend: 0
   BirdSoundsVolume: 1
   BirdSoundsFadeTime: 4

@@ -13,7 +13,7 @@ public class BuildingConstructionGhost : MonoBehaviour
     
     [Tooltip("The difference between the highest and lowest terrain points under the building cannot be greater than this value, or the building is considered obstructed.")]
     [Min(0)]
-    [SerializeField] private float _MaxGroundHeightDifference = 0.5f;
+    [SerializeField] private float _MaxGroundHeightDifference = 1f;
     
     [Tooltip("The build ghost will not move further above or below the player's elevation that this value. This prevents it from jumping to the bottom or top of cliffs.")]
     [Min(0)]
@@ -104,6 +104,8 @@ public class BuildingConstructionGhost : MonoBehaviour
     private float _PrevGroundHeightVariance; // The ground height variance from the previous frame.
     private bool _GhostRanIntoCliffBase;
     private bool _GhostRanIntoCliffTop;
+    
+    private Vector3 _PrevPosition;
     private Quaternion _PrevRotation;
 
     private bool _IsBridgeAndCompletelyInsideBridgeZone; // Whether or not the construction ghost is completely inside the bounds of _CurrentBridgeZone.
@@ -219,6 +221,7 @@ public class BuildingConstructionGhost : MonoBehaviour
 
 
         _PrevOffsetReleativeToPlayer = _GhostOffsetRelativeToPlayer;
+        _PrevPosition = transform.position;
         _PrevRotation = transform.rotation;
 
 
@@ -244,25 +247,13 @@ public class BuildingConstructionGhost : MonoBehaviour
 
     private void UpdateGhostPositionAndRotation()
     {
-        // Update the position of the build ghost.
 
-
-        Vector3 newPos = _GhostBasePosition;
-        newPos += new Vector3(_GhostOffsetRelativeToPlayer.x,
-                              _Player.transform.position.y,
-                              _GhostOffsetRelativeToPlayer.y);
-
-
-        if (_CurGridSnapState)
-            newPos = Utils_Math.SnapPositionToGrid(newPos, _GridSnapIncrement);
-
-
-
-        transform.position = newPos;
+        Vector3 newPos = new Vector3(_GhostBasePosition.x + _GhostOffsetRelativeToPlayer.x,
+                                     _Player.transform.position.y,
+                                     _GhostBasePosition.z + _GhostOffsetRelativeToPlayer.y); // This y is intentional, as _GhostOffsetRelativeToPlayer is a Vector2 since it doesn't care about elevation.
 
 
         // Update the rotation of the build ghost.        
-
         Quaternion q = transform.rotation;
         Vector3 eulerAngles = q.eulerAngles;
         eulerAngles.y = _GhostRotationInDegrees;
@@ -274,9 +265,15 @@ public class BuildingConstructionGhost : MonoBehaviour
         transform.rotation = q;
 
 
+        // Update the position of the build ghost.
         // We do this last after rotation, because this function gets the ground sample points under the mesh to determine
-        // the elevation of the construction ghost.
+        // the elevation of the construction ghost, so rotation needs to happen first so it affects the ground sample point positions.
         newPos.y = GetGhostYPos(newPos);
+
+        if (_CurGridSnapState)
+            newPos = Utils_Math.SnapPositionToGrid(newPos, _GridSnapIncrement);
+
+        transform.position = newPos;
 
 
         if (CheckIfGroundIsTooUneven())
@@ -302,13 +299,16 @@ public class BuildingConstructionGhost : MonoBehaviour
         // by simply returning from this function.
         if (_GroundHeightVariance > _MaxGroundHeightDifference)
         {
+            Debug.Log("1");
             // The building ghost has encountered either a cliff base or cliff top.
             if (!_BuildingIsBridge ||
                 (_BuildingIsBridge && _GhostRanIntoCliffBase)) // Allow bridges to still slide off cliff tops so you can build them over rivers.
             {
+                Debug.Log("2");
                 _GhostOffsetRelativeToPlayer = _PrevOffsetReleativeToPlayer;
                 _GroundHeightVariance = _PrevGroundHeightVariance;
 
+                //transform.position = _PrevPosition;
                 transform.rotation = _PrevRotation;
 
                 return true;
@@ -349,7 +349,11 @@ public class BuildingConstructionGhost : MonoBehaviour
                                    _Player.transform.position.y - _MaxVerticalOffsetFromPlayer, 
                                    _Player.transform.position.y + _MaxVerticalOffsetFromPlayer);
 
-        return groundHeight;
+
+        if (_GhostRanIntoCliffBase || _GhostRanIntoCliffTop)
+            return newPos.y;
+        else
+            return groundHeight;
     }
 
     private enum CalculateGroundPositionOps { Average = 0, Min, Max };
@@ -408,13 +412,13 @@ public class BuildingConstructionGhost : MonoBehaviour
 
         // Calculate the maximum height difference of the ground under the building ghost.
         _GroundHeightVariance = max - min;
-        //Debug.Log($"Ground height variance from {_GroundSamplePoints.Count} points: {_GroundHeightVariance}");
+        Debug.Log($"Ground height variance from {_GroundSamplePoints.Count} points: {_GroundHeightVariance}");
 
 
         _GhostRanIntoCliffBase = (max - ghostPos.y) > _MaxGroundHeightDifference;
         _GhostRanIntoCliffTop = (ghostPos.y - min) > _MaxGroundHeightDifference;
 
-        //Debug.Log($"Hit cliff base: {_GhostRanIntoCliffBase}    Hit cliff top: {_GhostRanIntoCliffTop}          Base result: {(max - ghostPos.y)}    Top result: {(ghostPos.y - min)}");
+        Debug.Log($"Hit cliff base: {_GhostRanIntoCliffBase}    Hit cliff top: {_GhostRanIntoCliffTop}          Base result: {(max - ghostPos.y)}    Top result: {(ghostPos.y - min)}");
 
         if (operation == CalculateGroundPositionOps.Average)
             return groundHeightsSum / _GroundSamplePoints.Count;

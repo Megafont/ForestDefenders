@@ -18,7 +18,7 @@ public class PlayerHungerBar : MonoBehaviour
     [Range(1f, 10f)]
     [SerializeField] private float _BorderThickness = 3f;
 
-    [SerializeField] private bool _FadeBarColorAsHealthDrops = true;
+    [SerializeField] private bool _FadeBarColorAsHungerIncreases = true;
     [SerializeField] private Color32 _BackgroundColor = Color.gray;
     [SerializeField] private Color32 _FullColor = new Color32(0, 150, 0, 255);
     [SerializeField] private Color32 _MediumColor = new Color32(255, 170, 0, 255);
@@ -49,7 +49,7 @@ public class PlayerHungerBar : MonoBehaviour
         GameObject healthBarObj = transform.Find("Hunger Bar").gameObject;
         _UI_HungerBarImage = healthBarObj.GetComponent<Image>();
 
-        if (GameManager.Instance.PlayerIsInGame())
+        if (_GameManager.Player)
         {
             _PlayerHungerComponent = _GameManager.Player.GetComponent<Hunger>();
             _PlayerHungerComponent.OnHungerChanged += OnPlayerHungerChanged;
@@ -103,7 +103,7 @@ public class PlayerHungerBar : MonoBehaviour
 
 
         // Fade the bar between colors as health drops if enabled.
-        if (_FadeBarColorAsHealthDrops)
+        if (_FadeBarColorAsHungerIncreases)
         {
             if (_PlayerHungerComponent.CurrentHunger >= _PlayerHungerComponent.MaxHunger / 2)
                 _UI_HungerBarImage.color = Color.Lerp(_MediumColor, _FullColor, (fillPercentage - 0.5f) * 2f);

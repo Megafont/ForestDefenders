@@ -53,3 +53,6 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Waterfall Particles
+    uniqueID: 2914370589
+    locked: 0

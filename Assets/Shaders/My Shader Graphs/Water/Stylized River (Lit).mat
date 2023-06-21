@@ -30,7 +30,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2998
+  m_CustomRenderQueue: 3000
   stringTagMap: {}
   disabledShaderPasses: []
   m_LockedProperties: 
@@ -119,10 +119,10 @@ Material:
     - _GlossyReflections: 0
     - _Metallic: 0
     - _OcclusionStrength: 1
-    - _Opacity: 0
+    - _Opacity: 0.75
     - _Parallax: 0.005
     - _QueueControl: 0
-    - _QueueOffset: -2
+    - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _RefractionScale: 1
     - _RefractionSpeed: 0.05

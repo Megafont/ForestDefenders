@@ -12,6 +12,8 @@ public class RadialMenuItem : MonoBehaviour, IPointerEnterHandler
     public static float ImageSizeIncreaseOnSelection = 50;
     public static Color ThumbnailUnhighlightedColor = new Color32(100, 100, 100, 255);
 
+
+
     private string _Name;
 
     private TMP_Text _UI_TMPComponent;

@@ -287,6 +287,9 @@ public class TextPopup : MonoBehaviour
 
     private static TextPopup CreateTextPopup()
     {
+        if (_TextPopupsParent == null)
+            _TextPopupsParent = GameObject.Find("Text Popups");
+
         if (_TextPopupPrefab == null)
             _TextPopupPrefab = Resources.Load<GameObject>("UI/Common/Text Popup");
 

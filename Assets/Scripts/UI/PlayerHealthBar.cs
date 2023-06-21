@@ -49,7 +49,7 @@ public class PlayerHealthBar : MonoBehaviour
         GameObject healthBarObj = transform.Find("Health Bar").gameObject;
         _UI_HealthBarImage = healthBarObj.GetComponent<Image>();
 
-        if (GameManager.Instance.PlayerIsInGame())
+        if (_GameManager.Player)
         {
             _PlayerHealthComponent = _GameManager.Player.GetComponent<Health>();
             _PlayerHealthComponent.OnHealthChanged += OnPlayerHealthChanged;

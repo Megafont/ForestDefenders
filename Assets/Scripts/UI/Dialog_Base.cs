@@ -107,12 +107,21 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
         OpenDialogs.Remove(this);
 
 
+        // Only disable mouse cursor, and switch input maps if no dialogs are still open.
         if (OpenDialogs.Count < 1)
-            Cursor.visible = false;
+        {
+            // Disable mouse cursor.
+            if (OpenDialogs.Count < 1)
+                Cursor.visible = false;
 
 
-        StartCoroutine(SwitchInputMaps(false));
+            // Switch input maps.
+            StartCoroutine(SwitchInputMaps(false));
 
+        }
+
+
+        gameObject.SetActive(false);
     }
 
     public virtual void OpenDialog(bool closeOtherOpenDialogs = false)
@@ -184,23 +193,21 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
         }
         else
         {
-            // Switch to the previously active input map.
-            _InputManager.GetPlayerInputComponent().actions.FindActionMap(InputManager.ACTION_MAP_UI).Disable();
+            // Only disable the UI input map and re-enable the previously active input map if no dialogs are still open.
+            if (OpenDialogs.Count < 1)
+            {            
+                // Disable the UI input map.
+                _InputManager.GetPlayerInputComponent().actions.FindActionMap(InputManager.ACTION_MAP_UI).Disable();
+
+                // Re-enable the previous active input map.
+                _PreviouslyActiveInputMap?.Enable();
+            }
+
 
             // Wait for a short delay so the player character can't react to the last UI button press.
             // The UI confirm button and player attack buttons are the same one, so this prevents that issue.
             yield return new WaitForSeconds(_GameManager.DialogCloseInputChangeDelay);
 
-
-            // This check is here, because otherwise the building selection menu will auto close a fraction of a second after the second menu opens.
-            // So this check catches that scenario and aborts the rest of this code since setting the GameObject to be inactive hides the window.
-            if (!IsOpen())
-            {
-                _PreviouslyActiveInputMap?.Enable();
-
-                // Lastly, disable the dialog's GameObject.
-                gameObject.SetActive(false);
-            }
         }
 
     }

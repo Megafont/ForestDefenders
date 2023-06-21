@@ -47,7 +47,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 7f35ba25541794f4d9de8c28ac29997c, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.8
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -141,8 +141,43 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 315522721928946659, guid: c7c2b58f40870d24cbdffb6536824ad2,
         type: 3}
+      propertyPath: m_SortingFudge
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 315522721928946659, guid: c7c2b58f40870d24cbdffb6536824ad2,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 315522721928946659, guid: c7c2b58f40870d24cbdffb6536824ad2,
+        type: 3}
       propertyPath: m_SortingOrder
-      value: 6
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 315522721928946659, guid: c7c2b58f40870d24cbdffb6536824ad2,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: -1380596707
+      objectReference: {fileID: 0}
+    - target: {fileID: 315522721928946659, guid: c7c2b58f40870d24cbdffb6536824ad2,
+        type: 3}
+      propertyPath: m_UseCustomVertexStreams
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 315522721928946659, guid: c7c2b58f40870d24cbdffb6536824ad2,
+        type: 3}
+      propertyPath: m_VertexStreams.Array.data[1]
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 315522721928946659, guid: c7c2b58f40870d24cbdffb6536824ad2,
+        type: 3}
+      propertyPath: m_VertexStreams.Array.data[2]
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 315522721928946659, guid: c7c2b58f40870d24cbdffb6536824ad2,
+        type: 3}
+      propertyPath: m_VertexStreams.Array.data[3]
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 612169444925150933, guid: c7c2b58f40870d24cbdffb6536824ad2,
         type: 3}
@@ -241,13 +276,48 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7587115606983360162, guid: c7c2b58f40870d24cbdffb6536824ad2,
         type: 3}
+      propertyPath: m_SortingFudge
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7587115606983360162, guid: c7c2b58f40870d24cbdffb6536824ad2,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7587115606983360162, guid: c7c2b58f40870d24cbdffb6536824ad2,
+        type: 3}
       propertyPath: m_SortingOrder
-      value: 6
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7587115606983360162, guid: c7c2b58f40870d24cbdffb6536824ad2,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: -1380596707
       objectReference: {fileID: 0}
     - target: {fileID: 7587115606983360162, guid: c7c2b58f40870d24cbdffb6536824ad2,
         type: 3}
       propertyPath: m_ApplyActiveColorSpace
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7587115606983360162, guid: c7c2b58f40870d24cbdffb6536824ad2,
+        type: 3}
+      propertyPath: m_UseCustomVertexStreams
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7587115606983360162, guid: c7c2b58f40870d24cbdffb6536824ad2,
+        type: 3}
+      propertyPath: m_VertexStreams.Array.data[1]
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7587115606983360162, guid: c7c2b58f40870d24cbdffb6536824ad2,
+        type: 3}
+      propertyPath: m_VertexStreams.Array.data[2]
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7587115606983360162, guid: c7c2b58f40870d24cbdffb6536824ad2,
+        type: 3}
+      propertyPath: m_VertexStreams.Array.data[3]
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -285,9 +355,49 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3916932307297794423, guid: 3ea2e97ecd341a442929abf12269b687,
         type: 3}
+      propertyPath: m_SortingFudge
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916932307297794423, guid: 3ea2e97ecd341a442929abf12269b687,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916932307297794423, guid: 3ea2e97ecd341a442929abf12269b687,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916932307297794423, guid: 3ea2e97ecd341a442929abf12269b687,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: -1380596707
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916932307297794423, guid: 3ea2e97ecd341a442929abf12269b687,
+        type: 3}
+      propertyPath: m_UseCustomVertexStreams
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916932307297794423, guid: 3ea2e97ecd341a442929abf12269b687,
+        type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 29d5e051148d617469a5139f608df282, type: 2}
+    - target: {fileID: 3916932307297794423, guid: 3ea2e97ecd341a442929abf12269b687,
+        type: 3}
+      propertyPath: m_VertexStreams.Array.data[1]
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916932307297794423, guid: 3ea2e97ecd341a442929abf12269b687,
+        type: 3}
+      propertyPath: m_VertexStreams.Array.data[2]
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3916932307297794423, guid: 3ea2e97ecd341a442929abf12269b687,
+        type: 3}
+      propertyPath: m_VertexStreams.Array.data[3]
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 3916932307928609177, guid: 3ea2e97ecd341a442929abf12269b687,
         type: 3}
       propertyPath: InitialModule.maxNumParticles
@@ -461,7 +571,7 @@ PrefabInstance:
     - target: {fileID: 5839378613995341909, guid: c6818adcc8d16d542bd5a3a736e4bf84,
         type: 3}
       propertyPath: m_SortingOrder
-      value: 4
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6290131487548142947, guid: c6818adcc8d16d542bd5a3a736e4bf84,
         type: 3}

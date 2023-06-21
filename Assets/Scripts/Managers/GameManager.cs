@@ -15,9 +15,17 @@ using Test;
 
 public class GameManager : MonoBehaviour
 {
+    public static bool _SpawnBoy = true;
+
+
+    [Header("Game Manager")]
+    [Tooltip("Specifies whether or not this scene is the main menu scene.")]
+    public bool IsMainMenuScene = false;
+
     [Tooltip("When the game starts up, wait this long before doing delayed initialization steps.  WARNING: You may sometimes get a lag spike when this delayed initialization occurs, probably in part due to the nav mesh generation. As such, it is best for this value to be as low as possible so it hopefully occurs before the player starts playing.")]
     [Range(0f, 5f)]
     [SerializeField] private float _StartupInitDelay = 5.0f;
+
 
     [Header("Dev Cheats")]
     public bool ConstructionIsFree = false;
@@ -27,13 +35,14 @@ public class GameManager : MonoBehaviour
     public bool StartWithAllZonesBridged = false;
     public bool DisableMonstersSpawning = false;
 
+
     [Header("Combat")]
     [Tooltip("The max percentage that the amount of damage an attack does can vary by. If this percentage is 0, then the amount of damage dealt is always equal to the original attack damage.")]
     [Range(0f, 1f)]
     public float AttackDamageVariance = 0.2f;
 
+
     [Header("Player")]
-    public bool EnablePlayerSpawn = true;
     public Transform PlayerSpawnPoint;
     public bool PlayerCanDamageVillagers = true;
     public float PlayerFallOutOfWorldDeathHeight = -32;
@@ -41,11 +50,13 @@ public class GameManager : MonoBehaviour
     public float PlayerStartingMaxHealth = 50f;
     public float PlayerStartingGatherRate = 3f;
 
+
     [Header("Village")]
     public float PlayerHealFoodCostMultiplier = 2f;
     public int StartingXP = 0;
     public int XP_EarnedPerWave = 2;
     public bool ShowFloatingStatBars = false;
+
 
     [Header("Village - Level Up Settings")]
     public float PlayerAttackBuffAmountPerLevelUp = 2f;
@@ -62,6 +73,7 @@ public class GameManager : MonoBehaviour
     [Tooltip("The maximum amount of resource that can be collected in a single punch.")]
     public float MaxGatheringCap = 20f;
 
+
     [Header("Scoring")]
     public int PlayerGatheringScoreMultiplier = 2;
     public int PlayerResearchScoreMultiplier = 100;
@@ -71,6 +83,7 @@ public class GameManager : MonoBehaviour
     public MusicParams MusicParams;
     public SoundParams SoundParams;
 
+
     [Header("UI")]
     [Tooltip("When the player closes a dialog, this much time will elapse before player input is re-enabled. This prevents the player character from acting on the last UI button press.")]
     [Range(0.1f, 1.0f)]
@@ -79,16 +92,16 @@ public class GameManager : MonoBehaviour
     [Range(0.1f, 1.0f)]
     public float GamepadMenuSelectionDelay = 0.2f;
 
+
     [Header("UI Elements")]
     public float GamePhaseTextFadeOutTime = 3.0f;
+
 
     [Header("UI Elements (Bottom Bar)")]
     public Color ResourceStockPilesLowColor = Color.red;
     public Color ResourceStockPilesOkColor = new Color32(255, 128, 0, 255);
     public Color ResourceStockPilesPlentifulColor = Color.white;
 
-
-    public bool PlayerHasSpawned { get; private set; } = false;
 
 
 
@@ -169,22 +182,22 @@ public class GameManager : MonoBehaviour
             throw new Exception("The player spawn point has not been set in the inspector!");
 
 
-        GameObject terrainObj = GameObject.Find("Terrain");
+        GameObject terrainObj = GameObject.Find("Level Terrain");
         if (!terrainObj)
-            throw new Exception("The GameObject \"Terrain\" was not found!");
+            throw new Exception("The GameObject \"Level Terrain\" was not found!");
         
         _BirdsAudioSource = terrainObj.GetComponent<AudioSource>();
 
 
-        // We use Renderer.bounds since it is in world space. Meanwhile, MeshFilter.bounds and Renderer.localbounds are in local space.
-        GameObject ground = terrainObj.transform.Find("Level01").gameObject;
+        // We use Renderer.bounds since it is in world space. Meanwhile, MeshFilter.bounds and Renderer.localbounds are in local space.                                                       
+        GameObject ground = terrainObj.transform.Find("Geometry").gameObject;
         ground = ground.transform.Find("Ground").gameObject;
         TerrainBounds = ground.GetComponent<MeshRenderer>().bounds;
 
 
         GetManagerReferences();
 
-        if (EnablePlayerSpawn)
+        if (!IsMainMenuScene)
             SpawnPlayer();
 
 
@@ -219,10 +232,10 @@ public class GameManager : MonoBehaviour
         SceneSwitcher = SceneSwitcher.Instance;
 
 
-        if (PlayerIsInGame())
-            ChangeGameState(GameStates.PlayerBuildPhase);
-        else
+        if (IsMainMenuScene)
             ChangeGameState(GameStates.MainMenu);
+        else
+            ChangeGameState(GameStates.PlayerBuildPhase);
 
 
         InitCameras();
@@ -270,7 +283,7 @@ public class GameManager : MonoBehaviour
         } // end switch GameState
 
 
-        if (PlayerIsInGame()) // Are we in a level?
+        if (!IsMainMenuScene) // Are we in a level?
         {
             if (PlayerHasSpawned && GameState != GameStates.GameOver)
             {
@@ -348,7 +361,8 @@ public class GameManager : MonoBehaviour
 
     private void SpawnPlayer()
     {
-        GameObject playerPrefab = Resources.Load<GameObject>("Player/Player_Male");
+        GameObject playerPrefab = _SpawnBoy ? Resources.Load<GameObject>("Player/Player_Male") :
+                                              Resources.Load<GameObject>("Player/Player_Female");
         GameObject playerObj = null;
 
         float xPos = PlayerSpawnPoint.position.x;
@@ -441,7 +455,7 @@ public class GameManager : MonoBehaviour
                 InitCameras_MenuScene();
                 break;
 
-            case "Level":
+            case "Level 01":
                 InitCameras_Level();
                 break;
 
@@ -616,11 +630,6 @@ public class GameManager : MonoBehaviour
         {
             return false;
         }
-    }
-
-    public bool PlayerIsInGame()
-    {
-        return Instance.EnablePlayerSpawn;
     }
 
     public void TogglePauseGameState()
@@ -1015,6 +1024,7 @@ public class GameManager : MonoBehaviour
 
     public Bounds TerrainBounds { get; private set; } // The terrain bounds in world space.
 
+    public bool PlayerHasSpawned { get; private set; } = false;
     public bool PlayerIsDead { get; private set; }
 
     public int TotalMonstersKilled { get; private set; }

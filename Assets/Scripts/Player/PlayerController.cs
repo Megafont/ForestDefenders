@@ -3,6 +3,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.ParticleSystem;
 
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
     using UnityEngine.InputSystem;
@@ -160,6 +161,9 @@ public class PlayerController : MonoBehaviour
     private bool _IsFalling;
 
     private AudioSource _PlayerLandAudio;
+    private ParticleSystem _PlayerMoveParticles;
+    private float _PlayerMoveParticlesRate;
+    private ParticleSystem _PlayerLandingParticles;
 
 
 
@@ -190,9 +194,25 @@ public class PlayerController : MonoBehaviour
         _HealthComponent = GetComponent<Health>();
         _HungerComponent = GetComponent<Hunger>();
 
-        _AttackPower = _GameManager.PlayerStartingAttackPower;
-
         _ResourceManager = _GameManager.ResourceManager;
+
+                                                             
+        GameObject particleObj1 = gameObject.transform.Find("Move Particles").gameObject;
+        if (particleObj1 == null)
+            throw new Exception("Failed to find the \"Walk\\Run Particles\" child game object!");
+
+        _PlayerMoveParticles = particleObj1.GetComponent<ParticleSystem>();
+        _PlayerMoveParticlesRate = _PlayerMoveParticles.emission.rateOverDistance.constantMax; // We're its rateOverDistance property, which makes particles spawn as the particle system covers distance.
+
+
+        GameObject particleObj2 = gameObject.transform.Find("Landing Particles").gameObject;
+        if (particleObj2 == null)
+            throw new Exception("Failed to find the \"Landing Particles\" child game object!");
+
+        _PlayerLandingParticles = particleObj2.GetComponent<ParticleSystem>();
+
+
+        _AttackPower = _GameManager.PlayerStartingAttackPower;
 
         InitAudio();
 
@@ -237,6 +257,17 @@ public class PlayerController : MonoBehaviour
         JumpAndGravity();
         GroundedCheck();
         Move();
+
+
+        // Adjust the move particles emission rate depending on the player's move speed.
+        if (_speed > 0)
+        {
+            float percent = _speed / _SprintSpeed;
+            ParticleSystem.EmissionModule emission = _PlayerMoveParticles.emission;
+            emission.rateOverDistanceMultiplier = percent * _PlayerMoveParticlesRate;
+
+            //Debug.Log($"PERCENT: {percent}    RATE: {emission.rateOverDistance.constant}");
+        }
 
 
         if (!_BuildModeManager.IsSelectingBuilding && !_IsDead)
@@ -729,8 +760,9 @@ public class PlayerController : MonoBehaviour
             _PlayerLandAudio.spatialize = _SoundParams.PlayPlayerLandingSoundAs3DSound;
             _PlayerLandAudio.spatialBlend = _SoundParams.PlayerLandingSoundSpatialBlend;
             _PlayerLandAudio.volume = _SoundParams.PlayerLandingSoundVolume;
-            _PlayerLandAudio.PlayOneShot(_SoundParams.PlayerLandingSound); 
+            _PlayerLandAudio.PlayOneShot(_SoundParams.PlayerLandingSound);
 
+            _PlayerLandingParticles.Play();
         //}
     }
 

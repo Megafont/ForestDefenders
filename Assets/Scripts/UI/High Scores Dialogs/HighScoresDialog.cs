@@ -12,7 +12,7 @@ public class HighScoresDialog : Dialog_Base, IDialog
     const float KEYBOARD_SCROLL_SPEED = 10.0f;
 
 
-    [SerializeField] private GameObject _MainMenuParent;    
+    [SerializeField] private GameObject _MainMenuObject;    
     [SerializeField] private GameObject _ScrollViewContentArea;
     [SerializeField] private GameObject _ScoreTableRowPrefab;
 
@@ -89,7 +89,9 @@ public class HighScoresDialog : Dialog_Base, IDialog
             HighScoresTableRow tableRowComponent = tableRow.GetComponent<HighScoresTableRow>();
 
             _HighScoresTableUIs.Add(tableRowComponent);
-        }
+
+        } // end for
+
     }
 
     private void LoadHighScoresTables()
@@ -172,7 +174,7 @@ public class HighScoresDialog : Dialog_Base, IDialog
     {
         gameObject.SetActive(false); // Disable this dialog to hide this window.
 
-        _MainMenuParent.SetActive(true);
+        _MainMenuObject.SetActive(true);
     }
 
     protected override void Dialog_OnNavigate()
