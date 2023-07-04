@@ -30,7 +30,11 @@ public class VillageManager_Villagers : MonoBehaviour
     [Tooltip("The maximum distance a villager can be from a building in distress and still respond to the call for help.")]
     public float BuildingBackupCallMaxDistance = 20f;
 
-
+    
+    [Tooltip("The probability that when checking for a target, a villager will just visit a random empty resource node when there are no accessable nodes left that aren't depleted. This makes it so they don't stand around doing nothing all the time when there are no resources left to harvest within their reach.")]
+    [Range(0.0f, 1.0f)]
+    public float VillagerChanceToVisitEmptyNodes = 0.1f;
+    
     [Header("Build Phase Heal Building Settings")]
 
     [Tooltip("The delay (in seconds) between each time a damaged building check is performed at the beginning of the build phase until all buildings get healed (if there is enough food in the stockpile).")]

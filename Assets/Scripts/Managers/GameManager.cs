@@ -24,16 +24,18 @@ public class GameManager : MonoBehaviour
 
     [Tooltip("When the game starts up, wait this long before doing delayed initialization steps.  WARNING: You may sometimes get a lag spike when this delayed initialization occurs, probably in part due to the nav mesh generation. As such, it is best for this value to be as low as possible so it hopefully occurs before the player starts playing.")]
     [Range(0f, 5f)]
-    [SerializeField] private float _StartupInitDelay = 5.0f;
+    [SerializeField] private float _StartupInitDelay = 1.0f;
 
 
-    [Header("Dev Cheats")]
+    [Header("Debug Cheats")]
     public bool ConstructionIsFree = false;
     public bool ResearchIsFree = false;
     public bool GodMode = false;
     public bool StartWithAllTechUnlocked = false;
     public bool StartWithAllZonesBridged = false;
     public bool DisableMonstersSpawning = false;
+    public bool DrawAIPaths = false;
+
 
 
     [Header("Combat")]
@@ -46,31 +48,35 @@ public class GameManager : MonoBehaviour
     public Transform PlayerSpawnPoint;
     public bool PlayerCanDamageVillagers = true;
     public float PlayerFallOutOfWorldDeathHeight = -32;
-    public float PlayerStartingAttackPower = 20f;
-    public float PlayerStartingMaxHealth = 50f;
-    public float PlayerStartingGatherRate = 3f;
-
-
-    [Header("Village")]
     public float PlayerHealFoodCostMultiplier = 2f;
     public int StartingXP = 0;
-    public int XP_EarnedPerWave = 2;
-    public bool ShowFloatingStatBars = false;
+    public int XP_EarnedPerWave = 5;
 
 
-    [Header("Village - Level Up Settings")]
+    [Header("Initial Stats")]
+    public float PlayerStartingAttackPower = 10f;
+    public float PlayerStartingMaxHealth = 25f;
+    public float PlayerStartingGatherRate = 5f;
+    [Space(10)]
+    public float VillagersStartingAttackPower = 10f;
+    public float VillagersStartingMaxHealth = 25f;
+    public float VillagersStartingGatherRate = 5f;
+
+
+    [Header("Level Up Buffs")]
     public float PlayerAttackBuffAmountPerLevelUp = 2f;
     public float PlayerGatheringBuffAmountPerLevelUp = 1f;
     public float PlayerHealthBuffAmountPerLevelUp = 5f;
+    [Space(10)]
     public float VillagersAttackBuffAmountPerLevelUp = 2f;
     public float VillagersGatheringBuffAmountPerLevelUp = 1f;
     public float VillagersHealthBuffAmountPerLevelUp = 5f;
-    public float VillagersStartingAttackPower = 5f;
-    public float VillagersStartingMaxHealth = 25f;
-    public float VillagersStartingGatherRate = 3f;
+
+
+    [Header("Level Up Caps")]
     public float MaxAttackPowerCap = 100f;
-    public float MaxHealthCap = 200f;    
-    [Tooltip("The maximum amount of resource that can be collected in a single punch.")]
+    public float MaxHealthCap = 200f;
+    [Tooltip("The maximum amount of a resource that can be collected in a single punch.")]
     public float MaxGatheringCap = 20f;
 
 
@@ -93,11 +99,11 @@ public class GameManager : MonoBehaviour
     public float GamepadMenuSelectionDelay = 0.2f;
 
 
-    [Header("UI Elements")]
-    public float GamePhaseTextFadeOutTime = 3.0f;
+    [Header("UI (Game Phase Text)")]
+    public float GamePhaseTextFadeOutTime = 2.5f;
 
 
-    [Header("UI Elements (Bottom Bar)")]
+    [Header("UI (Bottom Bar)")]
     public Color ResourceStockPilesLowColor = Color.red;
     public Color ResourceStockPilesOkColor = new Color32(255, 128, 0, 255);
     public Color ResourceStockPilesPlentifulColor = Color.white;

@@ -22,6 +22,7 @@ using Random = UnityEngine.Random;
 /// <summary>
 /// This third person character controller is a modified version of Unity's third person character controller asset.
 /// </summary>
+[SelectionBase]
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
@@ -649,7 +650,8 @@ public class PlayerController : MonoBehaviour
 
         TextPopup.ShowTextPopup(TextPopup.AdjustStartPosition(gameObject),
                                 $"Ate {totalFoodCost} Food", 
-                                TextPopupColors.ExpendedResourceColor);
+                                TextPopupColors.ExpendedResourceColor,
+                                gameObject);
     }
 
     private void DoDestroyAction(GameObject objToDestroy)

@@ -131,8 +131,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _BorderThickness: 3
   _BarLength: 200
-  _BarScale: 0.0025
-  _MaxVisibleDistance: 20
+  _DefaultBarScale: 0.0025
+  _MaxVisibleDistance: 30
   _FadeBarColorAsStatDrops: 1
   _BackgroundColor:
     serializedVersion: 2

@@ -68,50 +68,29 @@ public static class Utils_World
             return LevelAreas.Unknown;
     }
 
-    /*
-    /// <summary>
-    /// Fires a raycast to query the ground at the given position to determine what area it is in.
-    /// </summary>
-    /// <param name="xPos">The X-coordinate of the point to find the area at.</param>
-    /// <param name="zPos">The Z-coordinate of the point to find the area at.</param>
-    /// <param name="groundLayersMask">The ground layer(s).</param>
-    /// <param name="parentArea">Outputs the area the specified position is in.</param>
-    /// <returns>True if the area was determined, or false if no ground was detected at the specified point or the area could not be determined.
-    ///          In the last case, the parentArea out parameter will be set to Unknown.</returns>
-    public static bool DetectAreaNumberFromGroundPosition(float xPos, float zPos, LayerMask groundLayersMask, out LevelAreas parentArea)
+    public static List<ResourceNode> FindActiveResourceNodesAccessableFromArea(LevelAreas area)
     {
-        parentArea = LevelAreas.Unknown;
+        // Find all areas that are accessable from the starting area.
+        List<LevelAreas> accessableAreas = FindAllAccessableLevelAreasFrom(area);
+
+        if (_ResourceManager == null)
+            _ResourceManager = GameManager.Instance.ResourceManager;
 
 
-        // Detect the ground height at the current ground sample point.
-        if (Physics.Raycast(new Vector3(xPos, Utils_Math.GROUND_CHECK_RAYCAST_START_HEIGHT, zPos),
-                            Vector3.down,
-                            out RaycastHit hitInfo,
-                            Utils_Math.GROUND_CHECK_RAYCAST_MAX_DISTANCE,
-                            groundLayersMask))
+        // Find all active (non-depleted) resource nodes that are in the accessable areas we just found.
+        List<ResourceNode> accessableActiveResourceNodes = new List<ResourceNode>();
+        for (int i = 0; i < _ResourceManager.ActiveResourceNodesCount; i++)
         {
-            string objName = hitInfo.collider.gameObject.name;
-            if (objName.Length >= 7)
-            {
-                try
-                {
-                    parentArea = (LevelAreas)int.Parse(objName.Substring(5, 2));
-                }
-                catch
-                {
-                    Debug.LogWarning("Areas need their ground meshes to be named using the format \"Area ##\" so that certain entities can detect what area they are in.");
-                    parentArea = LevelAreas.Area1;
-                }
+            ResourceNode node = _ResourceManager.GetActiveResourceNode(i);
+            LevelAreas nodeArea = DetectAreaNumberFromPosition(node.transform.position);
 
-                return true;
-            }
+            if (accessableAreas.Contains(nodeArea))
+                accessableActiveResourceNodes.Add(node);
+
         }
 
-
-        // No ground was detected.
-        return false;
+        return accessableActiveResourceNodes;
     }
-    */
 
     public static List<ResourceNode> FindAllResourceNodesAccessableFromArea(LevelAreas area)
     {
@@ -124,20 +103,19 @@ public static class Utils_World
 
         // Find all active (non-depleted) resource nodes that are in the accessable areas we just found.
         List<ResourceNode> accessableResourceNodes = new List<ResourceNode>();
-        for (int i = 0; i < _ResourceManager.ActiveResourceNodesCount; i++)
+        for (int i = 0; i < _ResourceManager.AllResourceNodesCount; i++)
         {
-            ResourceNode node = _ResourceManager.GetActiveResourceNode(i);
+            ResourceNode node = _ResourceManager.GetResourceNode(i);
             LevelAreas nodeArea = DetectAreaNumberFromPosition(node.transform.position);
-            //DetectAreaNumberFromGroundPosition(node.transform.position.x, node.transform.position.z, LayerMask.GetMask(new string[] { "Ground" }), out LevelAreas nodeArea);
 
             if (accessableAreas.Contains(nodeArea))
                 accessableResourceNodes.Add(node);
 
         }
 
-
         return accessableResourceNodes;
     }
+
 
     private static List<LevelAreas> FindAllAccessableLevelAreasFrom(LevelAreas startArea)
     {

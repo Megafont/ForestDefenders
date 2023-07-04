@@ -28,7 +28,7 @@ public class InputManager_BuildMode : InputSubManager
         MoveBuildPosition = Vector2.zero;
         RotateBuildLeft = false;
         RotateBuildRight = false;
-        GridSnap = false;
+        // We skip GridSnap here because of how it is toggled in the GridSnapInput() function.
         ExitBuildMode = false;
     }
 
@@ -71,7 +71,11 @@ public class InputManager_BuildMode : InputSubManager
 
     public void OnGridSnap(InputAction.CallbackContext context)
     {
-        GridSnapInput(context.control.IsPressed());
+        // NOTE: This used to be "context.control.IsPressed()". However, this apparently caused a bug where sometimes this callback would not set the
+        //       input value to false when the button is released. Changing it to "context.performed" fixes this problem.
+        //       This issue does not seem to affect the player button controls like attack and jump for some reason, though.
+        //       It turns out this may have been caused by Steam running in the background.
+        GridSnapInput(context.performed);
     }
 
     public void OnExitBuildMode(InputAction.CallbackContext context)

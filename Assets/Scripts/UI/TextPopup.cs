@@ -7,8 +7,8 @@ using UnityEngine.AI;
 using UnityEngine.Pool;
 using Cinemachine;
 using TMPro;
-using UnityEditor.ShaderGraph.Internal;
-using System.Runtime.CompilerServices;
+
+
 
 public class TextPopup : MonoBehaviour
 {
@@ -26,7 +26,7 @@ public class TextPopup : MonoBehaviour
     private const float DEFAULT_OUTLINE_WIDTH = 0.2f;
     private const float DEFAULT_MAX_VISIBLE_DISTANCE = 20f;
 
-    private const float DEFAULT_FADE_START_DELAY = 2.0f;
+    private const float DEFAULT_FADE_OUT_START_DELAY = 2.0f;
     private const float DEFAULT_FADE_OUT_TIME = 1.0f;
     private const float DEFAULT_MAX_MOVE_SPEED = 2.0f;
 
@@ -46,7 +46,7 @@ public class TextPopup : MonoBehaviour
 
 
 
-    private float _FadeStartDelay = DEFAULT_FADE_START_DELAY;
+    private float _FadeStartDelay = DEFAULT_FADE_OUT_START_DELAY;
     private float _FadeOutTime = DEFAULT_FADE_OUT_TIME;
     private float _MaxMoveSpeed = DEFAULT_MAX_MOVE_SPEED;
 
@@ -62,7 +62,7 @@ public class TextPopup : MonoBehaviour
 
     private void Awake()
     {
-        _TMP_Text = GetComponent<TMP_Text>();
+        _TMP_Text = GetComponentInChildren<TMP_Text>();
     }
 
     // Start is called before the first frame update
@@ -82,7 +82,7 @@ public class TextPopup : MonoBehaviour
         if (_ElapsedTime > _FadeStartDelay + _FadeOutTime)
         {
             _TextPopupPool.Release(this);
-            transform.parent.gameObject.SetActive(false);
+            transform.gameObject.SetActive(false);
         }
 
     }
@@ -102,10 +102,8 @@ public class TextPopup : MonoBehaviour
             // Reset the scale to make it visible.
             transform.localScale = new Vector3(_DefaultPopupScale, _DefaultPopupScale, _DefaultPopupScale);
 
-            // We need to use the parent here, because the text component is on a child object rotated 180 degrees so it always faces the right way.
-            // Otherwise it ends up backwards when the parent object turns around to face the camera. The text is facing down the negative Z-axis by default.
-            transform.parent.position += Vector3.up * _MoveSpeed * Time.deltaTime;
-            transform.parent.LookAt(_CameraManager.GetActiveCamera().VirtualCameraGameObject.transform); // Make the text always face the player's camera.
+            transform.position += Vector3.up * _MoveSpeed * Time.deltaTime;
+            transform.LookAt(_CameraManager.GetActiveCamera().VirtualCameraGameObject.transform); // Make the text always face the player's camera.
 
 
             // Animate the text popup.
@@ -131,12 +129,15 @@ public class TextPopup : MonoBehaviour
         }
     }
 
-    private void ResetTextPopup(Vector3 startPosition, string text, Color32 textColor, Color32 outlineColor,
+    private void ResetTextPopup(Vector3 startPosition, string text, Color32 textColor, Color32 outlineColor, GameObject parent,
                                 float fontSize = DEFAULT_TEXT_SIZE, float outlineWidth = DEFAULT_OUTLINE_WIDTH,
-                                float fadeStartDelay = DEFAULT_FADE_START_DELAY, float fadeOutTime = DEFAULT_FADE_OUT_TIME, float maxMoveSpeed = DEFAULT_MAX_MOVE_SPEED)
+                                float fadeStartDelay = DEFAULT_FADE_OUT_START_DELAY, float fadeOutTime = DEFAULT_FADE_OUT_TIME, float maxMoveSpeed = DEFAULT_MAX_MOVE_SPEED)
     {
-        // See the comments in UpdateAppearance() for why we're accessing the parent here instead of the main object.
-        transform.parent.position = startPosition;
+        if (parent)
+            transform.localPosition = startPosition;
+        else
+            transform.position = startPosition;
+
 
         _TMP_Text.text = text;
         _TMP_Text.color = textColor;
@@ -156,17 +157,29 @@ public class TextPopup : MonoBehaviour
 
         _ElapsedTime = 0;
         _MoveSpeed = 0;
-        transform.parent.gameObject.SetActive(true);
+        transform.gameObject.SetActive(true);
     }
 
-    public static void ShowTextPopup(Vector3 startPosition, string text,
+    /// <summary>
+    /// Displays a text popup.
+    /// </summary>
+    /// <param name="startPosition">The starting position of the text popup. NOTE: If the text popup has a parent, then this parameter specifies its offset from the parent position.</param>
+    /// <param name="text">The text to display in the popup.</param>
+    /// <param name="parent">The parent of the popup, or null if there is none.</param>
+    /// <param name="fontSize">The size of the text.</param>
+    /// <param name="outlineWidth">The thickness of the text outline.</param>
+    /// <param name="fadeStartDelay">How long to wait before the text starts to fade out.</param>
+    /// <param name="fadeOutTime">How long it takes for the text to fade out.</param>
+    /// <param name="maxMoveSpeed">The maximum speed the popup can move at.</param>
+    public static void ShowTextPopup(Vector3 startPosition, string text, GameObject parent = null,
                                      float fontSize = DEFAULT_TEXT_SIZE, float outlineWidth = DEFAULT_OUTLINE_WIDTH,
-                                     float fadeStartDelay = DEFAULT_FADE_START_DELAY, float fadeOutTime = DEFAULT_FADE_OUT_TIME, float maxMoveSpeed = DEFAULT_MAX_MOVE_SPEED)
+                                     float fadeStartDelay = DEFAULT_FADE_OUT_START_DELAY, float fadeOutTime = DEFAULT_FADE_OUT_TIME, float maxMoveSpeed = DEFAULT_MAX_MOVE_SPEED)
     {
         ShowTextPopup(startPosition,
                       text,
                       _DefaultTextColor,
                       _DefaultOutlineColor,
+                      parent,
                       fontSize,
                       outlineWidth,
                       fadeStartDelay,
@@ -174,24 +187,25 @@ public class TextPopup : MonoBehaviour
                       maxMoveSpeed);
     }
 
-    public static void ShowTextPopup(Vector3 startPosition, string text, Color32 textColor,
+    public static void ShowTextPopup(Vector3 startPosition, string text, Color32 textColor, GameObject parent = null,
                                      float fontSize = DEFAULT_TEXT_SIZE, float outlineWidth = DEFAULT_OUTLINE_WIDTH,
-                                     float fadeStartDelay = DEFAULT_FADE_START_DELAY, float fadeOutTime = DEFAULT_FADE_OUT_TIME, float maxMoveSpeed = DEFAULT_MAX_MOVE_SPEED)
+                                     float fadeStartDelay = DEFAULT_FADE_OUT_START_DELAY, float fadeOutTime = DEFAULT_FADE_OUT_TIME, float maxMoveSpeed = DEFAULT_MAX_MOVE_SPEED)
     {
         ShowTextPopup(startPosition, 
                       text, 
                       textColor, 
                       _DefaultOutlineColor,
+                      parent,
                       fontSize,
                       outlineWidth,
                       fadeStartDelay,
                       fadeOutTime,
                       maxMoveSpeed);
     }
-    
-    public static void ShowTextPopup(Vector3 startPosition, string text, Color32 textColor, Color32 outlineColor,
+
+    public static void ShowTextPopup(Vector3 startPosition, string text, Color32 textColor, Color32 outlineColor, GameObject parent,
                                      float fontSize = DEFAULT_TEXT_SIZE, float outlineWidth = DEFAULT_OUTLINE_WIDTH,
-                                     float fadeStartDelay = DEFAULT_FADE_START_DELAY, float fadeOutTime = DEFAULT_FADE_OUT_TIME, float maxMoveSpeed = DEFAULT_MAX_MOVE_SPEED)
+                                     float fadeStartDelay = DEFAULT_FADE_OUT_START_DELAY, float fadeOutTime = DEFAULT_FADE_OUT_TIME, float maxMoveSpeed = DEFAULT_MAX_MOVE_SPEED)
     {
         if (_TextPopupPool == null)
             _TextPopupPool = new ObjectPool<TextPopup>(CreateTextPopup, OnTakenFromPool, OnReturnedToPool, OnDestroyPoolObject, true, 128, 1024);
@@ -205,12 +219,15 @@ public class TextPopup : MonoBehaviour
             Debug.LogError("Failed to get a new text popup!");
 
 
-        textPopup.ResetTextPopup(startPosition, text, textColor, outlineColor, fontSize, outlineWidth, fadeStartDelay, fadeOutTime, maxMoveSpeed);
+        textPopup.ResetTextPopup(startPosition, text, textColor, outlineColor, parent, fontSize, outlineWidth, fadeStartDelay, fadeOutTime, maxMoveSpeed);
+
+        if (parent)
+            textPopup.gameObject.transform.SetParent(parent.transform);
     }
 
-    public static IEnumerator ShowTextPopupDelayed(float delayInSeconds, Vector3 startPosition, string text,
+    public static IEnumerator ShowTextPopupDelayed(float delayInSeconds, Vector3 startPosition, string text, GameObject parent = null,
                                                    float fontSize = DEFAULT_TEXT_SIZE, float outlineWidth = DEFAULT_OUTLINE_WIDTH,
-                                                   float fadeStartDelay = DEFAULT_FADE_START_DELAY, float fadeOutTime = DEFAULT_FADE_OUT_TIME, float maxMoveSpeed = DEFAULT_MAX_MOVE_SPEED)
+                                                   float fadeStartDelay = DEFAULT_FADE_OUT_START_DELAY, float fadeOutTime = DEFAULT_FADE_OUT_TIME, float maxMoveSpeed = DEFAULT_MAX_MOVE_SPEED)
     {
         yield return new WaitForSeconds(delayInSeconds);
 
@@ -218,6 +235,7 @@ public class TextPopup : MonoBehaviour
                       text,
                       _DefaultTextColor,
                       _DefaultOutlineColor,
+                      parent,
                       fontSize,
                       outlineWidth,
                       fadeStartDelay,
@@ -225,9 +243,9 @@ public class TextPopup : MonoBehaviour
                       maxMoveSpeed);
     }
 
-    public static IEnumerator ShowTextPopupDelayed(float delayInSeconds, Vector3 startPosition, string text, Color32 textColor,
+    public static IEnumerator ShowTextPopupDelayed(float delayInSeconds, Vector3 startPosition, string text, Color32 textColor, GameObject parent = null,
                                                    float fontSize = DEFAULT_TEXT_SIZE, float outlineWidth = DEFAULT_OUTLINE_WIDTH,
-                                                   float fadeStartDelay = DEFAULT_FADE_START_DELAY, float fadeOutTime = DEFAULT_FADE_OUT_TIME, float maxMoveSpeed = DEFAULT_MAX_MOVE_SPEED)
+                                                   float fadeStartDelay = DEFAULT_FADE_OUT_START_DELAY, float fadeOutTime = DEFAULT_FADE_OUT_TIME, float maxMoveSpeed = DEFAULT_MAX_MOVE_SPEED)
     {
         yield return new WaitForSeconds(delayInSeconds);
 
@@ -235,6 +253,7 @@ public class TextPopup : MonoBehaviour
                       text,
                       textColor,
                       _DefaultOutlineColor,
+                      parent,
                       fontSize,
                       outlineWidth,
                       fadeStartDelay,
@@ -242,9 +261,9 @@ public class TextPopup : MonoBehaviour
                       maxMoveSpeed);
     }
 
-    public static IEnumerator ShowTextPopupDelayed(float delayInSeconds, Vector3 startPosition, string text, Color32 textColor, Color32 outlineColor,
+    public static IEnumerator ShowTextPopupDelayed(float delayInSeconds, Vector3 startPosition, string text, Color32 textColor, Color32 outlineColor, GameObject parent = null,
                                                    float fontSize = DEFAULT_TEXT_SIZE, float outlineWidth = DEFAULT_OUTLINE_WIDTH,
-                                                   float fadeStartDelay = DEFAULT_FADE_START_DELAY, float fadeOutTime = DEFAULT_FADE_OUT_TIME, float maxMoveSpeed = DEFAULT_MAX_MOVE_SPEED)
+                                                   float fadeStartDelay = DEFAULT_FADE_OUT_START_DELAY, float fadeOutTime = DEFAULT_FADE_OUT_TIME, float maxMoveSpeed = DEFAULT_MAX_MOVE_SPEED)
     {
         yield return new WaitForSeconds(delayInSeconds);
 
@@ -252,6 +271,7 @@ public class TextPopup : MonoBehaviour
                       text,
                       textColor,
                       outlineColor,
+                      parent,
                       fontSize,
                       outlineWidth,
                       fadeStartDelay,
@@ -303,19 +323,21 @@ public class TextPopup : MonoBehaviour
     }
 
 
-    private static void OnReturnedToPool(TextPopup projectile)
+    private static void OnReturnedToPool(TextPopup popup)
     {
+        popup.transform.SetParent(_TextPopupsParent.transform, false);
+
         //Debug.Log($"R - Pool Counts:    Total: {_TextPopupPool.CountAll}    Active: {_TextPopupPool.CountActive}    Inactive: {_TextPopupPool.CountInactive}");
     }
 
-    private static void OnTakenFromPool(TextPopup projectile)
+    private static void OnTakenFromPool(TextPopup popup)
     {
         //Debug.Log($"T - Pool Counts:    Total: {_TextPopupPool.CountAll}    Active: {_TextPopupPool.CountActive}    Inactive: {_TextPopupPool.CountInactive}");
     }
 
-    private static void OnDestroyPoolObject(TextPopup projectile)
+    private static void OnDestroyPoolObject(TextPopup popup)
     {
-        Destroy(projectile.gameObject);
+        Destroy(popup.gameObject);
 
         //Debug.Log("Destroyed text popup!");
     }

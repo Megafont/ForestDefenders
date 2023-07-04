@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2626548804557234482}
+  - component: {fileID: 2598886896942239993}
   m_Layer: 17
   m_Name: Text Popup
   m_TagString: Untagged
@@ -32,6 +33,44 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2598886896942239993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6225925263816160018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e67a1f684cc8a4c4ea569a16068b8d52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _AccelerationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _DefaultPopupScale: 0.1
+  _MaxVisibleDistance: 20
 --- !u!1 &6475353735327977084
 GameObject:
   m_ObjectHideFlags: 0
@@ -43,7 +82,6 @@ GameObject:
   - component: {fileID: 6475353735327977072}
   - component: {fileID: 6475353735327977087}
   - component: {fileID: 6475353735327977086}
-  - component: {fileID: 8726193864514601060}
   m_Layer: 17
   m_Name: Text
   m_TagString: Untagged
@@ -60,7 +98,7 @@ RectTransform:
   m_GameObject: {fileID: 6475353735327977084}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2626548804557234482}
@@ -205,45 +243,3 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 6475353735327977087}
   m_maskType: 0
---- !u!114 &8726193864514601060
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6475353735327977084}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e67a1f684cc8a4c4ea569a16068b8d52, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _AccelerationCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  _FadeStartDelay: 3
-  _FadeOutTime: 1
-  _MaxMoveSpeed: 2.5
-  _DefaultPopupScale: 0.1
-  _MaxVisibleDistance: 20
-  _TMP_Text: {fileID: 6475353735327977086}

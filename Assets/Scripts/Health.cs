@@ -248,7 +248,8 @@ public class Health : MonoBehaviour
 
         TextPopup.ShowTextPopup(TextPopup.AdjustStartPosition(gameObject), 
                                 text, 
-                                textColor, 
+                                textColor,
+                                gameObject,
                                 _HealthPopupTextSize);
     }
 

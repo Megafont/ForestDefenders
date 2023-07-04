@@ -14,11 +14,6 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public abstract class AI_Base : MonoBehaviour
 {
-    // Whether or not to display the AI paths.
-    protected const bool DISPLAY_AI_PATHS = true;
-
-
-
     [SerializeField] protected float _DeathFadeOutTime = 2.0f;
 
     [Range(0.01f, 10f)]
@@ -27,6 +22,8 @@ public abstract class AI_Base : MonoBehaviour
 
     [Tooltip("How often (in seconds) the AI will interact with a non-combat target such as a resource node.")]
     [SerializeField] protected float _InteractionFrequency = 2.0f;
+
+    [SerializeField] protected AudioClip _DeathSound;
 
 
 
@@ -44,6 +41,8 @@ public abstract class AI_Base : MonoBehaviour
     protected float _LastInteractionTime;
 
     protected WaitForSeconds _DeathFadeOutDelay;
+    protected ParticleSystem _DeathParticles;
+
 
 
     public Health HealthComponent { get { return _Health; } }
@@ -56,13 +55,19 @@ public abstract class AI_Base : MonoBehaviour
 
         _Animator = GetComponent<Animator>();
 
-        _DeathFadeOutDelay = new WaitForSeconds(_DeathFadeOutTime);
         _Health = GetComponent<Health>();
         _NavMeshAgent = GetComponent<NavMeshAgent>();
 
         _InteractionRange = _NavMeshAgent.radius + 1.0f;
 
+
+        _DeathFadeOutDelay = new WaitForSeconds(_DeathFadeOutTime);
         _Health.OnDeath += OnDeath;
+
+        Transform deathParticles = transform.Find("Death Particles");
+        if (deathParticles)
+            _DeathParticles = deathParticles.GetComponent<ParticleSystem>();
+
     }
 
 
@@ -390,13 +395,16 @@ public abstract class AI_Base : MonoBehaviour
         StartCoroutine(FadeOutAfterDeath());
     }
 
+    WaitForSeconds _DeathDelay = new WaitForSeconds(0.2f);
+    WaitForSeconds _DeathDelayX2 = new WaitForSeconds(0.4f);
     protected virtual IEnumerator FadeOutAfterDeath()
     {
         //Debug.Log(name + " is starting death fade out!");
 
         // Wait slightly for death animation to start.
-        yield return new WaitForSeconds(0.2f);
-        // Wait for the death animation to finsih.
+        yield return _DeathDelay;
+
+        // Wait for the death animation to finish.
         while (true)
         {
             // normalizedTime is a float that tells you how many times the animation has played.
@@ -406,18 +414,30 @@ public abstract class AI_Base : MonoBehaviour
                 yield return null;
         }
 
-        yield return new WaitForSeconds(0.2f);
+        yield return _DeathDelay;
+
+        // Play particle and sound FX as the monster disappears.
+        PlayDeathFX();
 
         // Start the shrink animation and wait for it to complete.
         yield return StartCoroutine(Utils_Misc.ShrinkObjectToNothing(transform, 0.4f));
 
         //Debug.Log(name + " finished death fade out!");
 
+        // We use double the death delay here, because the shrink effect done by the coroutine is set to take 0.4f seconds.
+        // The death particle effect takes 0.75f. So we need almost another 0.35f seconds for that to finish. This gives us
+        // a little extra to ensure the particle effect doesn't get cut off.
+        yield return _DeathDelayX2;
 
         Destroy(gameObject);
 
     }
 
+    protected virtual void PlayDeathFX()
+    {
+        if (_DeathSound)
+            AudioSource.PlayClipAtPoint(_DeathSound, transform.position, 1.0f);
+    }
 
     protected bool NavMeshAgentIsActiveAndOnNavMesh()
     {

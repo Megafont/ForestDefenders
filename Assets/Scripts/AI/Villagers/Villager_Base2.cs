@@ -26,9 +26,9 @@ public abstract class Villager_Base2 : AI_WithAttackBehavior //, IVillager
     {
         _NearbyTargetDetector = transform.GetComponentInChildren<VillagerTargetDetector>();
 
-        
-        // If we are running in the Unity Editor, display the villager's path.
-        if (DISPLAY_AI_PATHS && Application.isPlaying)
+
+        // If AI path drawing is enabled, then display the villager's path.
+        if (_GameManager.DrawAIPaths)
         {
             AI_Debug_DrawAIPath debugPathDrawer = gameObject.AddComponent<AI_Debug_DrawAIPath>();
             debugPathDrawer.SetColorAndWidth(Color.blue, 0.05f);

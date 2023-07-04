@@ -12,9 +12,6 @@ public class RadialMenuDialog : Dialog_Base, IDialog
 {
     [SerializeField] private GameObject _RadialMenuItemPrefab;
 
-    [Min(1)]
-    [SerializeField] private float _Radius = 150;
-
     [Header("Audio")]
     [SerializeField] private AudioClip _MenuClickSound;
     [SerializeField] private float _MenuClickSoundVolume = 1.0f;
@@ -26,6 +23,9 @@ public class RadialMenuDialog : Dialog_Base, IDialog
 
 
 
+    private float _Margins = 250f;
+    private float _Radius;
+
     private List<RadialMenuItem> _MenuItems;
     private int _ActiveMenuItemsCount;
 
@@ -36,6 +36,7 @@ public class RadialMenuDialog : Dialog_Base, IDialog
     WaitForSecondsRealtime _MenuCloseDelay = new WaitForSecondsRealtime(0.2f);
 
     private GameObject _RadialMenuPanel;
+    private RectTransform _RadialMenuPanelRectTransform;
 
     private TMP_Text _MenuTitleUI;
     private TMP_Text _MenuBottomBarUI;
@@ -53,9 +54,14 @@ public class RadialMenuDialog : Dialog_Base, IDialog
     protected override void Dialog_OnAwake()
     {
         _MenuTitleUI = GameObject.Find("Radial Menu Dialog/Panel/Title Bar/Title Text (TMP)").GetComponent<TMP_Text>();
+        
         _MenuBottomBarUI = GameObject.Find("Radial Menu Dialog/Panel/Bottom Text Bar/Bottom Text Bar (TMP)").GetComponent<TMP_Text>();
+        
         _RadialMenuPanel = GameObject.Find("Radial Menu Dialog/Panel");
+        _RadialMenuPanelRectTransform = _RadialMenuPanel.GetComponent<RectTransform>();
+        
         _RadialMenuItemsParent = GameObject.Find("Radial Menu Dialog/Panel/Menu Items Parent");
+
 
         _AudioSource = gameObject.AddComponent<AudioSource>();
 
@@ -102,11 +108,9 @@ public class RadialMenuDialog : Dialog_Base, IDialog
 
         _MenuTitleUI.text = title;
 
-        InitMenuItemsVisualElements(names, thumbnails, defaultItemIndex);
 
-        SelectedMenuItemIndex = 0;
-
-        _IsInitializing = false;
+        gameObject.SetActive(true); // This normall happens in Dialog_Base.OpenDialog(), but we need to active now so the following line can run a coroutine on this monobehavior.
+        StartCoroutine(ConfigureMenuItems(names, thumbnails, defaultItemIndex)); // The + 1 is to account for the automatically added cancel button.
     }
 
     public override void OpenDialog(bool closeOtherOpenDialogs = false)
@@ -281,6 +285,37 @@ public class RadialMenuDialog : Dialog_Base, IDialog
         OnSelectionChanged?.Invoke(gameObject);
     }
 
+    private IEnumerator ConfigureMenuItems(string[] names, Sprite[] thumbnails, int defaultItemIndex)
+    {
+        yield return CreateNewMenuItemsIfNeeded(names.Length + 1); // The + 1 is to account for the cancel button that is always automatically added.
+
+        InitMenuItemsVisualElements(names, thumbnails, defaultItemIndex);
+
+
+        _IsInitializing = false;
+
+        // Set selected index to -1 tempoarily. This is because SelectItem() just returns if the passed in index is already
+        // the selected item. As we're reseting for a new menu to be displayed, we want it to run no matter what.
+        _PrevSelectedItemIndex = -1;
+        SelectItem(0); // Sets selected item index to 0 and updates the GUI.
+    }
+
+    private IEnumerator CreateNewMenuItemsIfNeeded(int numberNeeded)
+    {
+        if (_MenuItems.Count < numberNeeded)
+        {
+            while (_MenuItems.Count < numberNeeded)
+            {
+                CreateMenuItem();
+            }
+        }
+
+
+        // Wait until all of the menu items we just created have initialized their UI.
+        // We need to give them a few frames so they can run their Awake() and Start() functions.
+        while (!_MenuItems[_MenuItems.Count - 1].IsInited)
+            yield return null;
+    }
 
     private void InitMenuItemsVisualElements(string[] names, Sprite[] thumbnails, int defaultItemIndex)
     {
@@ -296,20 +331,27 @@ public class RadialMenuDialog : Dialog_Base, IDialog
 
 
         bool addThumbnailOffset = (thumbnails != null && thumbnails[0] != null);        
-        float menuItemVerticalOffset = CalculateMenuItemsVerticalOffset(addThumbnailOffset);
-        //Debug.Log($"OFFSET: {menuItemVerticalOffset}");
 
         // Get the number of items we need to iterate through (whichever one is higher is what we need).
         // The plus one takes into account the Cancel item that is added to the end of the menu automatically below.
         int length = Mathf.Max(_MenuItems.Count, _ActiveMenuItemsCount);
 
 
+        float menuItemHeightHalved = RadialMenuItem.DefaultMenuItemSize.y / 2;
+
+        _Radius = (_RadialMenuPanelRectTransform.rect.width - _Margins) / 2;
+        _Radius -= menuItemHeightHalved; // Subtract half the size of the menu icons to make sure they don't stick outside the bounds of the menu panel.
+
+        float menuItemVerticalOffset = 0;
+
+        //Debug.Log($"RADIUS: {_Radius}    MENU ITEM SIZE: {RadialMenuItem.DefaultMenuItemSize}    VERTICAL OFFSET: {menuItemVerticalOffset}");
+
         // Iterate through the list of menu items.
         for (int i = 0; i < length; i++)
         {
             // If there isn't a next menu item, create it.
-            if (i >= _MenuItems.Count)
-                CreateMenuItem();
+            //if (i >= _MenuItems.Count)
+            //    CreateMenuItem();
 
             // If the menu item is within the length of the passed in list of items, then set it up.
             // This is >= instead of > to take into account the "Cancel" menu item that is added automatically.
@@ -322,7 +364,7 @@ public class RadialMenuDialog : Dialog_Base, IDialog
 
                 // Position the menu item.
                 // The last part of this line in ()s shifts the menu items down by half the height of the title bar so they appear centered in the area beneath it.
-                _MenuItems[i].transform.position = _RadialMenuPanel.transform.position + offset + new Vector3(0, menuItemVerticalOffset, 0);
+                _MenuItems[i].transform.localPosition = offset + new Vector3(0, menuItemVerticalOffset, 0);
 
                 // Debug.Log($"Menu Pos: {RadialMenuPanel.transform.position}    Offset: {offset}    Menu Item Pos: {_MenuItems[i].UI.transform.position}");
 
@@ -341,7 +383,9 @@ public class RadialMenuDialog : Dialog_Base, IDialog
 
                 // Set the name of the menu item.
                 if (i < names.Length)
+                {
                     _MenuItems[i].Name = names[i];
+                }
                 else if (i == names.Length)
                 {
                     _MenuItems[i].Name = "Cancel";
@@ -358,12 +402,12 @@ public class RadialMenuDialog : Dialog_Base, IDialog
                 // If this is the first menu item, set it as the default.
                 if (i == defaultItemIndex)
                 {
-                    _MenuItems[i].NewItemIsDefaultMenuItem = true;
+                    _MenuItems[i].HighlightOnStart = true;
                     _MenuItems[i].Highlight();
                 }
                 else
                 {
-                    _MenuItems[i].NewItemIsDefaultMenuItem = false;
+                    _MenuItems[i].HighlightOnStart = false;
                 }
 
 

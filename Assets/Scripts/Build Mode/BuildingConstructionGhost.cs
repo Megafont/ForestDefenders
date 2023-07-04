@@ -115,6 +115,7 @@ public class BuildingConstructionGhost : MonoBehaviour
     private bool _BuildingIsBridge;
 
 
+
     /// <summary>
     /// The building ghost will be positioned this far ahead of the player. This value should be half the radius of the largest building or larger.
     /// Buildings that are longer on one side than the other may get too close to the player when rotated if this value is too small.
@@ -412,13 +413,14 @@ public class BuildingConstructionGhost : MonoBehaviour
 
         // Calculate the maximum height difference of the ground under the building ghost.
         _GroundHeightVariance = max - min;
-        Debug.Log($"Ground height variance from {_GroundSamplePoints.Count} points: {_GroundHeightVariance}");
-
 
         _GhostRanIntoCliffBase = (max - ghostPos.y) > _MaxGroundHeightDifference;
         _GhostRanIntoCliffTop = (ghostPos.y - min) > _MaxGroundHeightDifference;
 
-        Debug.Log($"Hit cliff base: {_GhostRanIntoCliffBase}    Hit cliff top: {_GhostRanIntoCliffTop}          Base result: {(max - ghostPos.y)}    Top result: {(ghostPos.y - min)}");
+        
+        //Debug.Log($"Ground height variance from {_GroundSamplePoints.Count} points: {_GroundHeightVariance}");
+        //Debug.Log($"Hit cliff base: {_GhostRanIntoCliffBase}    Hit cliff top: {_GhostRanIntoCliffTop}          Base result: {(max - ghostPos.y)}    Top result: {(ghostPos.y - min)}");
+
 
         if (operation == CalculateGroundPositionOps.Average)
             return groundHeightsSum / _GroundSamplePoints.Count;

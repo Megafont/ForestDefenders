@@ -32,7 +32,7 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
 
     protected bool _SpawnedDuringGameOver = false;
     protected bool _AllBuildingsAndVillagersDestroyedDuringGameOver = false;
-
+  
 
     protected VillageManager_Buildings _VillageManager_Buildings;
     protected VillageManager_Villagers _VillageManager_Villagers;
@@ -51,8 +51,8 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         _NearbyTargetDetector = transform.GetComponentInChildren<MonsterTargetDetector>();
 
 
-        // If we are running in the Unity Editor, display the villager's path.
-        if (DISPLAY_AI_PATHS && Application.isPlaying)
+        // If AI path drawing is enabled, then display the monster's path.
+        if (_GameManager.DrawAIPaths)
         {
             AI_Debug_DrawAIPath debugPathDrawer = gameObject.AddComponent<AI_Debug_DrawAIPath>();
             debugPathDrawer.SetColorAndWidth(Color.red, 0.05f);
@@ -66,7 +66,8 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
 
     protected override void UpdateAI()
     {
-        DoPostGameOverVictoryCelebrationCheck();
+        if (_GameManager.GameState == GameStates.GameOver)
+            DoPostGameOverVictoryCelebrationCheck();
 
 
         // Monsters do not attack things during game over unless they were spawned during the game over state.
@@ -226,6 +227,16 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         
         return false;
     }
+
+    protected override void PlayDeathFX()
+    {
+        base.PlayDeathFX();
+
+
+        if (_DeathParticles)
+            _DeathParticles.Play();
+    }
+
 
 
     // These are a couple extra methods needed to satisfy the IMonster interface since you can't have fields in an interface.

@@ -27,7 +27,7 @@ public enum VillagerTasks
 /// </summary>
 public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 {
-    private const int MAX_RESOURCE_NODE_ATTEMPTS = 5;
+    private const int MAX_RESOURCE_NODE_ATTEMPTS = 16;
 
 
 
@@ -43,9 +43,9 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
     {
         _NearbyTargetDetector = transform.GetComponentInChildren<VillagerTargetDetector>();
 
-        
-        // If we are running in the Unity Editor, display the villager's path.
-        if (DISPLAY_AI_PATHS && Application.isPlaying)
+
+        // If AI path drawing is enabled, then display the villager's path.
+        if (_GameManager.DrawAIPaths)
         {
             AI_Debug_DrawAIPath debugPathDrawer = gameObject.AddComponent<AI_Debug_DrawAIPath>();
             debugPathDrawer.SetColorAndWidth(Color.blue, 0.05f);
@@ -172,24 +172,28 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
             LevelAreas villagerCurrentArea = Utils_World.DetectAreaNumberFromPosition(transform.position);
             if (villagerCurrentArea != LevelAreas.Unknown)
             {
-                List<ResourceNode> accessableResourceNodes = Utils_World.FindAllResourceNodesAccessableFromArea(villagerCurrentArea);
+                List<ResourceNode> accessableActiveResourceNodes = Utils_World.FindActiveResourceNodesAccessableFromArea(villagerCurrentArea);
                 ResourceNode possibleTargetResourceNode = null;
 
-                if (accessableResourceNodes.Count > 0)
+                if (accessableActiveResourceNodes.Count > 0)
                 {
                     int resourceNodeAttempts = 0;
                     while (true)
                     {
                         
-                        int index = Random.Range(0, accessableResourceNodes.Count);
+                        int index = Random.Range(0, accessableActiveResourceNodes.Count);
 
-                        possibleTargetResourceNode = accessableResourceNodes[index];
+                        possibleTargetResourceNode = accessableActiveResourceNodes[index];
                         if (possibleTargetResourceNode.VillagersMiningThisNode < 1)
                         {
                             break;
                         }
                         else
+                        {
                             resourceNodeAttempts++;
+                            if (resourceNodeAttempts >= MAX_RESOURCE_NODE_ATTEMPTS)
+                                break;
+                        }
                     }
 
 
@@ -198,7 +202,27 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
                     {
                         SetTarget(possibleTargetResourceNode.gameObject);
                     }
+
                 }
+                else
+                {
+                    float rand = Random.value;
+
+                    List<ResourceNode> allAccessableResourceNodes = Utils_World.FindAllResourceNodesAccessableFromArea(villagerCurrentArea);
+                    Debug.Log($"RAND: {rand}");
+
+                    
+                    // If there are no accessable and undelpleted resource nodes left, then give the villager
+                    // a certain chance of going to an empty node anyway so they don't stand around doing nothing so much.
+                    if (allAccessableResourceNodes.Count > 0 &&
+                        rand <= _VillageManager_Villagers.VillagerChanceToVisitEmptyNodes)
+                    {
+                        SetTarget(allAccessableResourceNodes[Random.Range(0, allAccessableResourceNodes.Count - 1)].gameObject);
+                    }
+                    
+                }
+
+
             }
 
 

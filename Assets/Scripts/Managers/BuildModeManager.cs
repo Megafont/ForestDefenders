@@ -49,6 +49,8 @@ public class BuildModeManager : MonoBehaviour
     private List<MaterialCost> _TotalBuildCostsInCurrentBuildModeSession; // Tracks the total resources the player spent constructing buildings in the current build mode session.
     private int _TotalBuildingsCreatedInCurrentBuildModeSession; // The number of buildings the player constructed in the current build mode session.
 
+    private Dictionary<string, Sprite> _CategoryThumbnails;
+
 
 
     private void Awake()
@@ -71,6 +73,10 @@ public class BuildModeManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _CategoryThumbnails = new Dictionary<string, Sprite>();
+        CacheCategoryThumbnailReferences();
+
+
         // This is using the ?. operator, because the player reference will be null if we are not in a gameplay scene (like the main menu for example).
         _Player = GameManager.Instance.Player?.GetComponentInChildren<PlayerController>();
 
@@ -206,6 +212,7 @@ public class BuildModeManager : MonoBehaviour
                                                               TextPopup.AdjustStartPosition(_Player.gameObject),
                                                               MaterialCostListToString(_TotalBuildCostsInCurrentBuildModeSession, "Used ", $" on {_TotalBuildingsCreatedInCurrentBuildModeSession} building(s)"),
                                                               TextPopupColors.ExpendedResourceColor,
+                                                              _Player.gameObject,
                                                               12f,
                                                               maxMoveSpeed: 1f));
             }
@@ -218,6 +225,31 @@ public class BuildModeManager : MonoBehaviour
 
 
         IsBuildModeActive = state;
+    }
+
+    private void CacheCategoryThumbnailReferences()
+    {
+        _CategoryThumbnails.Clear();
+
+        _CategoryThumbnails.Add("Bridges", BuildModeDefinitions.GetBuildingDefinition("Bridges", "Wood Bridge (10m)").Thumbnail);
+        _CategoryThumbnails.Add("Defense", BuildModeDefinitions.GetBuildingDefinition("Defense", "Turret").Thumbnail);
+        _CategoryThumbnails.Add("Farming", BuildModeDefinitions.GetBuildingDefinition("Farming", "Large Garden").Thumbnail);
+        _CategoryThumbnails.Add("Housing", BuildModeDefinitions.GetBuildingDefinition("Housing", "Medium House").Thumbnail);
+        _CategoryThumbnails.Add("Walls", BuildModeDefinitions.GetBuildingDefinition("Walls", "Wood Wall").Thumbnail);
+    }
+
+    private Sprite[] GetCategoryThumbnails(string[] categories)
+    {
+        List<Sprite> thumbnails = new List<Sprite>();
+
+
+        foreach (string category in categories)
+        {
+            thumbnails.Add(_CategoryThumbnails[category]);
+        }
+
+
+        return thumbnails.ToArray();
     }
 
     private IEnumerator DisplaySelectBuildingMenu()
@@ -234,13 +266,10 @@ public class BuildModeManager : MonoBehaviour
             // ----------------------------------------------------------------------------------------------------
 
             _RadialMenu.BottomBarText = "";
-            _RadialMenu.SetMenuParams("Select Building Type", 
-                                      BuildModeDefinitions.GetList_BuildingCategoriesContainingResearchedBuildings(),
-                                      new Sprite[] { BuildModeDefinitions.GetBuildingDefinition("Bridges", "Wood Bridge (10m)").Thumbnail,
-                                                     BuildModeDefinitions.GetBuildingDefinition("Defense", "Turret").Thumbnail,
-                                                     BuildModeDefinitions.GetBuildingDefinition("Farming", "Large Garden").Thumbnail,
-                                                     BuildModeDefinitions.GetBuildingDefinition("Housing", "Medium House").Thumbnail,
-                                                     BuildModeDefinitions.GetBuildingDefinition("Walls",   "Wood Wall").Thumbnail, });
+            string[] categories = BuildModeDefinitions.GetList_BuildingCategoriesContainingResearchedBuildings();
+            _RadialMenu.SetMenuParams("Select Building Type",
+                                      categories,
+                                      GetCategoryThumbnails(categories));
             _RadialMenu.OpenDialog();
 
 
@@ -290,8 +319,6 @@ public class BuildModeManager : MonoBehaviour
             }
 
 
-            OnRadialMenuSelectionChangedHandler(null);
-
             while (!_RadialMenu.MenuConfirmed && !_RadialMenu.MenuCancelled)
                 yield return null;
 
@@ -328,7 +355,7 @@ public class BuildModeManager : MonoBehaviour
         // because the input for that button hasn't had time to turn back off again after the button press.
         while (_RadialMenu.IsOpen())
             yield return null;
-
+        
 
         IsSelectingBuilding = false;
 
@@ -498,6 +525,7 @@ public class BuildModeManager : MonoBehaviour
         TextPopup.ShowTextPopup(TextPopup.AdjustStartPosition(_Player.gameObject), 
                                 MaterialCostListToString(def.ConstructionCosts, "Recovered ", ""), 
                                 TextPopupColors.RecoveredResourceColor,
+                                _Player.gameObject,
                                 12f,
                                 maxMoveSpeed: 1f);
     }

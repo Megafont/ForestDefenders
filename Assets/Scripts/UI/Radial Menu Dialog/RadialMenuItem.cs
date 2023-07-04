@@ -33,22 +33,35 @@ public class RadialMenuItem : MonoBehaviour, IPointerEnterHandler
 
 
 
+    void Awake()
+    {
+        _UI_ButtonComponent = GetComponent<Button>();
+
+        _UI_Thumbnail = transform.Find("Icon").GetComponent<Image>();
+        _UI_TMPComponent = transform.Find("Text (TMP)").GetComponent<TMP_Text>();
+
+        _DefaultThumbnailSize = _UI_Thumbnail.rectTransform.rect.size;
+        _DefaultThumbnailPosition = _UI_Thumbnail.rectTransform.localPosition;
+
+        DefaultTextSize = _UI_TMPComponent.fontSize;
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        _UI_TMPComponent = GetComponent<TMP_Text>();
-        _UI_ButtonComponent = GetComponent<Button>();
+        RectTransform rectTrans = GetComponent<RectTransform>();
+        
 
-        _UI_Thumbnail = transform.Find("Icon").GetComponent<Image>();
-        _DefaultThumbnailSize = _UI_Thumbnail.rectTransform.sizeDelta;
-        _DefaultThumbnailPosition = _UI_Thumbnail.rectTransform.localPosition;
-
-        DefaultTextSize = _UI_TMPComponent.fontSize;
-
+        // We have to force the canvases to update before we can set DefaultMenuItemSize. Otherwise they may not be
+        // up to date yet, in which case, rectTrans.rect.size will return (0,0).
+        Canvas.ForceUpdateCanvases();
+        DefaultMenuItemSize = rectTrans.rect.size;        
+        //Debug.Log($"INIT:   Size: {rectTrans.rect.size}    width: {rectTrans.rect.width}    height: {rectTrans.rect.height}    {_DefaultThumbnailSize}");
+        
         _UI_TMPComponent.text = _Name;
 
-        if (!NewItemIsDefaultMenuItem)
+
+        if (!HighlightOnStart)
             Unhighlight();
         else
             Highlight();
@@ -102,7 +115,7 @@ public class RadialMenuItem : MonoBehaviour, IPointerEnterHandler
             return;
 
 
-        _UI_TMPComponent.faceColor = _UI_ButtonComponent.colors.pressedColor;
+        _UI_TMPComponent.faceColor = _UI_ButtonComponent.colors.selectedColor;
         _UI_TMPComponent.fontSize = DefaultTextSize + 4;
 
         _UI_Thumbnail.color = Color.white;
@@ -136,7 +149,14 @@ public class RadialMenuItem : MonoBehaviour, IPointerEnterHandler
         OnMouseClick?.Invoke(gameObject);
     }
 
-
+    public Vector2 GetSize()
+    {
+        // We use the y position of the thumbnail because it is shifted up to be above the text. This means by using it, the
+        // height of the text component is automatically accounted for in this equation. We just need to add half the height of the
+        // image since it is anchored at its center point.
+        return new Vector2(_UI_Thumbnail.rectTransform.rect.width, 
+                           _UI_Thumbnail.rectTransform.rect.height + _UI_TMPComponent.rectTransform.rect.height + GetComponent<VerticalLayoutGroup>().spacing);
+    }
 
 
     private void SetNormalColor(Color32 newColor)
@@ -170,11 +190,14 @@ public class RadialMenuItem : MonoBehaviour, IPointerEnterHandler
 
 
 
+    public static Vector2 DefaultMenuItemSize { get; private set; } // The default size of the entire menu item.
+
+
     // This property is only important when a new RadialMenuItem object is created. It tells us whether or not this menu item should highlight itself when the Start() method is called.
     // I couldn't get the default menu item to highlight at first, because this GameObject isn't initialized yet when the RadialMenu.InitMenuItemsVisualElements() function
-    // creates a new menu item on the fly and sets it up. So I added this property so the new menu item can handle updating itself in the Start() that first time.
+    // creates a new menu item on the fly and sets it up. So I added this property so the new menu item can handle updating itself in the Start() function that first time.
     // The Name property exists for the same reason, but for setting the menu item's text.
-    public bool NewItemIsDefaultMenuItem { get; set; }
+    public bool HighlightOnStart { get; set; }
 
     public bool IsHighlighted 
     { 

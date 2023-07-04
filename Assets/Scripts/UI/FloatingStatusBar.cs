@@ -16,7 +16,7 @@ public class FloatingStatusBar : MonoBehaviour
     [Min(0)]
     [SerializeField] private float _DefaultBarScale = 0.0025f;
     [Min(1)]
-    [SerializeField] private int _MaxVisibleDistance = 20;
+    [SerializeField] private int _MaxVisibleDistance = 30;
 
     [SerializeField] private bool _FadeBarColorAsStatDrops = true;
     [SerializeField] private Color32 _BackgroundColor = Color.gray;
