@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -18,17 +18,13 @@ public class InputManager : MonoBehaviour
 {
     PlayerInput _PlayerInputComponent;
 
-    private Dictionary<int, InputActionMap> _InputActionMaps;
-
-    public const string ACTION_MAP_BUILD_MODE = "Build Mode";
-    public const string ACTION_MAP_PLAYER = "Player";
-    public const string ACTION_MAP_UI = "UI";
+    private Dictionary<uint, InputMapManager> _InputMapManagers;
 
 
 
     void Awake()
     {
-        _InputActionMaps = new Dictionary<int, InputActionMap>();
+        _InputMapManagers = new Dictionary<uint, InputMapManager>();
 
         _PlayerInputComponent = GetComponent<PlayerInput>();
         if (_PlayerInputComponent == null)
@@ -42,17 +38,15 @@ public class InputManager : MonoBehaviour
 
     private void GetInputManagerReferences()
     {
-        BuildMode = GetComponent<InputManager_BuildMode>();
-        if (BuildMode == null)
-            throw new Exception("The InputManager_BuildMode component was not found!");
+        InputMapManager[] foundInputMapManagers = GetComponents<InputMapManager>();
 
-        Player = GetComponent<InputManager_Player>();
-        if (Player == null)
-            throw new Exception("The InputManager_Player component was not found!");
 
-        UI = GetComponent<InputManager_UI>();
-        if (UI == null)
-            throw new Exception("The InputManager_UI component was not found!");
+        foreach (InputMapManager manager in foundInputMapManagers)
+        {
+            manager.Initialize(this);
+
+            _InputMapManagers.Add(manager.ID, manager);            
+        }
     }
 
     public PlayerInput GetPlayerInputComponent()
@@ -60,55 +54,95 @@ public class InputManager : MonoBehaviour
         return _PlayerInputComponent;
     }
 
-
-    public void EnableInputActionMap(int inputActionMapID, bool state = true)
+    /// <summary>
+    /// Gets the InputMapManager for the current input action map returned by the PlayerInput component.
+    /// </summary>
+    /// <returns>The InputMapManager associated with the current input action map, or null if it is not found.</returns>
+    public InputMapManager GetInputMapManagerOfCurrentInputActionMap()
     {
-        InputActionMap actionMap = _InputActionMaps[inputActionMapID];
+        string currentMapName = _PlayerInputComponent.currentActionMap.name;
+
+
+        foreach (InputMapManager inputMapManager in _InputMapManagers.Values)
+        {
+            if (inputMapManager.InputActionMap.name == currentMapName)
+                return inputMapManager;
+        }
+
+
+        return null;
+    }
+
+    public InputActionMap GetCurrentInputActionMap()
+    {
+        return _PlayerInputComponent.currentActionMap;
+    }
+
+    public string GetCurrentInputControlScheme()
+    {
+        return _PlayerInputComponent.currentControlScheme;
+    }
+
+    /// <summary>
+    /// Gets the specified action map.
+    /// </summary>
+    /// <param name="actionMapID">The ID number of the input action map manager to retrieve. This is of type uint rather than using an enum directly so that this code can be used in any project with any set of input action maps.</param>
+    /// <returns>The input action map manager with the specified ID.</returns>
+    public InputMapManager GetInputMapManager(uint actionMapID)
+    {
+        return _InputMapManagers[actionMapID];
+    }
+
+    /// <summary>
+    /// Gets the specified action map.
+    /// </summary>
+    /// <param name="actionMapID">The ID number of the input action map to retrieve. This is of type uint rather than using an enum directly so that this code can be used in any project with any set of input action maps.</param>
+    /// <returns>The input action map with the specified ID.</returns>
+    public InputActionMap GetInputActionMap(uint actionMapID)
+    {
+        return _InputMapManagers[actionMapID].InputActionMap;
+    }
+
+    public void EnableInputActionMap(uint inputActionMapID, bool state = true)
+    {
+        InputMapManager inputMapManager = _InputMapManagers[inputActionMapID];
+
+        if (state)
+            inputMapManager.Enable();
+        else
+            inputMapManager.Disable();
     }
 
     public void EnableAllInputActionMaps(bool state)
     {
-        foreach (InputActionMap actionMap in _InputActionMaps.Values)
+        foreach (InputMapManager inputMapManager in _InputMapManagers.Values)
         {
             if (state)
-                actionMap.Enable();
+                inputMapManager.Enable();
             else
-                actionMap.Disable();
+                inputMapManager.Disable();
         }
 
     }
 
-    public void SwitchToActionMap(int inputActionMapID)
+    public void SwitchToActionMap(uint inputActionMapID)
     {
-        InputActionMap actionMap = _InputActionMaps[inputActionMapID];
-
-        _PlayerInputComponent.SwitchCurrentActionMap(actionMap.name);
+        _InputMapManagers[inputActionMapID].SwitchToAsCurrentActionMap();
     }
 
-    public bool IsActionMapActive(int inputActionMapID)
+    public bool IsActionMapActive(uint inputActionMapID)
     {
-        return _InputActionMaps[inputActionMapID].enabled;
-    }
-
-    public void RegisterInputActionMap(int inputActionMapID, string name, bool throwIfNotFound = true)
-    {
-        InputActionMap actionMap = _PlayerInputComponent.actions.FindActionMap(name, throwIfNotFound);
-
-        _InputActionMaps.Add(inputActionMapID, actionMap);
+        return _InputMapManagers[inputActionMapID].IsEnabled;
     }
 
     public void ResetAllInputMapControlValues()
     {
-        BuildMode.Reset();
-        Player.Reset();
-        UI.Reset();
+        foreach (InputMapManager manager in _InputMapManagers.Values)
+        {
+            manager.ResetInputs();
+        }
+
     }
-
-
-
-    public InputManager_BuildMode BuildMode { get; private set; }
-    public InputManager_Player Player { get; private set; }
-    public InputManager_UI UI { get; private set; }
 
 
 }

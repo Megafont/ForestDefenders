@@ -30,7 +30,11 @@ public class BuildModeManager : MonoBehaviour
 
     private CameraManager _CameraManager;
     private ICinemachineCamera _BuildModeCam;
+    
     private InputManager _InputManager;
+    private InputMapManager_BuildMode _InputManager_BuildMode;
+    private InputMapManager_Player _InputManager_Player;
+
     private ResourceManager _ResourceManager;
     private VillageManager_Buildings _VillageManager_Buildings;
 
@@ -82,7 +86,12 @@ public class BuildModeManager : MonoBehaviour
 
         _GameManager = GameManager.Instance;
         _CameraManager = _GameManager.CameraManager;
+
         _InputManager = _GameManager.InputManager;
+        _InputManager_BuildMode = (InputMapManager_BuildMode)_InputManager.GetInputMapManager((uint)InputActionMapIDs.BuildMode);
+        _InputManager_Player = (InputMapManager_Player)_InputManager.GetInputMapManager((uint)InputActionMapIDs.Player);
+
+
         _ResourceManager = _GameManager.ResourceManager;
         _VillageManager_Buildings = _GameManager.VillageManager_Buildings;
 
@@ -112,7 +121,7 @@ public class BuildModeManager : MonoBehaviour
             !_GameManager.GamePhaseTextIsVisible)
         {
             // Check if player is entering build mode.
-            bool input = _InputManager.Player.EnterBuildMode;
+            bool input = _InputManager_Player.EnterBuildMode;
 
             if (input && !IsBuildModeActive)
             {
@@ -148,7 +157,7 @@ public class BuildModeManager : MonoBehaviour
     private void DoBuildModeChecks()
     {
         // Check if the player is exiting buildmode.
-        bool input = _InputManager.BuildMode.ExitBuildMode;
+        bool input = _InputManager_BuildMode.ExitBuildMode;
         if (input && Time.time - _LastExitTime > 0.25f)
         {
             _LastExitTime = Time.time;
@@ -160,7 +169,7 @@ public class BuildModeManager : MonoBehaviour
 
 
         // If the player pressed the select building button, and we are not already in the process of selecting a building, then open the buildings menu.
-        if (_InputManager.BuildMode.SelectBuilding && !IsSelectingBuilding && !Dialog_Base.AreAnyDialogsOpen())
+        if (_InputManager_BuildMode.SelectBuilding && !IsSelectingBuilding && !Dialog_Base.AreAnyDialogsOpen())
         {
             StartCoroutine(DisplaySelectBuildingMenu());
             return;
@@ -168,7 +177,7 @@ public class BuildModeManager : MonoBehaviour
 
 
         // Did the player press the build button?
-        if (_InputManager.BuildMode.Build && !IsSelectingBuilding)
+        if (_InputManager_BuildMode.ConstructBuilding && !IsSelectingBuilding)
             DoBuildAction();
 
     }
@@ -188,7 +197,7 @@ public class BuildModeManager : MonoBehaviour
         // Otherwise, we'll have problems since the two inputs use the same button where
         // as soon as we exit build mode, the Update() method will think we should enter
         // build mode again, because it sees that the button is pressed.
-        while (_InputManager.Player.EnterBuildMode || _InputManager.BuildMode.ExitBuildMode)
+        while (_InputManager_Player.EnterBuildMode || _InputManager_BuildMode.ExitBuildMode)
         {
             yield return null;
         }

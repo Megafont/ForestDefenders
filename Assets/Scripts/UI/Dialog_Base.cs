@@ -12,7 +12,7 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
     protected GameManager _GameManager;
 
     protected InputManager _InputManager;
-    protected InputManager_UI _InputManager_UI;
+    protected InputMapManager_UI _InputManager_UI;
 
     protected InputActionMap _PreviouslyActiveInputMap;
 
@@ -32,7 +32,8 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
     void Start()
     {
         _InputManager = _GameManager.InputManager;
-        _InputManager_UI = _InputManager.UI;       
+        _InputManager_UI = (InputMapManager_UI) _InputManager.GetInputMapManager((uint) InputActionMapIDs.UI);
+
 
         Dialog_OnStart();
 
@@ -68,8 +69,8 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
 
         if (_InputManager_UI != null)
         {
-            if (_InputManager_UI.Confirm)
-                Dialog_OnConfirm();
+            if (_InputManager_UI.Submit)
+                Dialog_OnSubmit();
             else if (_InputManager_UI.Cancel)
                 Dialog_OnCancel();
         }
@@ -92,14 +93,21 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
 
     // This method is called when the user uses any non-mouse navigational UI controls (WASD/Arrow keys, Joystick, Gamepad).
     protected virtual void Dialog_OnNavigate() { }
-    // These two methods are called when the users presses the confirm or cancel buttons on the gamepad.
-    protected virtual void Dialog_OnConfirm() { }
+    // These two methods are called when the users presses the submit or cancel buttons on the gamepad.
+    protected virtual void Dialog_OnSubmit() { }
     protected virtual void Dialog_OnCancel() { }
 
 
 
     public virtual void CloseDialog()
     {
+        if (!IsOpen())
+        {
+            Debug.LogWarning($"CloseDialog() was called on {this.GetType().Name}, while the dialog is not open!");
+            return;
+        }
+
+
         if (_PauseGameWhileDialogOpen)
             Time.timeScale = 1.0f;
 
@@ -110,14 +118,10 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
         // Only disable mouse cursor, and switch input maps if no dialogs are still open.
         if (OpenDialogs.Count < 1)
         {
-            // Disable mouse cursor.
-            if (OpenDialogs.Count < 1)
-                Cursor.visible = false;
+            Cursor.visible = false;
 
-
-            // Switch input maps.
+            // Switch input maps and deactivate the dialog.
             StartCoroutine(SwitchInputMaps(false));
-
         }
 
 
@@ -179,13 +183,11 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
     {        
         if (dialogIsOpening)
         {
-            //_GameManager.InputManager.SwitchToActionMap((int)InputActionMapIDs.UI)
-
             // Switch to the UI input map.
             _PreviouslyActiveInputMap = _InputManager.GetPlayerInputComponent().currentActionMap;
             _PreviouslyActiveInputMap?.Disable();
 
-            _InputManager.GetPlayerInputComponent().actions.FindActionMap(InputManager.ACTION_MAP_UI).Enable();
+            _InputManager_UI.Enable();
 
 
             // Disable any inputs that may still be on. This stops the player from sometimes stabbing over and over and over again while the dialog is open.
@@ -197,7 +199,7 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
             if (OpenDialogs.Count < 1)
             {            
                 // Disable the UI input map.
-                _InputManager.GetPlayerInputComponent().actions.FindActionMap(InputManager.ACTION_MAP_UI).Disable();
+                _InputManager_UI.Disable();
 
                 // Re-enable the previous active input map.
                 _PreviouslyActiveInputMap?.Enable();
@@ -205,7 +207,7 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
 
 
             // Wait for a short delay so the player character can't react to the last UI button press.
-            // The UI confirm button and player attack buttons are the same one, so this prevents that issue.
+            // The UI submit button and player attack buttons are the same one, so this prevents that issue.
             yield return new WaitForSeconds(_GameManager.DialogCloseInputChangeDelay);
 
         }
@@ -234,12 +236,21 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
 
 
 
-    public static void CloseAllDialogsExcept(Dialog_Base dialogToIgnore)
+    public static void CloseAllDialogsExcept(IDialog dialogToIgnore)
     {
-        for (int i = 0; i < OpenDialogs.Count; i++)
+        if (OpenDialogs.Count < 1)
+            return;
+
+
+        for (int i = OpenDialogs.Count - 1; i >= 0; i--)
         {
-            if (dialogToIgnore != null && OpenDialogs[i] == (IDialog) dialogToIgnore)
+            if (dialogToIgnore == null ||
+                (dialogToIgnore != null && OpenDialogs[i] != dialogToIgnore))
+            {
+                //Debug.Log($"Dialog_Base.CloseAllDialogsExcept() closed dialog [{i}] ({OpenDialogs[i].GetType()}).");
+
                 OpenDialogs[i].CloseDialog();
+            }
 
         } // end for i
     }

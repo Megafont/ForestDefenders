@@ -145,6 +145,8 @@ public class GameManager : MonoBehaviour
 
     public static GameManager Instance;
 
+    private InputMapManager_Player _InputManager_Player;
+
     private bool _PlayerDrowned = false;
 
     private AudioSource _BirdsAudioSource;
@@ -229,8 +231,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        InitInput();
-
+        _InputManager_Player = (InputMapManager_Player)InputManager.GetInputMapManager((uint)InputActionMapIDs.Player);
 
         _BuildPhaseLength = BuildModeManager.BuildPhaseBaseLength;
 
@@ -441,10 +442,13 @@ public class GameManager : MonoBehaviour
     {
         BuildModeManager = GameObject.Find("Build Mode Manager").GetComponent<BuildModeManager>();
         CameraManager = GameObject.Find("Camera Manager").GetComponent<CameraManager>();
+
         InputManager = GameObject.Find("Input Manager").GetComponent<InputManager>();
+
         MonsterManager = GameObject.Find("Monster Manager").GetComponent<MonsterManager>();
         NavMeshManager = GameObject.Find("Nav Mesh Manager").GetComponent<NavMeshManager>();
         ResourceManager = GameObject.Find("Resource Manager").GetComponent<ResourceManager>();
+        
         VillageManager_Buildings = GameObject.Find("Village Manager").GetComponent<VillageManager_Buildings>();
         VillageManager_Villagers = GameObject.Find("Village Manager").GetComponent<VillageManager_Villagers>();
     }
@@ -528,13 +532,6 @@ public class GameManager : MonoBehaviour
 
         // Switch to the main camera for this scene.
         CameraManager.SwitchToCamera((int) CameraIDs.PlayerFollow);
-    }
-
-    private void InitInput()
-    {
-        InputManager.RegisterInputActionMap((int) InputActionMapIDs.Player, "Player", true);
-        InputManager.RegisterInputActionMap((int) InputActionMapIDs.BuildMode, "Build Mode", true);
-        InputManager.RegisterInputActionMap((int) InputActionMapIDs.UI, "UI", true);
     }
 
     private void InitUI()
@@ -794,9 +791,9 @@ public class GameManager : MonoBehaviour
         float timeToNextWave = _BuildPhaseLength - (Time.time - _GameStateStartTime);
 
         if (timeToNextWave <= 0 ||
-            (InputManager.Player.EndBuildPhase && !BuildModeManager.IsBuildModeActive &&                    // Is the player pressing the end build phase button while not in build mode
-             !Dialog_Base.AreAnyDialogsOpen() && !GamePhaseTextIsVisible &&                                 // With no dialogs or game phase text currently open
-             !SceneSwitcher.IsFading && !SceneSwitcher.IsTransitioningToScene && !MusicPlayer.IsFading && !CameraManager.IsTransitioning))    // And no transitions taking place?
+            (_InputManager_Player.EndPlayerBuildPhase && !BuildModeManager.IsBuildModeActive &&                                                // Is the player pressing the end build phase button while not in build mode
+             !Dialog_Base.AreAnyDialogsOpen() && !GamePhaseTextIsVisible &&                                                                   // with no dialogs or game phase text currently open
+             !SceneSwitcher.IsFading && !SceneSwitcher.IsTransitioningToScene && !MusicPlayer.IsFading && !CameraManager.IsTransitioning))    // and no transitions taking place?
         {
 
             if (!DisableMonstersSpawning)

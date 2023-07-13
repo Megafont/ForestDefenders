@@ -9,7 +9,7 @@ public class BuildingConstructionGhost : MonoBehaviour
     [Header("General Settings")]
     
     [Tooltip("The minimum distance in front of the player that the construction ghost must be.")]
-    [SerializeField] private Vector2 _MaxMovementDistances = new Vector2(8f, 5f);
+    [SerializeField] private Vector2 _MaxMovementDistances = new Vector2(10f, 8f);
     
     [Tooltip("The difference between the highest and lowest terrain points under the building cannot be greater than this value, or the building is considered obstructed.")]
     [Min(0)]
@@ -27,11 +27,11 @@ public class BuildingConstructionGhost : MonoBehaviour
 
     [Tooltip("The size of the grid used when grid snap is on.")]
     [Range(0.1f, 2.0f)]
-    [SerializeField] private float _GridSnapIncrement = 1.0f;
+    [SerializeField] private float _GridSnapOnIncrement = 1.0f;
 
     [Tooltip("The rotation increment used when grid snap is on (in degrees).")]
     [Range(1f, 90f)]
-    [SerializeField] private float _GridSnapRotationIncrement = 15f;
+    [SerializeField] private float _GridSnapOnRotationIncrement = 15f;
 
     [Tooltip("How much to move the construction ghost forward/back by per frame when grid snap is off.")]
     [Range(0.01f, 5.0f)]
@@ -39,7 +39,7 @@ public class BuildingConstructionGhost : MonoBehaviour
 
     [Tooltip("How much to rotate the construction ghost by per frame when grid snap is off (in degrees).")]
     [Range(0.1f, 5.0f)]
-    [SerializeField] private float _GridSnapOffRotationIncrement = 1f;
+    [SerializeField] private float _GridSnapOffRotationIncrement = 2f;
 
 
     [Header("Color Settings")]
@@ -61,6 +61,7 @@ public class BuildingConstructionGhost : MonoBehaviour
     private GameManager _GameManager;
     private CameraManager _CameraManager;
     private InputManager _InputManager;
+    private InputMapManager_BuildMode _InputManager_BuildMode;
 
     private GameObject _Player;
 
@@ -188,7 +189,9 @@ public class BuildingConstructionGhost : MonoBehaviour
     {
         _GameManager = GameManager.Instance;
         _CameraManager = _GameManager.CameraManager;
+        
         _InputManager = _GameManager.InputManager;
+        _InputManager_BuildMode = (InputMapManager_BuildMode) _InputManager.GetInputMapManager((uint) InputActionMapIDs.BuildMode);
 
         _Player = _GameManager.Player;
 
@@ -208,17 +211,18 @@ public class BuildingConstructionGhost : MonoBehaviour
 
     private void CheckGhostMovementInputs()
     {
+        // Get player inputs for this frame.
         _PrevMovePositionState = _CurMovePositionState;
-        _CurMovePositionState = _InputManager.BuildMode.MoveBuildPosition;
+        _CurMovePositionState = _InputManager_BuildMode.MoveBuildPosition;
 
         _PrevRotateLeftState = _CurRotateLeftState;
-        _CurRotateLeftState = _InputManager.BuildMode.RotateBuildLeft;
+        _CurRotateLeftState = _InputManager_BuildMode.RotateBuildLeft;
 
         _PrevRotateRightState = _CurRotateRightState;
-        _CurRotateRightState = _InputManager.BuildMode.RotateBuildRight;
+        _CurRotateRightState = _InputManager_BuildMode.RotateBuildRight;
 
         _PrevGridSnapState = _CurGridSnapState;
-        _CurGridSnapState = _InputManager.BuildMode.GridSnap;
+        _CurGridSnapState = _InputManager_BuildMode.ToggleGridSnap;
 
 
         _PrevOffsetReleativeToPlayer = _GhostOffsetRelativeToPlayer;
@@ -230,12 +234,22 @@ public class BuildingConstructionGhost : MonoBehaviour
         _GhostOffsetRelativeToPlayer.x += _CurMovePositionState.x * _GridSnapOffIncrement;
         _GhostOffsetRelativeToPlayer.y += _CurMovePositionState.y * _GridSnapOffIncrement;
 
-        // Next, check for rotation inputs.
-        if (_CurRotateLeftState)
-            _GhostRotationInDegrees -= _GridSnapOffRotationIncrement;
 
-        if (_CurRotateRightState)
-            _GhostRotationInDegrees += _GridSnapOffRotationIncrement;
+        // Next, check for rotation inputs.
+        if (_CurGridSnapState)
+        {
+            if (_InputManager_BuildMode.RotateBuildLeftReleased)
+                _GhostRotationInDegrees -= _GridSnapOnRotationIncrement;
+            else if (_InputManager_BuildMode.RotateBuildRightReleased)
+                _GhostRotationInDegrees += _GridSnapOnRotationIncrement;
+        }
+        else
+        {
+            if (_CurRotateLeftState)
+                _GhostRotationInDegrees -= _GridSnapOffRotationIncrement;
+            else if (_CurRotateRightState)
+                _GhostRotationInDegrees += _GridSnapOffRotationIncrement;
+        }
 
 
         // Clamp the construction position within range.
@@ -260,7 +274,7 @@ public class BuildingConstructionGhost : MonoBehaviour
         eulerAngles.y = _GhostRotationInDegrees;
 
         if (_CurGridSnapState)
-            eulerAngles.y = Utils_Math.RoundToNearestMultiple(eulerAngles.y, _GridSnapRotationIncrement);
+            eulerAngles.y = Utils_Math.RoundToNearestMultiple(eulerAngles.y, _GridSnapOnRotationIncrement);
 
         q.eulerAngles = eulerAngles;
         transform.rotation = q;
@@ -272,7 +286,7 @@ public class BuildingConstructionGhost : MonoBehaviour
         newPos.y = GetGhostYPos(newPos);
 
         if (_CurGridSnapState)
-            newPos = Utils_Math.SnapPositionToGrid(newPos, _GridSnapIncrement);
+            newPos = Utils_Math.SnapPositionToGrid(newPos, _GridSnapOnIncrement);
 
         transform.position = newPos;
 
@@ -300,12 +314,10 @@ public class BuildingConstructionGhost : MonoBehaviour
         // by simply returning from this function.
         if (_GroundHeightVariance > _MaxGroundHeightDifference)
         {
-            Debug.Log("1");
             // The building ghost has encountered either a cliff base or cliff top.
             if (!_BuildingIsBridge ||
                 (_BuildingIsBridge && _GhostRanIntoCliffBase)) // Allow bridges to still slide off cliff tops so you can build them over rivers.
             {
-                Debug.Log("2");
                 _GhostOffsetRelativeToPlayer = _PrevOffsetReleativeToPlayer;
                 _GroundHeightVariance = _PrevGroundHeightVariance;
 
@@ -564,7 +576,7 @@ public class BuildingConstructionGhost : MonoBehaviour
         }
         else
         {
-            _Renderer.material.color = _InputManager.BuildMode.GridSnap ? _CanBuildWithGridSnapColor : _CanBuildColor;
+            _Renderer.material.color = _InputManager_BuildMode.ToggleGridSnap ? _CanBuildWithGridSnapColor : _CanBuildColor;
         }
     }
 

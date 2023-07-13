@@ -131,7 +131,7 @@ public class LevelUpDialog : Dialog_Base
 
     }
 
-    protected override void Dialog_OnConfirm()
+    protected override void Dialog_OnSubmit()
     {
         Button pressedBtn = _MenuItems.GetChild(_SelectedMenuItemIndex).GetComponent<Button>();
 

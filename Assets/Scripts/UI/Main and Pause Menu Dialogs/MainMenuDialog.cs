@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -45,64 +44,8 @@ public class MainMenuDialog : Dialog_Base, IDialog
         if (_TitleDisplayCanvas)
             _TitleDisplayCanvas.SetActive(true);
     }
-
-    protected override void Dialog_OnUpdate()
-    {        
-        if (Time.unscaledTime - _LastGamepadSelectionChangeTime >= _GameManager.GamepadMenuSelectionDelay)
-        {
-            // If the mouse has caused the selection to be lost by clicking not on a button, then reselect the currently selected button according to this class's stored index.
-            if (EventSystem.current.currentSelectedGameObject == null)
-                SelectMenuItem();
-
-            //Debug.Log("Selected: " + EventSystem.current.currentSelectedGameObject.name);
-
-            float y = _InputManager_UI.Navigate.y;
-            if (y < -0.5f) // User is pressing down
-            {
-                while (true)
-                {
-                    _SelectedMenuItemIndex++;
-
-                    if (_SelectedMenuItemIndex >= _MenuItems.childCount)
-                        _SelectedMenuItemIndex = 0;
-
-                    SelectMenuItem();
-
-                    // Skip the next item if it is disabled.
-                    Button selected = EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
-                    if (selected != null && selected.IsInteractable())
-                        break;
-                }
-
-                _LastGamepadSelectionChangeTime = Time.unscaledTime;
-            }
-            else if (y > 0.5f) // User is pressing up
-            {
-                while (true)
-                {
-                    _SelectedMenuItemIndex--;
-
-                    if (_SelectedMenuItemIndex < 0)
-                        _SelectedMenuItemIndex = _MenuItems.childCount - 1;
-
-                    SelectMenuItem();
-
-                    // Skip the next item if it is disabled.
-                    Button selected = EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
-                    if (selected != null && selected.IsInteractable())
-                        break;
-
-                }
-
-                _LastGamepadSelectionChangeTime = Time.unscaledTime;
-            }
-
-
-        }
-
-    }
-
-    protected override void Dialog_OnConfirm()
+  
+    protected override void Dialog_OnSubmit()
     {
         if (!_SceneSwitcher.IsTransitioningToScene)
         {
@@ -127,7 +70,7 @@ public class MainMenuDialog : Dialog_Base, IDialog
         SelectMenuItem();
     }
     
-    public void OnStartGame()
+    public void OnSelectedStartGame()
     {
         _TitleDisplayCanvas.SetActive(false);
         CloseDialog();
@@ -135,7 +78,17 @@ public class MainMenuDialog : Dialog_Base, IDialog
         _CharacterSelectionDialog.OpenDialog();
     }
 
-    public void OnHighScores()
+    public void OnSelectedHowToPlay()
+    {
+
+    }
+
+    public void OnSelectedControls()
+    {
+
+    }
+
+    public void OnSelectedHighScores()
     {
         _TitleDisplayCanvas.SetActive(false);
         CloseDialog();
@@ -143,7 +96,7 @@ public class MainMenuDialog : Dialog_Base, IDialog
         _HighScoresDialog.OpenDialog();
     }
 
-    public void OnExitGame()
+    public void OnSelectedExitGame()
     {
         Application.Quit();
     }
@@ -154,8 +107,9 @@ public class MainMenuDialog : Dialog_Base, IDialog
             _TitleDisplayCanvas.SetActive(true);
 
         // Select the first menu item.
-        EventSystem.current.SetSelectedGameObject(_MenuItems.GetChild(0).gameObject);
-
+        _SelectedMenuItemIndex = 0;
+        SelectMenuItem();
+        
         base.OpenDialog(closeOtherOpenDialogs);
     }
 

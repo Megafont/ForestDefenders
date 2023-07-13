@@ -12,7 +12,7 @@ public class HighScoresDialog : Dialog_Base, IDialog
     const float KEYBOARD_SCROLL_SPEED = 10.0f;
 
 
-    [SerializeField] private GameObject _MainMenuObject;    
+    [SerializeField] private MainMenuDialog _MainMenu;    
     [SerializeField] private GameObject _ScrollViewContentArea;
     [SerializeField] private GameObject _ScoreTableRowPrefab;
 
@@ -102,7 +102,8 @@ public class HighScoresDialog : Dialog_Base, IDialog
 
     public override void OpenDialog(bool closeOtherOpenDialogs = true)
     {
-        DisplayScoreTable();
+        // Always start the dialog with the best scores table displayed.
+        OnBestScoresClick();
 
         base.OpenDialog(closeOtherOpenDialogs);
     }
@@ -172,9 +173,9 @@ public class HighScoresDialog : Dialog_Base, IDialog
 
     public void OnDoneClick()
     {
-        gameObject.SetActive(false); // Disable this dialog to hide this window.
+        CloseDialog();
 
-        _MainMenuObject.SetActive(true);
+        _MainMenu.OpenDialog();
     }
 
     protected override void Dialog_OnNavigate()
@@ -196,8 +197,10 @@ public class HighScoresDialog : Dialog_Base, IDialog
             OnBestScoresClick();
     }
 
-    protected override void Dialog_OnConfirm()
+    protected override void Dialog_OnSubmit()
     {
+        //Debug.Log($"OnConfirm called on {this.GetType()}.");
+
         OnDoneClick();
     }
 

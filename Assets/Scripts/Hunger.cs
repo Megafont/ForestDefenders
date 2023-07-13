@@ -43,13 +43,16 @@ public class Hunger : MonoBehaviour
 
 
 
+    private void Awake()
+    {
+        _ParentHealthComponent = GetComponent<Health>();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         _GameManager = GameManager.Instance;
         _ResourceManager = _GameManager.ResourceManager;
-
-        _ParentHealthComponent = GetComponent<Health>();    
     }
 
     // Update is called once per frame

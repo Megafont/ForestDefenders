@@ -191,7 +191,7 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         bool state = true;
         if (_Target == null)
             state = true;
-        else if (_Target.CompareTag("Player") || _Target.CompareTag("Villager"))
+        else if (_Target.CompareTag("Player") /*|| _Target.CompareTag("Villager")*/)
             state = false;
         else
             state = true;

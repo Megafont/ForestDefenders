@@ -50,7 +50,7 @@ public class GameOverDialog : Dialog_Base, IDialog
             _InputField.ActivateInputField();
     }
 
-    protected override void Dialog_OnConfirm()
+    protected override void Dialog_OnSubmit()
     {
         OnDoneClick();
     }
@@ -76,7 +76,6 @@ public class GameOverDialog : Dialog_Base, IDialog
         GameManager.Instance.SceneSwitcher.FadeToScene("Main Menu");
 
         CloseDialog();
-
     }
 
 

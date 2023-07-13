@@ -3,11 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
-using UnityEngine.InputSystem;
 using TMPro;
 using UnityEngine.UI;
-using Unity.VisualScripting;
-using UnityEngine.UIElements;
+
 
 public class TechTreeDialog : Dialog_Base, IDialog
 {
@@ -76,10 +74,6 @@ public class TechTreeDialog : Dialog_Base, IDialog
 
     protected override void Dialog_OnStart()
     {        
-        _InputManager = GameManager.Instance.InputManager;
-        _InputManager_UI = _InputManager.UI;
-
-
         _ScrollRect = transform.GetComponentInChildren<ScrollRect>();
         if (_ScrollRect == null)
             Debug.LogError("The ScrollView's ScrollRect component was not found!");
@@ -112,7 +106,7 @@ public class TechTreeDialog : Dialog_Base, IDialog
         }
 
 
-        CloseDialog();
+        gameObject.SetActive(false);
 
     }
 
@@ -218,7 +212,7 @@ public class TechTreeDialog : Dialog_Base, IDialog
 
     }
 
-    protected override void Dialog_OnConfirm()
+    protected override void Dialog_OnSubmit()
     {
         // Attempt to unlock the selected tile.
         UnlockTile(SelectedTile);

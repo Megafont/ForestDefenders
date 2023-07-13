@@ -607,10 +607,10 @@ RectTransform:
   m_Father: {fileID: 569332846}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -250}
-  m_SizeDelta: {x: -50, y: 50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 75}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &363760249
 MonoBehaviour:
@@ -670,7 +670,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2109542785}
         m_TargetAssemblyTypeName: PauseMenuDialog, Assembly-CSharp
-        m_MethodName: OnExitGame
+        m_MethodName: OnSelectedExitGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1082,10 +1082,10 @@ RectTransform:
   m_Father: {fileID: 569332846}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -50}
-  m_SizeDelta: {x: -50, y: 50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 75}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &483737407
 MonoBehaviour:
@@ -1145,7 +1145,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2109542785}
         m_TargetAssemblyTypeName: PauseMenuDialog, Assembly-CSharp
-        m_MethodName: OnResumeGame
+        m_MethodName: OnSelectedResumeGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1288,10 +1288,10 @@ RectTransform:
   m_Father: {fileID: 569332846}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -150}
-  m_SizeDelta: {x: -50, y: 50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 75}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &499299251
 MonoBehaviour:
@@ -1351,7 +1351,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2109542785}
         m_TargetAssemblyTypeName: PauseMenuDialog, Assembly-CSharp
-        m_MethodName: OnReturnToMainMenu
+        m_MethodName: OnSelectedReturnToMainMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1519,6 +1519,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 569332846}
+  - component: {fileID: 569332847}
   m_Layer: 5
   m_Name: Menu Items
   m_TagString: Untagged
@@ -1549,6 +1550,32 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &569332847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 569332845}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 20
+    m_Right: 20
+    m_Top: 50
+    m_Bottom: 50
+  m_ChildAlignment: 1
+  m_Spacing: 30
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!224 &659299687 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3363655753489532560, guid: eb3d5d363c2d1ba4d91581cb6933ab7e,
@@ -2286,7 +2313,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 600, y: 400}
+  m_SizeDelta: {x: 600, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1218765699
 MonoBehaviour:

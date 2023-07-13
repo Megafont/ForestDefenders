@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 
+
 public class PauseMenuDialog : Dialog_Base, IDialog
 {
     private SceneSwitcher _SceneSwitcher;
@@ -36,64 +37,7 @@ public class PauseMenuDialog : Dialog_Base, IDialog
 
     }
 
-    protected override void Dialog_OnUpdate()
-    {
-        /// NOTE: We have to use Time.unscaledTime here since the time scale is set to 0 while the game is paused.
-        if (Time.unscaledTime - _LastGamepadSelectionChangeTime >= _GameManager.GamepadMenuSelectionDelay)
-        {
-            // If the mouse has caused the selection to be lost by clicking not on a button, then reselect the currently selected button according to this class's stored index.
-            if (EventSystem.current.currentSelectedGameObject == null)
-                SelectMenuItem();
-
-            //Debug.Log("Selected: " + EventSystem.current.currentSelectedGameObject.name);
-
-            float y = _InputManager_UI.Navigate.y;
-            if (y < -0.5f) // User is pressing down
-            {
-                // Skip the next item if it is disabled.
-                while (true)
-                {
-                    _SelectedMenuItemIndex++;
-
-                    if (_SelectedMenuItemIndex >= _MenuItems.childCount)
-                        _SelectedMenuItemIndex = 0;
-
-                    SelectMenuItem();
-
-                    Button selected = EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
-                    if (selected != null && selected.IsInteractable())
-                        break;
-                }
-
-                _LastGamepadSelectionChangeTime = Time.unscaledTime;
-            }
-            else if (y > 0.5f) // User is pressing up
-            {
-                // Skip the next item if it is disabled.
-                while (true)
-                {
-                    _SelectedMenuItemIndex--;
-
-                    if (_SelectedMenuItemIndex < 0)
-                        _SelectedMenuItemIndex = _MenuItems.childCount - 1;
-
-                    SelectMenuItem();
-
-                    Button selected = EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
-                    if (selected != null && selected.IsInteractable())
-                        break;
-
-                }
-
-                _LastGamepadSelectionChangeTime = Time.unscaledTime;
-            }
-
-
-        }
-
-    }
-
-    protected override void Dialog_OnConfirm()
+    protected override void Dialog_OnSubmit()
     {
         if (!_SceneSwitcher.IsTransitioningToScene)
         {
@@ -108,7 +52,7 @@ public class PauseMenuDialog : Dialog_Base, IDialog
 
     protected override void Dialog_OnCancel()
     {
-        OnResumeGame();
+        OnSelectedResumeGame();
     }
 
     public void OnMouseEnterMenuItem(GameObject sender)
@@ -118,19 +62,19 @@ public class PauseMenuDialog : Dialog_Base, IDialog
         SelectMenuItem();
     }
     
-    public void OnResumeGame()
+    public void OnSelectedResumeGame()
     {
         _GameManager.TogglePauseGameState();
     }
 
-    public void OnReturnToMainMenu()
+    public void OnSelectedReturnToMainMenu()
     {
         // We have to reset the time scale since it is set to 0 while the game is paused. Otherwise the transition between scenes won't work.
         Time.timeScale = 1.0f;
         _SceneSwitcher.FadeToScene("Main Menu");
     }
 
-    public void OnExitGame()
+    public void OnSelectedExitGame()
     {
         Time.timeScale = 1.0f;
         Application.Quit();
@@ -140,7 +84,8 @@ public class PauseMenuDialog : Dialog_Base, IDialog
     public override void OpenDialog(bool closeOtherOpenDialogs = true)
     {
         // Select the first menu item.
-        EventSystem.current.SetSelectedGameObject(_MenuItems.GetChild(0).gameObject);
+        _SelectedMenuItemIndex = 0;
+        SelectMenuItem();
 
         base.OpenDialog(closeOtherOpenDialogs);
     }

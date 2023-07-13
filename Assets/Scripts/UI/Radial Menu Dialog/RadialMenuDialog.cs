@@ -135,10 +135,6 @@ public class RadialMenuDialog : Dialog_Base, IDialog
             throw new Exception("The menu items list is empty!");
 
 
-        // Enable the UI controls InputActionMap.
-        _InputManager.GetPlayerInputComponent().actions.FindActionMap(InputManager.ACTION_MAP_UI).Enable();
-
-
 
         while (true)
         {
@@ -179,7 +175,7 @@ public class RadialMenuDialog : Dialog_Base, IDialog
 
     public void OnMouseClickItem(GameObject sender)
     {
-        Dialog_OnConfirm();
+        Dialog_OnSubmit();
     }
 
     public void OnMouseEnterMenuItem(GameObject sender)
@@ -192,7 +188,7 @@ public class RadialMenuDialog : Dialog_Base, IDialog
         SelectItem(index);
     }
 
-    protected override void Dialog_OnConfirm()
+    protected override void Dialog_OnSubmit()
     {
         if (!MenuCancelled && !MenuConfirmed)
         {
@@ -224,7 +220,7 @@ public class RadialMenuDialog : Dialog_Base, IDialog
 
     private void GetSelectedItemIndexFromGamepadInput()
     {
-        Vector2 dir = _InputManager.UI.Navigate;
+        Vector2 dir = _InputManager_UI.Navigate;
         dir.y *= -1;
 
 

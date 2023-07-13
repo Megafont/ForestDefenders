@@ -131,7 +131,7 @@ public class CharacterSelectionDialog : Dialog_Base, IDialog
 
     }
 
-    protected override void Dialog_OnConfirm()
+    protected override void Dialog_OnSubmit()
     {
         if (!_SceneSwitcher.IsTransitioningToScene)
         {
@@ -162,18 +162,14 @@ public class CharacterSelectionDialog : Dialog_Base, IDialog
     {
         GameManager._SpawnBoy = true;
 
-        _SceneSwitcher.FadeToScene("Level 01");
-
-        CloseDialog();
+        StartGame();
     }
 
     public void OnGirlConfirmed()
     {
         GameManager._SpawnBoy = false;
 
-        _SceneSwitcher.FadeToScene("Level 01");
-
-        CloseDialog();
+        StartGame();
     }
 
     public void OnReturnToMainMenuConfirmed()
@@ -183,11 +179,21 @@ public class CharacterSelectionDialog : Dialog_Base, IDialog
         _MainMenuDialog.OpenDialog();
     }
 
+    private void StartGame()
+    {
+        _SceneSwitcher.FadeToScene("Level 01");
+
+        CloseDialog();
+    }
 
     public override void OpenDialog(bool closeOtherOpenDialogs = true)
     {
         // Select the first menu item.
         EventSystem.current.SetSelectedGameObject(_MenuItems.GetChild(0).gameObject);
+
+        _PrevSelectedMenuItemIndex = _SelectedMenuItemIndex;
+        _SelectedMenuItemIndex = 0;
+        SelectMenuItem();
 
         base.OpenDialog(closeOtherOpenDialogs);
     }

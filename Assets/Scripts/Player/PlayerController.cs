@@ -127,8 +127,9 @@ public class PlayerController : MonoBehaviour
 
 
     private InputManager _InputManager;
-    private InputManager_Player _InputManager_Player;
+    private InputMapManager_Player _InputManager_Player;
 
+    // I moved the PlayerInput component into my input manager GameObject.
     //private PlayerInput _playerInput;
     //private StarterAssetsInputs _input;
 
@@ -225,7 +226,7 @@ public class PlayerController : MonoBehaviour
         _BuildModeManager = _GameManager.BuildModeManager;
 
         _InputManager = _GameManager.InputManager;
-        _InputManager_Player = _InputManager.Player;
+        _InputManager_Player = (InputMapManager_Player) _InputManager.GetInputMapManager((uint) InputActionMapIDs.Player);
 
 
         _cinemachineTargetYaw = _CinemachineCameraTarget.transform.rotation.eulerAngles.y;
@@ -251,6 +252,10 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         _hasAnimator = TryGetComponent(out _animator);
+
+
+        if (_InputManager_Player.PauseGame)
+            _GameManager.TogglePauseGameState();
 
 
         DoFallDamageCheck();
@@ -350,13 +355,13 @@ public class PlayerController : MonoBehaviour
     private void CameraRotation()
     {
         // if there is an input and camera position is not fixed
-        if (_InputManager.Player.look.sqrMagnitude >= _threshold && !_LockCameraPosition)
+        if (_InputManager_Player.Look.sqrMagnitude >= _threshold && !_LockCameraPosition)
         {
             //Don't multiply mouse input by Time.deltaTime;
             float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-            _cinemachineTargetYaw += _InputManager.Player.look.x * deltaTimeMultiplier;
-            _cinemachineTargetPitch += _InputManager.Player.look.y * deltaTimeMultiplier;
+            _cinemachineTargetYaw += _InputManager_Player.Look.x * deltaTimeMultiplier;
+            _cinemachineTargetPitch += _InputManager_Player.Look.y * deltaTimeMultiplier;
         }
 
         // clamp our rotations so our values are limited 360 degrees
@@ -378,19 +383,19 @@ public class PlayerController : MonoBehaviour
 
 
         // set target speed based on move speed, sprint speed and if sprint is pressed
-        float targetSpeed = _InputManager.Player.sprint ? _SprintSpeed : _MoveSpeed;
+        float targetSpeed = _InputManager_Player.Sprint ? _SprintSpeed : _MoveSpeed;
 
         // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
         // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
         // if there is no input, set the target speed to 0
-        if (_InputManager.Player.move == Vector2.zero) targetSpeed = 0.0f;
+        if (_InputManager_Player.Move == Vector2.zero) targetSpeed = 0.0f;
 
 
-        float inputMagnitude = _InputManager.Player.analogMovement ? _InputManager.Player.move.magnitude : 1f;
+        float inputMagnitude = _InputManager_Player.AnalogMovement ? _InputManager_Player.Move.magnitude : 1f;
         
         // normalise input direction
-        Vector3 inputDirection = new Vector3(_InputManager.Player.move.x, 0.0f, _InputManager.Player.move.y).normalized;
+        Vector3 inputDirection = new Vector3(_InputManager_Player.Move.x, 0.0f, _InputManager_Player.Move.y).normalized;
 
         if (!_HealthComponent.IsAlive)
         {
@@ -430,7 +435,7 @@ public class PlayerController : MonoBehaviour
         
         // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
         // if there is a move input rotate player when the player is moving
-        if (_InputManager.Player.move != Vector2.zero)
+        if (_InputManager_Player.Move != Vector2.zero)
         {
             _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
                                 _mainCamera.transform.eulerAngles.y;
@@ -478,7 +483,7 @@ public class PlayerController : MonoBehaviour
 
             // Jump
             if (_HealthComponent.IsAlive &&
-                _InputManager.Player.jump && _jumpTimeoutDelta <= 0.0f)
+                _InputManager_Player.Jump && _jumpTimeoutDelta <= 0.0f)
             {
                 // the square root of H * -2 * G = how much velocity needed to reach desired height
                 _verticalVelocity = Mathf.Sqrt(_JumpHeight * -2f * _Gravity);
@@ -514,9 +519,6 @@ public class PlayerController : MonoBehaviour
                     _animator.SetBool(_animIDFreeFall, true);
                 }
             }
-
-            // if we are not grounded, do not jump
-            _InputManager.Player.jump = false;
         }
 
         // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
@@ -544,7 +546,7 @@ public class PlayerController : MonoBehaviour
         }
 
 
-        if (_InputManager.Player.Attack)
+        if (_InputManager_Player.Attack)
         {
             _AttackCooldownRemainingTime = _AttackCooldownTime;
             DoAttackAction();

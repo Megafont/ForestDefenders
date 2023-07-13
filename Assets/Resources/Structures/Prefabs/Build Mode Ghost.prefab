@@ -144,8 +144,8 @@ MonoBehaviour:
   _MaxGroundHeightDifference: 1
   _MaxVerticalOffsetFromPlayer: 2
   _GroundCheckVerticalRaycastOffset: 5
-  _GridSnapIncrement: 1
-  _GridSnapRotationIncrement: 15
+  _GridSnapOnIncrement: 1
+  _GridSnapOnRotationIncrement: 15
   _GridSnapOffIncrement: 0.1
   _GridSnapOffRotationIncrement: 2
   _CanBuildColor: {r: 0, g: 1, b: 0, a: 0.5019608}
