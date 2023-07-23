@@ -10,7 +10,6 @@ using UnityEngine.UI;
 public class TechTreeDialog : Dialog_Base, IDialog
 {
     const float GAMEPAD_MIN_THRESHOLD = 0.5f; // The minimum amount the left stick must be pressed to move the selection.
-    const float KEYBOARD_SCROLL_SPEED = 10.0f;
 
 
     [Header("UI Prefabs")]

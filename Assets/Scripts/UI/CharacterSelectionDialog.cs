@@ -17,8 +17,6 @@ public class CharacterSelectionDialog : Dialog_Base, IDialog
 
 
 
-    [Tooltip("This much time in seconds must elapse before the menu will respond to another input event to keep it from moving too fast.")]
-
     [SerializeField] private MainMenuDialog _MainMenuDialog;
 
 
@@ -153,7 +151,7 @@ public class CharacterSelectionDialog : Dialog_Base, IDialog
     {
         _PrevSelectedMenuItemIndex = _SelectedMenuItemIndex;
 
-        _SelectedMenuItemIndex = GetIndexOfMenuItem(sender.transform);
+        _SelectedMenuItemIndex = Utils_UI.GetIndexOfMenuItem(_MenuItems, sender.transform);
 
         SelectMenuItem();
     }
@@ -196,21 +194,6 @@ public class CharacterSelectionDialog : Dialog_Base, IDialog
         SelectMenuItem();
 
         base.OpenDialog(closeOtherOpenDialogs);
-    }
-
-    private int GetIndexOfMenuItem(Transform child)
-    {
-        int index = 0;
-        foreach (Transform t in _MenuItems)
-        {
-            if (t == child)
-                return index;
-
-            index++;
-        }
-
-
-        return -1;    
     }
 
     private void SelectMenuItem()

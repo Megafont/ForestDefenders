@@ -13,9 +13,21 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
     [CustomEditor(typeof(RebindActionUI))]
     public class RebindActionUIEditor : UnityEditor.Editor
     {
+        // The next line is CUSTOM CODE from this tutorial: https://www.youtube.com/watch?v=qXbjyzBlduY
+        RebindActionUI m_RebindActionUI;
+
+
         protected void OnEnable()
         {
+            // The next line is CUSTOM CODE from this tutorial: https://www.youtube.com/watch?v=qXbjyzBlduY
+            m_RebindActionUI = (RebindActionUI) target;
+
+
             m_ActionProperty = serializedObject.FindProperty("m_Action");
+
+            // CUSTOM CODE. I added this line.
+            m_LinkedActionProperty = serializedObject.FindProperty("m_LinkedAction");
+
             m_BindingIdProperty = serializedObject.FindProperty("m_BindingId");
             m_ActionLabelProperty = serializedObject.FindProperty("m_ActionLabel");
             m_BindingTextProperty = serializedObject.FindProperty("m_BindingText");
@@ -25,6 +37,12 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
             m_RebindStartEventProperty = serializedObject.FindProperty("m_RebindStartEvent");
             m_RebindStopEventProperty = serializedObject.FindProperty("m_RebindStopEvent");
             m_DisplayStringOptionsProperty = serializedObject.FindProperty("m_DisplayStringOptions");
+
+
+            // This block is CUSTOM CODE from this tutorial: https://www.youtube.com/watch?v=qXbjyzBlduY
+            m_ActionOverrideProperty = serializedObject.FindProperty("m_OverrideActionLabel");
+            m_ActionOverrideStringProperty = serializedObject.FindProperty("m_ActionLabelString");
+
 
             RefreshBindingOptions();
         }
@@ -38,6 +56,25 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
             using (new EditorGUI.IndentLevelScope())
             {
                 EditorGUILayout.PropertyField(m_ActionProperty);
+
+                // CUSTOM CODE. I added this block and the following if statement. It shows the new linked action property, and validates it.
+                EditorGUILayout.PropertyField(m_LinkedActionProperty);
+                InputActionReference actionRef = (InputActionReference) m_ActionProperty.objectReferenceValue;
+                InputAction action = actionRef != null ? actionRef.action : null;
+                InputActionReference linkedActionRef = (InputActionReference) m_LinkedActionProperty.objectReferenceValue;
+                InputAction linkedAction = linkedActionRef != null ? linkedActionRef.action : null;
+                
+                if (action != null && linkedAction != null)
+                {
+                    if (linkedAction.actionMap == action.actionMap)
+                    {
+                        Debug.LogError($"RebindActionUIEditor.cs: You cannot set the linked action for input action \"{action.name}\" to \"{linkedAction.name}\", because it is in the same action map as \"{action.name}\"!");
+
+                        // Clear this property since the specified action is invalid.
+                        m_LinkedActionProperty.objectReferenceValue = null;
+                    }
+                }
+
 
                 var newSelectedBinding = EditorGUILayout.Popup(m_BindingLabel, m_SelectedBindingOption, m_BindingOptions);
                 if (newSelectedBinding != m_SelectedBindingOption)
@@ -63,6 +100,19 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
                 EditorGUILayout.PropertyField(m_RebindOverlayProperty);
                 EditorGUILayout.PropertyField(m_RebindTextProperty);
             }
+
+
+            // Customize UI Section.
+            // The block is CUSTOM CODE from this tutorial: https://www.youtube.com/watch?v=qXbjyzBlduY
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField(m_CustomizeUILabel, Styles.boldLabel);
+            using (new EditorGUI.IndentLevelScope())
+            {
+                EditorGUILayout.PropertyField(m_ActionOverrideProperty);
+                if (m_RebindActionUI.m_OverrideActionLabel)
+                    EditorGUILayout.PropertyField(m_ActionOverrideStringProperty);
+            }
+
 
             // Events section.
             EditorGUILayout.Space();
@@ -150,6 +200,10 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
         }
 
         private SerializedProperty m_ActionProperty;
+        
+        // CUSTOM CODE: I added this field.
+        private SerializedProperty m_LinkedActionProperty;
+
         private SerializedProperty m_BindingIdProperty;
         private SerializedProperty m_ActionLabelProperty;
         private SerializedProperty m_BindingTextProperty;
@@ -160,8 +214,16 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
         private SerializedProperty m_UpdateBindingUIEventProperty;
         private SerializedProperty m_DisplayStringOptionsProperty;
 
+        // The next two lines are CUSTOM CODE from this tutorial: https://www.youtube.com/watch?v=qXbjyzBlduY
+        private SerializedProperty m_ActionOverrideProperty;
+        private SerializedProperty m_ActionOverrideStringProperty;
+
         private GUIContent m_BindingLabel = new GUIContent("Binding");
         private GUIContent m_DisplayOptionsLabel = new GUIContent("Display Options");
+
+        // The next line is CUSTOM CODE from this tutorial: https://www.youtube.com/watch?v=qXbjyzBlduY
+        private GUIContent m_CustomizeUILabel = new GUIContent("Customize UI");
+
         private GUIContent m_UILabel = new GUIContent("UI");
         private GUIContent m_EventsLabel = new GUIContent("Events");
         private GUIContent[] m_BindingOptions;

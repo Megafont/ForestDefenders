@@ -13,8 +13,12 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
     /// </summary>
     public class GamepadIconsExample : MonoBehaviour
     {
+        // CUSTOM CODE: I added this property so you can specify whether or not the text will be hidden when icons are displayed.
+        public bool HideTextWhenIconsAreDisplayed = false;
+
         public GamepadIcons xbox;
         public GamepadIcons ps4;
+
 
         protected void OnEnable()
         {
@@ -46,7 +50,10 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
 
             if (icon != null)
             {
-                textComponent.gameObject.SetActive(false);
+                // CUSTOM CODE: I added this if statement and the HideTextWhenIconsAreDisplayed property so you can specify whether to hide the text or not when icons are displayed.
+                if (HideTextWhenIconsAreDisplayed)
+                    textComponent.gameObject.SetActive(false);
+
                 imageComponent.sprite = icon;
                 imageComponent.gameObject.SetActive(true);
             }

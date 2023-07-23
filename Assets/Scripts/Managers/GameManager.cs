@@ -637,7 +637,7 @@ public class GameManager : MonoBehaviour
 
     public void TogglePauseGameState()
     {
-        Debug.Log($"Game State {GameState}");
+        //Debug.Log($"Game paused. Current state: {GameState}");
 
         if (GameState == GameStates.Startup || 
             GameState == GameStates.GameOver || 

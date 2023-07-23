@@ -16,6 +16,7 @@ public class InputMapManager_UI : InputMapManager
     private InputAction _CancelAction;
 
     private InputAction _CloseTechTreeAction;
+    private InputAction _UnpauseGame;
     // ----------------------------------------------------------------------------------------------------
 
 
@@ -33,6 +34,7 @@ public class InputMapManager_UI : InputMapManager
         _CancelAction = _InputActionMap["Cancel"];
 
         _CloseTechTreeAction = _InputActionMap["Close Tech Tree"];
+        _UnpauseGame = _InputActionMap["Unpause Game"];
     }
 
     protected override void UpdateInputs()
@@ -43,6 +45,7 @@ public class InputMapManager_UI : InputMapManager
         Cancel = _CancelAction.WasPerformedThisFrame();
 
         CloseTechTree = _CloseTechTreeAction.WasPerformedThisFrame();
+        UnpauseGame = _UnpauseGame.WasPerformedThisFrame();
     }
 
 
@@ -69,5 +72,6 @@ public class InputMapManager_UI : InputMapManager
     public bool Cancel { get; private set; }
 
     public bool CloseTechTree { get; private set; }
+    public bool UnpauseGame { get; private set; }
 
 }

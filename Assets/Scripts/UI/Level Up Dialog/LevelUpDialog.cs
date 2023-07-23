@@ -10,11 +10,6 @@ using TMPro;
 
 public class LevelUpDialog : Dialog_Base
 {
-    [Tooltip("This much time in seconds must elapse before the menu will respond to another input event to keep it from moving too fast.")]
-    [SerializeField] private float _GamepadMenuSelectionDelay = 0.1f;
-
-
-
     public float CurrentPlayerAttackPower { get; private set; }
     public float CurrentPlayerMaxHealth { get; private set; }
     public float CurrentPlayerGatherRate { get; private set; }
@@ -78,7 +73,7 @@ public class LevelUpDialog : Dialog_Base
         RefreshMenuItems();
 
 
-        if (Time.time - _LastGamepadSelectionChange >= _GamepadMenuSelectionDelay)
+        if (Time.time - _LastGamepadSelectionChange >= _GameManager.GamepadMenuSelectionDelay)
         {
             // If the mouse has caused the selection to be lost by clicking not on a button, then reselect the currently selected button according to this class's stored index.
             if (EventSystem.current.currentSelectedGameObject == null)

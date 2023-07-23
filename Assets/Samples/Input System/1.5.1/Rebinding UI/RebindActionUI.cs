@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using TMPro;
 
 ////TODO: localization support
 
@@ -55,7 +56,7 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
         /// <summary>
         /// Text component that receives the name of the action. Optional.
         /// </summary>
-        public Text actionLabel
+        public TextMeshProUGUI actionLabel
         {
             get => m_ActionLabel;
             set
@@ -69,7 +70,7 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
         /// Text component that receives the display string of the binding. Can be <c>null</c> in which
         /// case the component entirely relies on <see cref="updateBindingUIEvent"/>.
         /// </summary>
-        public Text bindingText
+        public TextMeshProUGUI bindingText
         {
             get => m_BindingText;
             set
@@ -84,7 +85,7 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
         /// </summary>
         /// <seealso cref="startRebindEvent"/>
         /// <seealso cref="rebindOverlay"/>
-        public Text rebindPrompt
+        public TextMeshProUGUI rebindPrompt
         {
             get => m_RebindText;
             set => m_RebindText = value;
@@ -157,14 +158,15 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
         /// Return the action and binding index for the binding that is targeted by the component
         /// according to
         /// </summary>
+        /// <remarks>CUSTOM CODE: I modified this function to take in an InputActionReference so it can be used for any one, rather than only working for the one this RebindActionUI is set to.</remarks>
         /// <param name="action"></param>
         /// <param name="bindingIndex"></param>
         /// <returns></returns>
-        public bool ResolveActionAndBinding(out InputAction action, out int bindingIndex)
+        public bool ResolveActionAndBinding(InputActionReference actionRef, out InputAction action, out int bindingIndex)
         {
             bindingIndex = -1;
 
-            action = m_Action?.action;
+            action = actionRef?.action;
             if (action == null)
                 return false;
 
@@ -214,9 +216,25 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
         /// </summary>
         public void ResetToDefault()
         {
-            if (!ResolveActionAndBinding(out var action, out var bindingIndex))
+            // CUSTOM CODE: I modified this function call to take a new first pararmeter. See the comments on the ResolveActionAndBinding() function.
+            if (!ResolveActionAndBinding(m_Action, out var action, out var bindingIndex))
                 return;
 
+
+            // I added this code snippet.
+            bool actionIsEnabled = action.enabled;
+            if (actionIsEnabled)
+                action.Disable();
+
+
+            // CUSTOM CODE: I added this line.
+            ResetLinkedActionBinding();
+
+            // CUSTOM CODE. This line is from a tutorial (https://www.youtube.com/watch?v=qXbjyzBlduY). This tutorial also had me comment out the block of code below.
+            // Check if another input is bound to the default value of this one before we reset it.            
+            ResetBinding(action, bindingIndex);
+
+            
             if (action.bindings[bindingIndex].isComposite)
             {
                 // It's a composite. Remove overrides from part bindings.
@@ -227,7 +245,111 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
             {
                 action.RemoveBindingOverride(bindingIndex);
             }
+
+
+            // I added this code. If the action was enabled when this function started, then re-enable it now.
+            if (actionIsEnabled)
+                action.Enable();
+
+
             UpdateBindingDisplay();
+        }
+
+        /// <summary>
+        /// This function is CUSTOM CODE from the tutorial here: https://www.youtube.com/watch?v=qXbjyzBlduY
+        /// It checks if another input is already bound to the default binding of the action we are reseting.
+        /// If so, it sets that binding to whatever this action is currently set to, and then sets this action
+        /// back to its default key/button/input.
+        /// </summary>
+        /// <remarks>NOTE: This function has been modified according to the notes in his pinned post under the video description to fix a bug.</remarks>
+        private void ResetBinding(InputAction action, int bindingIndex)
+        {
+            InputBinding newBinding = action.bindings[bindingIndex];
+            string oldOverridePath = newBinding.overridePath;
+
+            action.RemoveBindingOverride(bindingIndex);
+            int currentIndex = -1;
+
+            foreach(InputAction otherAction in action.actionMap.actions)
+            {
+                currentIndex++;
+                InputBinding currentBinding = action.actionMap.bindings[currentIndex];
+
+
+                // I added this code snippet.
+                bool otherActionIsEnabled = otherAction.enabled;
+                if (otherActionIsEnabled)
+                    otherAction.Disable();
+
+
+                if (otherAction == action)
+                {
+                    if (newBinding.isPartOfComposite)
+                    {
+                        if (currentBinding.overridePath == newBinding.path)
+                        {
+                            otherAction.ApplyBindingOverride(currentIndex, oldOverridePath);
+                        }
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+
+                for (int i = 0; i < otherAction.bindings.Count; i++)
+                {
+                    InputBinding binding = otherAction.bindings[i];
+                    if (binding.overridePath == newBinding.path)
+                    {
+                        otherAction.ApplyBindingOverride(i, oldOverridePath);
+                    }
+                }
+
+
+                // I added this code. If otherAction was enabled when this function started, then re-enable it now.
+                if (otherActionIsEnabled)
+                    otherAction.Enable();
+            }
+             
+        }
+
+        /// <summary>
+        /// This function is CUSTOM CODE.
+        /// If there is an action in another action map that is linked to this one, then this function will reset that action.
+        /// </summary>
+        private void ResetLinkedActionBinding()
+        {
+            // CUSTOM CODE: I modified this function call to take a new first pararmeter. See the comments on the ResolveActionAndBinding() function.
+            if (!ResolveActionAndBinding(m_Action, out var action, out var bindingIndex))
+                return;
+
+
+            InputAction linkedAction = m_LinkedAction != null ? m_LinkedAction.action : null;
+
+
+            // This code first checks if a linked action is specified. If so, it validates it
+            // by checking that it is not in the same action map as the action this RebindActionUI is set to.
+            // If so, then the linked action is then reset.
+            if (linkedAction != null)
+            {
+                bool linkedActionIsEnabled = linkedAction.enabled;
+                linkedAction.Disable();
+
+                InputBinding bindingToCopy = action.bindings[bindingIndex];
+                InputBinding bindingMask = new InputBinding()
+                {
+                    groups = bindingToCopy.groups,
+                    overridePath = bindingToCopy.overridePath
+                };
+
+                int index = linkedAction.GetBindingIndex(bindingMask);
+                ResetBinding(m_LinkedAction.action, index);
+
+                if (linkedActionIsEnabled)
+                    m_LinkedAction.action.Enable();
+            }
+
         }
 
         /// <summary>
@@ -236,7 +358,8 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
         /// </summary>
         public void StartInteractiveRebind()
         {
-            if (!ResolveActionAndBinding(out var action, out var bindingIndex))
+            // CUSTOM CODE: I modified this function call to take a new first pararmeter. See the comments on the ResolveActionAndBinding() function.
+            if (!ResolveActionAndBinding(m_Action,out var action, out var bindingIndex))
                 return;
 
             // If the binding is a composite, we need to rebind each part in turn.
@@ -262,11 +385,24 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
                 m_RebindOperation = null;
             }
 
+
+            // CUSTOM CODE. This line is from a tutorial (https://www.youtube.com/watch?v=qXbjyzBlduY), and I added the second line.
+            // Disable the action before rebinding it to prevent errors.
+            action.Disable();
+            bool actionIsEnabled = action.enabled;
+            
+
             // Configure the rebind.
             m_RebindOperation = action.PerformInteractiveRebinding(bindingIndex)
                 .OnCancel(
                     operation =>
                     {
+                        // CUSTOM CODE. This line is from a tutorial (https://www.youtube.com/watch?v=qXbjyzBlduY). I added the if statement.
+                        // Re-enable the action if it was enabled before we rebound it.
+                        if (actionIsEnabled)
+                            action.Enable();
+
+
                         m_RebindStopEvent?.Invoke(this, operation);
                         m_RebindOverlay?.SetActive(false);
                         UpdateBindingDisplay();
@@ -275,8 +411,31 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
                 .OnComplete(
                     operation =>
                     {
+                        // CUSTOM CODE. This line is from a tutorial (https://www.youtube.com/watch?v=qXbjyzBlduY). I added the if statement.
+                        // Re-enable the action if it was enabled before we rebound it.
+                        if (actionIsEnabled)
+                            action.Enable();
+
+
                         m_RebindOverlay?.SetActive(false);
                         m_RebindStopEvent?.Invoke(this, operation);
+
+
+                        // CUSTOM CODE. This if block is from a tutorial (https://www.youtube.com/watch?v=qXbjyzBlduY). I added the if statement.
+                        // It checks for duplicate bindings in compisite iputs (like up/up/up/up instead of up/down/left/right).
+                        if (CheckForDuplicateBindings(action, bindingIndex, allCompositeParts))
+                        {
+                            action.RemoveBindingOverride(bindingIndex);
+                            CleanUp();
+                            PerformInteractiveRebind(action, bindingIndex, allCompositeParts);
+                            return;
+                        }
+
+
+                        // CUSTOM CODE. I added this line.
+                        ApplyOverrideToLinkedAction(action, bindingIndex);
+
+
                         UpdateBindingDisplay();
                         CleanUp();
 
@@ -316,6 +475,114 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
             m_RebindOperation.Start();
         }
 
+        /// <summary>
+        /// This function is CUSTOM CODE.
+        /// If there is an action in another action map that is linked to this one, then this function will apply
+        /// an input binding from this action to it.
+        /// </summary>
+        /// <remarks>
+        /// For example, Forest Defenders uses this function to make it so the Exit Build Mode action in the
+        /// Build Mode input action map always has the same key assigned to it as the Enter Build Mode action in
+        /// the Player input action map.
+        /// </remarks>
+        private void ApplyOverrideToLinkedAction(InputAction action, int bindingIndex)
+        {
+            // This code first checks if a linked action is specified. 
+            // If so, then the linked action is bound to the same key as this action.
+            if (m_LinkedAction != null)
+            {
+                bool linkedActionIsEnabled = m_LinkedAction.action.enabled;
+
+                m_LinkedAction.action.Disable();
+
+                InputBinding bindingToCopy = action.bindings[bindingIndex];
+                InputBinding newBinding = new InputBinding()
+                {
+                    groups = bindingToCopy.groups,
+                    overridePath = bindingToCopy.overridePath
+                };
+
+                m_LinkedAction.action.ApplyBindingOverride(newBinding);
+
+                if (linkedActionIsEnabled)
+                    m_LinkedAction.action.Enable();
+
+            }
+
+        }
+
+        /// <summary>
+        /// This function is CUSTOM CODE from the tutorial here: https://www.youtube.com/watch?v=qXbjyzBlduY
+        /// It prevents us from being able to assign duplicate inputs to a compisite binding (like up/up/up/up instead of up/down/left/right).
+        /// </summary>
+        /// <remarks>NOTE: This function has been modified according to the notes in his pinned post under the video description to fix a bug.</remarks>
+        /// <param name="action"></param>
+        /// <param name="bindingIndex"></param>
+        /// <param name="allCompositeParts"></param>
+        /// <returns></returns>
+        private bool CheckForDuplicateBindings(InputAction action, int bindingIndex, bool allCompositeParts = false)
+        {
+            InputBinding newBinding = action.bindings[bindingIndex];
+            int currentIndex = -1;
+
+            foreach (InputBinding binding in action.actionMap.bindings)
+            {
+                currentIndex++;
+
+                //Debug.Log($"{currentIndex}  {binding.name}  {binding.path}  {binding.effectivePath}  {binding.overridePath}");
+
+                if (binding.action == newBinding.action)
+                {
+                    // I had to change this if statement to get it to stop causing false positives. It used to be "if (binding.isPartOfComposite && currentIndex != bindingIndex)"                    
+                    if (binding.isPartOfComposite && binding.id != newBinding.id)
+                    {
+                        if (binding.effectivePath == newBinding.effectivePath)
+                        {                            
+                            //Debug.Log($"{bindingIndex}  {binding.name}  {binding.path}  {binding.effectivePath}  {binding.overridePath}   |   {currentIndex}  {newBinding.name}  {newBinding.path}  {newBinding.effectivePath}  {newBinding.overridePath}");
+                            LogDuplicateBindingWarning(action, newBinding);
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+
+                if (binding.effectivePath == newBinding.effectivePath)
+                {
+                    LogDuplicateBindingWarning(action, newBinding);
+                    return true;
+                }
+            }
+
+
+            if (allCompositeParts)
+            {
+                for (int i = 1; i < bindingIndex; i++)
+                {
+                    if (action.bindings[i].effectivePath == newBinding.overridePath)
+                    {
+                        LogDuplicateBindingWarning(action, newBinding);
+                        return true;
+                    }
+                }
+            }
+
+
+            return false;
+        }
+
+        /// <summary>
+        /// This is a CUSTOM FUNCTION I wrote to remove duplicate code.
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="newBinding"></param>
+        private void LogDuplicateBindingWarning(InputAction action, InputBinding newBinding)
+        {
+            Debug.LogWarning($"Duplicate key binding found while binding action {action.name}: {newBinding.effectivePath}");
+        }
+
         protected void OnEnable()
         {
             if (s_RebindActionUIs == null)
@@ -323,6 +590,9 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
             s_RebindActionUIs.Add(this);
             if (s_RebindActionUIs.Count == 1)
                 InputSystem.onActionChange += OnActionChange;
+
+            // CUSTOM CODE: I added this line to make sure the binding display gets updated whenever this UI element gets re-enabled (in other words when the controls dialog is opened).
+            UpdateBindingDisplay();
         }
 
         protected void OnDisable()
@@ -369,6 +639,11 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
         [SerializeField]
         private InputActionReference m_Action;
 
+        // CUSTOM CODE. I added this field.
+        [Tooltip("A reference to an action in another action map that is linked to this one. In other words, when this action is rebound, the linked action will be rebound to the same key.")]
+        [SerializeField]
+        private InputActionReference m_LinkedAction;
+
         [SerializeField]
         private string m_BindingId;
 
@@ -378,11 +653,11 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
         [Tooltip("Text label that will receive the name of the action. Optional. Set to None to have the "
             + "rebind UI not show a label for the action.")]
         [SerializeField]
-        private Text m_ActionLabel;
+        private TextMeshProUGUI m_ActionLabel;
 
         [Tooltip("Text label that will receive the current, formatted binding string.")]
         [SerializeField]
-        private Text m_BindingText;
+        private TextMeshProUGUI m_BindingText;
 
         [Tooltip("Optional UI that will be shown while a rebind is in progress.")]
         [SerializeField]
@@ -390,7 +665,17 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
 
         [Tooltip("Optional text label that will be updated with prompt for user input.")]
         [SerializeField]
-        private Text m_RebindText;
+        private TextMeshProUGUI m_RebindText;
+
+
+        // The next two fields are CUSTOM CODE from this tutorial: https://www.youtube.com/watch?v=qXbjyzBlduY
+        [Tooltip("Optional bool field which allows you to override the action label with your own text.")]
+        public bool m_OverrideActionLabel;
+
+        [Tooltip("The text that will be displayed for the action label if OverideActionLabel is enabled.")]
+        [SerializeField]
+        private string m_ActionLabelString;
+
 
         [Tooltip("Event that is triggered when the way the binding is display should be updated. This allows displaying "
             + "bindings in custom ways, e.g. using images instead of text.")]
@@ -427,7 +712,20 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
             if (m_ActionLabel != null)
             {
                 var action = m_Action?.action;
-                m_ActionLabel.text = action != null ? action.name : string.Empty;
+
+
+                // This block is CUSTOM CODE from this tutorial: https://www.youtube.com/watch?v=qXbjyzBlduY
+                if (m_OverrideActionLabel)
+                {
+                    m_ActionLabel.text = m_ActionLabelString;
+                }
+                else
+                {
+                    m_ActionLabelString = string.Empty;
+
+                    // This line used to be the only thing here instead of this if block.
+                    m_ActionLabel.text = action != null ? action.name : string.Empty;
+                }
             }
         }
 

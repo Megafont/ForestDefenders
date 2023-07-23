@@ -8,19 +8,14 @@ using UnityEngine.UI;
 
 public class MainMenuDialog : Dialog_Base, IDialog
 {
-    [Tooltip("This much time in seconds must elapse before the menu will respond to another input event to keep it from moving too fast.")]
-
     [SerializeField] GameObject _TitleDisplayCanvas;
     [SerializeField] CharacterSelectionDialog _CharacterSelectionDialog;
+    [SerializeField] HowToPlayDialog _HowToPlayDialog;
+    [SerializeField] ControlsDialog _ControlsDialog;
     [SerializeField] HighScoresDialog _HighScoresDialog;
 
 
-    private SceneSwitcher _SceneSwitcher;
     private Transform _MenuItems;
-
-
-    private float _LastGamepadSelectionChangeTime;
-    private int _SelectedMenuItemIndex;
 
 
 
@@ -31,8 +26,7 @@ public class MainMenuDialog : Dialog_Base, IDialog
 
     protected override void Dialog_OnStart()
     {
-        _SceneSwitcher = _GameManager.SceneSwitcher;
-
+        // Hook up the mouse over event on each menu item.
         foreach (Transform t in _MenuItems)
             t.GetComponent<MenuDialogsMenuItem>().OnMouseEnter += OnMouseEnterMenuItem;
 
@@ -44,19 +38,17 @@ public class MainMenuDialog : Dialog_Base, IDialog
         if (_TitleDisplayCanvas)
             _TitleDisplayCanvas.SetActive(true);
     }
-  
-    protected override void Dialog_OnSubmit()
+
+    protected override void Dialog_OnUpdate()
     {
-        if (!_SceneSwitcher.IsTransitioningToScene)
+        if (Utils_UI.GetSelectedMenuItemIndex(_MenuItems) < 0)
         {
-            Button pressedBtn = _MenuItems.GetChild(_SelectedMenuItemIndex).GetComponent<Button>();
-
-            PointerEventData eventData = new PointerEventData(EventSystem.current);
-            pressedBtn.OnPointerClick(eventData);
-
-            _LastGamepadSelectionChangeTime = Time.unscaledTime;
+            // No menu items are selected. This can happen if you click outside the menu panel. So select the first menu item.
+            SelectMenuItem(0);
         }
     }
+
+    // Dialog_OnSubmit() is omitted here on purpose, as it is not needed. The UI clicks the selected button for us when the user presses the Submit button.
 
     protected override void Dialog_OnCancel()
     {
@@ -65,33 +57,35 @@ public class MainMenuDialog : Dialog_Base, IDialog
 
     public void OnMouseEnterMenuItem(GameObject sender)
     {
-        _SelectedMenuItemIndex = GetIndexOfMenuItem(sender.transform);
+        int index = GetIndexOfMenuItem(sender.transform);
 
-        SelectMenuItem();
+        SelectMenuItem(index);
     }
     
     public void OnSelectedStartGame()
     {
-        _TitleDisplayCanvas.SetActive(false);
-        CloseDialog();
-        
+        CloseSelfAndHideTitleDisplay();
+
         _CharacterSelectionDialog.OpenDialog();
     }
 
     public void OnSelectedHowToPlay()
     {
+        CloseSelfAndHideTitleDisplay();
 
+        _HowToPlayDialog.OpenDialog();
     }
 
     public void OnSelectedControls()
     {
+        CloseSelfAndHideTitleDisplay();
 
+        _ControlsDialog.OpenDialog();
     }
 
     public void OnSelectedHighScores()
     {
-        _TitleDisplayCanvas.SetActive(false);
-        CloseDialog();
+        CloseSelfAndHideTitleDisplay();
 
         _HighScoresDialog.OpenDialog();
     }
@@ -101,16 +95,21 @@ public class MainMenuDialog : Dialog_Base, IDialog
         Application.Quit();
     }
 
-    public override void OpenDialog(bool closeOtherOpenDialogs = true)
+    public override void OpenDialog(bool closeOtherOpenDialogs = false)
     {
         if (_TitleDisplayCanvas)
             _TitleDisplayCanvas.SetActive(true);
 
         // Select the first menu item.
-        _SelectedMenuItemIndex = 0;
-        SelectMenuItem();
+        SelectMenuItem(0);
         
         base.OpenDialog(closeOtherOpenDialogs);
+    }
+
+    private void CloseSelfAndHideTitleDisplay()
+    {
+        _TitleDisplayCanvas.SetActive(false);
+        CloseDialog();
     }
 
     private int GetIndexOfMenuItem(Transform child)
@@ -128,10 +127,10 @@ public class MainMenuDialog : Dialog_Base, IDialog
         return -1;    
     }
 
-    private void SelectMenuItem()
+    private void SelectMenuItem(int index)
     {
         // Tell the Unity EventSystem to select the correct button.
-        EventSystem.current.SetSelectedGameObject(_MenuItems.GetChild(_SelectedMenuItemIndex).gameObject);
+        EventSystem.current.SetSelectedGameObject(_MenuItems.GetChild(index).gameObject);
     }
 
 }

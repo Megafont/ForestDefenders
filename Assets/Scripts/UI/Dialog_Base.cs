@@ -6,6 +6,9 @@ using UnityEngine.InputSystem;
 
 public abstract class Dialog_Base : MonoBehaviour, IDialog
 {
+    protected const float DIALOG_SCROLL_SPEED = 10.0f;
+
+
     private static List<IDialog> OpenDialogs = new List<IDialog>();
 
 

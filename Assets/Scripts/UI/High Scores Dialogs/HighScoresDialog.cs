@@ -9,9 +9,6 @@ using UnityEngine.UI;
 
 public class HighScoresDialog : Dialog_Base, IDialog
 {
-    const float KEYBOARD_SCROLL_SPEED = 10.0f;
-
-
     [SerializeField] private MainMenuDialog _MainMenu;    
     [SerializeField] private GameObject _ScrollViewContentArea;
     [SerializeField] private GameObject _ScoreTableRowPrefab;
@@ -57,6 +54,7 @@ public class HighScoresDialog : Dialog_Base, IDialog
 
         InitHighScoresTableRows();
         LoadHighScoresTables();
+        
 
         _BestScoresButtonText.color = _SelectedTableColor;
         _BestTimesButtonText.color = _DeselectedTablecolor;
@@ -103,7 +101,8 @@ public class HighScoresDialog : Dialog_Base, IDialog
     public override void OpenDialog(bool closeOtherOpenDialogs = true)
     {
         // Always start the dialog with the best scores table displayed.
-        OnBestScoresClick();
+        _SelectedTableType = HighScoreTypes.Score;
+        DisplayScoreTable();
 
         base.OpenDialog(closeOtherOpenDialogs);
     }
@@ -167,8 +166,8 @@ public class HighScoresDialog : Dialog_Base, IDialog
 
         DisplayScoreTable();
 
-        _BestScoresButtonText.color = _DeselectedTablecolor;
         _BestTimesButtonText.color = _SelectedTableColor;
+        _BestScoresButtonText.color = _DeselectedTablecolor;
     }
 
     public void OnDoneClick()
@@ -185,7 +184,7 @@ public class HighScoresDialog : Dialog_Base, IDialog
         if (scrollMagnitude != 0)
         {
             float scrollableHeight = _ScrollRect.content.sizeDelta.y - _ScrollRect.viewport.rect.height;
-            float scrollAmount = KEYBOARD_SCROLL_SPEED * scrollMagnitude;// * Time.unscaledDeltaTime;
+            float scrollAmount = DIALOG_SCROLL_SPEED * scrollMagnitude;// * Time.unscaledDeltaTime;
             _ScrollRect.verticalNormalizedPosition += scrollAmount / scrollableHeight;
         }
 

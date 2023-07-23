@@ -1,9 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+
 using UnityEngine;
 using UnityEngine.InputSystem;
+
+using Debug = UnityEngine.Debug;
 
 
 
@@ -16,6 +20,10 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerInput))]
 public class InputManager : MonoBehaviour
 {
+    const string KEY_BINDINGS_PLAYER_PREFS_KEY = "KeyBinds";
+
+
+
     PlayerInput _PlayerInputComponent;
 
     private Dictionary<uint, InputMapManager> _InputMapManagers;
@@ -30,6 +38,8 @@ public class InputManager : MonoBehaviour
         if (_PlayerInputComponent == null)
             throw new Exception("The PlayerInput component was not found!");
 
+
+        LoadKeyBindings();
 
         GetInputManagerReferences();
     }
@@ -144,5 +154,43 @@ public class InputManager : MonoBehaviour
 
     }
 
+    public void SaveKeyBindings()
+    {
+        string keyBindings = _PlayerInputComponent.actions.SaveBindingOverridesAsJson();
+
+        //DEBUG_PrintKeyBindings("SAVED KEY BINDINGS", keyBindings);
+
+        PlayerPrefs.SetString(KEY_BINDINGS_PLAYER_PREFS_KEY, keyBindings);
+    }
+
+    private void LoadKeyBindings()
+    {
+        string keyBindings = PlayerPrefs.GetString(KEY_BINDINGS_PLAYER_PREFS_KEY, string.Empty);
+
+        if (string.IsNullOrWhiteSpace(keyBindings))
+            return;
+
+        //DEBUG_PrintKeyBindings("LOADED KEY BINDINGS", keyBindings);
+
+        _PlayerInputComponent.actions.LoadBindingOverridesFromJson(keyBindings);
+    }
+
+    private void ClearAllKeyBindingOverrides()
+    {
+        // Delete all input binding overrides that are saved in player prefs.
+        PlayerPrefs.SetString(KEY_BINDINGS_PLAYER_PREFS_KEY, "");
+
+        // Remove all input binding overrides from the PlayerInputComponent now, otherwise they might just get saved in player prefs again.
+        _PlayerInputComponent.actions.RemoveAllBindingOverrides();
+    }
+
+    [Conditional("DEBUG")]
+    private void DEBUG_PrintKeyBindings(string outputHeading, string keyBindings)
+    {
+        Debug.Log(outputHeading);
+        Debug.Log(new string('-', 256));
+        Debug.Log(keyBindings);
+        Debug.Log(new string('-', 256));
+    }
 
 }

@@ -1,14 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
-using TMPro.EditorUtilities;
+
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using TMPro;
 
 
 
-public class InputBinding : MonoBehaviour
+public class KeyBindingTest : MonoBehaviour
 {
     const string KEY_BINDS_PLAYER_PREFS_KEY = "KeyBinds";
 
@@ -60,13 +60,6 @@ public class InputBinding : MonoBehaviour
             _BindKeyText.color = Color.white;
     }
 
-    public void SaveKeyBinds()
-    {
-        string keyBinds = _PlayerInput.actions.SaveBindingOverridesAsJson();
-
-        PlayerPrefs.SetString(KEY_BINDS_PLAYER_PREFS_KEY, keyBinds);
-    }
-
     public void StartRebinding()
     {
         _IsRebindingKey = true;
@@ -95,6 +88,14 @@ public class InputBinding : MonoBehaviour
         _IsRebindingKey = false;
 
         UpdateUI();
+    }
+
+
+    public void SaveKeyBinds()
+    {
+        string keyBinds = _PlayerInput.actions.SaveBindingOverridesAsJson();
+
+        PlayerPrefs.SetString(KEY_BINDS_PLAYER_PREFS_KEY, keyBinds);
     }
 
     private void LoadKeyBinds()

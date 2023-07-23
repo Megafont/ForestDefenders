@@ -8,7 +8,7 @@ public interface IDialog
 {
     void CloseDialog();
     void CloseAllOpenDialogs();
-    void OpenDialog(bool closeOtherOpenDialogs);
+    void OpenDialog(bool closeOtherOpenDialogs = false);
 
     bool IsOpen();
     

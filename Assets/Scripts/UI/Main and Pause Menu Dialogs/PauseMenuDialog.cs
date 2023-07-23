@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,13 +9,14 @@ using UnityEngine.UI;
 
 public class PauseMenuDialog : Dialog_Base, IDialog
 {
+    [SerializeField] HowToPlayDialog _HowToPlayDialog;
+    [SerializeField] ControlsDialog _ControlsDialog;
+
+
+
     private SceneSwitcher _SceneSwitcher;
     private Transform _MenuItems;
-
-
-    private float _LastGamepadSelectionChangeTime;
-    private int _SelectedMenuItemIndex;
-    
+   
 
 
     protected override void Dialog_OnAwake()
@@ -28,8 +28,21 @@ public class PauseMenuDialog : Dialog_Base, IDialog
     {
         _SceneSwitcher = _GameManager.SceneSwitcher;
 
+        // Hook up the mouse over event on each menu item.
         foreach (Transform t in _MenuItems)
             t.GetComponent<MenuDialogsMenuItem>().OnMouseEnter += OnMouseEnterMenuItem;
+    }
+
+    protected override void Dialog_OnUpdate()
+    {
+        if (Utils_UI.GetSelectedMenuItemIndex(_MenuItems) < 0)
+        {
+            // No menu items are selected. This can happen if you click outside the menu panel. So select the first menu item.
+            SelectMenuItem(0);
+        }
+
+        if (_InputManager_UI.UnpauseGame)
+            OnSelectedResumeGame();
     }
 
     protected override void Dialog_OnEnable()
@@ -37,18 +50,7 @@ public class PauseMenuDialog : Dialog_Base, IDialog
 
     }
 
-    protected override void Dialog_OnSubmit()
-    {
-        if (!_SceneSwitcher.IsTransitioningToScene)
-        {
-            Button pressedBtn = _MenuItems.GetChild(_SelectedMenuItemIndex).GetComponent<Button>();
-
-            PointerEventData eventData = new PointerEventData(EventSystem.current);
-            pressedBtn.OnPointerClick(eventData);
-
-            _LastGamepadSelectionChangeTime = Time.unscaledTime;
-        }
-    }
+    // Dialog_OnSubmit() is omitted here on purpose, as it is not needed. The UI clicks the selected button for us when the user presses the Submit button.
 
     protected override void Dialog_OnCancel()
     {
@@ -57,14 +59,28 @@ public class PauseMenuDialog : Dialog_Base, IDialog
 
     public void OnMouseEnterMenuItem(GameObject sender)
     {
-        _SelectedMenuItemIndex = GetIndexOfMenuItem(sender.transform);
+        int index = GetIndexOfMenuItem(sender.transform);
 
-        SelectMenuItem();
+        SelectMenuItem(index);
     }
     
     public void OnSelectedResumeGame()
     {
         _GameManager.TogglePauseGameState();
+    }
+
+    public void OnSelectedHowToPlay()
+    {
+        CloseDialog();
+
+        _HowToPlayDialog.OpenDialog();
+    }
+
+    public void OnSelectedControls()
+    {
+        CloseDialog();
+
+        _ControlsDialog.OpenDialog();
     }
 
     public void OnSelectedReturnToMainMenu()
@@ -81,11 +97,9 @@ public class PauseMenuDialog : Dialog_Base, IDialog
     }
 
 
-    public override void OpenDialog(bool closeOtherOpenDialogs = true)
-    {
-        // Select the first menu item.
-        _SelectedMenuItemIndex = 0;
-        SelectMenuItem();
+    public override void OpenDialog(bool closeOtherOpenDialogs = false)
+    {        
+        SelectMenuItem(0);
 
         base.OpenDialog(closeOtherOpenDialogs);
     }
@@ -105,10 +119,10 @@ public class PauseMenuDialog : Dialog_Base, IDialog
         return -1;    
     }
 
-    private void SelectMenuItem()
+    private void SelectMenuItem(int index)
     {
         // Tell the Unity EventSystem to select the correct button.
-        EventSystem.current.SetSelectedGameObject(_MenuItems.GetChild(_SelectedMenuItemIndex).gameObject);
+        EventSystem.current.SetSelectedGameObject(_MenuItems.GetChild(index).gameObject);
     }
 
 }
