@@ -135,7 +135,6 @@ public class RadialMenuDialog : Dialog_Base, IDialog
             throw new Exception("The menu items list is empty!");
 
 
-
         while (true)
         {
             RefreshUI();
@@ -236,7 +235,7 @@ public class RadialMenuDialog : Dialog_Base, IDialog
             angle = 360 - angle;
 
 
-        int index = (int)Mathf.Round((float)(angle / _MenuItemSizeInDegrees));
+        int index = (int) Mathf.Round((float)(angle / _MenuItemSizeInDegrees));
 
         // If the index is equal to the number of items, it means angle was 360, which is the same as 0. So reset index to 0 so it points to the first item as it should.
         if (index >= _ActiveMenuItemsCount)
@@ -293,6 +292,7 @@ public class RadialMenuDialog : Dialog_Base, IDialog
         // Set selected index to -1 tempoarily. This is because SelectItem() just returns if the passed in index is already
         // the selected item. As we're reseting for a new menu to be displayed, we want it to run no matter what.
         _PrevSelectedItemIndex = -1;
+        SelectedMenuItemIndex = -1;
         SelectItem(0); // Sets selected item index to 0 and updates the GUI.
     }
 

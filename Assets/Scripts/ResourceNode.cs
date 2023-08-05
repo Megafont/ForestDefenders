@@ -21,6 +21,14 @@ public class ResourceNode : MonoBehaviour
     [Tooltip("The maximum amount of resources that this node may potentially contain.")]
     [SerializeField] private float _MaxAmountInNode = 50;
 
+    [Tooltip("Whether or not this resource node should be destroyed upon depletion.")]
+    [SerializeField] private bool _DestroyOnDepletion = false;
+
+    [Tooltip("A prefab of the death particles system to be played when the resource node is destroyed. This prefab is only instantiated if DestroyOnDepletion is enabled.")]
+    [SerializeField] private GameObject _DeathParticlesPrefab;
+
+    [SerializeField] protected AudioClip _DestroySound;
+
 
 
     private GameManager _GameManager;
@@ -36,6 +44,9 @@ public class ResourceNode : MonoBehaviour
     private List<IVillager> _VillagersMiningThisNode;
 
     private FloatingStatusBar _FloatingStatBar;
+
+    private GameObject _DeathParticles;
+    
 
 
     public LevelAreas ParentArea { get; private set; } = LevelAreas.Unknown;
@@ -55,7 +66,10 @@ public class ResourceNode : MonoBehaviour
         LevelAreas area = Utils_World.DetectAreaNumberFromPosition(transform.position);
         if (area != LevelAreas.Unknown)    
             ParentArea = area;
-        
+
+        if (_DestroyOnDepletion)
+            _DeathParticles = Instantiate(_DeathParticlesPrefab, transform);
+
 
         _GameManager = GameManager.Instance;
         _BuildModeManager = _GameManager.BuildModeManager;
@@ -89,6 +103,9 @@ public class ResourceNode : MonoBehaviour
         _FloatingStatBar.MaxValue = AmountAvailable;
         _FloatingStatBar.Label = $"{_ResourceType}:";
         _FloatingStatBar.SetValue(AmountAvailable);
+
+        if (AmountAvailable < 1)
+            _FloatingStatBar.gameObject.SetActive(false); // Make the floating status bar disappear.
     }
 
     public float Gather(GameObject gatherer)
@@ -128,6 +145,9 @@ public class ResourceNode : MonoBehaviour
         {
             _FloatingStatBar.gameObject.SetActive(false); // Make the floating status bar disappear.
             OnNodeDepleted?.Invoke(this);
+
+            if (_DestroyOnDepletion)
+                StartCoroutine(DestroyOnDepletion());
         }
 
 
@@ -147,6 +167,11 @@ public class ResourceNode : MonoBehaviour
     /// </summary>
     public void RestoreNode()
     {
+        // Just abort this function if the resource node has been destroyed.
+        if (IsDestroyed)
+            return;
+
+
         float randomVariance = Random.Range(0.0f, _ResourceManager.ResourceNodeAmountVariance);
 
         _AmountAvailable = Mathf.CeilToInt(_MaxAmountInNode - (_MaxAmountInNode * randomVariance));
@@ -155,7 +180,7 @@ public class ResourceNode : MonoBehaviour
         _FloatingStatBar.SetValue(_AmountAvailable);
 
         if (!_BuildModeManager.IsBuildModeActive && _GameManager.GameState != GameStates.GameOver)
-            _FloatingStatBar.gameObject.SetActive(true);
+            _FloatingStatBar.gameObject.SetActive(true); // Make the floating status bar visible.
     }
 
     public void AddVillagerToMiningList(IVillager villager)
@@ -210,6 +235,34 @@ public class ResourceNode : MonoBehaviour
     }
 
 
+    WaitForSeconds _DeathDelay = new WaitForSeconds(0.4f);
+    private IEnumerator DestroyOnDepletion()
+    {
+        IsDestroyed = true;
+        _ResourceManager.RemoveResourceNode(this);
+
+        _FloatingStatBar.gameObject.SetActive(false);
+
+        PlayDestroySFX();
+
+        _DeathParticles.GetComponent<ParticleSystem>().Play();
+
+        // Start the shrink animation and wait for it to complete.
+        yield return StartCoroutine(Utils_Misc.ShrinkObjectToNothing(transform, 0.4f));
+
+
+
+        yield return _DeathDelay;
+
+        Destroy(gameObject);
+    }
+
+    private void PlayDestroySFX()
+    {
+        if (_DestroySound)
+            AudioSource.PlayClipAtPoint(_DestroySound, transform.position, 1.0f);
+    }
+
 
     /// <summary>
     /// The amount of resource still available in this node.
@@ -229,6 +282,7 @@ public class ResourceNode : MonoBehaviour
 
     public bool IsDepleted { get { return _AmountAvailable == 0; } }
 
+    public bool IsDestroyed { get; private set; } = false;
     public int VillagersMiningThisNode { get { return _VillagersMiningThisNode.Count; } }
 
 }

@@ -31,7 +31,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 525220768376587369}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -170,7 +169,6 @@ RectTransform:
   m_Children:
   - {fileID: 3617416970303231629}
   m_Father: {fileID: 408828108115202892}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -242,7 +240,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8317985717764225238}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -384,7 +381,6 @@ RectTransform:
   - {fileID: 525220768376587369}
   - {fileID: 8569303177721197368}
   m_Father: {fileID: 3464331043419402813}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -501,7 +497,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2187656468781245811}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -547,12 +542,15 @@ MonoBehaviour:
     As you survive more monster attacks,
     new more powerful beasts will descend on your village! Experience points earned
     from defeating these onslaughts can be used to unlock new buildings and tech
-    to defend yourself.
+    to defend yourself. Harvest food to relieve your hunger. Any excess goes into
+    the villge stockpile for villagers to use. They will multiply as long as there
+    is enough food and houses. Be careful of your food stockpile, as your villagers
+    can starve to death, too!
 
 
-    Defeating a wave of monsters also grants you the option
-    to level up a stat of your choice (for either you or your villagers). You can
-    also sacrifice this opporunity and choose to heal yourself instead.'
+    Defeating a wave of monsters also grants you
+    the option to level up a stat of your choice (for either you or your villagers).
+    You can also sacrifice this opporunity and choose to heal yourself instead.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -675,7 +673,6 @@ RectTransform:
   m_Children:
   - {fileID: 1226007717540841206}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -742,7 +739,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61d347a9a9535584cb87c759d5553c76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _MainMenuDialog: {fileID: 0}
+  _ParentDialog: {fileID: 0}
 --- !u!1 &7444416898418539513
 GameObject:
   m_ObjectHideFlags: 0
@@ -776,7 +773,6 @@ RectTransform:
   m_Children:
   - {fileID: 5058339169074783843}
   m_Father: {fileID: 1226007717540841206}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -908,7 +904,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1226007717540841206}
-  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -985,7 +980,6 @@ RectTransform:
   m_Children:
   - {fileID: 3587042706814598608}
   m_Father: {fileID: 1226007717540841206}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -1063,7 +1057,6 @@ RectTransform:
   m_Children:
   - {fileID: 2187656468781245811}
   m_Father: {fileID: 1226007717540841206}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}

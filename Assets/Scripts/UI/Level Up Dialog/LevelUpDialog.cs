@@ -143,9 +143,6 @@ public class LevelUpDialog : Dialog_Base
 
     public override void OpenDialog(bool closeOtherOpenDialogs = true)
     {
-        _DescriptionText.text = $"Select A Buff:";
-
-
         RefreshMenuItems();
 
 
@@ -157,37 +154,41 @@ public class LevelUpDialog : Dialog_Base
 
     private void RefreshMenuItems()
     {
+        int index = 0;
+
+
         // Setup the buff player attack option
-        GameObject menuItem = _MenuItems.GetChild(0).gameObject;
+        GameObject menuItem = _MenuItems.GetChild(index++).gameObject;
         RefreshStatMenuItem(menuItem, "Player Attack Power", 2, CurrentPlayerAttackPower, _GameManager.MaxAttackPowerCap, _GameManager.PlayerAttackBuffAmountPerLevelUp);
 
 
         // Setup the buff player max health option
-        menuItem = _MenuItems.GetChild(1).gameObject;
+        menuItem = _MenuItems.GetChild(index++).gameObject;
         RefreshStatMenuItem(menuItem, "Player Max Health", 2, CurrentPlayerMaxHealth, _GameManager.MaxHealthCap, _GameManager.PlayerHealthBuffAmountPerLevelUp);
 
         // Setup the buff player gather rate option
-        menuItem = _MenuItems.GetChild(2).gameObject;
+        menuItem = _MenuItems.GetChild(index++).gameObject;
         RefreshStatMenuItem(menuItem, "Player Gather Rate", 2, CurrentPlayerGatherRate, _GameManager.MaxGatheringCap, _GameManager.PlayerGatheringBuffAmountPerLevelUp);
 
-        // Setup the heal player option.
-        menuItem = _MenuItems.GetChild(3).gameObject;
-        Health pHealth = _Player.GetComponent<Health>();
-        float amountToHeal = pHealth.MaxHealth - pHealth.CurrentHealth;
-        RefreshHealMenuItem(menuItem, "Heal Player", pHealth.CurrentHealth, pHealth.MaxHealth, amountToHeal);
 
         // Setup the buff villager attack option
-        menuItem = _MenuItems.GetChild(4).gameObject;
+        menuItem = _MenuItems.GetChild(index++).gameObject;
         RefreshStatMenuItem(menuItem, "Villager's Attack Power", 1, CurrentVillagerAttackPower, _GameManager.MaxAttackPowerCap, _GameManager.VillagersAttackBuffAmountPerLevelUp);
 
-
         // Setup the buff villager attack option
-        menuItem = _MenuItems.GetChild(5).gameObject;
+        menuItem = _MenuItems.GetChild(index++).gameObject;
         RefreshStatMenuItem(menuItem, "Villager's Max Health", 2, CurrentVillagerMaxHealth, _GameManager.MaxHealthCap, _GameManager.VillagersHealthBuffAmountPerLevelUp);
 
         // Setup the buff villager gather rate option
-        menuItem = _MenuItems.GetChild(6).gameObject;
+        menuItem = _MenuItems.GetChild(index++).gameObject;
         RefreshStatMenuItem(menuItem, "Villager's Gather Rate", 1, CurrentVillagerGatherRate, _GameManager.MaxGatheringCap, _GameManager.VillagersGatheringBuffAmountPerLevelUp);
+
+
+        // Setup the heal player option.
+        menuItem = _MenuItems.GetChild(index++).gameObject;
+        Health pHealth = _Player.GetComponent<Health>();
+        float amountToHeal = pHealth.MaxHealth - pHealth.CurrentHealth;
+        RefreshHealMenuItem(menuItem, "Heal Player", pHealth.CurrentHealth, pHealth.MaxHealth, amountToHeal);
 
     }
 
@@ -286,20 +287,6 @@ public class LevelUpDialog : Dialog_Base
         CurrentPlayerGatherRate += _GameManager.PlayerGatheringBuffAmountPerLevelUp;
     }
 
-
-    public void BuffHealPlayer()
-    {
-        CloseDialog();
-
-        Health playerHealth = _Player.GetComponent<Health>();
-        float healAmount = playerHealth.MaxHealth - playerHealth.CurrentHealth;
-        playerHealth.ResetHealthToMax();
-
-        _GameManager.ResourceManager.ExpendFromStockpile(ResourceTypes.Food, 
-                                                         Mathf.CeilToInt(healAmount * _GameManager.PlayerHealFoodCostMultiplier));
-
-    }
-
     public void BuffVillagerAttackPower()
     {
         CloseDialog();
@@ -323,5 +310,17 @@ public class LevelUpDialog : Dialog_Base
         CurrentVillagerGatherRate += _GameManager.VillagersGatheringBuffAmountPerLevelUp;
     }
 
+    public void HealPlayer()
+    {
+        CloseDialog();
+
+        Health playerHealth = _Player.GetComponent<Health>();
+        float healAmount = playerHealth.MaxHealth - playerHealth.CurrentHealth;
+        playerHealth.ResetHealthToMax();
+
+        _GameManager.ResourceManager.ExpendFromStockpile(ResourceTypes.Food,
+                                                         Mathf.CeilToInt(healAmount * _GameManager.PlayerHealFoodCostMultiplier));
+
+    }
 
 }

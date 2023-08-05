@@ -33,11 +33,10 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5626806956683392505}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -475}
+  m_AnchoredPosition: {x: 0, y: -450}
   m_SizeDelta: {x: -150, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &4385307755969426953
@@ -240,7 +239,6 @@ RectTransform:
   m_Children:
   - {fileID: 5626806956544420513}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -307,7 +305,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca413055a7a41314d987c4931ff35ba3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _GamepadMenuSelectionDelay: 0.1
 --- !u!1 &3654263558106062493
 GameObject:
   m_ObjectHideFlags: 0
@@ -341,11 +338,10 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5626806956683392505}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -250}
+  m_AnchoredPosition: {x: 0, y: -275}
   m_SizeDelta: {x: -150, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &5735433747611111427
@@ -547,11 +543,10 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5626806956683392505}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 25, y: -300}
+  m_AnchoredPosition: {x: 25, y: -525}
   m_SizeDelta: {x: -100, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &8329460678662487109
@@ -697,8 +692,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 3367022305311099929}
-        m_TargetAssemblyTypeName: LevelUpDialog, Assembly-CSharp
-        m_MethodName: BuffHealPlayer
+        m_TargetAssemblyTypeName: LevelUpDialog, Main
+        m_MethodName: HealPlayer
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -753,11 +748,10 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5626806956683392505}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -375}
+  m_AnchoredPosition: {x: 0, y: -350}
   m_SizeDelta: {x: -150, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &5626806954842863876
@@ -959,11 +953,10 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5626806956683392505}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -200}
+  m_AnchoredPosition: {x: 0, y: -225}
   m_SizeDelta: {x: -150, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &5626806954955418791
@@ -1165,7 +1158,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5626806956544420513}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -1242,7 +1234,6 @@ RectTransform:
   m_Children:
   - {fileID: 5626806955436644909}
   m_Father: {fileID: 5626806956544420513}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -1318,7 +1309,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5626806955296364670}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -1456,11 +1446,10 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5626806956683392505}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -150}
+  m_AnchoredPosition: {x: 0, y: -175}
   m_SizeDelta: {x: -150, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &5626806955684007224
@@ -1662,11 +1651,10 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5626806956683392505}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -425}
+  m_AnchoredPosition: {x: 0, y: -400}
   m_SizeDelta: {x: -150, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &5626806955993458430
@@ -1867,12 +1855,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5626806956544420513}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -80}
-  m_SizeDelta: {x: -50, y: 50}
+  m_SizeDelta: {x: -50, y: 75}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &5626806956259343647
 CanvasRenderer:
@@ -1902,7 +1889,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Select a Buff:
+  m_text: 'Select a stat to level up or heal instead:
 
 '
   m_isRightToLeft: 0
@@ -2023,12 +2010,11 @@ RectTransform:
   - {fileID: 5626806956683392505}
   - {fileID: 5626806955173143923}
   m_Father: {fileID: 3367022305311099942}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 600, y: 575}
+  m_SizeDelta: {x: 600, y: 615}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5626806956544420506
 CanvasRenderer:
@@ -2139,12 +2125,11 @@ RectTransform:
   - {fileID: 5626806955684007228}
   - {fileID: 5626806954955418795}
   - {fileID: 3282141962903409318}
-  - {fileID: 8299193865326261068}
   - {fileID: 5626806954842863880}
   - {fileID: 5626806955993457922}
   - {fileID: 921571682249462176}
+  - {fileID: 8299193865326261068}
   m_Father: {fileID: 5626806956544420513}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}

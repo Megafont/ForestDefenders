@@ -606,6 +606,7 @@ public class PlayerController : MonoBehaviour
                 if (_HungerComponent.CurrentHunger > 0 && node.ResourceType == ResourceTypes.Food)
                     EatFood(gatherAmount);
 
+
                 // Since we found a resource node and gathered from it, break out of this loop.
                 // This prevents the player mining the same garden/farm multiple times in one hit
                 // if their sword is colliding with multiple plants.

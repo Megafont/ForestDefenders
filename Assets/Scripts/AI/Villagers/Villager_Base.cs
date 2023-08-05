@@ -209,7 +209,7 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
                     float rand = Random.value;
 
                     List<ResourceNode> allAccessableResourceNodes = Utils_World.FindAllResourceNodesAccessableFromArea(villagerCurrentArea);
-                    Debug.Log($"RAND: {rand}");
+                    //Debug.Log($"RAND: {rand}");
 
                     
                     // If there are no accessable and undelpleted resource nodes left, then give the villager

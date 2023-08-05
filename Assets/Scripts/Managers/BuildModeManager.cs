@@ -242,8 +242,8 @@ public class BuildModeManager : MonoBehaviour
 
         _CategoryThumbnails.Add("Bridges", BuildModeDefinitions.GetBuildingDefinition("Bridges", "Wood Bridge (10m)").Thumbnail);
         _CategoryThumbnails.Add("Defense", BuildModeDefinitions.GetBuildingDefinition("Defense", "Turret").Thumbnail);
-        _CategoryThumbnails.Add("Farming", BuildModeDefinitions.GetBuildingDefinition("Farming", "Large Garden").Thumbnail);
-        _CategoryThumbnails.Add("Housing", BuildModeDefinitions.GetBuildingDefinition("Housing", "Medium House").Thumbnail);
+        _CategoryThumbnails.Add("Farming", BuildModeDefinitions.GetBuildingDefinition("Farming", "Small Garden").Thumbnail);
+        _CategoryThumbnails.Add("Housing", BuildModeDefinitions.GetBuildingDefinition("Housing", "Small House").Thumbnail);
         _CategoryThumbnails.Add("Walls", BuildModeDefinitions.GetBuildingDefinition("Walls", "Wood Wall").Thumbnail);
     }
 
@@ -320,7 +320,6 @@ public class BuildModeManager : MonoBehaviour
                                       BuildModeDefinitions.GetList_ThumbnailsOfResearchedbuildingsInCategory(_TempCategory));
             _RadialMenu.OpenDialog();
 
-
             if (!_RadialMenu.IsOpen())
             {
                 IsSelectingBuilding = false;
@@ -379,7 +378,16 @@ public class BuildModeManager : MonoBehaviour
             return;
         }
 
+        UpdateBuildingCostDisplay();
+    }
 
+    private void UpdateBuildingCostDisplay()
+    {
+        _RadialMenu.BottomBarText = GetBuildingCostString();
+    }
+
+    private string GetBuildingCostString()
+    {
         StringBuilder b = new StringBuilder("Construction Cost:  ");
 
         List<MaterialCost> constructionCosts = BuildModeDefinitions.GetList_BuildingConstructionCosts(_TempCategory, _RadialMenu.SelectedMenuItemName);
@@ -393,7 +401,7 @@ public class BuildModeManager : MonoBehaviour
                 b.Append(",  ");
         }
 
-        _RadialMenu.BottomBarText = b.ToString();
+        return b.ToString();
     }
 
     public void SelectBuilding(string category, string buildingName)

@@ -417,12 +417,13 @@ public abstract class AI_Base : MonoBehaviour
         yield return _DeathDelay;
 
         // Play particle and sound FX as the monster disappears.
-        PlayDeathFX();
+        PlayDeathSFX();
 
         // Start the shrink animation and wait for it to complete.
         yield return StartCoroutine(Utils_Misc.ShrinkObjectToNothing(transform, 0.4f));
 
         //Debug.Log(name + " finished death fade out!");
+
 
         // We use double the death delay here, because the shrink effect done by the coroutine is set to take 0.4f seconds.
         // The death particle effect takes 0.75f. So we need almost another 0.35f seconds for that to finish. This gives us
@@ -433,7 +434,7 @@ public abstract class AI_Base : MonoBehaviour
 
     }
 
-    protected virtual void PlayDeathFX()
+    protected virtual void PlayDeathSFX()
     {
         if (_DeathSound)
             AudioSource.PlayClipAtPoint(_DeathSound, transform.position, 1.0f);
