@@ -227,6 +227,9 @@ public class TechTreeDialog : Dialog_Base, IDialog
         UpdateXPCountText();
         RefreshTileUIColors(null);
 
+        // Always start scrolled to the top of the tech tree.
+        _ScrollRect.normalizedPosition = Vector2.one;
+
         base.OpenDialog(closeOtherOpenDialogs);
     }
 
@@ -438,7 +441,7 @@ public class TechTreeDialog : Dialog_Base, IDialog
         int rowIndex = _TechTreeTileGroups.Count;
 
         //Debug.Log($"Tile Count: {techTilesData.Count}");
-        bool startAllUnlocked = GameManager.Instance.StartWithAllTechUnlocked;
+        bool startAllUnlocked = _GameManager.StartWithAllTechUnlocked;
         for (int i = 0; i < techTilesData.Count; i++)
         {
             TechTreeTile newTile = Instantiate(_TilePrefab).GetComponent<TechTreeTile>();
@@ -467,7 +470,9 @@ public class TechTreeDialog : Dialog_Base, IDialog
             // Also add research tile into the current group data block.
             newGroup.TechTiles.Add(newTile);
 
-
+            // If StartWithAlllTechUnlocked is enabled, then enable this tech.
+            if (_GameManager.StartWithAllTechUnlocked)
+                TechEnabler.EnableTech(tileData.Title);
 
         } // end foreach tileData
 

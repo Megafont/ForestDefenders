@@ -76,10 +76,10 @@ public class SoundSetPlayer : MonoBehaviour
 
         //AudioSource.PlayClipAtPoint(_SoundSet.SoundsList[index], transform.position, _SoundSet.Volume);
 
-        _AudioSource.spatialize = _SoundSet.PlayAs3DSound;
-        _AudioSource.spatialBlend = _SoundSet.SpatialBlend;
-        _AudioSource.volume = _SoundSet.Volume;
-        _AudioSource.PlayOneShot(_SoundSet.SoundsList[index]);
+        if (_SoundSet.PlayAs3DSound)
+            AudioSource.PlayClipAtPoint(_SoundSet.SoundsList[index], transform.position, _SoundSet.Volume);
+        else
+            _AudioSource.PlayOneShot(_SoundSet.SoundsList[index], _SoundSet.Volume);
     }
 
 

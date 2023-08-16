@@ -39,6 +39,7 @@ public class Health : MonoBehaviour
     // These hold references to all child objects with MeshRenderers or SkinnedMeshRenderers so the entire object can be made to flash when damage is taken.
     private List<MeshRenderer> _MeshRenderers;
     private List<SkinnedMeshRenderer> _SkinnedMeshRenderers;
+    private List<Material> _RendererMaterials;
 
 
 
@@ -64,6 +65,7 @@ public class Health : MonoBehaviour
 
         _MeshRenderers = new List<MeshRenderer>();
         _SkinnedMeshRenderers = new List<SkinnedMeshRenderer>();
+        _RendererMaterials = new List<Material>();
 
         CurrentHealth = MaxHealth;
 
@@ -211,17 +213,18 @@ public class Health : MonoBehaviour
 
     private IEnumerator DoDamageFlash()
     {
-        foreach (MeshRenderer renderer in _MeshRenderers)
-            renderer.material.color = _DamageFlashColor;
-        foreach (SkinnedMeshRenderer renderer in _SkinnedMeshRenderers)
-            renderer.material.color = _DamageFlashColor;
+        // Tint all materials red.
+        foreach (Material m in _RendererMaterials)
+            m.color = _DamageFlashColor;
 
+
+        // Wait a little bit.
         yield return new WaitForSeconds(_DamageFlashTime);
+        
 
-        foreach (MeshRenderer renderer in _MeshRenderers)
-            renderer.material.color = Color.white;
-        foreach (SkinnedMeshRenderer renderer in _SkinnedMeshRenderers)
-            renderer.material.color = Color.white;
+        // Remove red tint from all materials.
+        foreach (Material m in _RendererMaterials)
+            m.color = Color.white;
     }
 
     private void SpawnHealthPopup(float healthChangedAmount, float buffAmount = 0)
@@ -256,7 +259,19 @@ public class Health : MonoBehaviour
     private void FindRenderers()
     {
         _MeshRenderers = new List<MeshRenderer>(GetComponentsInChildren<MeshRenderer>());
+        foreach (MeshRenderer renderer in _MeshRenderers)
+        {
+            foreach (Material m in renderer.materials)
+                _RendererMaterials.Add(m);
+        }
+
+
         _SkinnedMeshRenderers = new List<SkinnedMeshRenderer>(GetComponentsInChildren<SkinnedMeshRenderer>());        
+        foreach (SkinnedMeshRenderer renderer in _SkinnedMeshRenderers)
+        {
+            foreach (Material m in renderer.materials)
+                _RendererMaterials.Add(m);
+        }
     }
 
     public void SetMaxHealth(float amount)

@@ -4,14 +4,15 @@ using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.UI;
-using UnityObject = UnityEngine.Object;
-using Debug = UnityEngine.Debug;
-
+using UnityEngine.InputSystem;
 using Cinemachine;
 using TMPro;
 using Unity.VisualScripting;
 using System.Diagnostics;
-using Test;
+
+using UnityObject = UnityEngine.Object;
+using Debug = UnityEngine.Debug;
+using UnityEngine.InputSystem.Utilities;
 
 public class GameManager : MonoBehaviour
 {
@@ -28,9 +29,9 @@ public class GameManager : MonoBehaviour
 
 
     [Header("Debug Cheats")]
+    public bool GodMode = false;
     public bool ConstructionIsFree = false;
     public bool ResearchIsFree = false;
-    public bool GodMode = false;
     public bool StartWithAllTechUnlocked = false;
     public bool StartWithAllZonesBridged = false;
     public bool DisableMonstersSpawning = false;
@@ -160,7 +161,9 @@ public class GameManager : MonoBehaviour
 
     private List<BridgeConstructionZone> _BridgeConstructionZones;
 
-    private Texture2D _AreasMap;
+    private SceneSwitcher _GameOverSceneFader;
+
+
 
     public delegate void GameManager_GameStateChangedEventHandler(GameStates newGameState);
     public delegate void GameManager_GameOverEventHandler();
@@ -190,9 +193,9 @@ public class GameManager : MonoBehaviour
             throw new Exception("The player spawn point has not been set in the inspector!");
 
 
-        GameObject terrainObj = GameObject.Find("Level Terrain");
+        GameObject terrainObj = GameObject.Find("Level 01 Terrain");
         if (!terrainObj)
-            throw new Exception("The GameObject \"Level Terrain\" was not found!");
+            throw new Exception("The GameObject \"Level 01 Terrain\" was not found!");
         
         _BirdsAudioSource = terrainObj.GetComponent<AudioSource>();
 
@@ -236,7 +239,8 @@ public class GameManager : MonoBehaviour
         _BuildPhaseLength = BuildModeManager.BuildPhaseBaseLength;
 
 
-        SceneSwitcher = SceneSwitcher.Instance;
+        SceneSwitcher = GameObject.Find("Scene Switcher").GetComponent<SceneSwitcher>();
+        _GameOverSceneFader = GameObject.Find("Game Over Scene Fader").GetComponent<SceneSwitcher>();
 
 
         if (IsMainMenuScene)
@@ -745,7 +749,7 @@ public class GameManager : MonoBehaviour
                 CameraManager.SwitchToCamera((int) CameraIDs.GameOver);
 
                 // Fade the screen to somewhat red.
-                SceneSwitcher.FadeOut(new Color32(128, 0, 0, 180), 2.5f);
+                _GameOverSceneFader.FadeOut(new Color32(128, 0, 0, 180), 2.5f);
 
                 ShowGamePhaseText("Game Over!", Color.red);
 
@@ -838,12 +842,17 @@ public class GameManager : MonoBehaviour
 
     private void GameState_GameOver()
     {
-        //Debug.LogError("Game Over!");
-
         int monstersLeft = MonsterManager.MonstersLeft;
 
         _UI_MonstersLeftText.text = $"Monsters Left: {monstersLeft} of {MonsterManager.CurrentWaveSize}";
         _UI_WaveNumberText.text = $"Wave #{MonsterManager.CurrentWaveNumber} Incoming!";
+
+        InputSystem.onAnyButtonPress.CallOnce(x =>
+        {
+            if (!SceneSwitcher.IsTransitioningToScene)
+                SceneSwitcher.FadeToScene("Main Menu");
+        });
+    
     }
 
     private void SetupGameOverCamera()
@@ -918,7 +927,7 @@ public class GameManager : MonoBehaviour
         if (GameState == GameStates.PlayerBuildPhase &&
             PreviousGameState == GameStates.MonsterAttackPhase)
         {
-            StartCoroutine(ShowLevelUpDialogAfter(GamePhaseTextFadeOutTime - 1.25f));
+            StartCoroutine(ShowLevelUpDialogAfter(GamePhaseTextFadeOutTime - 1.4f));
         }
 
 
@@ -936,9 +945,15 @@ public class GameManager : MonoBehaviour
         _UI_GamePhaseText.enabled = false;
     }
 
+    WaitForSeconds _LevelUpDialogDelay = new WaitForSeconds(0.3f);
     private IEnumerator ShowLevelUpDialogAfter(float delay)
     {
         yield return new WaitForSeconds(delay);
+
+        AudioSource.PlayClipAtPoint(SoundParams.LevelUpSound, Player.transform.position, 1.0f);
+
+        // We need a small delay before opening the level up dialog, because the sound effect has a small delay at the start.
+        yield return _LevelUpDialogDelay;
 
         _UI_LevelUpDialog.OpenDialog();
     }

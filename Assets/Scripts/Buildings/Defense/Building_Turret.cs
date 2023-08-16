@@ -95,10 +95,10 @@ public class Building_Turret : Building_Base
                 FireProjectile();
             }
         }
-
-
-        if (_Target == null)
-            FindTarget();            
+        else
+        {
+            FindTarget();
+        }
 
     }
 
@@ -131,13 +131,13 @@ public class Building_Turret : Building_Base
 
             _IsLockedOnTarget = Mathf.Abs(angleH) <= _AimThreshold;
 
-            //Debug.Log($"Turret Aiming:    TurrentDirection: {_TurretDirection}    angleH: {angleH}    rotAmount: {rotAmount}");
+            Debug.Log($"Turret Aiming:    TurrentDirection: {_TurretDirection}    angleH: {angleH}    rotAmount: {rotAmount}");
 
             yield return null;
-        }
+
+        } // end while
 
 
-        //_IsLockedOnTarget = false;
     }
 
     private void FindTarget()
@@ -146,12 +146,12 @@ public class Building_Turret : Building_Base
         {
             GameObject monster = Utils_World.FindNearestObjectOfType(gameObject, typeof(Monster_Base));
             if (monster != null &&
-                Vector3.Distance(transform.parent.transform.position, monster.transform.position) <= _AttackRange &&
+                Vector3.Distance(transform.position, monster.transform.position) <= _AttackRange &&
                 monster.GetComponent<Health>().CurrentHealth > 0)
             {
                 _Target = monster.GetComponent<IMonster>();
 
-                //Debug.Log($"Turret is targeting monster {_Target.gameObject.name} at ({_Target.transform.position}).");
+                Debug.Log($"Turret is targeting monster {_Target.gameObject.name} at ({_Target.transform.position}).");
             }
         }
 

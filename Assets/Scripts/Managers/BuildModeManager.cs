@@ -511,7 +511,7 @@ public class BuildModeManager : MonoBehaviour
             // Add this cost to the total build costs of this build mode session.
             AddToTotalMaterialCosts(cost);
 
-            if (!_ResourceManager.ExpendFromStockpile(cost.Resource, cost.Amount))
+            if (!_ResourceManager.TryToExpendFromStockpile(cost.Resource, cost.Amount))
             {
                 // NOTE: This code should NEVER run, as the game already checked if the player has enough resources before this
                 //       function was ever called, because the BuildingConstructionGhost's CanBuild property includes a resources check.

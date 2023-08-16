@@ -10,6 +10,7 @@ using UnityEngine.InputSystem.Samples.RebindUI;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using UnityEditor;
+using Unity.VisualScripting;
 
 public class ControlsDialog : Dialog_Base, IDialog
 {
@@ -26,6 +27,8 @@ public class ControlsDialog : Dialog_Base, IDialog
     [SerializeField] private GameObject _KeyboardAndMouseControlsPane;
     [SerializeField] private GameObject _GamepadControlsPane;
 
+    [SerializeField] private GameObject _BindingInProgressPanel;
+
 
 
     private ControlsPageTypes _SelectedControlsPage = ControlsPageTypes.KeyboardAndMouse;
@@ -35,8 +38,9 @@ public class ControlsDialog : Dialog_Base, IDialog
     private GameObject _CurrentSelectedObject;
     private GameObject _PrevSelectedObject;
 
+    
 
-
+    
     protected override void Dialog_OnStart()
     {
         _CurrentSelectedObject = null;
@@ -46,7 +50,6 @@ public class ControlsDialog : Dialog_Base, IDialog
         _ScrollRect = transform.GetComponentInChildren<ScrollRect>();
         if (_ScrollRect == null)
             Debug.LogError("The ScrollView's ScrollRect component was not found!");
-
 
         // Hook up the mouse over event on each menu item.
         foreach (Transform t in _ControlTypesMenuItems)
@@ -184,6 +187,17 @@ public class ControlsDialog : Dialog_Base, IDialog
     /// </summary>
     protected override void Dialog_OnCancel() 
     {
+        // Check that we are NOT in a controls page
+        if (_SelectedControlsPage == ControlsPageTypes.ControlTypesMenu)
+        {
+            OnReturnToMainMenuClick();
+        }
+
+        // Otherwise, check that we are in a controls page but NOT in the process of binding a control.
+        else if (_SelectedControlsPage != ControlsPageTypes.ControlTypesMenu && !_BindingInProgressPanel.activeSelf)
+        {
+            OpenControlTypesMenuPane();
+        }
 
     }
 

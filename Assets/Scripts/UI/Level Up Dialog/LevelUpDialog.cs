@@ -10,21 +10,16 @@ using TMPro;
 
 public class LevelUpDialog : Dialog_Base
 {
-    public float CurrentPlayerAttackPower { get; private set; }
-    public float CurrentPlayerMaxHealth { get; private set; }
-    public float CurrentPlayerGatherRate { get; private set; }
-
-    public float CurrentVillagerAttackPower { get; private set; }
-    public float CurrentVillagerMaxHealth { get; private set; }
-    public float CurrentVillagerGatherRate { get; private set; }
-
-
+    [SerializeField]
+    private AudioClip _LevelUpSound;
 
     private GameObject _Player;
     private VillageManager_Villagers _VillageManager_Villagers;
 
     private TMP_Text _DescriptionText;
     private Transform _MenuItems;
+
+    private AudioSource _AudioSource;
 
 
     private float _LastGamepadSelectionChange;
@@ -34,6 +29,8 @@ public class LevelUpDialog : Dialog_Base
 
     protected override void Dialog_OnAwake()
     {
+        _AudioSource = GetComponent<AudioSource>();
+
         _IgnoreGamePhaseText = true;
 
         _DescriptionText = transform.Find("Panel/Description Text (TMP)").GetComponent<TMP_Text>();
@@ -145,11 +142,17 @@ public class LevelUpDialog : Dialog_Base
     {
         RefreshMenuItems();
 
-
         // Select the first menu item.
         EventSystem.current.SetSelectedGameObject(_MenuItems.GetChild(0).gameObject);
 
         base.OpenDialog(closeOtherOpenDialogs);
+    }
+
+    public override void CloseDialog()
+    {
+        AudioSource.PlayClipAtPoint(_LevelUpSound, _Player.transform.position, 1.0f);
+
+        base.CloseDialog();
     }
 
     private void RefreshMenuItems()
@@ -173,15 +176,15 @@ public class LevelUpDialog : Dialog_Base
 
         // Setup the buff villager attack option
         menuItem = _MenuItems.GetChild(index++).gameObject;
-        RefreshStatMenuItem(menuItem, "Villager's Attack Power", 1, CurrentVillagerAttackPower, _GameManager.MaxAttackPowerCap, _GameManager.VillagersAttackBuffAmountPerLevelUp);
+        RefreshStatMenuItem(menuItem, "Villager Attack Power", 2, CurrentVillagerAttackPower, _GameManager.MaxAttackPowerCap, _GameManager.VillagersAttackBuffAmountPerLevelUp);
 
         // Setup the buff villager attack option
         menuItem = _MenuItems.GetChild(index++).gameObject;
-        RefreshStatMenuItem(menuItem, "Villager's Max Health", 2, CurrentVillagerMaxHealth, _GameManager.MaxHealthCap, _GameManager.VillagersHealthBuffAmountPerLevelUp);
+        RefreshStatMenuItem(menuItem, "Villager Max Health", 2, CurrentVillagerMaxHealth, _GameManager.MaxHealthCap, _GameManager.VillagersHealthBuffAmountPerLevelUp);
 
         // Setup the buff villager gather rate option
         menuItem = _MenuItems.GetChild(index++).gameObject;
-        RefreshStatMenuItem(menuItem, "Villager's Gather Rate", 1, CurrentVillagerGatherRate, _GameManager.MaxGatheringCap, _GameManager.VillagersGatheringBuffAmountPerLevelUp);
+        RefreshStatMenuItem(menuItem, "Villager Gather Rate", 2, CurrentVillagerGatherRate, _GameManager.MaxGatheringCap, _GameManager.VillagersGatheringBuffAmountPerLevelUp);
 
 
         // Setup the heal player option.
@@ -194,7 +197,7 @@ public class LevelUpDialog : Dialog_Base
 
     private void RefreshStatMenuItem(GameObject menuItem, string descriptionText, int tabCount, float statCurrentValue, float statMaxValue, float buffAmount)
     {
-        if (CurrentVillagerMaxHealth < _GameManager.MaxHealthCap)
+        if (statCurrentValue < statMaxValue)
         {
             string strTabs = new string('\t', tabCount);
             menuItem.GetComponent<TMP_Text>().text = $"{descriptionText}{strTabs}+{buffAmount}  ({statCurrentValue + buffAmount})";
@@ -258,8 +261,6 @@ public class LevelUpDialog : Dialog_Base
         SelectMenuItem();
     }
 
-
-
     public void BuffPlayerAttackPower()
     {
         CloseDialog();
@@ -318,9 +319,20 @@ public class LevelUpDialog : Dialog_Base
         float healAmount = playerHealth.MaxHealth - playerHealth.CurrentHealth;
         playerHealth.ResetHealthToMax();
 
-        _GameManager.ResourceManager.ExpendFromStockpile(ResourceTypes.Food,
+        _GameManager.ResourceManager.TryToExpendFromStockpile(ResourceTypes.Food,
                                                          Mathf.CeilToInt(healAmount * _GameManager.PlayerHealFoodCostMultiplier));
 
     }
+
+
+
+    public float CurrentPlayerAttackPower { get; private set; }
+    public float CurrentPlayerMaxHealth { get; private set; }
+    public float CurrentPlayerGatherRate { get; private set; }
+
+    public float CurrentVillagerAttackPower { get; private set; }
+    public float CurrentVillagerMaxHealth { get; private set; }
+    public float CurrentVillagerGatherRate { get; private set; }
+
 
 }

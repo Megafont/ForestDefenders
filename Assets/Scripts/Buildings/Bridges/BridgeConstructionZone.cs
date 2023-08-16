@@ -110,21 +110,20 @@ public class BridgeConstructionZone : MonoBehaviour
         Vector3 rotation = transform.rotation.eulerAngles;
 
 
-        // If the player has tried to move the construction ghost by more than GHOST_UNLOCK_DISTANCE units from the center of
-        // the length of the bridge construction zone, then allow it to unlock from the bridge construction zone.
-        // We simply return so that the constraints don't get applied.
-        if (!_PrevIsCompletelyInsideResult)
-        {
-            return;
-        }
-        
-
         bridgePos = transform.TransformPoint(bridgePos); // Convert back to world space.
 
         // Apply the bridge constraints of this bridge construction zone to the transform of the building
         // construction ghost to lock it in this zone.
-        targetGameObject.transform.position = bridgePos;
-        targetGameObject.transform.rotation = transform.rotation; // Copy the rotation of the bridge zone.
+        // ---------------------------------------------------------------------------------------------------
+
+        // If the player has tried to move the construction ghost by more than GHOST_UNLOCK_DISTANCE units from the center of
+        // the length of the bridge construction zone, then don't set the position. This allows it to unlock from the bridge
+        // construction zone.
+        if (_PrevIsCompletelyInsideResult)
+            targetGameObject.transform.position = bridgePos;
+
+        if (IsBridgeCenterWithinConstructionZone)
+            targetGameObject.transform.rotation = transform.rotation; // Copy the rotation of the bridge zone.
 
         //Debug.Log($"Applied constraints:    Position: {targetGameObject.position}    Rotation: {targetGameObject.rotation.eulerAngles}");
     }
@@ -159,7 +158,9 @@ public class BridgeConstructionZone : MonoBehaviour
         if (position == _GhostBridgePrevPosition)
             return _PrevIsCompletelyInsideResult;
 
-        Vector3 positionRelativeToBridgeZoneCenter = transform.InverseTransformPoint(position); // Convert position to the bridge zone's local space.
+
+        // Convert position to the bridge zone's local space.
+        Vector3 positionRelativeToBridgeZoneCenter = transform.InverseTransformPoint(position);
 
 
         // NOTE: This line originally used _BridgeZoneCollider.bounds.size, but for some reason this returns a bounding box
@@ -170,15 +171,18 @@ public class BridgeConstructionZone : MonoBehaviour
         // Calculate the distance of the bridge's center from the bridge zone's center point, taking into account half of the bridge width to prevent the player
         // from being able to slide the bridge too far along the bridge zone in either direction.
         float halfBridgeWidth = bridgeDefinition.Size.z / 2;
-        //float halfBridgeLength = bridgeDefinition.Size.x / 2;
-        float threshHoldZ = (bridgeZoneSize.z / 2) - halfBridgeWidth;
+        float halfBridgeLength = bridgeDefinition.Size.x / 2;
+        
+        float threshHoldZ = halfBridgeWidth;
 
 
         bool isWithinWidthOfZone = Mathf.Abs(positionRelativeToBridgeZoneCenter.x) <= GHOST_UNLOCK_DISTANCE;
         bool isWithinLengthOfZone = Mathf.Abs(positionRelativeToBridgeZoneCenter.z) <= threshHoldZ;
+        IsBridgeCenterWithinConstructionZone = Mathf.Abs(positionRelativeToBridgeZoneCenter.x) <= bridgeZoneSize.x / 2 && 
+                                               Mathf.Abs(positionRelativeToBridgeZoneCenter.z) <= bridgeZoneSize.z / 2;
 
-
-        if (isWithinWidthOfZone && isWithinLengthOfZone)
+        _PrevIsCompletelyInsideResult = isWithinWidthOfZone && isWithinLengthOfZone;
+        if (IsBridgeCenterWithinConstructionZone)
         {
             _GhostBridgeDefinition = bridgeDefinition;
             _GhostBridgePrevPosition = _GhostBridgePosition;
@@ -194,11 +198,11 @@ public class BridgeConstructionZone : MonoBehaviour
         }
         
 
-        //Debug.Log($"Inside Zone Thresholds:  (X: {threshHoldX}    Z: {threshHoldZ})    X Delta: {_GhostBridgeXDelta}    GhostBridgePos: {_GhostBridgePosition}    Prev Pos: {_GhostBridgePrevPosition}");
+        //Debug.Log($"Inside Zone Thresholds:  (X Threshold: {GHOST_UNLOCK_DISTANCE}    Z Threshold: {threshHoldZ})    X Delta: {_GhostBridgeXDelta}    GhostBridgePos: {_GhostBridgePosition}    Prev Pos: {_GhostBridgePrevPosition}");
         //Debug.Log($"Bridge \"{bridgeObject.name}\" is inside bridge zone:  (Width-wise: {isWithinWidthOfZone}  |  Length-wise: {isWithinLengthOfZone})    bridgeZonePos: {transform.position}    bridgePosRelativeToBridgeZonePos: {positionRelativeToBridgeZoneCenter}    bridgeZoneSize: {_BridgeZoneCollider.bounds.size}");
+        //Debug.Log($"IsCenterInBridgeZone: {IsBridgeCenterWithinConstructionZone}    HalfBridgeWidth: {halfBridgeWidth}    HalfBridgeLength: {halfBridgeLength}");
+            
 
-
-        _PrevIsCompletelyInsideResult = isWithinWidthOfZone && isWithinLengthOfZone;
         return _PrevIsCompletelyInsideResult;
     }
 
@@ -334,6 +338,7 @@ public class BridgeConstructionZone : MonoBehaviour
     }
 
 
+    public bool IsBridgeCenterWithinConstructionZone { get; private set; }
     public int BridgeCount {  get { return _BridgesInThisZone.Count; } }
 
     public LevelAreas PrevArea { get { return _PreviousArea; } }

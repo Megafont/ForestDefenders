@@ -18,5 +18,5 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 835c105aafcd320449532d50cf477c1d, type: 3}
   - {fileID: 8300000, guid: c5fcdd679e5c54e41b016a5df849c1c3, type: 3}
   Volume: 1
-  PlayAs3DSound: 0
-  SpatialBlend: 0
+  PlayAs3DSound: 1
+  SpatialBlend: 1

@@ -33,6 +33,8 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
     protected VillagerTargetDetector _NearbyTargetDetector;
 
+    protected Hunger _Hunger;
+
     protected ResourceManager _ResourceManager;
     protected VillageManager_Buildings _VillageManager_Buildings;
     protected VillageManager_Villagers _VillageManager_Villagers;
@@ -41,6 +43,8 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
     protected override void InitAI()
     {
+        _Hunger = GetComponent<Hunger>();
+
         _NearbyTargetDetector = transform.GetComponentInChildren<VillagerTargetDetector>();
 
 
@@ -115,19 +119,22 @@ public abstract class Villager_Base : AI_WithAttackBehavior, IVillager
 
                 //Debug.Log($"HealAmnt: {healAmount}    Resources Cost: {resourcesCost}    BCurH: {bHealth.CurrentHealth}    BMaxH: {bHealth.MaxHealth}    vHAmnt: {villagerHealAmount}");
 
-                // Don't heal the building if there isn't enough resources!
+                // Heal the building if there are enough resources!
                 if (_ResourceManager.GetStockpileLevel(ResourceTypes.Stone) >= resourcesCost &&
                     _ResourceManager.GetStockpileLevel(ResourceTypes.Wood) >= resourcesCost)
                 {
                     // Expend resources from the stockpile.
-                    _ResourceManager.ExpendFromStockpile(ResourceTypes.Stone, resourcesCost);
-                    _ResourceManager.ExpendFromStockpile(ResourceTypes.Wood, resourcesCost);
+                    _ResourceManager.TryToExpendFromStockpile(ResourceTypes.Stone, resourcesCost);
+                    _ResourceManager.TryToExpendFromStockpile(ResourceTypes.Wood, resourcesCost);
 
                     TextPopup.ShowTextPopup(TextPopup.AdjustStartPosition(gameObject), 
                                             $"Used {resourcesCost} Stone and Wood", 
                                             TextPopupColors.ExpendedResourceColor);
 
                     bHealth.Heal(healAmount, gameObject);
+
+                    // Make the villager use some food as a result of working on the building.
+                    _Hunger.AddToHunger((uint) healAmount);
                 }
                 else
                 {

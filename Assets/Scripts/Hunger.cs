@@ -1,8 +1,11 @@
+using JetBrains.Annotations;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
-using UnityEngine.Rendering;
+
+using Random = UnityEngine.Random;
 
 
 public class Hunger : MonoBehaviour
@@ -80,7 +83,7 @@ public class Hunger : MonoBehaviour
 
 
             // If we are NOT the player and hunger level is greater than 0, then try to eat some food to alleviatge it.
-            if (gameObject.tag != "Player" && CurrentHunger > 0)
+            if (gameObject.tag != "Player" && CurrentHunger >= _HungerPointsToHealEachTimeOnEating)
                 AttemptToEat();
 
 
@@ -128,7 +131,7 @@ public class Hunger : MonoBehaviour
             float totalFoodCost = _FoodCostToHealOneHungerPoint * hungerPtsToRestore;
 
 
-            if (_ResourceManager.ExpendFromStockpile(ResourceTypes.Food, totalFoodCost))
+            if (_ResourceManager.TryToExpendFromStockpile(ResourceTypes.Food, totalFoodCost))
             {
                 //Debug.Log($"Eating. Healed {hungerPtsToRestore} hunger with {totalFoodCost} food.");
 
@@ -154,6 +157,17 @@ public class Hunger : MonoBehaviour
         CurrentHunger = Mathf.Max(0, CurrentHunger - amount);
 
         OnHungerChanged?.Invoke(gameObject, -amount);
+    }
+
+    public void AddToHunger(uint amount)
+    {
+        if (amount <= 0)
+            throw new Exception("The hunger amount to add must be positive!");
+
+        CurrentHunger += amount;
+
+        if (CurrentHunger > MaxHunger)
+            CurrentHunger = MaxHunger;
     }
 
     public void SetMaxHunger(float amount)

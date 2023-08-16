@@ -103,6 +103,7 @@ public class HighScoresDialog : Dialog_Base, IDialog
         // Always start the dialog with the best scores table displayed.
         _SelectedTableType = HighScoreTypes.Score;
         DisplayScoreTable();
+        ScrollToTopOfScoreTable();
 
         base.OpenDialog(closeOtherOpenDialogs);
     }
@@ -154,6 +155,8 @@ public class HighScoresDialog : Dialog_Base, IDialog
 
         _BestScoresButtonText.color = _SelectedTableColor;
         _BestTimesButtonText.color = _DeselectedTablecolor;
+
+        ScrollToTopOfScoreTable();
     }
 
     public void OnBestTimesClick()
@@ -168,6 +171,8 @@ public class HighScoresDialog : Dialog_Base, IDialog
 
         _BestTimesButtonText.color = _SelectedTableColor;
         _BestScoresButtonText.color = _DeselectedTablecolor;
+
+        ScrollToTopOfScoreTable();
     }
 
     public void OnDoneClick()
@@ -184,7 +189,7 @@ public class HighScoresDialog : Dialog_Base, IDialog
         if (scrollMagnitude != 0)
         {
             float scrollableHeight = _ScrollRect.content.sizeDelta.y - _ScrollRect.viewport.rect.height;
-            float scrollAmount = DIALOG_SCROLL_SPEED * scrollMagnitude;// * Time.unscaledDeltaTime;
+            float scrollAmount = DIALOG_SCROLL_SPEED * scrollMagnitude;
             _ScrollRect.verticalNormalizedPosition += scrollAmount / scrollableHeight;
         }
 
@@ -206,6 +211,12 @@ public class HighScoresDialog : Dialog_Base, IDialog
     protected override void Dialog_OnCancel() 
     {
         OnDoneClick();
+    }
+
+    private void ScrollToTopOfScoreTable()
+    {
+        // Scroll to the top of the table.
+        _ScrollRect.normalizedPosition = Vector2.one;
     }
 
 }

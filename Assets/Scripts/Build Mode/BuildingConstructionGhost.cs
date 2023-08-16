@@ -299,7 +299,7 @@ public class BuildingConstructionGhost : MonoBehaviour
         {
             _IsBridgeAndCompletelyInsideBridgeZone = ParentBridgeConstructionZone.IsCompletelyInsideBridgeZone(gameObject, _BuildingDefinition);
 
-            if (_IsBridgeAndCompletelyInsideBridgeZone)
+            if (ParentBridgeConstructionZone.IsBridgeCenterWithinConstructionZone)
                 ParentBridgeConstructionZone.ApplyConstraints(transform);
         }
         else
@@ -684,7 +684,7 @@ public class BuildingConstructionGhost : MonoBehaviour
 
             ParentBridgeConstructionZone = zone;
             _IsBridgeAndCompletelyInsideBridgeZone = true;
-        }
+        }      
         // Add the collider we hit to the list of obstructions if it is not already in the list and is not the ground.
         else if (!_OverlappingObjects.Contains(collider) && collider.gameObject.layer != _GroundLayerID)
         {
@@ -696,6 +696,8 @@ public class BuildingConstructionGhost : MonoBehaviour
                 _OverlappingBridgeZonesCount++;
         }
 
+
+        //Debug.Log($"IsCompletelyInBridgeZone: {_IsBridgeAndCompletelyInsideBridgeZone}");
 
         UpdateGhostColor();
 
@@ -718,28 +720,17 @@ public class BuildingConstructionGhost : MonoBehaviour
         }
 
 
-        // Is the construction ghost free of collisions with any other object?
-        if (_OverlappingObjects.Count < 1)
-        {
-            // The building is not overlapping anything else, and is thus not in a bridge construction zone either.
-            if (_BuildingIsBridge)
-                result = true; // The building is a bridge that's not in a bridge construction zone, so it counts as obstructed.
-            else
-                result = false; // The building is not a bridge and not in a bridge construction zone, so it is not considered obstructed.
-        }
 
         // Is the construction ghost a bridge that is completely within a bridge construction zone?
-        else if (_IsBridgeAndCompletelyInsideBridgeZone) 
+        if (_BuildingIsBridge) 
         {
             // Is the construction ghost free of collisions with anything other than the bridge construction zone?
-            if (_OverlappingObjects.Count == 1) 
+            if (_OverlappingObjects.Count == 1 && _IsBridgeAndCompletelyInsideBridgeZone) 
             {
                 //Debug.Log($"BridgeType: \"{(_BuildingDefinition.Prefab.GetComponent<IBuilding>() as Bridge_Base).BridgeType}\"    Construction Zone Allowed Type: \"{ParentBridgeConstructionZone.AllowedBridgeType}\"");
 
                 // Is the player trying to build the type of bridge that is allowed in this bridge construction zone?
-                if ((_BuildingDefinition.Prefab.GetComponent<IBuilding>() as Bridge_Base).BridgeType == ParentBridgeConstructionZone.AllowedBridgeType)
-                    result = false;
-                else
+                if ((_BuildingDefinition.Prefab.GetComponent<IBuilding>() as Bridge_Base).BridgeType != ParentBridgeConstructionZone.AllowedBridgeType)
                     result = true;
             }
             else
@@ -753,7 +744,7 @@ public class BuildingConstructionGhost : MonoBehaviour
         {
             result = true;        
         }
-
+        
 
         return result;
     }

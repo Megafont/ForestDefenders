@@ -24,5 +24,6 @@ MonoBehaviour:
   PlayerLandingSoundVolume: 1
   PlayPlayerLandingSoundAs3DSound: 0
   PlayerLandingSoundSpatialBlend: 0
+  LevelUpSound: {fileID: 8300000, guid: ff9ae02198b4e6e48b99581af2cd6c24, type: 3}
   BirdSoundsVolume: 1
   BirdSoundsFadeTime: 4

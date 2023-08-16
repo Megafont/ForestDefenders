@@ -60,10 +60,14 @@ public class Projectile_MageTower : Projectile_Homing
         yield return _ExplosionDamageDelay;
 
 
-        RaycastHit[] enemies = Physics.SphereCastAll(transform.position, _ExplosionParticleSystem.shape.radius + 2.0f, transform.forward, 2.0f, _TargetLayers.value);
+        RaycastHit[] enemies = Physics.SphereCastAll(transform.position, 
+                                                     _ExplosionParticleSystem.shape.radius + 2.0f, 
+                                                     transform.forward, 
+                                                     2.0f, 
+                                                     _TargetLayers.value);
+
         for (int i = 0; i < enemies.Length; i++)
         {
-            GameObject obj = enemies[i].collider.gameObject;
             enemies[i].collider.gameObject.GetComponent<Health>().DealDamage(_DefaultAttackPower, _DamageType, this.gameObject);
         }
     }

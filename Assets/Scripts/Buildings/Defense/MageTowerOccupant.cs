@@ -170,6 +170,13 @@ public class MageTowerOccupant : MonoBehaviour
 
     private static void OnDestroyPoolObject(IProjectile projectile)
     {
+        // Sometimes this is null when the game shuts down.
+        if (projectile == null)
+            return;
+        if (projectile.gameObject == null)
+            return;
+
+
         Destroy(projectile.gameObject);
 
         //Debug.Log("Destroyed mage tower pool projectile!");

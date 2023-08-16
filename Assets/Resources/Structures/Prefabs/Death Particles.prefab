@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5779892527540294169}
   - component: {fileID: 455510262942554082}
   m_Layer: 0
-  m_Name: Death Particles (Resource Nodes)
+  m_Name: Death Particles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4855,7 +4855,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_RenderMode: 4
   m_MeshDistribution: 0
   m_SortMode: 0

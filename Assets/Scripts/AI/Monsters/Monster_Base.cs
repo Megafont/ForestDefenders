@@ -228,9 +228,9 @@ public abstract class Monster_Base : AI_WithAttackBehavior, IMonster
         return false;
     }
 
-    protected override void PlayDeathSFX()
+    protected override void PlayDeathFX()
     {
-        base.PlayDeathSFX();
+        base.PlayDeathFX();
 
 
         if (_DeathParticles)

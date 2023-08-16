@@ -24,6 +24,10 @@ public class SoundParams : ScriptableObject
     [Tooltip("The spatial blend amount to use betwen 3D sound and 2D when PlayPlayerLandingSoundAs3DSound is enabled.")]
     public float PlayerLandingSoundSpatialBlend = 1.0f;
 
+    [Space(10)]
+    public AudioClip LevelUpSound;
+
+
     [Header("Birds")]
     [Range(0, 1)]
     public float BirdSoundsVolume = 1.0f;

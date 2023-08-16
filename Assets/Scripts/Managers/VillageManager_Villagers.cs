@@ -265,15 +265,14 @@ public class VillageManager_Villagers : MonoBehaviour
         while (true)
         {
             if (_AllVillagers.Count < _PopulationCap &&
-                (!_ResourceManager.IsStockpileLevelOK(ResourceTypes.Food) ||                        // Allow new villagers to spawn only if the food stockpile is at least at an OK level.
+                (_ResourceManager.IsStockpileLevelOK(ResourceTypes.Food) ||                        // Allow new villagers to spawn only if the food stockpile is at least at an OK level.
                  (Population == 0 && !_ResourceManager.IsStockpileLevelLow(ResourceTypes.Food))))   // However, if there are no villagers then the first one is allowed to spawn as long as
             {                                                                                       // the food stockpile is not low.            
                 GameObject prefab = SelectVillagerPrefab();
 
 
-                if (_ResourceManager.ExpendFromStockpile(ResourceTypes.Food, VillagerFoodCost))
+                if (_ResourceManager.TryToExpendFromStockpile(ResourceTypes.Food, VillagerFoodCost))
                 {
-
                     GameObject newVillager = Instantiate(prefab,
                                                          townCenter.transform.position,
                                                          townCenter.transform.rotation,
@@ -357,14 +356,14 @@ public class VillageManager_Villagers : MonoBehaviour
         // Add the building and villager into our heal tracking dictionary and tell the villager to head to the building.
         if (villager != null)
         {
-            Debug.Log("Sending villager to heal building!");
+            //Debug.Log("Sending villager to heal building!");
 
             _VillagersHealingBuildings.Add(building, villager);
             villager.SetTarget(target);
         }
         else
         {
-            Debug.Log("Failed to find an available villager to heal the building!");
+            //Debug.Log("Failed to find an available villager to heal the building!");
         }
     }
 

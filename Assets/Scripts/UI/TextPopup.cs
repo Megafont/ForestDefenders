@@ -133,10 +133,17 @@ public class TextPopup : MonoBehaviour
                                 float fontSize = DEFAULT_TEXT_SIZE, float outlineWidth = DEFAULT_OUTLINE_WIDTH,
                                 float fadeStartDelay = DEFAULT_FADE_OUT_START_DELAY, float fadeOutTime = DEFAULT_FADE_OUT_TIME, float maxMoveSpeed = DEFAULT_MAX_MOVE_SPEED)
     {
+
         if (parent)
-            transform.localPosition = startPosition;
+        {
+            // If the text popup is parented to an object, then we only need the vertical offset.
+            // The x and z coordinates are both 0 so the popup will have the same x,z coordinates as the parent object.
+            transform.localPosition = new Vector3(0, startPosition.y, 0);
+        }
         else
+        {
             transform.position = startPosition;
+        }
 
 
         _TMP_Text.text = text;
@@ -219,10 +226,11 @@ public class TextPopup : MonoBehaviour
             Debug.LogError("Failed to get a new text popup!");
 
 
-        textPopup.ResetTextPopup(startPosition, text, textColor, outlineColor, parent, fontSize, outlineWidth, fadeStartDelay, fadeOutTime, maxMoveSpeed);
-
         if (parent)
             textPopup.gameObject.transform.SetParent(parent.transform);
+
+        textPopup.ResetTextPopup(startPosition, text, textColor, outlineColor, parent, fontSize, outlineWidth, fadeStartDelay, fadeOutTime, maxMoveSpeed);
+
     }
 
     public static IEnumerator ShowTextPopupDelayed(float delayInSeconds, Vector3 startPosition, string text, GameObject parent = null,

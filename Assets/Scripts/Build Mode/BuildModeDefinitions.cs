@@ -101,10 +101,10 @@ public static class BuildModeDefinitions
         string category = "Farming";
         _BuildingCategories.Add(category, _Buildings_Farming);
 
-        CreateBuildingDefinition(category, "Small Garden", 50, 1, TechDefinitionIDs.NOT_APPLICABLE, _MaterialRecoveryRate, 0, new Vector3(2.1f, 0.5f, 2.1f), false, new MaterialCost[]
+        CreateBuildingDefinition(category, "Small Garden", 100, 1, TechDefinitionIDs.NOT_APPLICABLE, _MaterialRecoveryRate, 0, new Vector3(2.1f, 0.5f, 2.1f), false, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 100),
               CreateMaterialCost(ResourceTypes.Stone, 100) });
-        CreateBuildingDefinition(category, "Large Garden", 100, 2, TechDefinitionIDs.Buildings_LargeGarden, _MaterialRecoveryRate, 0, new Vector3(2.1f, 0.5f, 4.1f), false, new MaterialCost[]
+        CreateBuildingDefinition(category, "Large Garden", 250, 2, TechDefinitionIDs.Buildings_LargeGarden, _MaterialRecoveryRate, 0, new Vector3(2.1f, 0.5f, 4.1f), false, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 500) });
         CreateBuildingDefinition(category, "Farm", 500, 3, TechDefinitionIDs.Buildings_Farm, _MaterialRecoveryRate, 0, new Vector3(4, 1.0f, 4), false, new MaterialCost[]
             { CreateMaterialCost(ResourceTypes.Wood, 1000),

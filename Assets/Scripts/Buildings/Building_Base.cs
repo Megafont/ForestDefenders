@@ -26,7 +26,8 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
 
     protected bool _IsDeconstructing = false;
 
-    public AnimationCurve _Curve;
+    protected ParticleSystem _DeathParticles;
+
 
 
     void Awake()
@@ -88,13 +89,26 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
     {
         _Health.SetMaxHealth(_BuildingDefinition.MaxHealth);
         _Health.ResetHealthToMax();
+
+
+        Transform deathParticles = transform.Find("Death Particles");
+        if (deathParticles)
+        {
+            _DeathParticles = deathParticles.GetComponent<ParticleSystem>();
+
+            BuildingDefinition buildingDef = GetBuildingDefinition();
+            float sizeOfLongestDimension = Mathf.Max(buildingDef.Size.x, Mathf.Max(buildingDef.Size.y, buildingDef.Size.z));
+            sizeOfLongestDimension *= 0.75f; // Reduce the scale a bit so the dust cloud isn't too big.
+
+            _DeathParticles.transform.localScale = new Vector3(sizeOfLongestDimension, sizeOfLongestDimension, sizeOfLongestDimension);
+        }
+
     }
 
     protected virtual void InitBuilding()
     {
         ConfigureBasicBuildingSetup("None", "None");
     }
-
 
     protected virtual void UpdateBuilding()
     {
@@ -115,10 +129,6 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
 
     protected virtual void OnDeath(GameObject sender, GameObject attacker)
     {
-        _AudioSource.clip = _BuildModeManager.BuildingDestructionSound;
-        _AudioSource.volume = _BuildModeManager.BuildingDestructionSoundVolume;
-        _AudioSource.Play();
-
         StartCoroutine(FadeOutAfterDeath());
     }
 
@@ -131,6 +141,8 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
     WaitForSeconds _FadeOutDelay = new WaitForSeconds(3.0f);
     protected virtual IEnumerator FadeOutAfterDeath()
     {
+        PlayDeathFX();
+
         // Start the shrink animation and wait for it to complete.
         yield return StartCoroutine(Utils_Misc.ShrinkObjectToNothing(transform, 0.4f));
 
@@ -140,6 +152,15 @@ public abstract class Building_Base : MonoBehaviour, IBuilding
         Destroy(gameObject);
     }
 
+    protected virtual void PlayDeathFX()
+    {
+        _AudioSource.clip = _BuildModeManager.BuildingDestructionSound;
+        _AudioSource.volume = _BuildModeManager.BuildingDestructionSoundVolume;
+        _AudioSource.Play();
+
+        if (_DeathParticles)
+            _DeathParticles.Play();
+    }
 
 
     /// <summary>

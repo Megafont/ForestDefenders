@@ -111,10 +111,6 @@ public abstract class Projectile_Base : MonoBehaviour, IProjectile
 
     protected virtual void OnDeath()
     {
-        // Unparent this projectile since it is no longer in use for now.
-        transform.parent = null;
-
-
         // Invoke the OnDestroyed event.
         OnDestroyed?.Invoke(this);
 

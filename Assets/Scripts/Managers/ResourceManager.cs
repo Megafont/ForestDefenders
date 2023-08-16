@@ -14,7 +14,7 @@ public class ResourceManager : MonoBehaviour
 
     [Header("Stockpiles Settings")]
     public uint ResourceStockpilesStartAmount = 0;
-
+    [Space(10)]
     public uint ResourceStockpilesLowThreshold = 250;
     public uint ResourceStockpilesOkThreshold = 500;
     public uint ResourceStockpilesPlentifulThreshold = 1000;
@@ -96,7 +96,7 @@ public class ResourceManager : MonoBehaviour
     /// <param name="amount">The amount of resources being requested.</param>
     /// <returns>True if the resources were expended, or false if there wasn't enough.</returns>
     /// <exception cref="ArgumentException">When amount is 0 or negative.</exception>
-    public bool ExpendFromStockpile(ResourceTypes stockpile, float amount)
+    public bool TryToExpendFromStockpile(ResourceTypes stockpile, float amount)
     {
         if (amount < 1)
             throw new ArgumentException($"The amount of resources requested from the \"{stockpile}\" stockpile must be positive!");

@@ -57,7 +57,7 @@ public class Building_MageTower : Building_Base
             {
                 // Check if the villager has arrived.
                 if (!_VillagerArrived &&
-                    Vector3.Distance(transform.position, _VillagerOccupant.transform.position) <= _BuildingDefinition.Size.x / 2)
+                    Vector3.Distance(transform.position, _VillagerOccupant.transform.position) <= _BuildingDefinition.Size.x / 2 + 0.75f) // The + 0.75f adds a little extra room so villagers don't run into the tower and not be considered to have arrived since they can't get any closer.
                 {
                     _VillagerArrived = true;
 

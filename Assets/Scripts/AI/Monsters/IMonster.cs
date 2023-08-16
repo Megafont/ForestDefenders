@@ -11,11 +11,11 @@ public interface IMonster
     bool SetTarget(GameObject target, bool discardTarget = false);
 
 
-    public GameObject gameObject { get; }
-    public Transform transform { get; }
+    GameObject gameObject { get; }
+    Transform transform { get; }
 
 
-    public Health HealthComponent { get; }
+    Health HealthComponent { get; }
 
 
     bool IsAttacking { get; }
@@ -32,7 +32,7 @@ public interface IMonster
     bool HasStatusEffect { get; }
     StatusEffectsFlags StatusEffectsFlags { get; set; }
 
-    
+
     bool TargetIsBuilding { get; }
     bool TargetIsMonster { get; }
     bool TargetIsResourceNode { get; }

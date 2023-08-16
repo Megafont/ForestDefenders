@@ -80,6 +80,7 @@ public class MonsterManager : MonoBehaviour
         CurrentComboStreak = 0;
     }
 
+    int _TotalMonsterTypeCount = 0; // This tracks how many different monster types should spawn in the current wave.
     private IEnumerator SpawnWave()
     {
         MonstersKilled = 0;
@@ -95,11 +96,14 @@ public class MonsterManager : MonoBehaviour
         CurrentWaveSize = BaseMonsterSpawnAmount + ((CurrentWaveNumber - 1) * 3);
 
         // Determine how many monster types will spawn in the current wave.
-        int totalMonsterTypeCount = Mathf.Max(1, (CurrentWaveNumber + 1) / 2); // Make a new monster appear in every other wave
-        if (CurrentWaveNumber > _MonsterDefinitions.Count)
-            totalMonsterTypeCount = _MonsterDefinitions.Count;
+        if (CurrentWaveNumber <= 10)
+            _TotalMonsterTypeCount = Mathf.Max(1, (CurrentWaveNumber + 1) / 2); // Make a new monster type appear in every other wave        
+        else
+            _TotalMonsterTypeCount += 1; // Make a new monster type appear in every wave.
 
-        int lowLevelMonsterTypeCount = (int)(totalMonsterTypeCount * 0.33f);
+        if (CurrentWaveNumber > _MonsterDefinitions.Count)
+            _TotalMonsterTypeCount = _MonsterDefinitions.Count;
+
 
         //Debug.Log($"Wave #: {CurrentWaveNumber}    Base Spawn Count: {BaseMonsterSpawnAmount}    Wave Spawn Count: {CurrentWaveSize}");
         for (int i = 0; i < CurrentWaveSize; i++)
@@ -112,7 +116,7 @@ public class MonsterManager : MonoBehaviour
             int monsterIndex = 0;
 
             float rand2 = 0f;
-            if (totalMonsterTypeCount == 1)
+            if (_TotalMonsterTypeCount == 1)
                 rand2 = 0;
             else if (rand <= 0.25f) // We give a 25% chance of a low level monster spawning.
                 rand2 = Random.Range(0f, 0.25f);
@@ -122,7 +126,7 @@ public class MonsterManager : MonoBehaviour
                 rand2 = Random.Range(0.66f, 1f);
 
 
-            monsterIndex = (int) (totalMonsterTypeCount * rand2);
+            monsterIndex = (int) (_TotalMonsterTypeCount * rand2);
 
             MonsterDefinition monsterDef = _MonsterDefinitions[monsterIndex];
 

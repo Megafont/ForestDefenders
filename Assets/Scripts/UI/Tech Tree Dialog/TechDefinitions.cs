@@ -35,7 +35,7 @@ public static class TechDefinitions
         List<TechTreeTileData> tilesData = new List<TechTreeTileData>()
         {
             new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_WoodBridge_10m, Title = "Wood Bridge (10m)", DescriptionText = "Gain the technology to build 10-meter long wooden bridges and reach new areas.", XPCost = 20, Thumbnail = BuildModeDefinitions.GetBuildingDefinition("Bridges", "Wood Bridge (10m)").Thumbnail },
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_WoodBridge_20m, Title = "Wood Bridge (20m)", DescriptionText = "Gain the technology to build 20-meter long wooden bridges and reach new areas.", XPCost = 40, Thumbnail = BuildModeDefinitions.GetBuildingDefinition("Bridges", "Wood Bridge (20m)").Thumbnail },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_WoodBridge_20m, Title = "Wood Bridge (20m)", DescriptionText = "Gain the technology to build 20-meter long wooden bridges and reach more distant new areas.", XPCost = 40, Thumbnail = BuildModeDefinitions.GetBuildingDefinition("Bridges", "Wood Bridge (20m)").Thumbnail },
         };
 
 
@@ -49,9 +49,9 @@ public static class TechDefinitions
 
         List<TechTreeTileData> tilesData = new List<TechTreeTileData>()
         {
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_Turret, Title = "Turret", DescriptionText = "Gain the technology to build simple turrets.", XPCost = 20, Thumbnail = BuildModeDefinitions.GetBuildingDefinition("Defense", "Turret").Thumbnail },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_Turret, Title = "Turret", DescriptionText = "Gain the technology to build simple magic turrets.", XPCost = 20, Thumbnail = BuildModeDefinitions.GetBuildingDefinition("Defense", "Turret").Thumbnail },
             new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_IceTurret, Title = "Ice Turret", DescriptionText = "Gain the technology to build ice turrets that can slow enemies.", XPCost = 30, Thumbnail = BuildModeDefinitions.GetBuildingDefinition("Defense", "Ice Turret").Thumbnail },
-            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_MageTower, Title = "Mage Tower", DescriptionText = "Gain the technology to build mage towers.", XPCost = 40, Thumbnail = BuildModeDefinitions.GetBuildingDefinition("Defense", "Mage Tower").Thumbnail },
+            new TechTreeTileData() { TechID = TechDefinitionIDs.Buildings_MageTower, Title = "Mage Tower", DescriptionText = "Gain the technology to build mage towers. Villagers will occupy these towers during monster attacks to defend the village.", XPCost = 40, Thumbnail = BuildModeDefinitions.GetBuildingDefinition("Defense", "Mage Tower").Thumbnail },
         };
 
 

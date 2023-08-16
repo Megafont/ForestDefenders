@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8147773462339167774}
   - component: {fileID: 4434419210027312232}
   m_Layer: 5
-  m_Name: Buff Villager's Gather Rate
+  m_Name: Buff Villager Gather Rate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -67,7 +67,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Villagers' Gather Rate
+  m_text: Villager Gather Rate
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -305,6 +305,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca413055a7a41314d987c4931ff35ba3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _LevelUpSound: {fileID: 8300000, guid: 3ef96c50d59d83f48958b439d2087780, type: 3}
 --- !u!1 &3654263558106062493
 GameObject:
   m_ObjectHideFlags: 0
@@ -729,7 +730,7 @@ GameObject:
   - component: {fileID: 5626806954842863878}
   - component: {fileID: 5626806954842863881}
   m_Layer: 5
-  m_Name: Buff Villagers' Attack Power
+  m_Name: Buff Villager Attack Power
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -782,7 +783,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Villagers' Attack Power
+  m_text: Villager Attack Power
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -1632,7 +1633,7 @@ GameObject:
   - component: {fileID: 5626806955993457920}
   - component: {fileID: 5626806955993457923}
   m_Layer: 5
-  m_Name: Buff Villagers' Max Health
+  m_Name: Buff Villager Max Health
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1685,7 +1686,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Villagers' Max Health
+  m_text: Villager Max Health
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}

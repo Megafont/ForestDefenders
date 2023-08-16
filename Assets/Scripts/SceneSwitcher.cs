@@ -16,9 +16,7 @@ using UnityEngine.UI;
 ///                on root objects according to the documentation. I still made it accessible through GameManager, though.</remarks>
 public class SceneSwitcher : MonoBehaviour
 {
-    public static SceneSwitcher Instance;
-
-
+    [SerializeField] private bool _StartFadedOut = true;
     [SerializeField] private Color32 _DefaultScreenFadeColor = Color.black;
     [SerializeField] private float _DefaultScreenFadeDuration = 2.5f;
 
@@ -29,18 +27,6 @@ public class SceneSwitcher : MonoBehaviour
 
     private void Awake()
     {
-        // If there is already an instance of SceneSwitcher, then destroy this one.
-        if (Instance)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-
-        Instance = this;
-
-        DontDestroyOnLoad(gameObject);
-
         string screenFaderName = "Screen Fader";
         Transform screenFaderObject = transform.Find($"Screen Switcher Canvas/{screenFaderName}");
         if (screenFaderObject == null)
@@ -52,8 +38,11 @@ public class SceneSwitcher : MonoBehaviour
 
 
         // Start the screen faded out.
-        _ScreenFader.color = _DefaultScreenFadeColor;
-        _ScreenFader.gameObject.SetActive(true);
+        if (_StartFadedOut)
+        {
+            _ScreenFader.color = _DefaultScreenFadeColor;
+            _ScreenFader.gameObject.SetActive(true);
+        }
     }
 
     // Start is called before the first frame update
@@ -83,6 +72,16 @@ public class SceneSwitcher : MonoBehaviour
     public void FadeToScene(int sceneBuildIndex)
     {
         StartCoroutine(DoFadeToScene(sceneBuildIndex, _DefaultScreenFadeColor, _DefaultScreenFadeDuration));
+    }
+
+    public void FadeToScene(string sceneName, Color32  fadeColor)
+    {
+        StartCoroutine(DoFadeToScene(sceneName, fadeColor, _DefaultScreenFadeDuration));
+    }    
+
+    public void FadeToScene(int sceneBuildIndex, Color32 fadeColor)
+    {
+        StartCoroutine(DoFadeToScene(sceneBuildIndex, fadeColor, _DefaultScreenFadeDuration));
     }
 
     public void FadeToScene(string sceneName, Color32 fadeColor, float fadeDuration)

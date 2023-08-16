@@ -45,10 +45,6 @@ public abstract class AI_Base : MonoBehaviour
 
 
 
-    public Health HealthComponent { get { return _Health; } }
-    public float MaxMovementSpeed { get { return _MaxMovementSpeed; } }
-
-
     private void Awake()
     {
         _GameManager = GameManager.Instance;
@@ -417,7 +413,7 @@ public abstract class AI_Base : MonoBehaviour
         yield return _DeathDelay;
 
         // Play particle and sound FX as the monster disappears.
-        PlayDeathSFX();
+        PlayDeathFX();
 
         // Start the shrink animation and wait for it to complete.
         yield return StartCoroutine(Utils_Misc.ShrinkObjectToNothing(transform, 0.4f));
@@ -434,7 +430,7 @@ public abstract class AI_Base : MonoBehaviour
 
     }
 
-    protected virtual void PlayDeathSFX()
+    protected virtual void PlayDeathFX()
     {
         if (_DeathSound)
             AudioSource.PlayClipAtPoint(_DeathSound, transform.position, 1.0f);
@@ -455,6 +451,13 @@ public abstract class AI_Base : MonoBehaviour
 
         return !_NavMeshAgent.pathPending && !_NavMeshAgent.isPathStale && _NavMeshAgent.pathStatus == NavMeshPathStatus.PathComplete;
     }
+
+
+
+
+    public Health HealthComponent { get { return _Health; } }
+    public float MaxMovementSpeed { get { return _MaxMovementSpeed; } }
+
 
     public bool IsInteracting { get; protected set; }
 

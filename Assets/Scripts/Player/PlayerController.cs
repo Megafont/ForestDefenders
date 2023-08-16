@@ -603,8 +603,11 @@ public class PlayerController : MonoBehaviour
                 float gatherAmount = node.Gather(gameObject);
 
 
-                if (_HungerComponent.CurrentHunger > 0 && node.ResourceType == ResourceTypes.Food)
+                if (_HungerComponent.CurrentHunger > 0 && 
+                    node.ResourceType == ResourceTypes.Food)
+                { 
                     EatFood(gatherAmount);
+                }
 
 
                 // Since we found a resource node and gathered from it, break out of this loop.
@@ -643,7 +646,7 @@ public class PlayerController : MonoBehaviour
         //Debug.Log($"Eating. Healed {hungerPtsToRestore} hunger with {totalFoodCost} food. Gather amount: {gatherAmount}");
 
         // Expend eaten food from the stockpile, as all gathered food was previously added to the stockpile (see next comment).
-        _ResourceManager.ExpendFromStockpile(ResourceTypes.Food, totalFoodCost);
+        _ResourceManager.TryToExpendFromStockpile(ResourceTypes.Food, totalFoodCost);
 
         // If the player's hunger is fully satiated, then clear the foodGatheredWhileHungry counter.
         // We DO NOT add excess food into the stockpile. This is because all food gathered was already
