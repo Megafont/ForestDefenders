@@ -47,7 +47,7 @@ public static class Utils_World
             _GameManager = GameManager.Instance;
 
 
-        Vector2Int texCoords = GetCoordinateInAreasMapSpace(worldPos, _GameManager.TerrainBounds, _GameManager.AreasMap.Size());
+        Vector2Int texCoords = GetCoordinateInAreasMapSpace(worldPos, _GameManager.TerrainBounds, new Vector2(_GameManager.AreasMap.width, _GameManager.AreasMap.height));
 
         
         Color32 mapColor = _GameManager.AreasMap.GetPixel(texCoords.x, texCoords.y);

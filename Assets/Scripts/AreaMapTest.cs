@@ -50,7 +50,7 @@ namespace Test
         // Update is called once per frame
         void Update()
         {
-            Vector2 coord = Utils_World.GetCoordinateInAreasMapSpace(_GameManager.Player.transform.position, _GameManager.TerrainBounds, _AreaMapTexture.Size());
+            Vector2 coord = Utils_World.GetCoordinateInAreasMapSpace(_GameManager.Player.transform.position, _GameManager.TerrainBounds, new Vector2(_AreaMapTexture.width, _AreaMapTexture.height));
             
             //Debug.Log($"COORD: {coord}");
             

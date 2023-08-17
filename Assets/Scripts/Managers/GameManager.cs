@@ -488,9 +488,9 @@ public class GameManager : MonoBehaviour
     {
         // Register game over camera.
         ICinemachineCamera gameOverCam = GameObject.Find("CM Game Over Camera").GetComponent<ICinemachineCamera>();
-        GameObject townCenter = GameObject.FindGameObjectWithTag("Town Center");
-        gameOverCam.Follow = townCenter.transform;
-        gameOverCam.LookAt = townCenter.transform;
+        GameObject focalPoint = GameObject.Find("Menu Camera Focal Point");
+        gameOverCam.LookAt = focalPoint.transform;
+        gameOverCam.Follow = focalPoint.transform;
         CameraManager.RegisterCamera((int) CameraIDs.GameOver, gameOverCam);
 
 
@@ -857,17 +857,18 @@ public class GameManager : MonoBehaviour
 
     private void SetupGameOverCamera()
     {
-        ICinemachineCamera gameOvercam = CameraManager.GetCameraWithID((int) CameraIDs.GameOver);
+        ICinemachineCamera gameOverCam = CameraManager.GetCameraWithID((int) CameraIDs.GameOver);
         if (Player.transform.position.y <= PlayerFallOutOfWorldDeathHeight)
         {
             Transform townCenterTransform = VillageManager_Buildings.TownCenter.transform;
-            gameOvercam.LookAt = townCenterTransform;
-            gameOvercam.Follow = townCenterTransform;
+
+            gameOverCam.LookAt = townCenterTransform;
+            gameOverCam.Follow = townCenterTransform;
         }
         else
         {
-            gameOvercam.LookAt = Player.transform;
-            gameOvercam.Follow = Player.transform;
+            gameOverCam.LookAt = Player.transform;
+            gameOverCam.Follow = Player.transform;
         }
     }
 

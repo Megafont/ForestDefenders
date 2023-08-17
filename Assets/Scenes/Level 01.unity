@@ -735,7 +735,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ResourcesParent: {fileID: 97276842}
-  ResourceStockpilesStartAmount: 0
+  ResourceStockpilesStartAmount: 1000
   ResourceStockpilesLowThreshold: 250
   ResourceStockpilesOkThreshold: 500
   ResourceStockpilesPlentifulThreshold: 1000
@@ -7303,7 +7303,7 @@ PrefabInstance:
     - target: {fileID: 1577447414875987645, guid: 3850851bd0bf8f24e93c526915ab6c45,
         type: 3}
       propertyPath: _MaxAmountInNode
-      value: 500
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 6167686008198300683, guid: 3850851bd0bf8f24e93c526915ab6c45,
         type: 3}
@@ -7363,7 +7363,7 @@ PrefabInstance:
     - target: {fileID: 6984204722750235608, guid: 3850851bd0bf8f24e93c526915ab6c45,
         type: 3}
       propertyPath: _MaxAmountInNode
-      value: 500
+      value: 100
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -8882,9 +8882,9 @@ MonoBehaviour:
   IsMainMenuScene: 0
   _StartupInitDelay: 1
   GodMode: 0
-  ConstructionIsFree: 0
+  ConstructionIsFree: 1
   ResearchIsFree: 0
-  StartWithAllTechUnlocked: 0
+  StartWithAllTechUnlocked: 1
   StartWithAllZonesBridged: 0
   DisableMonstersSpawning: 0
   DrawAIPaths: 0
