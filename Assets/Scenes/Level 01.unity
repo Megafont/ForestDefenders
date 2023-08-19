@@ -735,7 +735,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ResourcesParent: {fileID: 97276842}
-  ResourceStockpilesStartAmount: 1000
+  ResourceStockpilesStartAmount: 0
   ResourceStockpilesLowThreshold: 250
   ResourceStockpilesOkThreshold: 500
   ResourceStockpilesPlentifulThreshold: 1000
@@ -8882,9 +8882,9 @@ MonoBehaviour:
   IsMainMenuScene: 0
   _StartupInitDelay: 1
   GodMode: 0
-  ConstructionIsFree: 1
+  ConstructionIsFree: 0
   ResearchIsFree: 0
-  StartWithAllTechUnlocked: 1
+  StartWithAllTechUnlocked: 0
   StartWithAllZonesBridged: 0
   DisableMonstersSpawning: 0
   DrawAIPaths: 0

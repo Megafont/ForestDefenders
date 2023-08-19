@@ -16,7 +16,6 @@ Material:
   - _TRANSLUCENCYONOFF_ON
   m_InvalidKeywords:
   - _ALPHAPREMULTIPLY_ON
-  - _CUSTOMWIND1_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
@@ -71,16 +70,28 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _AlphaCutoff: 0.5
     - _BumpScale: 1
     - _CUSTOMCOLORSTINTING: 0
     - _CUSTOMWIND: 1
-    - _CUSTOMWIND1: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 10
+    - _EnvironmentReflections: 1
     - _GlossMapScale: 1
     - _Glossiness: 0
     - _GlossyReflections: 1
@@ -92,6 +103,9 @@ Material:
     - _Mode: 3
     - _OcclusionStrength: 1
     - _Parallax: 0.02
+    - _QueueControl: 0
+    - _QueueOffset: 0
+    - _ReceiveShadows: 1
     - _SNOWONOFF: 0
     - _Smoothness: 0
     - _SmoothnessTextureChannel: 0
@@ -112,16 +126,13 @@ Material:
     - _UVSec: 0
     - _WINDMASKONOFF: 0
     - _WindDensity: 3.3
-    - _WindDensity1: 0.2
     - _WindMovement: 0.5
-    - _WindMovement1: 0.5
     - _WindStrength: 0.3
-    - _WindStrength1: 0.3
     - _ZWrite: 0
     - __dirty: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GroundColor: {r: 1, g: 0, b: 0, a: 1}
-    - _TopColor: {r: 0.03921568, g: 0.0566027, b: 0.5764706, a: 1}
+    - _TopColor: {r: 0.5754717, g: 0.5186884, b: 0.04071733, a: 1}
   m_BuildTextureStacks: []
