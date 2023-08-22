@@ -228,7 +228,7 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
 
 
             // CUSTOM CODE: I added this line.
-            ResetLinkedActionBinding();
+            ResetLinkedActionBindings();
 
             // CUSTOM CODE. This line is from a tutorial (https://www.youtube.com/watch?v=qXbjyzBlduY). This tutorial also had me comment out the block of code below.
             // Check if another input is bound to the default value of this one before we reset it.            
@@ -318,7 +318,7 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
         /// This function is CUSTOM CODE.
         /// If there is an action in another action map that is linked to this one, then this function will reset that action.
         /// </summary>
-        private void ResetLinkedActionBinding()
+        private void ResetLinkedActionBindings()
         {
             // CUSTOM CODE: I modified this function call to take a new first pararmeter. See the comments on the ResolveActionAndBinding() function.
             if (!ResolveActionAndBinding(m_Action, out var action, out var bindingIndex))
@@ -326,30 +326,37 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
 
 
             InputAction linkedAction = m_LinkedAction != null ? m_LinkedAction.action : null;
+            InputAction linkedAction2 = m_LinkedAction2 != null ? m_LinkedAction2.action : null;
 
+            ResetLinkedAction(action, bindingIndex, linkedAction);
+            ResetLinkedAction(action, bindingIndex, linkedAction2);
+        }
 
-            // This code first checks if a linked action is specified. If so, it validates it
-            // by checking that it is not in the same action map as the action this RebindActionUI is set to.
-            // If so, then the linked action is then reset.
-            if (linkedAction != null)
+        /// <summary>
+        /// This function first checks if a linked action is specified. If so, it validates it
+        /// by checking that it is not in the same action map as the action this RebindActionUI is set to.
+        /// If so, then the linked action is then reset.
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="bindingIndex"></param>
+        /// <param name="linkedAction"></param>
+        private void ResetLinkedAction(InputAction action, int bindingIndex, InputAction linkedAction)
+        {
+            bool linkedActionIsEnabled = linkedAction.enabled;
+            linkedAction.Disable();
+
+            InputBinding bindingToCopy = action.bindings[bindingIndex];
+            InputBinding bindingMask = new InputBinding()
             {
-                bool linkedActionIsEnabled = linkedAction.enabled;
-                linkedAction.Disable();
+                groups = bindingToCopy.groups,
+                overridePath = bindingToCopy.overridePath
+            };
 
-                InputBinding bindingToCopy = action.bindings[bindingIndex];
-                InputBinding bindingMask = new InputBinding()
-                {
-                    groups = bindingToCopy.groups,
-                    overridePath = bindingToCopy.overridePath
-                };
+            int index = linkedAction.GetBindingIndex(bindingMask);
+            ResetBinding(m_LinkedAction.action, index);
 
-                int index = linkedAction.GetBindingIndex(bindingMask);
-                ResetBinding(m_LinkedAction.action, index);
-
-                if (linkedActionIsEnabled)
-                    m_LinkedAction.action.Enable();
-            }
-
+            if (linkedActionIsEnabled)
+                m_LinkedAction.action.Enable();
         }
 
         /// <summary>
@@ -432,8 +439,9 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
                         }
 
 
-                        // CUSTOM CODE. I added this line.
-                        ApplyOverrideToLinkedAction(action, bindingIndex);
+                        // CUSTOM CODE. I added these lines.
+                        ApplyOverrideToLinkedAction(action, bindingIndex, m_LinkedAction);
+                        ApplyOverrideToLinkedAction(action, bindingIndex, m_LinkedAction2);
 
 
                         UpdateBindingDisplay();
@@ -485,15 +493,15 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
         /// Build Mode input action map always has the same key assigned to it as the Enter Build Mode action in
         /// the Player input action map.
         /// </remarks>
-        private void ApplyOverrideToLinkedAction(InputAction action, int bindingIndex)
+        private void ApplyOverrideToLinkedAction(InputAction action, int bindingIndex, InputActionReference linkedAction)
         {
             // This code first checks if a linked action is specified. 
             // If so, then the linked action is bound to the same key as this action.
-            if (m_LinkedAction != null)
+            if (linkedAction != null)
             {
-                bool linkedActionIsEnabled = m_LinkedAction.action.enabled;
+                bool linkedActionIsEnabled = linkedAction.action.enabled;
 
-                m_LinkedAction.action.Disable();
+                linkedAction.action.Disable();
 
                 InputBinding bindingToCopy = action.bindings[bindingIndex];
                 InputBinding newBinding = new InputBinding()
@@ -502,14 +510,15 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
                     overridePath = bindingToCopy.overridePath
                 };
 
-                m_LinkedAction.action.ApplyBindingOverride(newBinding);
+                linkedAction.action.ApplyBindingOverride(newBinding);
 
                 if (linkedActionIsEnabled)
-                    m_LinkedAction.action.Enable();
+                    linkedAction.action.Enable();
 
             }
 
         }
+
 
         /// <summary>
         /// This function is CUSTOM CODE from the tutorial here: https://www.youtube.com/watch?v=qXbjyzBlduY
@@ -643,6 +652,9 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
         [Tooltip("A reference to an action in another action map that is linked to this one. In other words, when this action is rebound, the linked action will be rebound to the same key.")]
         [SerializeField]
         private InputActionReference m_LinkedAction;
+        [Tooltip("A reference to an action in another action map that is linked to this one. In other words, when this action is rebound, the linked action will be rebound to the same key.")]
+        [SerializeField]
+        private InputActionReference m_LinkedAction2;
 
         [SerializeField]
         private string m_BindingId;

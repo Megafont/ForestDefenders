@@ -297,9 +297,8 @@ public static class Utils_HighScores
         RegisterHighScore("Fred", 10, 60);
         RegisterHighScore("Judy", 10000, 250);
         RegisterHighScore("Mark", 7500, 300);
-        RegisterHighScore("Susan", 10000, 400);
+        RegisterHighScore("Susan", 11000, 400);
         RegisterHighScore("Rachel", 12000, 300);
-
     }
 
     public static void DEBUG_LogHighScoresTable(List<HighScoreData> highScoresTable, HighScoreTypes tableType)

@@ -177,7 +177,7 @@
                 {
                     "name": "",
                     "id": "9e5f92f1-b193-4cdc-85c2-fe43408f5ccc",
-                    "path": "<Keyboard>/z",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
@@ -429,6 +429,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Pause Game (Build Mode)",
+                    "type": "Button",
+                    "id": "f70a0cc2-cf6e-4240-b280-ac94a1f3ccb0",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -501,7 +510,7 @@
                 {
                     "name": "",
                     "id": "5a255dac-9be5-4653-91e7-72c4d65d3552",
-                    "path": "<Keyboard>/c",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
@@ -610,6 +619,17 @@
                 },
                 {
                     "name": "",
+                    "id": "dc65bdc5-3c02-40fb-8ec4-bf92f235d012",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "ScaleVector2(x=0.1,y=0.1)",
+                    "groups": "KeyboardMouse",
+                    "action": "Move Build Position",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "201e95d8-6be3-402c-8d97-98f7fc1e397c",
                     "path": "<Gamepad>/rightStickPress",
                     "interactions": "",
@@ -627,6 +647,28 @@
                     "processors": "",
                     "groups": "KeyboardMouse",
                     "action": "Select Building",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b183b34d-81df-42b2-9b07-d4eb4ca65e1a",
+                    "path": "<Gamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Pause Game (Build Mode)",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2a267c04-33ca-4828-96ef-aebd17c52cd2",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Pause Game (Build Mode)",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -1028,6 +1070,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse;Gamepad;Touch;Joystick;XR",
+                    "action": "Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "76045611-c90e-41b4-9e60-e4e60f468ab7",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
                     "action": "Cancel",
                     "isComposite": false,
                     "isPartOfComposite": false

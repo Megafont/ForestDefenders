@@ -133,7 +133,7 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
 
     public virtual void OpenDialog(bool closeOtherOpenDialogs = false)
     {
-        Cursor.lockState = CursorLockMode.None;
+        Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
 
 
@@ -183,7 +183,11 @@ public abstract class Dialog_Base : MonoBehaviour, IDialog
     }
 
     protected virtual IEnumerator SwitchInputMaps(bool dialogIsOpening)
-    {        
+    {
+        // Reset all inputs. This way we don't have problems like the pause menu instantly reopening after being closed via the Esc key.
+        _InputManager.ResetAllInputMapControlValues();
+
+
         if (dialogIsOpening)
         {
             // Switch to the UI input map.

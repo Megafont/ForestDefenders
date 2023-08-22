@@ -128,6 +128,7 @@ public class PlayerController : MonoBehaviour
 
     private InputManager _InputManager;
     private InputMapManager_Player _InputManager_Player;
+    private InputMapManager_BuildMode _InputManager_BuildMode;
 
     // I moved the PlayerInput component into my input manager GameObject.
     //private PlayerInput _playerInput;
@@ -227,7 +228,7 @@ public class PlayerController : MonoBehaviour
 
         _InputManager = _GameManager.InputManager;
         _InputManager_Player = (InputMapManager_Player) _InputManager.GetInputMapManager((uint) InputActionMapIDs.Player);
-
+        _InputManager_BuildMode = (InputMapManager_BuildMode) _InputManager.GetInputMapManager((uint)InputActionMapIDs.BuildMode);
 
         _cinemachineTargetYaw = _CinemachineCameraTarget.transform.rotation.eulerAngles.y;
             
@@ -254,7 +255,7 @@ public class PlayerController : MonoBehaviour
         _hasAnimator = TryGetComponent(out _animator);
 
 
-        if (_InputManager_Player.PauseGame)
+        if (_InputManager_Player.PauseGame || _InputManager_BuildMode.PauseGame)
             _GameManager.TogglePauseGameState();
 
 

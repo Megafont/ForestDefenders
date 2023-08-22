@@ -25,8 +25,9 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
 
             m_ActionProperty = serializedObject.FindProperty("m_Action");
 
-            // CUSTOM CODE. I added this line.
+            // CUSTOM CODE. I added these two lines.
             m_LinkedActionProperty = serializedObject.FindProperty("m_LinkedAction");
+            m_LinkedAction2Property = serializedObject.FindProperty("m_LinkedAction2");
 
             m_BindingIdProperty = serializedObject.FindProperty("m_BindingId");
             m_ActionLabelProperty = serializedObject.FindProperty("m_ActionLabel");
@@ -58,9 +59,10 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
                 EditorGUILayout.PropertyField(m_ActionProperty);
 
                 // CUSTOM CODE. I added this block and the following if statement. It shows the new linked action property, and validates it.
-                EditorGUILayout.PropertyField(m_LinkedActionProperty);
                 InputActionReference actionRef = (InputActionReference) m_ActionProperty.objectReferenceValue;
                 InputAction action = actionRef != null ? actionRef.action : null;
+
+                EditorGUILayout.PropertyField(m_LinkedActionProperty);
                 InputActionReference linkedActionRef = (InputActionReference) m_LinkedActionProperty.objectReferenceValue;
                 InputAction linkedAction = linkedActionRef != null ? linkedActionRef.action : null;
                 
@@ -72,6 +74,23 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
 
                         // Clear this property since the specified action is invalid.
                         m_LinkedActionProperty.objectReferenceValue = null;
+                    }
+                }
+
+
+                // CUSTOM CODE. I added this block and the following if statement. It shows the new linked action 2 property, and validates it.
+                EditorGUILayout.PropertyField(m_LinkedAction2Property);
+                InputActionReference linkedActionRef2 = (InputActionReference) m_LinkedAction2Property.objectReferenceValue;
+                InputAction linkedAction2 = linkedActionRef2 != null ? linkedActionRef2.action : null;
+
+                if (action != null && linkedAction2 != null)
+                {
+                    if (linkedAction2.actionMap == action.actionMap)
+                    {
+                        Debug.LogError($"RebindActionUIEditor.cs: You cannot set the second linked action for input action \"{action.name}\" to \"{linkedAction2.name}\", because it is in the same action map as \"{action.name}\"!");
+
+                        // Clear this property since the specified action is invalid.
+                        m_LinkedAction2Property.objectReferenceValue = null;
                     }
                 }
 
@@ -201,8 +220,9 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
 
         private SerializedProperty m_ActionProperty;
         
-        // CUSTOM CODE: I added this field.
+        // CUSTOM CODE: I added these two fields.
         private SerializedProperty m_LinkedActionProperty;
+        private SerializedProperty m_LinkedAction2Property;
 
         private SerializedProperty m_BindingIdProperty;
         private SerializedProperty m_ActionLabelProperty;
